@@ -280,7 +280,6 @@ typedef struct
 #define NOTE_FLAG_OPPONENT    (1 << 2) //Note is opponent's
 #define NOTE_FLAG_SUSTAIN     (1 << 3) //Note is a sustain note
 #define NOTE_FLAG_SUSTAIN_END (1 << 4) //Draw as sustain ending (this sucks)
-#define NOTE_FLAG_MISS        (1 << 6) //Note has been missed
 #define NOTE_FLAG_HIT         (1 << 7) //Note has been hit
 
 typedef struct
@@ -323,6 +322,8 @@ typedef struct
 	
 	u_short song_step;
 	u_char just_step, vocal_active;
+	
+	u_char arrow_hitan[4]; //Arrow hit animation for presses
 	
 	signed short health;
 } Stage;
@@ -496,9 +497,9 @@ void Character_DrawHealth(Character *this, int ox, fixed_t bump)
 {
 	int dying;
 	if (ox < 0)
-		dying = (stage.health >= 19000) * 24;
+		dying = (stage.health >= 18000) * 24;
 	else
-		dying = (stage.health <= 1000) * 24;
+		dying = (stage.health <= 2000) * 24;
 	
 	fixed_t hx = (128 << FIXED_SHIFT) * (10000 - stage.health) / 10000;
 	RECT src = {(this->char_id % 5) * 48 + dying, 16 + (this->char_id / 5) * 24, 24, 24};
@@ -514,12 +515,14 @@ static const CharAnim note_anims[4][2] = {
 
 void Character_MissNote(Character *this, u_char type)
 {
-	//Stop playing vocal track
-	Stage_CutVocal();
+	//Stop playing vocal track if section is focused on us
+	if (!(stage.cur_section->flag & SECTION_FLAG_OPPFOCUS))
+		Stage_CutVocal();
 }
 
 void Character_NoteCheck(Character *this, u_char type)
 {
+	//Perform note check
 	Note *note = stage.start_note;
 	for (;; note++)
 	{
@@ -537,6 +540,7 @@ void Character_NoteCheck(Character *this, u_char type)
 		Character_SetAnim(this, note_anims[type & 0x3][0]);
 		note->type |= NOTE_FLAG_HIT;
 		stage.health += 230;
+		stage.arrow_hitan[type] = 6;
 		return;
 	}
 	
@@ -548,6 +552,11 @@ void Character_NoteCheck(Character *this, u_char type)
 
 void Character_SustainCheck(Character *this, u_char type)
 {
+	//Hold note animation
+	if (stage.arrow_hitan[type] == 0)
+		stage.arrow_hitan[type] = 1;
+	
+	//Perform note check
 	Note *note = stage.start_note;
 	for (;; note++)
 	{
@@ -566,6 +575,7 @@ void Character_SustainCheck(Character *this, u_char type)
 			Character_SetAnim(this, note_anims[type & 0x3][0]);
 		note->type |= NOTE_FLAG_HIT;
 		stage.health += 230;
+		stage.arrow_hitan[type] = 6;
 		return;
 	}
 	
@@ -612,13 +622,15 @@ void Stage_Load(StageId id, StageDiff difficulty)
 	
 	stage.note_speed = FIXED_MUL(FIXED_DIV(FIXED_DEC(140, 0), stage.step_crochet), stage.speed);
 	
-	stage.late_safe = FIXED_MUL(FIXED_DEC(0, 166667), stage.step_crochet);
+	stage.late_safe = stage.step_crochet * 10 / 60;
 	stage.early_safe = stage.late_safe >> 1;
 	
 	//Initialize stage state
 	stage.note_scroll = -8 << FIXED_SHIFT;
 	
 	stage.just_step = 0;
+	
+	memset(stage.arrow_hitan, 0, sizeof(stage.arrow_hitan));
 	
 	stage.health = 10000;
 	
@@ -648,7 +660,7 @@ void Stage_Tick()
 	if (stage.note_scroll < 0)
 	{
 		//Count up scroll
-		fixed_t next_scroll = stage.note_scroll + FIXED_MUL(FIXED_DEC(0, 16667), stage.step_crochet); //TODO: PAL
+		fixed_t next_scroll = stage.note_scroll + stage.step_crochet / 60; //TODO: PAL
 		
 		//3 2 1 GO - pre song start
 		
@@ -682,7 +694,7 @@ void Stage_Tick()
 	else
 	{
 		//Song has ended
-		stage.note_scroll += FIXED_MUL(FIXED_DEC(0, 16667), stage.step_crochet); //TODO: PAL
+		stage.note_scroll += stage.step_crochet / 60; //TODO: PAL
 		
 		next_step = stage.note_scroll >> FIXED_SHIFT;
 		playing = 1;
@@ -767,26 +779,13 @@ void Stage_Tick()
 		if (note->pos > stage.song_step)
 			break;
 		
-		if (playing && !(note->type & (NOTE_FLAG_HIT | NOTE_FLAG_MISS)))
+		//Opponent note hits
+		if (playing && (note->type & NOTE_FLAG_OPPONENT) && !(note->type & NOTE_FLAG_HIT))
 		{
-			//Miss note if out of hit range
-			fixed_t note_fp = note->pos << FIXED_SHIFT;
-			if (note_fp + stage.late_safe < stage.note_scroll && !(note->type & NOTE_FLAG_OPPONENT))
-			{
-				//Missed note
-				Character_MissNote(&stage.character[0], note->type & 0x3);
-				note->type |= NOTE_FLAG_MISS;
-				stage.health -= 475;
-			}
-			
-			//Hit if note is opponent's
-			if (note->type & NOTE_FLAG_OPPONENT)
-			{
-				//Opponent hits note
-				Stage_StartVocal();
-				Character_SetAnim(&stage.character[1], note_anims[note->type & 0x3][0]);
-				note->type |= NOTE_FLAG_HIT;
-			}
+			//Opponent hits note
+			Stage_StartVocal();
+			Character_SetAnim(&stage.character[1], note_anims[note->type & 0x3][0]);
+			note->type |= NOTE_FLAG_HIT;
 		}
 	}
 	
@@ -818,9 +817,16 @@ void Stage_Tick()
 		HUD_GetNotePos(note->type & 0x7, &x, &y, note->pos);
 		
 		//Check if went above screen
-		fixed_t note_fp = note->pos << FIXED_SHIFT;
-		if (note_fp + stage.late_safe < stage.note_scroll && y < ((-16 - SCREEN_HEIGHT2) << FIXED_SHIFT))
+		if (y < ((-16 - SCREEN_HEIGHT2) << FIXED_SHIFT))
 		{
+			//Miss note if player's note
+			if (!(note->type & (NOTE_FLAG_OPPONENT | NOTE_FLAG_HIT)))
+			{
+				//Missed note
+				Character_MissNote(&stage.character[0], note->type & 0x3);
+				stage.health -= 475;
+			}
+			
 			//Update start note
 			stage.start_note++;
 		}
@@ -849,16 +855,30 @@ void Stage_Tick()
 	//Draw note HUD
 	RECT note_src = {0, 0, 32, 32};
 	
-	for (int i = 0; i < 4; i++, note_src.y += 32)
+	for (int i = 0; i < 4; i++)
 	{
 		fixed_t x, y;
 		
 		//BF
 		HUD_GetNotePos(i, &x, &y, 0xFFFF);
+		if (stage.arrow_hitan[i] != 0)
+		{
+			//Play hit animation
+			note_src.x = (i + 1) << 5;
+			note_src.y = 128 - ((((int)stage.arrow_hitan[i] + 1) >> 1) << 5);
+			stage.arrow_hitan[i]--;
+		}
+		else
+		{
+			note_src.x = 0;
+			note_src.y = i << 5;
+		}
 		Stage_DrawTex(&stage.tex_note, &note_src, x - (16 << FIXED_SHIFT), y - (16 << FIXED_SHIFT), bump);
 		
 		//Opponent
 		HUD_GetNotePos(4 + i, &x, &y, 0xFFFF);
+		note_src.x = 0;
+		note_src.y = i << 5;
 		Stage_DrawTex(&stage.tex_note, &note_src, x - (16 << FIXED_SHIFT), y - (16 << FIXED_SHIFT), bump);
 	}
 	
