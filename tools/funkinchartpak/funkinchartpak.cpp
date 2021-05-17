@@ -112,7 +112,10 @@ int main(int argc, char *argv[])
 	
 	//Sort notes
 	std::sort(notes.begin(), notes.end(), [](Note a, Note b) {
-		return a.pos < b.pos;
+		if (a.pos == b.pos)
+			return (b.type & NOTE_FLAG_SUSTAIN) && !(a.type & NOTE_FLAG_SUSTAIN);
+		else
+			return a.pos < b.pos;
 	});
 	
 	//Push dummy section and note

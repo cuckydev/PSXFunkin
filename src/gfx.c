@@ -9,11 +9,11 @@
 //Gfx state
 static DISPENV disp[2];
 static DRAWENV draw[2];
-static int db;
+static u8 db;
 
-static u_long ot[2][OTLEN];    //Ordering table length
-static char pribuff[2][32768]; //Primitive buffer
-static char *nextpri;          //Next primitive pointer
+static u32 ot[2][OTLEN];    //Ordering table length
+static u8 pribuff[2][32768]; //Primitive buffer
+static u8 *nextpri;          //Next primitive pointer
 
 //Gfx functions
 void Gfx_Init()
@@ -130,7 +130,7 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 		free3(data);
 }
 
-void Gfx_BlitTex(Gfx_Tex *tex, const RECT *src, int x, int y)
+void Gfx_BlitTex(Gfx_Tex *tex, const RECT *src, s32 x, s32 y)
 {
 	//Add sprite
 	SPRT *sprt = (SPRT*)nextpri;

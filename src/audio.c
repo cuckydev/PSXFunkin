@@ -5,12 +5,13 @@
 #include "main.h"
 
 //XA state
-static int xa_active, xa_loop, xa_start, xa_end, xa_pos;
+static boolean xa_active, xa_loop;
+static s32 xa_start, xa_end, xa_pos;
 static void *xa_readycb;
 
-static void XA_ReadyCallback(u_char intr, u_char *result)
+static void XA_ReadyCallback(u8 intr, u8 *result)
 {
-	static u_char chk_cool = 0;
+	static u8 chk_cool = 0;
 	
 	if (intr == CdlDataReady)
 	{
@@ -22,7 +23,7 @@ static void XA_ReadyCallback(u_char intr, u_char *result)
 				//Reset XA playback
 				CdlLOC loc;
 				CdIntToPos(xa_start, &loc);
-				CdControlF(CdlReadN, (u_char*)&loc);
+				CdControlF(CdlReadN, (u8*)&loc);
 				xa_pos = xa_start;
 			}
 			else
@@ -44,7 +45,7 @@ void Audio_Init()
 	xa_active = 0;
 }
 
-void Audio_PlayXA_Pos(int start, int end, int volume, int channel, int loop)
+void Audio_PlayXA_Pos(s32 start, s32 end, u8 volume, u8 channel, boolean loop)
 {
 	//Use input
 	xa_pos = start;
@@ -54,7 +55,7 @@ void Audio_PlayXA_Pos(int start, int end, int volume, int channel, int loop)
 	xa_loop = loop;
 	
 	//Prepare CD for XA reading
-	u_char param[4];
+	u8 param[4];
 	param[0] = CdlModeSpeed | CdlModeRT | CdlModeSF;
 	
 	CdControlB(CdlSetmode, param, 0);
@@ -66,11 +67,11 @@ void Audio_PlayXA_Pos(int start, int end, int volume, int channel, int loop)
 	
 	CdlLOC loc;
 	CdIntToPos(start, &loc);
-	CdControlF(CdlReadN, (u_char*)&loc);
+	CdControlF(CdlReadN, (u8*)&loc);
 	xa_active = 1;
 }
 
-void Audio_PlayXA(const char *path, int volume, int channel, int loop)
+void Audio_PlayXA(const char *path, u8 volume, u8 channel, boolean loop)
 {
 	//Search for file
 	CdlFILE file;
@@ -82,42 +83,41 @@ void Audio_PlayXA(const char *path, int volume, int channel, int loop)
 	}
 	
 	//Play file
-	int start = CdPosToInt(&file.pos);
+	s32 start = CdPosToInt(&file.pos);
 	Audio_PlayXA_Pos(start, start + (file.size / IO_SECT_SIZE) - 1, volume, channel, loop);
 }
 
-void Audio_ChannelXA(int channel)
+void Audio_ChannelXA(u8 channel)
 {
 	//Change CD filter
 	CdlFILTER filter;
 	filter.file = 1;
 	filter.chan = channel;
-	
-	CdControlF(CdlSetfilter, (u_char*)&filter);
+	CdControlF(CdlSetfilter, (u8*)&filter);
 }
 
-static u_char Audio_FromBCD(u_char x)
+static u8 Audio_FromBCD(u8 x)
 {
 	return x - 6 * (x >> 4);
 }
 
-int Audio_TellXA_Sector()
+s32 Audio_TellXA_Sector()
 {
 	if (!xa_active)
 		return -1;
-	u_char result[8];
+	u8 result[8];
 	CdControlB(CdlGetlocP, NULL, result);
 	return ((Audio_FromBCD(result[2]) * 75 * 60) + (Audio_FromBCD(result[3]) * 75) + Audio_FromBCD(result[4])) - xa_start;
 }
 
-int Audio_TellXA_Milli()
+s32 Audio_TellXA_Milli()
 {
 	if (!xa_active)
 		return -1;
 	return Audio_TellXA_Sector() * 1000 / 150;
 }
 
-int Audio_PlayingXA()
+boolean Audio_PlayingXA()
 {
 	return xa_active;
 }
@@ -133,7 +133,7 @@ void Audio_StopXA()
 		CdReadyCallback(xa_readycb);
 		CdControlF(CdlStop,0);
 		
-		u_char param[4];
+		u8 param[4];
 		param[0] = CdlModeSpeed;
 		CdControlB(CdlSetmode, param, 0);
 	}

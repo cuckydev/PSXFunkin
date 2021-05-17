@@ -17,4 +17,22 @@
 #include <string.h>
 #include <malloc.h>
 
+//Fixed size types
+typedef u_char             u8;
+typedef signed char        s8;
+typedef u_short            u16;
+typedef signed short       s16;
+typedef u_long             u32;
+typedef signed int         s32;
+typedef unsigned long long u64;
+typedef signed long long   s64;
+
+typedef s8 boolean;
+#ifndef true
+	#define true 1
+#endif
+#ifndef false
+	#define false 0
+#endif
+
 #endif

@@ -13,23 +13,23 @@
 //Gfx structures
 typedef struct
 {
-	int tim_mode;
+	u32 tim_mode;
 	RECT tim_prect, tim_crect;
-	u_short tpage, clut;
-	u_char pxshift;
+	u16 tpage, clut;
+	u8 pxshift;
 } Gfx_Tex;
 
 //Gfx functions
 void Gfx_Init();
 void Gfx_Flip();
 
-typedef u_char Gfx_LoadTex_Flag;
+typedef u8 Gfx_LoadTex_Flag;
 #define GFX_LOADTEX_FREE   (1 << 0)
 #define GFX_LOADTEX_NOTEX  (1 << 1)
 #define GFX_LOADTEX_NOCLUT (1 << 2)
 void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag free);
 
-void Gfx_BlitTex(Gfx_Tex *tex, const RECT *src, int x, int y);
+void Gfx_BlitTex(Gfx_Tex *tex, const RECT *src, s32 x, s32 y);
 void Gfx_DrawTex(Gfx_Tex *tex, const RECT *src, const RECT *dst);
 
 #endif

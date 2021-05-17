@@ -3,7 +3,7 @@
 
 #include "psx.h"
 
-typedef u_long* IO_Data;
+typedef u32* IO_Data;
 
 //IO constants
 #define IO_SECT_SIZE 2048

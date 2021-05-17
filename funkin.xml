@@ -54,6 +54,18 @@
 				<file name = "1.3e.cht" type = "data" source = "iso/chart/1.3e.cht"/>
 				<file name = "1.3n.cht" type = "data" source = "iso/chart/1.3n.cht"/>
 				<file name = "1.3h.cht" type = "data" source = "iso/chart/1.3h.cht"/>
+				<!-- Pico -->
+				<file name = "3.1e.cht" type = "data" source = "iso/chart/3.1e.cht"/>
+				<file name = "3.1n.cht" type = "data" source = "iso/chart/3.1n.cht"/>
+				<file name = "3.1h.cht" type = "data" source = "iso/chart/3.1h.cht"/>
+				<!-- Philly -->
+				<file name = "3.2e.cht" type = "data" source = "iso/chart/3.2e.cht"/>
+				<file name = "3.2n.cht" type = "data" source = "iso/chart/3.2n.cht"/>
+				<file name = "3.2h.cht" type = "data" source = "iso/chart/3.2h.cht"/>
+				<!-- Blammed -->
+				<file name = "3.3e.cht" type = "data" source = "iso/chart/3.3e.cht"/>
+				<file name = "3.3n.cht" type = "data" source = "iso/chart/3.3n.cht"/>
+				<file name = "3.3h.cht" type = "data" source = "iso/chart/3.3h.cht"/>
 				<!-- Satin Panties -->
 				<file name = "4.1e.cht" type = "data" source = "iso/chart/4.1e.cht"/>
 				<file name = "4.1n.cht" type = "data" source = "iso/chart/4.1n.cht"/>
@@ -92,6 +104,8 @@
 				<file name = "menu.xa" type = "xa" source = "iso/music/menu.xa"/>
 				<dummy sectors="32"/>
 				<file name = "week1.xa" type = "xa" source = "iso/music/week1.xa"/>
+				<dummy sectors="32"/>
+				<file name = "week3.xa" type = "xa" source = "iso/music/week3.xa"/>
 				<dummy sectors="32"/>
 				<file name = "week4.xa" type = "xa" source = "iso/music/week4.xa"/>
 				<dummy sectors="32"/>
