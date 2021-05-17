@@ -34,7 +34,7 @@ int main()
 	Pad_Init();
 	
 	//Start game
-	int md = 0, stid = 0;
+	int md = 0, stid = StageId_1_1;
 	Menu_Load(MenuLoadPage_Title);
 	
 	//Game loop

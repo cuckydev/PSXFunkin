@@ -771,7 +771,7 @@ void Stage_Tick()
 		{
 			//Miss note if out of hit range
 			fixed_t note_fp = note->pos << FIXED_SHIFT;
-			if (!(note->type & NOTE_FLAG_OPPONENT) && note_fp + stage.late_safe < stage.note_scroll)
+			if (note_fp + stage.late_safe < stage.note_scroll && !(note->type & NOTE_FLAG_OPPONENT))
 			{
 				//Missed note
 				Character_MissNote(&stage.character[0], note->type & 0x3);
@@ -818,7 +818,8 @@ void Stage_Tick()
 		HUD_GetNotePos(note->type & 0x7, &x, &y, note->pos);
 		
 		//Check if went above screen
-		if (y < ((-16 - SCREEN_HEIGHT2) << FIXED_SHIFT))
+		fixed_t note_fp = note->pos << FIXED_SHIFT;
+		if (note_fp + stage.late_safe < stage.note_scroll && y < ((-16 - SCREEN_HEIGHT2) << FIXED_SHIFT))
 		{
 			//Update start note
 			stage.start_note++;
