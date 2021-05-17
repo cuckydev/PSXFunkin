@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Defines the ISO project -->
+<iso_project image_name="funkin.iso" cue_sheet="funkin.cue" no_xa="0">
+	<!-- Data track -->
+	<track type="data">
+		<!-- Identifiers -->
+		<identifiers
+			system        = "PLAYSTATION"
+			application   = "PLAYSTATION"
+			volume        = "PSXFUNKIN"
+			volume_set    = "PSXFUNKIN"
+			publisher     = "CUCKYDEV"
+			copyright     = "NINJAMUFFIN99"
+		/>
+		<license file="licensea.dat"/>
+		
+		<!-- Data directory tree -->
+		<directory_tree>
+			<!-- System -->
+			<file name = "system.cnf" type = "data" source = "iso/system.cnf"/>
+			<file name = "SCUS_000.00" type = "data" source = "funkin.ps-exe"/>
+			
+			<!-- Menu assets -->
+			<dir name = "menu">
+				<file name = "whitefnt.tim" type = "data" source = "iso/menu/whitefnt.tim"/>
+				<file name = "title0.tim" type = "data" source = "iso/menu/title0.tim"/>
+				<file name = "title1.tim" type = "data" source = "iso/menu/title1.tim"/>
+				<file name = "ng.tim" type = "data" source = "iso/menu/ng.tim"/>
+				<file name = "gf0.tim" type = "data" source = "iso/menu/gf0.tim"/>
+				<file name = "gf1.tim" type = "data" source = "iso/menu/gf1.tim"/>
+				<file name = "gf2.tim" type = "data" source = "iso/menu/gf2.tim"/>
+				<file name = "gf3.tim" type = "data" source = "iso/menu/gf3.tim"/>
+				<file name = "gf4.tim" type = "data" source = "iso/menu/gf4.tim"/>
+			</dir>
+			
+			<!-- Stage assets -->
+			<dir name = "stage">
+				<file name = "note.tim" type = "data" source = "iso/stage/note.tim"/>
+				<file name = "health.tim" type = "data" source = "iso/stage/health.tim"/>
+			</dir>
+			
+			<!-- Stage charts -->
+			<dir name = "chart">
+				<!-- Bopeebo -->
+				<file name = "1.1e.cht" type = "data" source = "iso/chart/1.1e.cht"/>
+				<file name = "1.1n.cht" type = "data" source = "iso/chart/1.1n.cht"/>
+				<file name = "1.1h.cht" type = "data" source = "iso/chart/1.1h.cht"/>
+				<!-- Fresh -->
+				<file name = "1.2e.cht" type = "data" source = "iso/chart/1.2e.cht"/>
+				<file name = "1.2n.cht" type = "data" source = "iso/chart/1.2n.cht"/>
+				<file name = "1.2h.cht" type = "data" source = "iso/chart/1.2h.cht"/>
+				<!-- Dadbattle -->
+				<file name = "1.3e.cht" type = "data" source = "iso/chart/1.3e.cht"/>
+				<file name = "1.3n.cht" type = "data" source = "iso/chart/1.3n.cht"/>
+				<file name = "1.3h.cht" type = "data" source = "iso/chart/1.3h.cht"/>
+				<!-- Satin Panties -->
+				<file name = "4.1e.cht" type = "data" source = "iso/chart/4.1e.cht"/>
+				<file name = "4.1n.cht" type = "data" source = "iso/chart/4.1n.cht"/>
+				<file name = "4.1h.cht" type = "data" source = "iso/chart/4.1h.cht"/>
+				<!-- High -->
+				<file name = "4.2e.cht" type = "data" source = "iso/chart/4.2e.cht"/>
+				<file name = "4.2n.cht" type = "data" source = "iso/chart/4.2n.cht"/>
+				<file name = "4.2h.cht" type = "data" source = "iso/chart/4.2h.cht"/>
+				<!-- MILF -->
+				<file name = "4.3e.cht" type = "data" source = "iso/chart/4.3e.cht"/>
+				<file name = "4.3n.cht" type = "data" source = "iso/chart/4.3n.cht"/>
+				<file name = "4.3h.cht" type = "data" source = "iso/chart/4.3h.cht"/>
+			</dir>
+			
+			<!-- Boyfriend assets -->
+			<dir name = "bf">
+				<file name = "idle.tim" type = "data" source = "iso/bf/idle.tim"/>
+				<file name = "left.tim" type = "data" source = "iso/bf/left.tim"/>
+				<file name = "down.tim" type = "data" source = "iso/bf/down.tim"/>
+				<file name = "up.tim" type = "data" source = "iso/bf/up.tim"/>
+				<file name = "right.tim" type = "data" source = "iso/bf/right.tim"/>
+				<file name = "peace.tim" type = "data" source = "iso/bf/peace.tim"/>
+			</dir>
+			
+			<!-- Dad assets -->
+			<dir name = "dad">
+				<file name = "idle.tim" type = "data" source = "iso/dad/idle.tim"/>
+				<file name = "left.tim" type = "data" source = "iso/dad/left.tim"/>
+				<file name = "down.tim" type = "data" source = "iso/dad/down.tim"/>
+				<file name = "up.tim" type = "data" source = "iso/dad/up.tim"/>
+				<file name = "right.tim" type = "data" source = "iso/dad/right.tim"/>
+			</dir>
+			
+			<!-- Music -->
+			<dir name = "music">
+				<file name = "menu.xa" type = "xa" source = "iso/music/menu.xa"/>
+				<dummy sectors="32"/>
+				<file name = "week1.xa" type = "xa" source = "iso/music/week1.xa"/>
+				<dummy sectors="32"/>
+				<file name = "week4.xa" type = "xa" source = "iso/music/week4.xa"/>
+				<dummy sectors="32"/>
+			</dir>
+			
+			<!-- Dummy sectors -->
+			<dummy sectors="1024"/>
+		</directory_tree>
+	</track>
+</iso_project>

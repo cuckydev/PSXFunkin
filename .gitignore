@@ -1,0 +1,24 @@
+# Exclude files that shouldn't be included
+do.sh
+pcsx.json
+memcard1.mcd
+memcard2.mcd
+licensea.dat
+
+# Exclude executable files
+funkin.cue
+funkin.elf
+funkin.iso
+funkin.map
+funkin.ps-exe
+
+# Exclude object and link files
+src/*.o
+src/*.dep
+
+# Exclude tool data and exe
+tools/funkinchartpak/*.json
+tools/funkinchartpak/*.cht
+tools/funkinchartpak/funkinchartpak.exe
+tools/funkinchartpak/funkinchartpak.elf
+tools/funkinchartpak/funkinchartpak
