@@ -48,6 +48,8 @@ typedef struct
 
 typedef struct
 {
+	fixed_t focus_height;
+	
 	u8 texs;
 	const char **tex;
 	
@@ -58,6 +60,7 @@ typedef struct
 
 static const CharDef char_defs[CharId_Max] = {
 	{ //CharId_Boyfriend
+		32 << FIXED_SHIFT,
 		6,
 		(const char*[]){
 			"\\BF\\IDLE.TIM;1",
@@ -111,6 +114,7 @@ static const CharDef char_defs[CharId_Max] = {
 		}
 	},
 	{ //CharId_Dad
+		64 << FIXED_SHIFT,
 		6,
 		(const char*[]){
 			"\\DAD\\IDLE0.TIM;1",
@@ -121,21 +125,21 @@ static const CharDef char_defs[CharId_Max] = {
 			"\\DAD\\RIGHT.TIM;1",
 		},
 		(const CharFrame[]){
-			{0, {  0,   0, 128, 256}, { 42, 183}}, //0 idle 1
-			{0, {128,   0, 128, 256}, { 43, 181}}, //1 idle 2
-			{1, {  0,   0, 128, 256}, { 43, 181}}, //2 idle 3
-			{1, {128,   0, 128, 256}, { 42, 183}}, //3 idle 4
+			{0, {  0,   0, 128, 256}, { 42, 188}}, //0 idle 1
+			{0, {128,   0, 128, 256}, { 43, 186}}, //1 idle 2
+			{1, {  0,   0, 128, 256}, { 43, 186}}, //2 idle 3
+			{1, {128,   0, 128, 256}, { 42, 188}}, //3 idle 4
 			
-			{2, {  0,   0, 128, 256}, { 42, 185}}, //4 left 1
+			{2, {  0,   0, 128, 256}, { 42, 190}}, //4 left 1
 			
-			{3, {  0,   0, 128, 256}, { 44, 174}}, //5 down 1
-			{3, {128,   0, 128, 256}, { 44, 175}}, //6 down 2
+			{3, {  0,   0, 128, 256}, { 44, 179}}, //5 down 1
+			{3, {128,   0, 128, 256}, { 44, 180}}, //6 down 2
 			
-			{4, {  0,   0, 128, 256}, { 41, 195}}, //7 up 1
-			{4, {128,   0, 128, 256}, { 41, 193}}, //8 up 2
+			{4, {  0,   0, 128, 256}, { 41, 200}}, //7 up 1
+			{4, {128,   0, 128, 256}, { 41, 198}}, //8 up 2
 			
-			{5, {  0,   0, 128, 256}, { 43, 189}}, //9 right 1
-			{5, {128,   0, 128, 256}, { 43, 189}}, //10 right 2
+			{5, {  0,   0, 128, 256}, { 43, 194}}, //9 right 1
+			{5, {128,   0, 128, 256}, { 43, 194}}, //10 right 2
 		},
 		{
 			{4, (const u8[]){ 1,  2,  3,  0,  0,  0,  0,  0,  0,  0, ASCR_REPEAT}},                    //CharAnim_Idle
@@ -281,6 +285,7 @@ static const StageDef stage_defs[StageId_Max] = {
 typedef struct
 {
 	//Character textures and definition
+	const CharDef *char_def;
 	const CharAnimDef *anim_def;
 	const CharFrame *frame_def;
 	CharId char_id;
@@ -420,7 +425,7 @@ void Stage_CutVocal()
 void Character_SetFrame(Character *this, u8 frame)
 {
 	//Get frame definition
-	const CharFrame *frame_def = &this->frame_def[this->frame = frame];
+	const CharFrame *frame_def = &this->char_def->frame[this->frame = frame];
 	
 	//Load texture
 	if (this->tex_i != frame_def->tex)
@@ -442,19 +447,19 @@ void Character_Animate(Character *this)
 		switch (this->anim_p[0])
 		{
 			case ASCR_REPEAT:
-				this->anim_p = this->anim_def[this->anim].script;
+				this->anim_p = this->char_def->anim[this->anim].script;
 				break;
 			case ASCR_CHGANI:
-				this->anim_p = this->anim_def[this->anim = this->anim_p[1]].script;
+				this->anim_p = this->char_def->anim[this->anim = this->anim_p[1]].script;
 				break;
 			case ASCR_BACK:
-				this->anim_time = this->anim_def[this->anim].spd;
+				this->anim_time = this->char_def->anim[this->anim].spd;
 				this->anim_p -= this->anim_p[1];
 				break;
 			default:
 				if (this->anim_p[0] != this->frame)
 					Character_SetFrame(this, this->anim_p[0]);
-				this->anim_time = this->anim_def[this->anim].spd;
+				this->anim_time = this->char_def->anim[this->anim].spd;
 				this->anim_p++;
 				return;
 		}
@@ -464,7 +469,7 @@ void Character_Animate(Character *this)
 void Character_SetAnim(Character *this, CharAnim anim)
 {
 	//Get animation definition
-	const CharAnimDef *anim_def = &this->anim_def[this->anim = anim];
+	const CharAnimDef *anim_def = &this->char_def->anim[this->anim = anim];
 	
 	//Start animation
 	this->anim_p = anim_def->script;
@@ -475,11 +480,7 @@ void Character_SetAnim(Character *this, CharAnim anim)
 void Character_Load(Character *this, const StageDef_Char *sdef)
 {
 	//Get character definition
-	const CharDef *char_def = &char_defs[this->char_id = sdef->id];
-	
-	//Use definitions
-	this->anim_def = char_def->anim;
-	this->frame_def = char_def->frame;
+	const CharDef *char_def = this->char_def = &char_defs[this->char_id = sdef->id];
 	
 	//Load character textures
 	u8 texs = this->texs = char_def->texs;
@@ -516,7 +517,7 @@ void Character_Unload(Character *this)
 void Character_Draw(Character *this, fixed_t bump)
 {
 	//Get frame definition
-	const CharFrame *frame_def = &this->frame_def[this->frame];
+	const CharFrame *frame_def = &this->char_def->frame[this->frame];
 	
 	//Get offset
 	fixed_t ox = frame_def->off[0] * stage.camera.zoom;
@@ -627,10 +628,10 @@ void Character_SustainCheck(Character *this, u8 type)
 }
 
 //Stage functions
-void Stage_FocusChar(Character *ch, fixed_t div)
+void Stage_FocusCharacter(Character *ch, fixed_t div)
 {
 	stage.camera.tx = ch->x * 2 / 3;
-	stage.camera.ty = ch->y / 3 - (32 << FIXED_SHIFT);
+	stage.camera.ty = ch->y / 3 - ch->char_def->focus_height;
 	stage.camera.td = div;
 }
 
@@ -677,7 +678,7 @@ void Stage_Load(StageId id, StageDiff difficulty)
 	stage.health = 10000;
 	
 	//Initialize camera
-	Stage_FocusChar(&stage.character[(stage.cur_section->flag & SECTION_FLAG_OPPFOCUS) != 0], FIXED_UNIT / 24);
+	Stage_FocusCharacter(&stage.character[(stage.cur_section->flag & SECTION_FLAG_OPPFOCUS) != 0], FIXED_UNIT / 24);
 	stage.camera.x = stage.camera.tx;
 	stage.camera.y = stage.camera.ty;
 	stage.camera.zoom = FIXED_UNIT;
@@ -788,7 +789,7 @@ void Stage_Tick()
 		
 		//Start next section
 		stage.cur_section++;
-		Stage_FocusChar(&stage.character[(stage.cur_section->flag & SECTION_FLAG_OPPFOCUS) != 0], FIXED_UNIT / 24);
+		Stage_FocusCharacter(&stage.character[(stage.cur_section->flag & SECTION_FLAG_OPPFOCUS) != 0], FIXED_UNIT / 24);
 	}
 	
 	//Scroll camera
@@ -900,37 +901,69 @@ void Stage_Tick()
 			//Don't draw if below screen or already hit
 			if (y > ((SCREEN_HEIGHT2 + 16) << FIXED_SHIFT) || note->pos == 0xFFFF)
 				break;
-			if (note->type & NOTE_FLAG_HIT)
-				continue;
 			
 			//Draw note
 			if (note->type & NOTE_FLAG_SUSTAIN)
 			{
-				if (note->type & NOTE_FLAG_SUSTAIN_END)
+				//Check for sustain clipping
+				fixed_t clip;
+				if (note->type & (NOTE_FLAG_HIT | NOTE_FLAG_OPPONENT))
 				{
-					RECT note_src = {160, ((note->type & 0x3) << 5) + 16, 32, 16};
-					RECT_FIXED note_dst = {
-						x - (16 << FIXED_SHIFT),
-						y - (16 << FIXED_SHIFT),
-						note_src.w << FIXED_SHIFT,
-						note_src.h << FIXED_SHIFT
-					};
-					Stage_DrawTex(&stage.tex_note, &note_src, &note_dst, bump);
+					clip = (((32 + 16) - SCREEN_HEIGHT2) << FIXED_SHIFT) - y;
+					if (clip < 0)
+						clip = 0;
 				}
 				else
 				{
-					RECT note_src = {160, ((note->type & 0x3) << 5), 32, 16};
-					RECT_FIXED note_dst = {
-						x - (16 << FIXED_SHIFT),
-						y - (12 << FIXED_SHIFT),
-						note_src.w << FIXED_SHIFT,
-						stage.note_speed + FIXED_UNIT,
-					};
-					Stage_DrawTex(&stage.tex_note, &note_src, &note_dst, bump);
+					clip = 0;
+				}
+				
+				//Draw sustain
+				if (note->type & NOTE_FLAG_SUSTAIN_END)
+				{
+					if (clip < (16 << FIXED_SHIFT))
+					{
+						RECT note_src = {
+							160,
+							((note->type & 0x3) << 5) + 16 + (clip >> FIXED_SHIFT),
+							32,
+							16 - (clip >> FIXED_SHIFT)
+						};
+						RECT_FIXED note_dst = {
+							x - (16 << FIXED_SHIFT),
+							y - (16 << FIXED_SHIFT) + clip,
+							note_src.w << FIXED_SHIFT,
+							(note_src.h << FIXED_SHIFT)
+						};
+						Stage_DrawTex(&stage.tex_note, &note_src, &note_dst, bump);
+					}
+				}
+				else
+				{
+					if (clip < stage.note_speed)
+					{
+						RECT note_src = {
+							160,
+							((note->type & 0x3) << 5),
+							32,
+							16
+						};
+						RECT_FIXED note_dst = {
+							x - (16 << FIXED_SHIFT),
+							y - (12 << FIXED_SHIFT) + clip,
+							note_src.w << FIXED_SHIFT,
+							stage.note_speed + FIXED_UNIT - clip
+						};
+						Stage_DrawTex(&stage.tex_note, &note_src, &note_dst, bump);
+					}
 				}
 			}
 			else
 			{
+				//Draw note
+				if (note->type & NOTE_FLAG_HIT)
+					continue;
+				
 				RECT note_src = {32 + ((note->type & 0x3) << 5), 0, 32, 32};
 				RECT_FIXED note_dst = {
 					x - (16 << FIXED_SHIFT),
