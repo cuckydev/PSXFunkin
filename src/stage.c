@@ -13,7 +13,7 @@ typedef struct
 	fixed_t x, y, w, h;
 } RECT_FIXED;
 
-#define FIXED_SHIFT (10)
+#define FIXED_SHIFT (8)
 #define FIXED_UNIT  (1 << FIXED_SHIFT)
 #define FIXED_LAND  (FIXED_UNIT - 1)
 #define FIXED_UAND  (~FIXED_LAND)
@@ -339,9 +339,11 @@ typedef struct
 	Character character[2];
 	
 	//HUD textures
-	Gfx_Tex tex_note, tex_health;
+	Gfx_Tex tex_hud0, tex_hud1;
 	
 	//Stage data
+	Gfx_Tex tex_back0, tex_back1;
+	
 	const StageDef *stage_def;
 	StageId stage_id;
 	
@@ -548,7 +550,7 @@ void Character_DrawHealth(Character *this, int ox, fixed_t bump)
 		src.w << FIXED_SHIFT,
 		src.h << FIXED_SHIFT
 	};
-	Stage_DrawTex(&stage.tex_health, &src, &dst, FIXED_MUL(stage.camera.zoom, bump));
+	Stage_DrawTex(&stage.tex_hud1, &src, &dst, FIXED_MUL(stage.camera.zoom, bump));
 }
 
 static const CharAnim note_anims[4][2] = {
@@ -565,6 +567,7 @@ void Character_MissNote(Character *this, u8 type)
 
 void Character_NoteCheck(Character *this, u8 type)
 {
+	//printf("chknote\n");
 	//Perform note check
 	Note *note = stage.start_note;
 	for (;; note++)
@@ -595,6 +598,7 @@ void Character_NoteCheck(Character *this, u8 type)
 
 void Character_SustainCheck(Character *this, u8 type)
 {
+	//printf("chksus\n");
 	//Hold note animation
 	if (stage.arrow_hitan[type] == 0)
 		stage.arrow_hitan[type] = 1;
@@ -641,8 +645,10 @@ void Stage_Load(StageId id, StageDiff difficulty)
 	const StageDef *stage_def = stage.stage_def = &stage_defs[stage.stage_id = id];
 	
 	//Load HUD textures
-	Gfx_LoadTex(&stage.tex_note, IO_Read("\\STAGE\\NOTE.TIM;1"), GFX_LOADTEX_FREE);
-	Gfx_LoadTex(&stage.tex_health, IO_Read("\\STAGE\\HEALTH.TIM;1"), GFX_LOADTEX_FREE);
+	Gfx_LoadTex(&stage.tex_hud0, IO_Read("\\STAGE\\HUD0.TIM;1"), GFX_LOADTEX_FREE);
+	Gfx_LoadTex(&stage.tex_hud1, IO_Read("\\STAGE\\HUD1.TIM;1"), GFX_LOADTEX_FREE);
+	Gfx_LoadTex(&stage.tex_back0, IO_Read("\\WEEK1\\BACK0.TIM;1"), GFX_LOADTEX_FREE);
+	Gfx_LoadTex(&stage.tex_back1, IO_Read("\\WEEK1\\BACK1.TIM;1"), GFX_LOADTEX_FREE);
 	
 	//Load characters
 	Character_Load(&stage.character[0], &stage_def->mchar);
@@ -696,6 +702,7 @@ void Stage_Unload()
 
 void Stage_Tick()
 {
+	//printf("fetchsongpos\n");
 	//Get song position
 	boolean playing;
 	
@@ -730,8 +737,9 @@ void Stage_Tick()
 		if (song_time > 0)
 		{
 			//Get step position and bump
-			stage.note_scroll = FIXED_MUL(song_time, stage.step_crochet);
-			
+			fixed_t next_scroll = FIXED_MUL(song_time, stage.step_crochet);
+			if (next_scroll > stage.note_scroll) //Skipping?
+				stage.note_scroll = next_scroll;
 			next_step = stage.note_scroll >> FIXED_SHIFT;
 			playing = true;
 		}
@@ -751,6 +759,8 @@ void Stage_Tick()
 		playing = false;
 	}
 	
+	//Update step
+	//printf("step\n");
 	if (next_step > stage.song_step)
 		stage.just_step = true;
 	else
@@ -758,6 +768,7 @@ void Stage_Tick()
 	stage.song_step = next_step;
 	
 	//Get bump
+	//printf("bump\n");
 	fixed_t bump, sbump;
 	if (playing)
 	{
@@ -781,6 +792,7 @@ void Stage_Tick()
 	}
 	
 	//Update section
+	//printf("section\n");
 	while (1)
 	{
 		//Check if current section has ended
@@ -793,12 +805,14 @@ void Stage_Tick()
 	}
 	
 	//Scroll camera
+	//printf("scroll\n");
 	fixed_t dx = stage.camera.tx - stage.camera.x;
 	fixed_t dy = stage.camera.ty - stage.camera.y;
 	stage.camera.x += FIXED_MUL(dx, stage.camera.td);
 	stage.camera.y += FIXED_MUL(dy, stage.camera.td);
 	
 	//Handle player note presses
+	//printf("notepress\n");
 	if (playing)
 	{
 		if (pad_state.press & INPUT_LEFT)
@@ -821,6 +835,7 @@ void Stage_Tick()
 	}
 	
 	//Hardcoded stage animations
+	//printf("stageanim\n");
 	switch (stage.stage_id)
 	{
 		case StageId_1_1:
@@ -832,6 +847,7 @@ void Stage_Tick()
 	}
 	
 	//Process notes
+	//printf("noteproc\n");
 	Note *note;
 	
 	note = stage.start_note;
@@ -851,6 +867,7 @@ void Stage_Tick()
 	}
 	
 	//Perform health checks
+	//printf("chkhealth\n");
 	if (stage.health <= 0)
 	{
 		sprintf(error_msg, "YOU DIED");
@@ -860,20 +877,23 @@ void Stage_Tick()
 		stage.health = 20000;
 	
 	//Draw health heads
+	//printf("drawhead\n");
 	Character_DrawHealth(&stage.character[0],  1, FIXED_MUL(bump, sbump));
 	Character_DrawHealth(&stage.character[1], -1, FIXED_MUL(bump, sbump));
 	
 	//Draw health bar
+	//printf("drawhp\n");
 	RECT health_fill = {0, 0, 256 - (256 * stage.health / 20000), 8};
 	RECT health_back = {0, 8, 256, 8};
 	RECT_FIXED health_dst = {-128 << FIXED_SHIFT, (SCREEN_HEIGHT2 - 32) << FIXED_SHIFT, 0, 8 << FIXED_SHIFT};
 	
 	health_dst.w = health_fill.w << FIXED_SHIFT;
-	Stage_DrawTex(&stage.tex_health, &health_fill, &health_dst, bump);
+	Stage_DrawTex(&stage.tex_hud1, &health_fill, &health_dst, bump);
 	health_dst.w = health_back.w << FIXED_SHIFT;
-	Stage_DrawTex(&stage.tex_health, &health_back, &health_dst, bump);
+	Stage_DrawTex(&stage.tex_hud1, &health_back, &health_dst, bump);
 	
 	//Draw notes
+	//printf("drawnote\n");
 	note = stage.start_note;
 	for (;; note++)
 	{
@@ -894,11 +914,11 @@ void Stage_Tick()
 			}
 			
 			//Update start note
-			stage.start_note++;
+			stage.start_note = note + 1;
 		}
 		else
 		{
-			//Don't draw if below screen or already hit
+			//Don't draw if below screen
 			if (y > ((SCREEN_HEIGHT2 + 16) << FIXED_SHIFT) || note->pos == 0xFFFF)
 				break;
 			
@@ -935,7 +955,7 @@ void Stage_Tick()
 							note_src.w << FIXED_SHIFT,
 							(note_src.h << FIXED_SHIFT)
 						};
-						Stage_DrawTex(&stage.tex_note, &note_src, &note_dst, bump);
+						Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, bump);
 					}
 				}
 				else
@@ -954,7 +974,7 @@ void Stage_Tick()
 							note_src.w << FIXED_SHIFT,
 							stage.note_speed + FIXED_UNIT - clip
 						};
-						Stage_DrawTex(&stage.tex_note, &note_src, &note_dst, bump);
+						Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, bump);
 					}
 				}
 			}
@@ -971,12 +991,13 @@ void Stage_Tick()
 					note_src.w << FIXED_SHIFT,
 					note_src.h << FIXED_SHIFT
 				};
-				Stage_DrawTex(&stage.tex_note, &note_src, &note_dst, bump);
+				Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, bump);
 			}
 		}
 	}
 	
 	//Draw note HUD
+	//printf("drawnotehud\n");
 	RECT note_src = {0, 0, 32, 32};
 	RECT_FIXED note_dst = {0, 0, 32 << FIXED_SHIFT, 32 << FIXED_SHIFT};
 	
@@ -999,7 +1020,7 @@ void Stage_Tick()
 			note_src.x = 0;
 			note_src.y = i << 5;
 		}
-		Stage_DrawTex(&stage.tex_note, &note_src, &note_dst, bump);
+		Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, bump);
 		
 		//Opponent
 		HUD_GetNotePos(4 + i, &note_dst.x, &note_dst.y, 0xFFFF);
@@ -1008,13 +1029,34 @@ void Stage_Tick()
 		
 		note_src.x = 0;
 		note_src.y = i << 5;
-		Stage_DrawTex(&stage.tex_note, &note_src, &note_dst, bump);
+		Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, bump);
 	}
 	
 	//Animate and draw characters
+	//printf("drawchar\n");
 	Character_Animate(&stage.character[0]);
 	Character_Draw(&stage.character[0], bump);
 	
 	Character_Animate(&stage.character[1]);
 	Character_Draw(&stage.character[1], bump);
+	
+	//Draw stage
+	//printf("drawstage\n");
+	RECT stagel_src = {0, 0, 256, 128};
+	RECT_FIXED stage1_dst = {
+		(-400 << FIXED_SHIFT) - stage.camera.x,
+		(48 << FIXED_SHIFT) - stage.camera.y,
+		400 << FIXED_SHIFT,
+		200 << FIXED_SHIFT
+	};
+	RECT stager_src = {0, 128, 256, 128};
+	RECT_FIXED stager_dst = {
+		-stage.camera.x,
+		(48 << FIXED_SHIFT) - stage.camera.y,
+		400 << FIXED_SHIFT,
+		200 << FIXED_SHIFT
+	};
+	
+	Stage_DrawTex(&stage.tex_back0, &stagel_src, &stage1_dst, bump);
+	Stage_DrawTex(&stage.tex_back0, &stager_src, &stager_dst, bump);
 }

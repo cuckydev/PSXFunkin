@@ -36,8 +36,14 @@
 			
 			<!-- Stage assets -->
 			<dir name = "stage">
-				<file name = "note.tim" type = "data" source = "iso/stage/note.tim"/>
-				<file name = "health.tim" type = "data" source = "iso/stage/health.tim"/>
+				<file name = "hud0.tim" type = "data" source = "iso/stage/hud0.tim"/>
+				<file name = "hud1.tim" type = "data" source = "iso/stage/hud1.tim"/>
+			</dir>
+			
+			<!-- Week 1 assets -->
+			<dir name = "week1">
+				<file name = "back0.tim" type = "data" source = "iso/week1/back0.tim"/>
+				<file name = "back1.tim" type = "data" source = "iso/week1/back1.tim"/>
 			</dir>
 			
 			<!-- Stage charts -->

@@ -21,7 +21,7 @@ void ErrorLock()
 }
 
 //Entry point
-u_long malloc_heap[0x140000 / sizeof(u_long)];
+u_long malloc_heap[0x100000 / sizeof(u_long)];
 
 int main()
 {
@@ -34,7 +34,7 @@ int main()
 	Pad_Init();
 	
 	//Start game
-	int md = 0, stid = StageId_1_1;
+	int md = 0, stid = StageId_4_3;
 	Menu_Load(MenuLoadPage_Title);
 	
 	//Game loop
@@ -50,7 +50,7 @@ int main()
 				Stage_Unload();
 			else
 				Menu_Unload();
-			Stage_Load(stid++, StageDiff_Hard);
+			Stage_Load(stid, StageDiff_Hard);
 			md = 1;
 		}
 		if (!md)

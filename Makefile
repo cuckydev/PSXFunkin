@@ -10,7 +10,7 @@ SRCS = src/main.c \
        src/stage.c \
        ../common/crt0/crt0.s
 
-CPPFLAGS += -I../psyq/include -Wall -O3 -s
+CPPFLAGS += -I../psyq/include -Wall -O3
 LDFLAGS += -L../psyq/lib
 LDFLAGS += -Wl,--start-group
 LDFLAGS += -lapi
