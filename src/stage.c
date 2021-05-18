@@ -42,8 +42,8 @@ typedef struct
 typedef struct
 {
 	u8 tex;
-	u8 src[4];
-	s8 off[2];
+	u16 src[4];
+	s16 off[2];
 } CharFrame;
 
 typedef struct
@@ -51,7 +51,6 @@ typedef struct
 	u8 texs;
 	const char **tex;
 	
-	u8 frames;
 	const CharFrame *frame;
 	
 	const CharAnimDef anim[CharAnim_Max];
@@ -68,7 +67,6 @@ static const CharDef char_defs[CharId_Max] = {
 			"\\BF\\RIGHT.TIM;1",
 			"\\BF\\PEACE.TIM;1",
 		},
-		23,
 		(const CharFrame[]){
 			{0, {  0,   0, 128, 128}, { 53,  91}}, //0 idle 1
 			{0, {128,   0, 128, 128}, { 53,  91}}, //1 idle 2
@@ -113,52 +111,43 @@ static const CharDef char_defs[CharId_Max] = {
 		}
 	},
 	{ //CharId_Dad
-		5,
+		6,
 		(const char*[]){
-			"\\DAD\\IDLE.TIM;1",
+			"\\DAD\\IDLE0.TIM;1",
+			"\\DAD\\IDLE1.TIM;1",
 			"\\DAD\\LEFT.TIM;1",
 			"\\DAD\\DOWN.TIM;1",
 			"\\DAD\\UP.TIM;1",
 			"\\DAD\\RIGHT.TIM;1",
 		},
-		19,
 		(const CharFrame[]){
-			{0, {  0,   0, 128, 128}, { 53,  91}}, //0 idle 1
-			{0, {128,   0, 128, 128}, { 53,  91}}, //1 idle 2
-			{0, {  0, 128, 128, 128}, { 52,  92}}, //2 idle 3
-			{0, {128, 128, 128, 128}, { 53,  96}}, //3 idle 4
+			{0, {  0,   0, 128, 256}, { 42, 183}}, //0 idle 1
+			{0, {128,   0, 128, 256}, { 43, 181}}, //1 idle 2
+			{1, {  0,   0, 128, 256}, { 43, 181}}, //2 idle 3
+			{1, {128,   0, 128, 256}, { 42, 183}}, //3 idle 4
 			
-			{1, {  0,   0, 128, 128}, { 54,  93}}, //4 left 1
-			{1, {128,   0, 128, 128}, { 56,  94}}, //5 left 2
-			{1, {  0, 128, 128, 128}, { 51,  97}}, //6 left miss 1
-			{1, {128, 128, 128, 128}, { 52, 101}}, //7 left miss 2
+			{2, {  0,   0, 128, 256}, { 42, 185}}, //4 left 1
 			
-			{2, {  0,   0, 128, 128}, { 48,  83}}, //8 down 1
-			{2, {128,   0, 128, 128}, { 48,  84}}, //9 down 2
-			{2, {  0, 128, 128, 128}, { 49,  90}}, //10 down miss 1
-			{2, {128, 128, 128, 128}, { 50,  90}}, //11 down miss 2
+			{3, {  0,   0, 128, 256}, { 44, 174}}, //5 down 1
+			{3, {128,   0, 128, 256}, { 44, 175}}, //6 down 2
 			
-			{3, {  0,   0, 128, 128}, { 42, 103}}, //12 up 1
-			{3, {128,   0, 128, 128}, { 43, 102}}, //13 up 2
-			{3, {  0, 128, 128, 128}, { 44,  97}}, //14 up miss 1
-			{3, {128, 128, 128, 128}, { 43,  98}}, //15 up miss 2
+			{4, {  0,   0, 128, 256}, { 41, 195}}, //7 up 1
+			{4, {128,   0, 128, 256}, { 41, 193}}, //8 up 2
 			
-			{4, {  0,   0, 128, 128}, { 42,  94}}, //16 right 1
-			{4, {128,   0, 128, 128}, { 42,  94}}, //17 right 2
-			{4, {  0, 128, 128, 128}, { 44, 101}}, //18 right miss 1
-			{4, {128, 128, 128, 128}, { 43, 101}}, //19 right miss 2
+			{5, {  0,   0, 128, 256}, { 43, 189}}, //9 right 1
+			{5, {128,   0, 128, 256}, { 43, 189}}, //10 right 2
 		},
 		{
-			{4, (const u8[]){ 0,  1,  2,  3,  3,  3,  3,  3,  3,  3, ASCR_REPEAT}},                    //CharAnim_Idle
-			{2, (const u8[]){ 4,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_Left
-			{2, (const u8[]){ 4,  6,  7,  7,  7,  7,  7,  7,  7,  7,  7, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_LeftAlt
-			{2, (const u8[]){ 8,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_Down
-			{2, (const u8[]){ 8, 10, 11, 11, 11, 11, 11, 11, 11, 11, 11, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_DownAlt
-			{2, (const u8[]){12, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_Up
-			{2, (const u8[]){12, 14, 15, 15, 15, 15, 15, 15, 15, 15, 15, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_UpAlt
-			{2, (const u8[]){16, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_Right
-			{2, (const u8[]){16, 18, 19, 19, 19, 19, 19, 19, 19, 19, 19, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_RightAlt
-			{4, (const u8[]){ 0,  1,  2,  3,  3,  3,  3,  3,  3,  3, ASCR_REPEAT}},                    //CharAnim_Peace
+			{4, (const u8[]){ 1,  2,  3,  0,  0,  0,  0,  0,  0,  0, ASCR_REPEAT}},                    //CharAnim_Idle
+			{2, (const u8[]){ 4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_Left
+			{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},                                             //CharAnim_LeftAlt
+			{2, (const u8[]){ 5,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_Down
+			{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},                                             //CharAnim_DownAlt
+			{2, (const u8[]){ 7,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_Up
+			{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},                                             //CharAnim_UpAlt
+			{2, (const u8[]){ 9, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_Right
+			{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},                                             //CharAnim_RightAlt
+			{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},                                             //CharAnim_Peace
 		}
 	},
 };
@@ -400,7 +389,7 @@ void HUD_GetNotePos(int i, fixed_t *x, fixed_t *y, u_short pos)
 	}
 	if (y != NULL)
 	{
-		*y = FIXED_UNIT * -90;
+		*y = (32 - SCREEN_HEIGHT2) << FIXED_SHIFT;
 		if (pos != 0xFFFF)
 			*y += FIXED_MUL((((fixed_t)pos << FIXED_SHIFT) - stage.note_scroll), stage.note_speed);
 		else if (stage.note_scroll < (-2 << FIXED_SHIFT))
@@ -663,7 +652,7 @@ void Stage_Load(StageId id, StageDiff difficulty)
 	sprintf(chart_path, stage_def->chart_path, "ENH"[difficulty]);
 	stage.chart_data = IO_Read(chart_path);
 	stage.sections = (Section*)((u_char*)stage.chart_data + 2);
-	stage.notes = (Note*)((u_char*)stage.chart_data + 4 + (*((u_short*)stage.chart_data) << 2));
+	stage.notes = (Note*)((u_char*)stage.chart_data + *((u_short*)stage.chart_data));
 	
 	stage.cur_section = stage.sections;
 	stage.start_note = stage.notes;
@@ -855,7 +844,7 @@ void Stage_Tick()
 		{
 			//Opponent hits note
 			Stage_StartVocal();
-			Character_SetAnim(&stage.character[1], note_anims[note->type & 0x3][0]);
+			Character_SetAnim(&stage.character[1], note_anims[note->type & 0x3][(stage.cur_section->flag & SECTION_FLAG_ALTANIM) != 0]);
 			note->type |= NOTE_FLAG_HIT;
 		}
 	}

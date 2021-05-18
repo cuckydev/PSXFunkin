@@ -119,9 +119,10 @@ int main(int argc, char *argv[])
 	});
 	
 	//Push dummy section and note
-	Section dum_section;
-	dum_section.end = 0xFFFF;
-	sections.push_back(dum_section);
+	//Section dum_section;
+	//dum_section.end = 0xFFFF;
+	//sections.push_back(dum_section);
+	sections[sections.size() - 1].end = 0xFFFF;
 	
 	Note dum_note;
 	dum_note.pos = 0xFFFF;
@@ -137,7 +138,7 @@ int main(int argc, char *argv[])
 	}
 	
 	//Write sections
-	WriteWord(out, sections.size());
+	WriteWord(out, 2 + (sections.size() << 2));
 	for (auto &i : sections)
 	{
 		WriteWord(out, i.end);
@@ -146,7 +147,6 @@ int main(int argc, char *argv[])
 	}
 	
 	//Write notes
-	WriteWord(out, notes.size());
 	for (auto &i : notes)
 	{
 		WriteWord(out, i.pos);
