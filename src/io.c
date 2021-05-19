@@ -37,7 +37,7 @@ IO_Data IO_Read(const char *path)
 	}
 	
 	//Read file
-	CdControl(CdlSetloc, (u_char*)&file.pos, 0);
+	CdControl(CdlSetloc, (u8*)&file.pos, 0);
 	CdRead(sects, buffer, CdlModeSpeed);
 	CdReadSync(0, 0);
 	

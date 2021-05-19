@@ -19,7 +19,7 @@ typedef struct
 	//Menu state
 	MenuPage page;
 	
-	signed int frame;
+	s32 frame;
 	
 	Gfx_Tex tex_whitefnt;
 	
@@ -33,12 +33,12 @@ static Menu menu;
 //Menu drawing
 #define TEXT_W 13
 
-void Menu_DrawText(const char *text, int x, int y)
+void Menu_DrawText(const char *text, s32 x, s32 y)
 {
-	u_long v0 = 0;
-	u_char v1 = (menu.frame >> 3) & 1;
+	u32 v0 = 0;
+	u8 v1 = (menu.frame >> 3) & 1;
 	
-	u_char c;
+	u8 c;
 	while ((c = *text++) != '\0')
 	{
 		//Draw character
@@ -52,7 +52,7 @@ void Menu_DrawText(const char *text, int x, int y)
 	}
 }
 
-void Menu_DrawCenterText(const char *text, int x, int y)
+void Menu_DrawCenterText(const char *text, s32 x, s32 y)
 {
 	Menu_DrawText(text, x - (strlen(text) * TEXT_W / 2), y);
 }
@@ -201,10 +201,10 @@ void Menu_Tick()
 				Menu_DrawCenterText("PRESS START", SCREEN_WIDTH2, SCREEN_HEIGHT - 32);
 				
 				//Draw title
-				const int beattime = 35;
+				const u32 beattime = 35;
 				
-				int title_cnt = menu.frame % beattime;
-				int title_y, title_xo, title_yo;
+				s32 title_cnt = menu.frame % beattime;
+				s32 title_y, title_xo, title_yo;
 				if (title_cnt == 0)
 					Gfx_LoadTex(&menu.tex_title, menu.data_title0, 0);
 				else if (title_cnt == beattime - 4)
@@ -228,7 +228,7 @@ void Menu_Tick()
 				if ((menu.frame & 0x7) == 0)
 					Gfx_LoadTex(&menu.tex_ng, menu.data_gf[(menu.frame >> 3) % 5], 0);
 				
-				int gf_sf = menu.frame >> 1;
+				u8 gf_sf = menu.frame >> 2;
 				RECT gf_src = {(gf_sf & 1) << 7, (gf_sf & 2) << 6, 128, 128};
 				RECT gf_dst = {SCREEN_WIDTH2 - 16, SCREEN_HEIGHT2 - 80, 168, 168};
 				Gfx_DrawTex(&menu.tex_ng, &gf_src, &gf_dst);

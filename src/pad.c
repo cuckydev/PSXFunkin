@@ -3,15 +3,15 @@
 //Pad state
 typedef struct
 {
-    u_char	stat;
-    u_char	len:4;
-    u_char	type:4;
-    u_short	btn;
-    u_char	rs_x,rs_y;
-    u_char	ls_x,ls_y;
+    u8  stat;
+    u8  len : 4;
+    u8  type : 4;
+    u16 btn;
+    u8  rs_x, rs_y;
+    u8  ls_x, ls_y;
 } PADTYPE;
 
-static u_short pad_buff[2][34/2];
+static u16 pad_buff[2][34/2];
 Pad pad_state;
 
 //Pad functions

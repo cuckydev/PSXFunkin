@@ -174,7 +174,7 @@ typedef struct
 	
 	const char *chart_path;
 	const char *music_path;
-	int music_channel;
+	u8 music_channel;
 } StageDef;
 
 static const StageDef stage_defs[StageId_Max] = {
@@ -385,7 +385,7 @@ void Stage_DrawTex(Gfx_Tex *tex, RECT *src, RECT_FIXED *dst, fixed_t zoom)
 }
 
 //HUD functions
-void HUD_GetNotePos(int i, fixed_t *x, fixed_t *y, u_short pos)
+void HUD_GetNotePos(s32 i, fixed_t *x, fixed_t *y, u16 pos)
 {
 	if (x != NULL)
 	{
@@ -536,7 +536,7 @@ void Character_Draw(Character *this, fixed_t bump)
 
 void Character_DrawHealth(Character *this, int ox, fixed_t bump)
 {
-	int dying;
+	s8 dying;
 	if (ox < 0)
 		dying = (stage.health >= 18000) * 24;
 	else
@@ -656,8 +656,8 @@ void Stage_Load(StageId id, StageDiff difficulty)
 	char chart_path[64];
 	sprintf(chart_path, stage_def->chart_path, "ENH"[difficulty]);
 	stage.chart_data = IO_Read(chart_path);
-	stage.sections = (Section*)((u_char*)stage.chart_data + 2);
-	stage.notes = (Note*)((u_char*)stage.chart_data + *((u_short*)stage.chart_data));
+	stage.sections = (Section*)((u8*)stage.chart_data + 2);
+	stage.notes = (Note*)((u8*)stage.chart_data + *((u16*)stage.chart_data));
 	
 	stage.cur_section = stage.sections;
 	stage.start_note = stage.notes;
@@ -986,7 +986,7 @@ void Stage_Tick()
 	RECT note_src = {0, 0, 32, 32};
 	RECT_FIXED note_dst = {0, 0, 32 << FIXED_SHIFT, 32 << FIXED_SHIFT};
 	
-	for (int i = 0; i < 4; i++)
+	for (u8 i = 0; i < 4; i++)
 	{
 		//BF
 		HUD_GetNotePos(i, &note_dst.x, &note_dst.y, 0xFFFF);

@@ -24,9 +24,9 @@
 //Pad structure
 typedef struct
 {
-	u_short held, press;
-	u_char left_x, left_y;
-	u_char right_x, right_y;
+	u16 held, press;
+	u8 left_x, left_y;
+	u8 right_x, right_y;
 } Pad;
 
 extern Pad pad_state;

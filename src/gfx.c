@@ -109,7 +109,7 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 			memcpy(&tex->tim_prect, &tparam.prect, sizeof(tparam.prect));
 			tex->tpage = getTPage(tparam.mode & 0x3, 0, tparam.prect->x, tparam.prect->y);
 		}
-		LoadImage(tparam.prect, (u_long*)tparam.paddr);
+		LoadImage(tparam.prect, (u32*)tparam.paddr);
 		DrawSync(0);
 	}
 	
@@ -121,7 +121,7 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 			memcpy(&tex->tim_crect, &tparam.crect, sizeof(tparam.crect));
 			tex->clut = getClut(tparam.crect->x, tparam.crect->y);
 		}
-		LoadImage(tparam.crect, (u_long*)tparam.caddr);
+		LoadImage(tparam.crect, (u32*)tparam.caddr);
 		DrawSync(0);
 	}
 	
