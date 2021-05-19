@@ -573,12 +573,12 @@ void Character_NoteCheck(Character *this, u8 type)
 	for (;; note++)
 	{
 		//Check if note can be hit
-		if ((note->type & NOTE_FLAG_HIT) || (note->type & (NOTE_FLAG_OPPONENT | 0x3)) != type || (note->type & NOTE_FLAG_SUSTAIN))
-			continue;
 		fixed_t note_fp = (fixed_t)note->pos << FIXED_SHIFT;
 		if (note_fp - stage.early_safe > stage.note_scroll)
 			break;
 		if (note_fp + stage.late_safe < stage.note_scroll)
+			continue;
+		if ((note->type & NOTE_FLAG_HIT) || (note->type & (NOTE_FLAG_OPPONENT | 0x3)) != type || (note->type & NOTE_FLAG_SUSTAIN))
 			continue;
 		
 		//Hit the note
@@ -608,12 +608,12 @@ void Character_SustainCheck(Character *this, u8 type)
 	for (;; note++)
 	{
 		//Check if note can be hit
-		if ((note->type & NOTE_FLAG_HIT) || (note->type & (NOTE_FLAG_OPPONENT | 0x3)) != type || !(note->type & NOTE_FLAG_SUSTAIN))
-			continue;
 		fixed_t note_fp = (fixed_t)note->pos << FIXED_SHIFT;
 		if (note_fp - stage.early_safe > stage.note_scroll)
 			break;
 		if (note_fp + stage.late_safe < stage.note_scroll)
+			continue;
+		if ((note->type & NOTE_FLAG_HIT) || (note->type & (NOTE_FLAG_OPPONENT | 0x3)) != type || !(note->type & NOTE_FLAG_SUSTAIN))
 			continue;
 		
 		//Hit the note
