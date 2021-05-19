@@ -13,7 +13,7 @@ typedef struct
 	fixed_t x, y, w, h;
 } RECT_FIXED;
 
-#define FIXED_SHIFT (8)
+#define FIXED_SHIFT (10)
 #define FIXED_UNIT  (1 << FIXED_SHIFT)
 #define FIXED_LAND  (FIXED_UNIT - 1)
 #define FIXED_UAND  (~FIXED_LAND)
@@ -686,6 +686,8 @@ void Stage_Load(StageId id, StageDiff difficulty)
 	stage.camera.x = stage.camera.tx;
 	stage.camera.y = stage.camera.ty;
 	stage.camera.zoom = FIXED_UNIT;
+	
+	Gfx_SetClear(62, 48, 64);
 }
 
 void Stage_Unload()
@@ -1024,20 +1026,38 @@ void Stage_Tick()
 	Character_Animate(&stage.character[1]);
 	Character_Draw(&stage.character[1], bump);
 	
+	//Draw curtains
+	RECT curtain_src = {0, 0, 128, 256};
+	RECT_FIXED curtain1_dst = {
+		(-300 << FIXED_SHIFT) - stage.camera.x,
+		(-350 << FIXED_SHIFT) - stage.camera.y,
+		200 << FIXED_SHIFT,
+		400 << FIXED_SHIFT
+	};
+	RECT_FIXED curtainr_dst = {
+		(300 << FIXED_SHIFT) - stage.camera.x,
+		(-350 << FIXED_SHIFT) - stage.camera.y,
+		-200 << FIXED_SHIFT,
+		400 << FIXED_SHIFT
+	};
+	
+	Stage_DrawTex(&stage.tex_back1, &curtain_src, &curtain1_dst, FIXED_MUL(FIXED_DEC(0, 950000), bump));
+	Stage_DrawTex(&stage.tex_back1, &curtain_src, &curtainr_dst, FIXED_MUL(FIXED_DEC(0, 950000), bump));
+	
 	//Draw stage
 	RECT stagel_src = {0, 0, 256, 128};
 	RECT_FIXED stage1_dst = {
-		(-400 << FIXED_SHIFT) - stage.camera.x,
-		(48 << FIXED_SHIFT) - stage.camera.y,
-		(400 << FIXED_SHIFT) + FIXED_UNIT,
-		200 << FIXED_SHIFT
+		(-500 << FIXED_SHIFT) - stage.camera.x,
+		(32 << FIXED_SHIFT) - stage.camera.y,
+		(500 << FIXED_SHIFT) + FIXED_UNIT,
+		250 << FIXED_SHIFT
 	};
 	RECT stager_src = {0, 128, 256, 128};
 	RECT_FIXED stager_dst = {
 		-stage.camera.x,
-		(48 << FIXED_SHIFT) - stage.camera.y,
-		400 << FIXED_SHIFT,
-		200 << FIXED_SHIFT
+		(32 << FIXED_SHIFT) - stage.camera.y,
+		500 << FIXED_SHIFT,
+		250 << FIXED_SHIFT
 	};
 	
 	Stage_DrawTex(&stage.tex_back0, &stagel_src, &stage1_dst, bump);

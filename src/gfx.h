@@ -22,6 +22,7 @@ typedef struct
 //Gfx functions
 void Gfx_Init();
 void Gfx_Flip();
+void Gfx_SetClear(u8 r, u8 g, u8 b);
 
 typedef u8 Gfx_LoadTex_Flag;
 #define GFX_LOADTEX_FREE   (1 << 0)

@@ -44,8 +44,8 @@ void Gfx_Init()
 	
 	//Set draw background
 	draw[0].isbg = draw[1].isbg = 1;
-    setRGB0(&draw[0], 0, 0, 0);
-    setRGB0(&draw[1], 0, 0, 0);
+	setRGB0(&draw[0], 0, 0, 0);
+	setRGB0(&draw[1], 0, 0, 0);
 	
 	//Load font
 	FntLoad(960, 0);
@@ -79,6 +79,12 @@ void Gfx_Flip()
 	db ^= 1;
 	nextpri = pribuff[db];
 	ClearOTagR(ot[db], OTLEN);
+}
+
+void Gfx_SetClear(u8 r, u8 g, u8 b)
+{
+	setRGB0(&draw[0], r, g, b);
+    setRGB0(&draw[1], r, g, b);
 }
 
 void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
