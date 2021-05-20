@@ -42,6 +42,7 @@ int main()
 	while (1)
 	{
 		//Prepare frame
+		Audio_ProcessXA();
 		Pad_Update();
 		
 		//Tick and draw game

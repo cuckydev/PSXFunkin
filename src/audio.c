@@ -4,71 +4,133 @@
 #include "io.h"
 #include "main.h"
 
-//XA state
-static boolean xa_active, xa_loop;
-static s32 xa_start, xa_end, xa_pos;
-static void *xa_readycb;
+#include "pad.h"
 
-static void XA_ReadyCallback(u8 intr, u8 *result)
+//XA state
+#define XA_STATE_INIT    (1 << 0)
+#define XA_STATE_PLAYING (1 << 1)
+#define XA_STATE_LOOPS   (1 << 2)
+#define XA_STATE_SEEKING    (1 << 3)
+static u8 xa_state;
+static u32 xa_pos, xa_start, xa_end;
+
+//Internal XA functions
+static u8 XA_BCD(u8 x)
 {
-	static u8 chk_cool = 0;
+	return x - 6 * (x >> 4);
+}
+
+static u32 XA_TellSector()
+{
+	u8 result[8];
+	CdControlB(CdlGetlocP, NULL, result);
+	return (XA_BCD(result[2]) * 75 * 60) + (XA_BCD(result[3]) * 75) + XA_BCD(result[4]);
+}
+
+static void XA_SetVolume(u8 x)
+{
+	//Set CD mix volume
+	CdlATV cd_vol;
+	cd_vol.val0 = cd_vol.val1 = cd_vol.val2 = cd_vol.val3 = x;
+	CdMix(&cd_vol);
+}
+
+static void XA_Init()
+{
+	u8 param[4];
 	
-	if (intr == CdlDataReady)
-	{
-		//Check if we've reached end
-		if ((chk_cool++ & 0xF) == 0 && Audio_TellXA_Sector() >= (xa_end - xa_start))
-		{
-			if (xa_loop)
-			{
-				//Reset XA playback
-				CdlLOC loc;
-				CdIntToPos(xa_start, &loc);
-				CdControlF(CdlReadN, (u8*)&loc);
-				xa_pos = xa_start;
-			}
-			else
-			{
-				//Stop XA playback
-				Audio_StopXA();
-			}
-		}
-	}
+	//Set XA state
+	if (xa_state & XA_STATE_INIT)
+		return;
+	xa_state = XA_STATE_INIT;
+	
+	//Set CD mix flag
+	SpuCommonAttr spu_attr;
+	spu_attr.mask = SPU_COMMON_CDMIX | SPU_COMMON_CDVOLL | SPU_COMMON_CDVOLR;
+	spu_attr.cd.mix = SPU_ON;
+	spu_attr.cd.volume.left = spu_attr.cd.volume.right  = 0x7FFF; //Can't explain this magic number
+	SpuSetCommonAttr(&spu_attr);
+	
+	//Set initial volume
+	XA_SetVolume(0);
+	
+	//Prepare CD drive for XA reading
+	param[0] = CdlModeRT | CdlModeSF | CdlModeSize1;
+	
+	CdControlB(CdlSetmode, param, 0);
+	CdControlF(CdlPause, 0);
+}
+
+static void XA_Quit()
+{
+	//Set XA state
+	if (!(xa_state & XA_STATE_INIT))
+		return;
+	xa_state = 0;
+	
+	//Stop playing XA
+	XA_SetVolume(0);
+	CdControlB(CdlPause, 0, 0);
+}
+
+static void XA_Play(u32 start)
+{
+	//Play at given position
+	CdlLOC cd_loc;
+	CdIntToPos(start, &cd_loc);
+	CdControlF(CdlReadS, (u8*)&cd_loc);
+}
+
+static void XA_Pause()
+{
+	//Set XA state
+	if (!(xa_state & XA_STATE_PLAYING))
+		return;
+	xa_state &= ~XA_STATE_PLAYING;
+	
+	//Pause playback
+	CdControlB(CdlPause, 0, 0);
+}
+
+static void XA_SetFilter(u8 channel)
+{
+	//Change CD filter
+	CdlFILTER filter;
+	filter.file = 1;
+	filter.chan = channel;
+	CdControlF(CdlSetfilter, (u8*)&filter);
 }
 
 //Audio functions
 void Audio_Init()
 {
-	//Initialize audio
+	//Initialize sound system
 	SsInit();
 	
-	//Initialize XA state
-	xa_active = 0;
+	//Set XA state
+	xa_state = 0;
 }
 
-void Audio_PlayXA_Pos(s32 start, s32 end, u8 volume, u8 channel, boolean loop)
+void Audio_PlayXA_Pos(u32 start, u32 end, u8 volume, u8 channel, boolean loop)
 {
-	//Use input
-	xa_pos = start;
-	xa_start = start;
+	//Initialize XA system and stop previous song
+	XA_Init();
+	XA_SetVolume(0);
+	
+	//Set XA state
+	xa_start = xa_pos = start;
 	xa_end = end;
-	SsSetSerialVol(SS_SERIAL_A, volume, volume);
-	xa_loop = loop;
+	xa_state = XA_STATE_INIT | XA_STATE_PLAYING | XA_STATE_SEEKING;
+	if (loop)
+		xa_state |= XA_STATE_LOOPS;
 	
-	//Prepare CD for XA reading
-	u8 param[4];
-	param[0] = CdlModeSpeed | CdlModeRT | CdlModeSF;
+	//Start seeking to XA and use parameters
+	CdlLOC cd_loc;
+	CdIntToPos(start, &cd_loc);
+	CdControlB(CdlSeekL, (u8*)&cd_loc, 0);
 	
-	CdControlB(CdlSetmode, param, 0);
-	CdControlF(CdlPause, 0);
-	xa_readycb = CdReadyCallback(XA_ReadyCallback);
-	
-	//Play XA
-	Audio_ChannelXA(channel);
-	
-	CdlLOC loc;
-	CdIntToPos(start, &loc);
-	CdControlF(CdlReadN, (u8*)&loc);
-	xa_active = 1;
+	XA_SetFilter(channel);
+	XA_SetVolume(volume);
 }
 
 void Audio_PlayXA(const char *path, u8 volume, u8 channel, boolean loop)
@@ -83,58 +145,86 @@ void Audio_PlayXA(const char *path, u8 volume, u8 channel, boolean loop)
 	}
 	
 	//Play file
-	s32 start = CdPosToInt(&file.pos);
+	u32 start = CdPosToInt(&file.pos);
 	Audio_PlayXA_Pos(start, start + (file.size / IO_SECT_SIZE) - 1, volume, channel, loop);
 }
 
-void Audio_ChannelXA(u8 channel)
+void Audio_PauseXA()
 {
-	//Change CD filter
-	CdlFILTER filter;
-	filter.file = 1;
-	filter.chan = channel;
-	CdControlF(CdlSetfilter, (u8*)&filter);
-}
-
-static u8 Audio_FromBCD(u8 x)
-{
-	return x - 6 * (x >> 4);
-}
-
-s32 Audio_TellXA_Sector()
-{
-	if (!xa_active)
-		return -1;
-	u8 result[8];
-	CdControlB(CdlGetlocP, NULL, result);
-	return ((Audio_FromBCD(result[2]) * 75 * 60) + (Audio_FromBCD(result[3]) * 75) + Audio_FromBCD(result[4])) - xa_start;
-}
-
-s32 Audio_TellXA_Milli()
-{
-	if (!xa_active)
-		return -1;
-	return Audio_TellXA_Sector() * 1000 / 150;
-}
-
-boolean Audio_PlayingXA()
-{
-	return xa_active;
+	//Pause playing XA file
+	XA_Pause();
 }
 
 void Audio_StopXA()
 {
-	if (xa_active)
+	//Deinitialize XA system
+	XA_Quit();
+}
+
+void Audio_ChannelXA(u8 channel)
+{
+	//Set XA filter to the given channel
+	XA_SetFilter(channel);
+}
+
+s32 Audio_TellXA_Sector()
+{
+	//Get CD position
+	return (s32)xa_pos - (s32)xa_start; //Meh casting
+}
+
+s32 Audio_TellXA_Milli()
+{
+	return ((s32)xa_pos - (s32)xa_start) * 1000 / 75; //1000 / (75 * speed (1x))
+}
+
+boolean Audio_PlayingXA()
+{
+	return (xa_state & XA_STATE_PLAYING) != 0;
+}
+
+void Audio_ProcessXA()
+{
+	//Handle playing state
+	if (xa_state & XA_STATE_PLAYING)
 	{
-		//Reset XA state
-		xa_active = 0;
+		//Handle seeking state
+		if (xa_state & XA_STATE_SEEKING)
+		{
+			//Check if CD is still seeking to the XA's beginning
+			if (!(CdStatus() & CdlStatSeek))
+			{
+				//Stopped seeking
+				xa_state &= ~XA_STATE_SEEKING;
+				XA_Play(xa_start);
+			}
+			else
+			{
+				//Still seeking
+				return;
+			}
+		}
 		
-		//Reset CD state
-		CdReadyCallback(xa_readycb);
-		CdControlF(CdlStop,0);
+		//Get CD position
+		xa_pos = XA_TellSector();
 		
-		u8 param[4];
-		param[0] = CdlModeSpeed;
-		CdControlB(CdlSetmode, param, 0);
+		//Check position
+		if (xa_pos >= xa_end)
+		{
+			if (xa_state & XA_STATE_LOOPS)
+			{
+				//Reset XA playback
+				CdlLOC cd_loc;
+				CdIntToPos(xa_pos = xa_start, &cd_loc);
+				CdControlB(CdlSeekL, (u8*)&cd_loc, 0);
+				xa_state |= XA_STATE_SEEKING;
+			}
+			else
+			{
+				//Stop XA playback
+				Audio_StopXA();
+			}
+		}
 	}
 }
+

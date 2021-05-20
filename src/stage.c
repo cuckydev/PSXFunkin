@@ -187,7 +187,7 @@ static const StageDef stage_defs[StageId_Max] = {
 		FIXED_DEC(100,0),
 		{FIXED_DEC(1,0),FIXED_DEC(1,0),FIXED_DEC(1,600000)},
 		"\\CHART\\1.1%c.CHT;1",
-		"\\MUSIC\\WEEK1.XA;1", 0,
+		"\\MUSIC\\WEEK1A.XA;1", 0,
 	},
 	{ //StageId_1_2 (Fresh)
 		//Characters
@@ -198,7 +198,7 @@ static const StageDef stage_defs[StageId_Max] = {
 		FIXED_DEC(120,0),
 		{FIXED_DEC(1,0),FIXED_DEC(1,300000),FIXED_DEC(1,800000)},
 		"\\CHART\\1.2%c.CHT;1",
-		"\\MUSIC\\WEEK1.XA;1", 2,
+		"\\MUSIC\\WEEK1A.XA;1", 2,
 	},
 	{ //StageId_1_3 (Dadbattle)
 		//Characters
@@ -209,7 +209,7 @@ static const StageDef stage_defs[StageId_Max] = {
 		FIXED_DEC(180,0),
 		{FIXED_DEC(1,300000),FIXED_DEC(1,500000),FIXED_DEC(2,300000)},
 		"\\CHART\\1.3%c.CHT;1",
-		"\\MUSIC\\WEEK1.XA;1", 4,
+		"\\MUSIC\\WEEK1B.XA;1", 0,
 	},
 	
 	{ //StageId_3_1 (Pico)
@@ -221,7 +221,7 @@ static const StageDef stage_defs[StageId_Max] = {
 		FIXED_DEC(150,0),
 		{FIXED_DEC(1,200000),FIXED_DEC(1,400000),FIXED_DEC(1,600000)},
 		"\\CHART\\3.1%c.CHT;1",
-		"\\MUSIC\\WEEK3.XA;1", 0,
+		"\\MUSIC\\WEEK3A.XA;1", 0,
 	},
 	{ //StageId_3_2 (Philly)
 		//Characters
@@ -232,7 +232,7 @@ static const StageDef stage_defs[StageId_Max] = {
 		FIXED_DEC(175,0),
 		{FIXED_DEC(1,0),FIXED_DEC(1,300000),FIXED_DEC(2,000000)},
 		"\\CHART\\3.2%c.CHT;1",
-		"\\MUSIC\\WEEK3.XA;1", 2,
+		"\\MUSIC\\WEEK3A.XA;1", 2,
 	},
 	{ //StageId_3_3 (Blammed)
 		//Characters
@@ -243,7 +243,7 @@ static const StageDef stage_defs[StageId_Max] = {
 		FIXED_DEC(165,0),
 		{FIXED_DEC(1,200000),FIXED_DEC(1,500000),FIXED_DEC(2,300000)},
 		"\\CHART\\3.3%c.CHT;1",
-		"\\MUSIC\\WEEK3.XA;1", 4,
+		"\\MUSIC\\WEEK3B.XA;1", 0,
 	},
 	
 	{ //StageId_4_1 (Satin Panties)
@@ -255,7 +255,7 @@ static const StageDef stage_defs[StageId_Max] = {
 		FIXED_DEC(110,0),
 		{FIXED_DEC(1,300000),FIXED_DEC(1,600000),FIXED_DEC(1,800000)},
 		"\\CHART\\4.1%c.CHT;1",
-		"\\MUSIC\\WEEK4.XA;1", 0,
+		"\\MUSIC\\WEEK4A.XA;1", 0,
 	},
 	{ //StageId_4_2 (High)
 		//Characters
@@ -266,7 +266,7 @@ static const StageDef stage_defs[StageId_Max] = {
 		FIXED_DEC(125,0),
 		{FIXED_DEC(1,300000),FIXED_DEC(1,800000),FIXED_DEC(1,800000)},
 		"\\CHART\\4.2%c.CHT;1",
-		"\\MUSIC\\WEEK4.XA;1", 2,
+		"\\MUSIC\\WEEK4A.XA;1", 2,
 	},
 	{ //StageId_4_3 (MILF)
 		//Characters
@@ -277,7 +277,7 @@ static const StageDef stage_defs[StageId_Max] = {
 		FIXED_DEC(180,0),
 		{FIXED_DEC(1,400000),FIXED_DEC(1,700000),FIXED_DEC(2,600000)},
 		"\\CHART\\4.3%c.CHT;1",
-		"\\MUSIC\\WEEK4.XA;1", 4,
+		"\\MUSIC\\WEEK4B.XA;1", 0,
 	},
 };
 
@@ -410,7 +410,7 @@ void Stage_StartVocal()
 	if (!stage.vocal_active)
 	{
 		Audio_ChannelXA(stage.stage_def->music_channel);
-		stage.vocal_active = 1;
+		stage.vocal_active = true;
 	}
 }
 
@@ -419,7 +419,7 @@ void Stage_CutVocal()
 	if (stage.vocal_active)
 	{
 		Audio_ChannelXA(stage.stage_def->music_channel + 1);
-		stage.vocal_active = 0;
+		stage.vocal_active = false;
 	}
 }
 
@@ -717,7 +717,7 @@ void Stage_Tick()
 		if (next_scroll >= 0)
 		{
 			//Start song
-			Audio_PlayXA(stage.stage_def->music_path, 127, stage.stage_def->music_channel, 0);
+			Audio_PlayXA(stage.stage_def->music_path, 0x7F, stage.stage_def->music_channel, 0);
 			stage.note_scroll = 0;
 		}
 		else
@@ -733,6 +733,7 @@ void Stage_Tick()
 	{
 		//XA position
 		fixed_t song_time = (Audio_TellXA_Milli() << FIXED_SHIFT) / 1000;
+		
 		if (song_time > 0)
 		{
 			//Get step position and bump

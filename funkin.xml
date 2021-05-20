@@ -109,13 +109,19 @@
 			<!-- Music -->
 			<dir name = "music">
 				<file name = "menu.xa" type = "xa" source = "iso/music/menu.xa"/>
-				<dummy sectors="32"/>
-				<file name = "week1.xa" type = "xa" source = "iso/music/week1.xa"/>
-				<dummy sectors="32"/>
-				<file name = "week3.xa" type = "xa" source = "iso/music/week3.xa"/>
-				<dummy sectors="32"/>
-				<file name = "week4.xa" type = "xa" source = "iso/music/week4.xa"/>
-				<dummy sectors="32"/>
+				<dummy sectors="128"/>
+				<file name = "week1a.xa" type = "xa" source = "iso/music/week1a.xa"/>
+				<dummy sectors="128"/>
+				<file name = "week1b.xa" type = "xa" source = "iso/music/week1b.xa"/>
+				<dummy sectors="128"/>
+				<file name = "week3a.xa" type = "xa" source = "iso/music/week3a.xa"/>
+				<dummy sectors="128"/>
+				<file name = "week3b.xa" type = "xa" source = "iso/music/week3b.xa"/>
+				<dummy sectors="128"/>
+				<file name = "week4a.xa" type = "xa" source = "iso/music/week4a.xa"/>
+				<dummy sectors="128"/>
+				<file name = "week4b.xa" type = "xa" source = "iso/music/week4b.xa"/>
+				<dummy sectors="128"/>
 			</dir>
 			
 			<!-- Dummy sectors -->
