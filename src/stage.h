@@ -36,6 +36,8 @@ typedef enum
 	StageId_4_2, //High
 	StageId_4_3, //MILF
 	
+	StageId_4_4, //Test
+	
 	StageId_Max
 } StageId;
 

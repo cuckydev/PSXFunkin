@@ -4,6 +4,7 @@ pcsx.json
 memcard1.mcd
 memcard2.mcd
 licensea.dat
+tools/funkinchartpak/exp.sh
 
 # Exclude executable files
 funkin.cue

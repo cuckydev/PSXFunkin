@@ -62,3 +62,8 @@ cp milf.json.cht ../../iso/chart/4.3n.cht
 cp milf-easy.json.cht ../../iso/chart/4.3e.cht
 ./funkinchartpak milf-hard.json
 cp milf-hard.json.cht ../../iso/chart/4.3h.cht
+
+./funkinchartpak test.json
+cp test.json.cht ../../iso/chart/4.4n.cht
+cp test.json.cht ../../iso/chart/4.4e.cht
+cp test.json.cht ../../iso/chart/4.4h.cht

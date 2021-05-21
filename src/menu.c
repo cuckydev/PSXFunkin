@@ -4,6 +4,10 @@
 #include "audio.h"
 #include "pad.h"
 
+
+#include "stage.h"
+extern int stid;
+
 //Menu state
 typedef enum
 {
@@ -108,6 +112,32 @@ void Menu_Unload()
 
 void Menu_Tick()
 {
+	//Debug
+	static const char *titles[] = {
+		"BOPEEBO",
+		"FRESH",
+		"DADBATTLE",
+		
+		"PICO",
+		"PHILY",
+		"BLAMMED",
+		
+		"SATIN PANTIES",
+		"HIGH",
+		"MILF",
+		
+		"TEST",
+	};
+	
+	if (pad_state.press & PAD_DOWN)
+		if (++stid > StageId_4_4)
+			stid = StageId_4_4;
+	if (pad_state.press & PAD_UP)
+		if (--stid < 0)
+			stid = 0;
+	Menu_DrawText("STAGE SELECT", 16, 16);
+	Menu_DrawText(titles[stid], 16, 32);
+	
 	//Run current menu page
 	switch (menu.page)
 	{

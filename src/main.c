@@ -23,6 +23,8 @@ void ErrorLock()
 //Entry point
 u32 malloc_heap[0x100000 / sizeof(u32)];
 
+int stid;
+
 int main()
 {
 	//Initialize system
@@ -35,7 +37,7 @@ int main()
 	
 	//Start game
 	boolean md = 0;
-	StageId stid = StageId_1_1;
+	stid = StageId_1_1;
 	Menu_Load(MenuLoadPage_Title);
 	
 	//Game loop
@@ -49,11 +51,16 @@ int main()
 		if (pad_state.press & PAD_START)
 		{
 			if (md)
+			{
 				Stage_Unload();
+				Menu_Load(MenuLoadPage_Title);
+			}
 			else
+			{
 				Menu_Unload();
-			Stage_Load(stid++, StageDiff_Hard);
-			md = 1;
+				Stage_Load(stid, StageDiff_Hard);
+			}
+			md ^= 1;
 		}
 		if (!md)
 			Menu_Tick();

@@ -278,6 +278,17 @@ static const StageDef stage_defs[StageId_Max] = {
 		4, 3,
 		'B', 0,
 	},
+	{ //StageId_4_4 (Test)
+		//Characters
+		{CharId_Boyfriend,  120 << FIXED_SHIFT, 100 << FIXED_SHIFT},
+		{CharId_Dad,       -120 << FIXED_SHIFT, 100 << FIXED_SHIFT},
+		
+		//Song info
+		FIXED_DEC(150,1),
+		{FIXED_DEC(16,10),FIXED_DEC(16,10),FIXED_DEC(16,10)},
+		4, 4,
+		'B', 2,
+	},
 };
 
 //Character state

@@ -84,6 +84,10 @@
 				<file name = "4.3e.cht" type = "data" source = "iso/chart/4.3e.cht"/>
 				<file name = "4.3n.cht" type = "data" source = "iso/chart/4.3n.cht"/>
 				<file name = "4.3h.cht" type = "data" source = "iso/chart/4.3h.cht"/>
+				<!-- Test -->
+				<file name = "4.4e.cht" type = "data" source = "iso/chart/4.4e.cht"/>
+				<file name = "4.4n.cht" type = "data" source = "iso/chart/4.4n.cht"/>
+				<file name = "4.4h.cht" type = "data" source = "iso/chart/4.4h.cht"/>
 			</dir>
 			
 			<!-- Boyfriend assets -->
