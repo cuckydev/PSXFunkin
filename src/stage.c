@@ -18,7 +18,7 @@ typedef struct
 #define FIXED_LAND  (FIXED_UNIT - 1)
 #define FIXED_UAND  (~FIXED_LAND)
 
-#define FIXED_DEC(d, f) (((d) << FIXED_SHIFT) + (((u32)(f) << FIXED_SHIFT) / 1000000))
+#define FIXED_DEC(d, f) (((d) << FIXED_SHIFT) / (f))
 
 #define FIXED_MUL(x, y) (((s64)(x) * (y)) >> FIXED_SHIFT)
 #define FIXED_DIV(x, y) (((x) << FIXED_SHIFT) / (y))
@@ -172,9 +172,8 @@ typedef struct
 	fixed_t bpm;
 	fixed_t speed[3];
 	
-	const char *chart_path;
-	const char *music_path;
-	u8 music_channel;
+	u8 week, week_song;
+	u8 music_pack, music_channel;
 } StageDef;
 
 static const StageDef stage_defs[StageId_Max] = {
@@ -184,10 +183,10 @@ static const StageDef stage_defs[StageId_Max] = {
 		{CharId_Dad,       -120 << FIXED_SHIFT, 100 << FIXED_SHIFT},
 		
 		//Song info
-		FIXED_DEC(100,0),
-		{FIXED_DEC(1,0),FIXED_DEC(1,0),FIXED_DEC(1,600000)},
-		"\\CHART\\1.1%c.CHT;1",
-		"\\MUSIC\\WEEK1A.XA;1", 0,
+		FIXED_DEC(100,1),
+		{FIXED_DEC(1,1),FIXED_DEC(1,1),FIXED_DEC(13,10)},
+		1, 1,
+		'A', 0,
 	},
 	{ //StageId_1_2 (Fresh)
 		//Characters
@@ -195,10 +194,10 @@ static const StageDef stage_defs[StageId_Max] = {
 		{CharId_Dad,       -120 << FIXED_SHIFT, 100 << FIXED_SHIFT},
 		
 		//Song info
-		FIXED_DEC(120,0),
-		{FIXED_DEC(1,0),FIXED_DEC(1,300000),FIXED_DEC(1,800000)},
-		"\\CHART\\1.2%c.CHT;1",
-		"\\MUSIC\\WEEK1A.XA;1", 2,
+		FIXED_DEC(120,1),
+		{FIXED_DEC(1,1),FIXED_DEC(13,10),FIXED_DEC(18,10)},
+		1, 2,
+		'A', 2,
 	},
 	{ //StageId_1_3 (Dadbattle)
 		//Characters
@@ -206,10 +205,10 @@ static const StageDef stage_defs[StageId_Max] = {
 		{CharId_Dad,       -120 << FIXED_SHIFT, 100 << FIXED_SHIFT},
 		
 		//Song info
-		FIXED_DEC(180,0),
-		{FIXED_DEC(1,300000),FIXED_DEC(1,500000),FIXED_DEC(2,300000)},
-		"\\CHART\\1.3%c.CHT;1",
-		"\\MUSIC\\WEEK1B.XA;1", 0,
+		FIXED_DEC(180,1),
+		{FIXED_DEC(13,10),FIXED_DEC(15,10),FIXED_DEC(23,10)},
+		1, 3,
+		'B', 0,
 	},
 	
 	{ //StageId_3_1 (Pico)
@@ -218,10 +217,10 @@ static const StageDef stage_defs[StageId_Max] = {
 		{CharId_Dad,       -120 << FIXED_SHIFT, 100 << FIXED_SHIFT},
 		
 		//Song info
-		FIXED_DEC(150,0),
-		{FIXED_DEC(1,200000),FIXED_DEC(1,400000),FIXED_DEC(1,600000)},
-		"\\CHART\\3.1%c.CHT;1",
-		"\\MUSIC\\WEEK3A.XA;1", 0,
+		FIXED_DEC(150,1),
+		{FIXED_DEC(12,10),FIXED_DEC(14,10),FIXED_DEC(16,10)},
+		3, 1,
+		'A', 0,
 	},
 	{ //StageId_3_2 (Philly)
 		//Characters
@@ -229,10 +228,10 @@ static const StageDef stage_defs[StageId_Max] = {
 		{CharId_Dad,       -120 << FIXED_SHIFT, 100 << FIXED_SHIFT},
 		
 		//Song info
-		FIXED_DEC(175,0),
-		{FIXED_DEC(1,0),FIXED_DEC(1,300000),FIXED_DEC(2,000000)},
-		"\\CHART\\3.2%c.CHT;1",
-		"\\MUSIC\\WEEK3A.XA;1", 2,
+		FIXED_DEC(175,1),
+		{FIXED_DEC(1,1),FIXED_DEC(13,10),FIXED_DEC(2,1)},
+		3, 2,
+		'A', 2,
 	},
 	{ //StageId_3_3 (Blammed)
 		//Characters
@@ -240,10 +239,10 @@ static const StageDef stage_defs[StageId_Max] = {
 		{CharId_Dad,       -120 << FIXED_SHIFT, 100 << FIXED_SHIFT},
 		
 		//Song info
-		FIXED_DEC(165,0),
-		{FIXED_DEC(1,200000),FIXED_DEC(1,500000),FIXED_DEC(2,300000)},
-		"\\CHART\\3.3%c.CHT;1",
-		"\\MUSIC\\WEEK3B.XA;1", 0,
+		FIXED_DEC(165,1),
+		{FIXED_DEC(12,10),FIXED_DEC(15,10),FIXED_DEC(23,10)},
+		3, 3,
+		'B', 0,
 	},
 	
 	{ //StageId_4_1 (Satin Panties)
@@ -252,10 +251,10 @@ static const StageDef stage_defs[StageId_Max] = {
 		{CharId_Dad,       -120 << FIXED_SHIFT, 100 << FIXED_SHIFT},
 		
 		//Song info
-		FIXED_DEC(110,0),
-		{FIXED_DEC(1,300000),FIXED_DEC(1,600000),FIXED_DEC(1,800000)},
-		"\\CHART\\4.1%c.CHT;1",
-		"\\MUSIC\\WEEK4A.XA;1", 0,
+		FIXED_DEC(110,1),
+		{FIXED_DEC(13,10),FIXED_DEC(16,10),FIXED_DEC(18,10)},
+		4, 1,
+		'A', 0,
 	},
 	{ //StageId_4_2 (High)
 		//Characters
@@ -263,10 +262,10 @@ static const StageDef stage_defs[StageId_Max] = {
 		{CharId_Dad,       -120 << FIXED_SHIFT, 100 << FIXED_SHIFT},
 		
 		//Song info
-		FIXED_DEC(125,0),
-		{FIXED_DEC(1,300000),FIXED_DEC(1,800000),FIXED_DEC(1,800000)},
-		"\\CHART\\4.2%c.CHT;1",
-		"\\MUSIC\\WEEK4A.XA;1", 2,
+		FIXED_DEC(125,1),
+		{FIXED_DEC(13,10),FIXED_DEC(18,10),FIXED_DEC(2,1)},
+		4, 2,
+		'A', 2,
 	},
 	{ //StageId_4_3 (MILF)
 		//Characters
@@ -274,10 +273,10 @@ static const StageDef stage_defs[StageId_Max] = {
 		{CharId_Dad,       -120 << FIXED_SHIFT, 100 << FIXED_SHIFT},
 		
 		//Song info
-		FIXED_DEC(180,0),
-		{FIXED_DEC(1,400000),FIXED_DEC(1,700000),FIXED_DEC(2,600000)},
-		"\\CHART\\4.3%c.CHT;1",
-		"\\MUSIC\\WEEK4B.XA;1", 0,
+		FIXED_DEC(180,1),
+		{FIXED_DEC(14,10),FIXED_DEC(17,10),FIXED_DEC(26,10)},
+		4, 3,
+		'B', 0,
 	},
 };
 
@@ -324,7 +323,7 @@ typedef struct
 
 typedef struct
 {
-	u16 pos; //steps
+	u16 pos; //Quarter steps
 	u8 type, pad;
 } Note;
 
@@ -358,7 +357,7 @@ typedef struct
 	
 	//Stage state
 	Section *cur_section; //Current section
-	Note *start_note; //First visible and hittable note, used for drawing and hit detection
+	Note *cur_note; //First visible and hittable note, used for drawing and hit detection
 	
 	fixed_t note_scroll;
 	
@@ -398,7 +397,7 @@ void HUD_GetNotePos(s32 i, fixed_t *x, fixed_t *y, u16 pos)
 	{
 		*y = (32 - SCREEN_HEIGHT2) << FIXED_SHIFT;
 		if (pos != 0xFFFF)
-			*y += FIXED_MUL((((fixed_t)pos << FIXED_SHIFT) - stage.note_scroll), stage.note_speed);
+			*y += FIXED_MUL((((fixed_t)pos << FIXED_SHIFT) >> 2) - stage.note_scroll, stage.note_speed);
 		else if (stage.note_scroll < (-2 << FIXED_SHIFT))
 			*y += FIXED_MUL(stage.note_scroll + (2 << FIXED_SHIFT), stage.note_speed);
 	}
@@ -568,11 +567,11 @@ void Character_MissNote(Character *this, u8 type)
 void Character_NoteCheck(Character *this, u8 type)
 {
 	//Perform note check
-	Note *note = stage.start_note;
+	Note *note = stage.cur_note;
 	for (;; note++)
 	{
 		//Check if note can be hit
-		fixed_t note_fp = (fixed_t)note->pos << FIXED_SHIFT;
+		fixed_t note_fp = ((fixed_t)note->pos << FIXED_SHIFT) >> 2;
 		if (note_fp - stage.early_safe > stage.note_scroll)
 			break;
 		if (note_fp + stage.late_safe < stage.note_scroll)
@@ -602,11 +601,11 @@ void Character_SustainCheck(Character *this, u8 type)
 		stage.arrow_hitan[type] = 1;
 	
 	//Perform note check
-	Note *note = stage.start_note;
+	Note *note = stage.cur_note;
 	for (;; note++)
 	{
 		//Check if note can be hit
-		fixed_t note_fp = (fixed_t)note->pos << FIXED_SHIFT;
+		fixed_t note_fp = ((fixed_t)note->pos << FIXED_SHIFT) >> 2;
 		if (note_fp - stage.early_safe > stage.note_scroll)
 			break;
 		if (note_fp + stage.late_safe < stage.note_scroll)
@@ -654,20 +653,21 @@ void Stage_Load(StageId id, StageDiff difficulty)
 	
 	//Load stage data
 	char chart_path[64];
-	sprintf(chart_path, stage_def->chart_path, "ENH"[difficulty]);
+	sprintf(chart_path, "\\CHART\\%d.%d%c.CHT;1", stage_def->week, stage_def->week_song, "ENH"[difficulty]);
+	
 	stage.chart_data = IO_Read(chart_path);
 	stage.sections = (Section*)((u8*)stage.chart_data + 2);
 	stage.notes = (Note*)((u8*)stage.chart_data + *((u16*)stage.chart_data));
 	
 	stage.cur_section = stage.sections;
-	stage.start_note = stage.notes;
+	stage.cur_note = stage.notes;
 	
 	stage.speed = stage_def->speed[difficulty];
 	
 	stage.crochet = FIXED_DIV(stage_def->bpm, 60 << FIXED_SHIFT);
 	stage.step_crochet = stage.crochet * 4;
 	
-	stage.note_speed = FIXED_MUL(FIXED_DIV(FIXED_DEC(140, 0), stage.step_crochet), stage.speed);
+	stage.note_speed = FIXED_MUL(FIXED_DIV((140 << FIXED_SHIFT), stage.step_crochet), stage.speed);
 	
 	stage.late_safe = stage.step_crochet * 10 / 60;
 	stage.early_safe = stage.late_safe >> 1;
@@ -717,7 +717,10 @@ void Stage_Tick()
 		if (next_scroll >= 0)
 		{
 			//Start song
-			Audio_PlayXA(stage.stage_def->music_path, 0x7F, stage.stage_def->music_channel, 0);
+			char music_path[64];
+			sprintf(music_path, "\\MUSIC\\WEEK%d%c.XA;1", stage.stage_def->week, stage.stage_def->music_pack);
+			
+			Audio_PlayXA(music_path, 0x40, stage.stage_def->music_channel, 0);
 			stage.note_scroll = 0;
 		}
 		else
@@ -772,13 +775,13 @@ void Stage_Tick()
 	{
 		//Bump every 16 steps
 		if ((stage.song_step & 0xF) == 0)
-			bump = (fixed_t)FIXED_UNIT + ((fixed_t)(FIXED_DEC(0,750000) - (stage.note_scroll & FIXED_LAND)) / 16);
+			bump = (fixed_t)FIXED_UNIT + ((fixed_t)(FIXED_DEC(75,100) - (stage.note_scroll & FIXED_LAND)) / 16);
 		else
 			bump = FIXED_UNIT;
 		
 		//Bump every 4 steps
 		if ((stage.song_step & 0x3) == 0)
-			sbump = (fixed_t)FIXED_UNIT + ((fixed_t)(FIXED_DEC(0,750000) - (stage.note_scroll & FIXED_LAND)) / 24);
+			sbump = (fixed_t)FIXED_UNIT + ((fixed_t)(FIXED_DEC(75,100) - (stage.note_scroll & FIXED_LAND)) / 24);
 		else
 			sbump = FIXED_UNIT;
 	}
@@ -843,10 +846,10 @@ void Stage_Tick()
 	//Process notes
 	Note *note;
 	
-	note = stage.start_note;
+	note = stage.cur_note;
 	for (;; note++)
 	{
-		if (note->pos > stage.song_step)
+		if (note->pos > ((stage.note_scroll << 2) >> FIXED_SHIFT))
 			break;
 		
 		//Opponent note hits
@@ -883,7 +886,7 @@ void Stage_Tick()
 	Stage_DrawTex(&stage.tex_hud1, &health_back, &health_dst, bump);
 	
 	//Draw notes
-	note = stage.start_note;
+	note = stage.cur_note;
 	for (;; note++)
 	{
 		//Get note position
@@ -902,8 +905,8 @@ void Stage_Tick()
 				stage.health -= 475;
 			}
 			
-			//Update start note
-			stage.start_note = note + 1;
+			//Update current note
+			stage.cur_note = note + 1;
 		}
 		else
 		{
@@ -1042,8 +1045,8 @@ void Stage_Tick()
 		400 << FIXED_SHIFT
 	};
 	
-	Stage_DrawTex(&stage.tex_back1, &curtain_src, &curtain1_dst, FIXED_MUL(FIXED_DEC(0, 950000), bump));
-	Stage_DrawTex(&stage.tex_back1, &curtain_src, &curtainr_dst, FIXED_MUL(FIXED_DEC(0, 950000), bump));
+	Stage_DrawTex(&stage.tex_back1, &curtain_src, &curtain1_dst, FIXED_MUL(FIXED_DEC(95,100), bump));
+	Stage_DrawTex(&stage.tex_back1, &curtain_src, &curtainr_dst, FIXED_MUL(FIXED_DEC(95,100), bump));
 	
 	//Draw stage
 	RECT stagel_src = {0, 0, 256, 128};

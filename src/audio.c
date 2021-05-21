@@ -10,7 +10,7 @@
 #define XA_STATE_INIT    (1 << 0)
 #define XA_STATE_PLAYING (1 << 1)
 #define XA_STATE_LOOPS   (1 << 2)
-#define XA_STATE_SEEKING    (1 << 3)
+#define XA_STATE_SEEKING (1 << 3)
 static u8 xa_state;
 static u32 xa_pos, xa_start, xa_end;
 
@@ -48,7 +48,7 @@ static void XA_Init()
 	SpuCommonAttr spu_attr;
 	spu_attr.mask = SPU_COMMON_CDMIX | SPU_COMMON_CDVOLL | SPU_COMMON_CDVOLR;
 	spu_attr.cd.mix = SPU_ON;
-	spu_attr.cd.volume.left = spu_attr.cd.volume.right  = 0x7FFF; //Can't explain this magic number
+	spu_attr.cd.volume.left = spu_attr.cd.volume.right = 0x6000; //Lame magic number
 	SpuSetCommonAttr(&spu_attr);
 	
 	//Set initial volume
@@ -106,6 +106,7 @@ void Audio_Init()
 {
 	//Initialize sound system
 	SsInit();
+	SsSetSerialVol(SS_SERIAL_A, 0x7F, 0x7F);
 	
 	//Set XA state
 	xa_state = 0;
