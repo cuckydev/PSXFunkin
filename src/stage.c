@@ -323,7 +323,7 @@ typedef struct
 
 typedef struct
 {
-	u16 pos; //Quarter steps
+	u16 pos; //1/24 steps
 	u8 type, pad;
 } Note;
 
@@ -397,7 +397,7 @@ void HUD_GetNotePos(s32 i, fixed_t *x, fixed_t *y, u16 pos)
 	{
 		*y = (32 - SCREEN_HEIGHT2) << FIXED_SHIFT;
 		if (pos != 0xFFFF)
-			*y += FIXED_MUL((((fixed_t)pos << FIXED_SHIFT) >> 2) - stage.note_scroll, stage.note_speed);
+			*y += FIXED_MUL((((fixed_t)pos << FIXED_SHIFT) / 24) - stage.note_scroll, stage.note_speed);
 		else if (stage.note_scroll < (-2 << FIXED_SHIFT))
 			*y += FIXED_MUL(stage.note_scroll + (2 << FIXED_SHIFT), stage.note_speed);
 	}
@@ -571,7 +571,7 @@ void Character_NoteCheck(Character *this, u8 type)
 	for (;; note++)
 	{
 		//Check if note can be hit
-		fixed_t note_fp = ((fixed_t)note->pos << FIXED_SHIFT) >> 2;
+		fixed_t note_fp = ((fixed_t)note->pos << FIXED_SHIFT) / 24;
 		if (note_fp - stage.early_safe > stage.note_scroll)
 			break;
 		if (note_fp + stage.late_safe < stage.note_scroll)
@@ -605,7 +605,7 @@ void Character_SustainCheck(Character *this, u8 type)
 	for (;; note++)
 	{
 		//Check if note can be hit
-		fixed_t note_fp = ((fixed_t)note->pos << FIXED_SHIFT) >> 2;
+		fixed_t note_fp = ((fixed_t)note->pos << FIXED_SHIFT) / 24;
 		if (note_fp - stage.early_safe > stage.note_scroll)
 			break;
 		if (note_fp + stage.late_safe < stage.note_scroll)
@@ -849,7 +849,7 @@ void Stage_Tick()
 	note = stage.cur_note;
 	for (;; note++)
 	{
-		if (note->pos > ((stage.note_scroll << 2) >> FIXED_SHIFT))
+		if (note->pos > ((stage.note_scroll * 24) >> FIXED_SHIFT))
 			break;
 		
 		//Opponent note hits

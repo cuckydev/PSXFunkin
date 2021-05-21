@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
 		{
 			//Push main note
 			Note new_note;
-			new_note.pos = PosRound((double)j[0] * 4.0, step_crochet);
+			new_note.pos = PosRound((double)j[0] * 24.0, step_crochet);
 			new_note.type = (uint8_t)j[1];
 			if (is_opponent)
 				new_note.type ^= NOTE_FLAG_OPPONENT;
@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
 			for (int k = 0; k <= sustain; k++)
 			{
 				Note sus_note; //jerma
-				sus_note.pos = new_note.pos + (k << 2); //Starts at first note's position?
+				sus_note.pos = new_note.pos + (k * 24); //Starts at first note's position?
 				sus_note.type = new_note.type | NOTE_FLAG_SUSTAIN;
 				if (k == sustain)
 					sus_note.type |= NOTE_FLAG_SUSTAIN_END;
