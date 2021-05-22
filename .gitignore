@@ -14,8 +14,8 @@ funkin.map
 funkin.ps-exe
 
 # Exclude object and link files
-src/*.o
-src/*.dep
+*.o
+*.dep
 
 # Exclude tool data and exe
 tools/funkinchartpak/*.json
