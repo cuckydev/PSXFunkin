@@ -119,7 +119,7 @@ void Menu_Tick()
 		"DADBATTLE",
 		
 		"PICO",
-		"PHILY",
+		"PHILLY",
 		"BLAMMED",
 		
 		"SATIN PANTIES",

@@ -6,8 +6,11 @@ SRCS = src/main.c \
        src/gfx.c \
        src/audio.c \
        src/pad.c \
+       src/random.c \
        src/menu.c \
        src/stage.c \
+       src/object.c \
+       src/object/combo.c \
        ../common/crt0/crt0.s
 
 CPPFLAGS += -I../psyq/include -Wall -O3

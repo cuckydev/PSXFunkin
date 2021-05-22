@@ -1,63 +1,17 @@
 #include "stage.h"
-#include "io.h"
-#include "gfx.h"
 #include "audio.h"
 #include "pad.h"
 #include "main.h"
 
+#include "object/combo.h"
+
 //Stage constants
-typedef s32 fixed_t;
-
-typedef struct
-{
-	fixed_t x, y, w, h;
-} RECT_FIXED;
-
-#define FIXED_SHIFT (10)
-#define FIXED_UNIT  (1 << FIXED_SHIFT)
-#define FIXED_LAND  (FIXED_UNIT - 1)
-#define FIXED_UAND  (~FIXED_LAND)
-
-#define FIXED_DEC(d, f) (((d) << FIXED_SHIFT) / (f))
-
-#define FIXED_MUL(x, y) (((s64)(x) * (y)) >> FIXED_SHIFT)
-#define FIXED_DIV(x, y) (((x) << FIXED_SHIFT) / (y))
-
 #define INPUT_LEFT  (PAD_LEFT  | PAD_SQUARE)
 #define INPUT_DOWN  (PAD_DOWN  | PAD_CROSS)
 #define INPUT_UP    (PAD_UP    | PAD_TRIANGLE)
 #define INPUT_RIGHT (PAD_RIGHT | PAD_CIRCLE)
 
 //Character definitions
-#define ASCR_REPEAT 0xFF
-#define ASCR_CHGANI 0xFE
-#define ASCR_BACK   0xFD
-
-typedef struct
-{
-	u8 spd;
-	const u8 *script;
-} CharAnimDef;
-
-typedef struct
-{
-	u8 tex;
-	u16 src[4];
-	s16 off[2];
-} CharFrame;
-
-typedef struct
-{
-	fixed_t focus_height;
-	
-	u8 texs;
-	const char **tex;
-	
-	const CharFrame *frame;
-	
-	const CharAnimDef anim[CharAnim_Max];
-} CharDef;
-
 static const CharDef char_defs[CharId_Max] = {
 	{ //CharId_Boyfriend
 		32 << FIXED_SHIFT,
@@ -101,7 +55,7 @@ static const CharDef char_defs[CharId_Max] = {
 			{5, {  0, 128, 128, 128}, { 53,  96}}, //22 peace 3
 		},
 		{
-			{4, (const u8[]){ 0,  1,  2,  3,  3,  3,  3,  3,  3,  3, ASCR_REPEAT}},                    //CharAnim_Idle
+			{4, (const u8[]){ 0,  1,  2,  3,  ASCR_BACK, 1}},                                          //CharAnim_Idle
 			{2, (const u8[]){ 4,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_Left
 			{2, (const u8[]){ 4,  6,  7,  7,  7,  7,  7,  7,  7,  7,  7, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_LeftAlt
 			{2, (const u8[]){ 8,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_Down
@@ -142,7 +96,7 @@ static const CharDef char_defs[CharId_Max] = {
 			{5, {128,   0, 128, 256}, { 43, 194}}, //10 right 2
 		},
 		{
-			{4, (const u8[]){ 1,  2,  3,  0,  0,  0,  0,  0,  0,  0, ASCR_REPEAT}},                    //CharAnim_Idle
+			{4, (const u8[]){ 1,  2,  3,  0,  ASCR_BACK, 1}},                                          //CharAnim_Idle
 			{2, (const u8[]){ 4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_Left
 			{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},                                             //CharAnim_LeftAlt
 			{2, (const u8[]){ 5,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_Down
@@ -157,25 +111,6 @@ static const CharDef char_defs[CharId_Max] = {
 };
 
 //Stage definitions
-typedef struct
-{
-	CharId id;
-	fixed_t x, y;
-} StageDef_Char;
-
-typedef struct
-{
-	//Characters
-	StageDef_Char mchar, ochar;
-	
-	//Song info
-	fixed_t bpm;
-	fixed_t speed[3];
-	
-	u8 week, week_song;
-	u8 music_pack, music_channel;
-} StageDef;
-
 static const StageDef stage_defs[StageId_Max] = {
 	{ //StageId_1_1 (Bopeebo)
 		//Characters
@@ -291,96 +226,8 @@ static const StageDef stage_defs[StageId_Max] = {
 	},
 };
 
-//Character state
-typedef struct
-{
-	//Character textures and definition
-	const CharDef *char_def;
-	const CharAnimDef *anim_def;
-	const CharFrame *frame_def;
-	CharId char_id;
-	
-	u8 texs;
-	IO_Data *load_tex;
-	
-	//Character state
-	fixed_t x, y;
-	
-	Gfx_Tex tex;
-	u8 tex_i;
-	
-	CharAnim anim;
-	const u8 *anim_p;
-	u8 anim_spd, anim_time;
-	
-	u8 frame;
-	u8 load_tex_i;
-} Character;
-
 //Stage state
-#define SECTION_FLAG_ALTANIM  (1 << 0) //Mom/Dad in Week 5
-#define SECTION_FLAG_OPPFOCUS (1 << 1) //Focus on opponent
-
-typedef struct
-{
-	u16 end;
-	u8 flag, pad;
-} Section;
-
-#define NOTE_FLAG_OPPONENT    (1 << 2) //Note is opponent's
-#define NOTE_FLAG_SUSTAIN     (1 << 3) //Note is a sustain note
-#define NOTE_FLAG_SUSTAIN_END (1 << 4) //Draw as sustain ending (this sucks)
-#define NOTE_FLAG_HIT         (1 << 7) //Note has been hit
-
-typedef struct
-{
-	u16 pos; //1/24 steps
-	u8 type, pad;
-} Note;
-
-typedef struct
-{
-	//Camera and characters
-	struct
-	{
-		fixed_t x, y, zoom;
-		fixed_t tx, ty, td;
-	} camera;
-	Character character[2];
-	
-	//HUD textures
-	Gfx_Tex tex_hud0, tex_hud1;
-	
-	//Stage data
-	Gfx_Tex tex_back0, tex_back1;
-	
-	const StageDef *stage_def;
-	StageId stage_id;
-	
-	IO_Data chart_data;
-	Section *sections;
-	Note *notes;
-	
-	fixed_t speed;
-	fixed_t crochet, step_crochet;
-	fixed_t early_safe, late_safe;
-	fixed_t note_speed;
-	
-	//Stage state
-	Section *cur_section; //Current section
-	Note *cur_note; //First visible and hittable note, used for drawing and hit detection
-	
-	fixed_t note_scroll;
-	
-	u16 song_step;
-	boolean just_step, vocal_active;
-	
-	u8 arrow_hitan[4]; //Arrow hit animation for presses
-	
-	s16 health;
-} Stage;
-
-static Stage stage;
+Stage stage;
 
 //Stage drawing functions
 void Stage_DrawTex(Gfx_Tex *tex, RECT *src, RECT_FIXED *dst, fixed_t zoom)
@@ -570,9 +417,43 @@ static const CharAnim note_anims[4][2] = {
 	{CharAnim_Right, CharAnim_RightAlt},
 };
 
+void Character_HitNote(Character *this, fixed_t offset)
+{
+	//Get hit type
+	if (offset < 0)
+		offset = -offset;
+	
+	u8 hit_type;
+	if (offset > stage.late_safe * 9 / 10)
+		hit_type = 3; //SHIT
+	else if (offset > stage.late_safe * 3 / 4)
+		hit_type = 2; //BAD
+	else if (offset > stage.late_safe / 5)
+		hit_type = 1; //GOOD
+	else
+		hit_type = 0; //SICK
+	
+	//Increment combo
+	stage.combo++;
+	
+	//Create combo object telling of our combo
+	Obj_Combo *combo = Obj_Combo_New(this->x, this->y - this->char_def->focus_height, hit_type, stage.combo >= 10 ? stage.combo : 0xFFFF);
+	if (combo != NULL)
+		ObjectList_Add(&stage.objlist_fg, (Object*)combo);
+}
+
 void Character_MissNote(Character *this, u8 type)
 {
-	//Kill combo
+	if (stage.combo)
+	{
+		//Kill combo
+		stage.combo = 0;
+		
+		//Create combo object telling of our lost combo
+		Obj_Combo *combo = Obj_Combo_New(this->x, this->y - this->char_def->focus_height, 0xFF, 0);
+		if (combo != NULL)
+			ObjectList_Add(&stage.objlist_fg, (Object*)combo);
+	}
 }
 
 void Character_NoteCheck(Character *this, u8 type)
@@ -591,17 +472,21 @@ void Character_NoteCheck(Character *this, u8 type)
 			continue;
 		
 		//Hit the note
-		Stage_StartVocal();
-		Character_SetAnim(this, note_anims[type & 0x3][0]);
 		note->type |= NOTE_FLAG_HIT;
+		
+		Character_SetAnim(this, note_anims[type][0]);
+		Character_HitNote(this, stage.note_scroll - note_fp);
+		
+		Stage_StartVocal();
 		stage.health += 230;
 		stage.arrow_hitan[type] = 6;
 		return;
 	}
 	
-	//Missed
-	Character_SetAnim(this, note_anims[type & 0x3][1]);
-	Character_MissNote(this, type & 0x3);
+	//Missed a note
+	Character_SetAnim(this, note_anims[type][1]);
+	Character_MissNote(this, type);
+	
 	stage.health -= 400;
 }
 
@@ -613,6 +498,8 @@ void Character_SustainCheck(Character *this, u8 type)
 	
 	//Perform note check
 	Note *note = stage.cur_note;
+	boolean near_note = false;
+	
 	for (;; note++)
 	{
 		//Check if note can be hit
@@ -621,22 +508,27 @@ void Character_SustainCheck(Character *this, u8 type)
 			break;
 		if (note_fp + stage.late_safe < stage.note_scroll)
 			continue;
-		if ((note->type & NOTE_FLAG_HIT) || (note->type & (NOTE_FLAG_OPPONENT | 0x3)) != type || !(note->type & NOTE_FLAG_SUSTAIN))
+		if ((note->type & (NOTE_FLAG_OPPONENT | 0x3)) != type)
+			continue;
+		near_note = true;
+		if ((note->type & NOTE_FLAG_HIT) || !(note->type & NOTE_FLAG_SUSTAIN))
 			continue;
 		
 		//Hit the note
-		Stage_StartVocal();
-		if (this->anim != note_anims[type & 0x3][0])
-			Character_SetAnim(this, note_anims[type & 0x3][0]);
 		note->type |= NOTE_FLAG_HIT;
+		
+		if (this->anim != note_anims[type][0])
+			Character_SetAnim(this, note_anims[type][0]);
+		
+		Stage_StartVocal();
 		stage.health += 230;
 		stage.arrow_hitan[type] = 6;
 		return;
 	}
 	
 	//Hold animation
-	if (stage.just_step && this->anim == note_anims[type & 0x3][0])
-		Character_SetAnim(this, note_anims[type & 0x3][0]);
+	if ((stage.just_step || !near_note) && this->anim == note_anims[type][0])
+		Character_SetAnim(this, note_anims[type][0]);
 }
 
 //Stage functions
@@ -691,6 +583,11 @@ void Stage_Load(StageId id, StageDiff difficulty)
 	memset(stage.arrow_hitan, 0, sizeof(stage.arrow_hitan));
 	
 	stage.health = 10000;
+	stage.score = 0;
+	stage.combo = 0;
+	
+	stage.objlist_fg = NULL;
+	stage.objlist_bg = NULL;
 	
 	//Initialize camera
 	Stage_FocusCharacter(&stage.character[(stage.cur_section->flag & SECTION_FLAG_OPPFOCUS) != 0], FIXED_UNIT / 24);
@@ -703,6 +600,10 @@ void Stage_Load(StageId id, StageDiff difficulty)
 
 void Stage_Unload()
 {
+	//Free objects
+	ObjectList_Free(&stage.objlist_fg);
+	ObjectList_Free(&stage.objlist_bg);
+	
 	//Unload stage data
 	free3(stage.chart_data);
 	
@@ -781,14 +682,14 @@ void Stage_Tick()
 	stage.song_step = next_step;
 	
 	//Get bump
-	fixed_t bump, sbump;
+	fixed_t sbump;
 	if (playing)
 	{
 		//Bump every 16 steps
 		if ((stage.song_step & 0xF) == 0)
-			bump = (fixed_t)FIXED_UNIT + ((fixed_t)(FIXED_DEC(75,100) - (stage.note_scroll & FIXED_LAND)) / 16);
+			stage.bump = (fixed_t)FIXED_UNIT + ((fixed_t)(FIXED_DEC(75,100) - (stage.note_scroll & FIXED_LAND)) / 16);
 		else
-			bump = FIXED_UNIT;
+			stage.bump = FIXED_UNIT;
 		
 		//Bump every 4 steps
 		if ((stage.song_step & 0x3) == 0)
@@ -799,7 +700,7 @@ void Stage_Tick()
 	else
 	{
 		//Song isn't playing yet
-		bump = FIXED_UNIT;
+		stage.bump = FIXED_UNIT;
 		sbump = FIXED_UNIT;
 	}
 	
@@ -883,8 +784,8 @@ void Stage_Tick()
 		stage.health = 20000;
 	
 	//Draw health heads
-	Character_DrawHealth(&stage.character[0],  1, FIXED_MUL(bump, sbump));
-	Character_DrawHealth(&stage.character[1], -1, FIXED_MUL(bump, sbump));
+	Character_DrawHealth(&stage.character[0],  1, FIXED_MUL(stage.bump, sbump));
+	Character_DrawHealth(&stage.character[1], -1, FIXED_MUL(stage.bump, sbump));
 	
 	//Draw health bar
 	RECT health_fill = {0, 0, 256 - (256 * stage.health / 20000), 8};
@@ -892,9 +793,9 @@ void Stage_Tick()
 	RECT_FIXED health_dst = {-128 << FIXED_SHIFT, (SCREEN_HEIGHT2 - 32) << FIXED_SHIFT, 0, 8 << FIXED_SHIFT};
 	
 	health_dst.w = health_fill.w << FIXED_SHIFT;
-	Stage_DrawTex(&stage.tex_hud1, &health_fill, &health_dst, bump);
+	Stage_DrawTex(&stage.tex_hud1, &health_fill, &health_dst, stage.bump);
 	health_dst.w = health_back.w << FIXED_SHIFT;
-	Stage_DrawTex(&stage.tex_hud1, &health_back, &health_dst, bump);
+	Stage_DrawTex(&stage.tex_hud1, &health_back, &health_dst, stage.bump);
 	
 	//Draw notes
 	note = stage.cur_note;
@@ -944,21 +845,21 @@ void Stage_Tick()
 				//Draw sustain
 				if (note->type & NOTE_FLAG_SUSTAIN_END)
 				{
-					if (clip < (16 << FIXED_SHIFT))
+					if (clip < (24 << FIXED_SHIFT))
 					{
 						RECT note_src = {
 							160,
-							((note->type & 0x3) << 5) + 16 + (clip >> FIXED_SHIFT),
+							((note->type & 0x3) << 5) + 8 + (clip >> FIXED_SHIFT),
 							32,
-							16 - (clip >> FIXED_SHIFT)
+							24 - (clip >> FIXED_SHIFT)
 						};
 						RECT_FIXED note_dst = {
 							x - (16 << FIXED_SHIFT),
-							y - (16 << FIXED_SHIFT) + clip,
+							y - (12 << FIXED_SHIFT) + clip,
 							note_src.w << FIXED_SHIFT,
 							(note_src.h << FIXED_SHIFT)
 						};
-						Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, bump);
+						Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, stage.bump);
 					}
 				}
 				else
@@ -977,7 +878,7 @@ void Stage_Tick()
 							note_src.w << FIXED_SHIFT,
 							stage.note_speed + FIXED_UNIT - clip
 						};
-						Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, bump);
+						Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, stage.bump);
 					}
 				}
 			}
@@ -994,7 +895,7 @@ void Stage_Tick()
 					note_src.w << FIXED_SHIFT,
 					note_src.h << FIXED_SHIFT
 				};
-				Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, bump);
+				Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, stage.bump);
 			}
 		}
 	}
@@ -1022,7 +923,7 @@ void Stage_Tick()
 			note_src.x = 0;
 			note_src.y = i << 5;
 		}
-		Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, bump);
+		Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, stage.bump);
 		
 		//Opponent
 		HUD_GetNotePos(4 + i, &note_dst.x, &note_dst.y, 0xFFFF);
@@ -1031,15 +932,30 @@ void Stage_Tick()
 		
 		note_src.x = 0;
 		note_src.y = i << 5;
-		Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, bump);
+		Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, stage.bump);
 	}
+	
+	//Perform character idle dance
+	if (stage.just_step && (stage.song_step & 0x7) == 0)
+	{
+		if (stage.character[0].anim == CharAnim_Idle)
+			Character_SetAnim(&stage.character[0], CharAnim_Idle);
+		if (stage.character[1].anim == CharAnim_Idle)
+			Character_SetAnim(&stage.character[1], CharAnim_Idle);
+	}
+	
+	//Tick foreground objects
+	ObjectList_Tick(&stage.objlist_fg);
 	
 	//Animate and draw characters
 	Character_Animate(&stage.character[0]);
-	Character_Draw(&stage.character[0], bump);
+	Character_Draw(&stage.character[0], stage.bump);
 	
 	Character_Animate(&stage.character[1]);
-	Character_Draw(&stage.character[1], bump);
+	Character_Draw(&stage.character[1], stage.bump);
+	
+	//Tick background objects
+	ObjectList_Tick(&stage.objlist_bg);
 	
 	//Draw curtains
 	RECT curtain_src = {0, 0, 128, 256};
@@ -1056,8 +972,8 @@ void Stage_Tick()
 		400 << FIXED_SHIFT
 	};
 	
-	Stage_DrawTex(&stage.tex_back1, &curtain_src, &curtain1_dst, FIXED_MUL(FIXED_DEC(95,100), bump));
-	Stage_DrawTex(&stage.tex_back1, &curtain_src, &curtainr_dst, FIXED_MUL(FIXED_DEC(95,100), bump));
+	Stage_DrawTex(&stage.tex_back1, &curtain_src, &curtain1_dst, FIXED_MUL(FIXED_DEC(95,100), stage.bump));
+	Stage_DrawTex(&stage.tex_back1, &curtain_src, &curtainr_dst, FIXED_MUL(FIXED_DEC(95,100), stage.bump));
 	
 	//Draw stage
 	RECT stagel_src = {0, 0, 256, 128};
@@ -1075,6 +991,6 @@ void Stage_Tick()
 		250 << FIXED_SHIFT
 	};
 	
-	Stage_DrawTex(&stage.tex_back0, &stagel_src, &stage1_dst, bump);
-	Stage_DrawTex(&stage.tex_back0, &stager_src, &stager_dst, bump);
+	Stage_DrawTex(&stage.tex_back0, &stagel_src, &stage1_dst, stage.bump);
+	Stage_DrawTex(&stage.tex_back0, &stager_src, &stager_dst, stage.bump);
 }
