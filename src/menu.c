@@ -1,4 +1,6 @@
 #include "menu.h"
+
+#include "mem.h"
 #include "io.h"
 #include "gfx.h"
 #include "audio.h"
@@ -101,13 +103,13 @@ void Menu_Load(MenuLoadPage page)
 void Menu_Unload()
 {
 	//Free buffers
-	free3(menu.data_title0);
-	free3(menu.data_title1);
-	free3(menu.data_gf[0]);
-	free3(menu.data_gf[1]);
-	free3(menu.data_gf[2]);
-	free3(menu.data_gf[3]);
-	free3(menu.data_gf[4]);
+	Mem_Free(menu.data_title0);
+	Mem_Free(menu.data_title1);
+	Mem_Free(menu.data_gf[0]);
+	Mem_Free(menu.data_gf[1]);
+	Mem_Free(menu.data_gf[2]);
+	Mem_Free(menu.data_gf[3]);
+	Mem_Free(menu.data_gf[4]);
 }
 
 void Menu_Tick()

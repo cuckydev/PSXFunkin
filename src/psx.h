@@ -15,7 +15,6 @@
 
 #include <stddef.h>
 #include <string.h>
-#include <malloc.h>
 
 //Fixed size types
 typedef u_char             u8;

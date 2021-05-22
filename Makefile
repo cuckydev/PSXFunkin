@@ -2,6 +2,7 @@ TARGET = funkin
 TYPE = ps-exe
 
 SRCS = src/main.c \
+       src/mem.c \
        src/io.c \
        src/gfx.c \
        src/audio.c \

@@ -1,5 +1,6 @@
 #include "psx.h"
 
+#include "mem.h"
 #include "io.h"
 #include "gfx.h"
 #include "audio.h"
@@ -28,7 +29,7 @@ int stid;
 int main()
 {
 	//Initialize system
-	InitHeap3((void*)malloc_heap, sizeof(malloc_heap));
+	Mem_Init((void*)malloc_heap, sizeof(malloc_heap));
 	
 	Audio_Init();
 	Gfx_Init();

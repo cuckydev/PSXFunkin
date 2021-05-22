@@ -1,5 +1,6 @@
 #include "combo.h"
 
+#include "../mem.h"
 #include "../random.h"
 
 //Combo object functions
@@ -32,10 +33,10 @@ boolean Obj_Combo_Tick(Object *obj)
 		//Apply gravity
 		this->hy += this->hv;
 		this->hv += FIXED_DEC(3,100);
-		
-		//Increment timer
-		this->ht++;
 	}
+	
+	//Increment hit type timer
+	this->ht++;
 	
 	//Tick combo
 	if (this->num[4] != 0xFF && this->ct < 16)
@@ -62,10 +63,10 @@ boolean Obj_Combo_Tick(Object *obj)
 		//Apply gravity
 		this->cy += this->cv;
 		this->cv += FIXED_DEC(3,100);
-		
-		//Increment timer
-		this->ct++;
 	}
+	
+	//Increment combo timer
+	this->ct++;
 	
 	//Tick numbers
 	if (this->numt < 16)
@@ -99,12 +100,12 @@ boolean Obj_Combo_Tick(Object *obj)
 			this->numy[i] += this->numv[i];
 			this->numv[i] += FIXED_DEC(3,100);
 		}
-		
-		//Increment timer
-		this->numt++;
 	}
 	
-	return this->numt >= 16 && this->ht >= 16;
+	//Increment number timer
+	this->numt++;
+	
+	return this->numt >= 16 && this->ht >= 16 && this->ct >= 16;
 }
 
 void Obj_Combo_Free(Object *obj)
@@ -115,7 +116,7 @@ void Obj_Combo_Free(Object *obj)
 Obj_Combo *Obj_Combo_New(fixed_t x, fixed_t y, u8 hit_type, u16 combo)
 {
 	//Allocate new object
-	Obj_Combo *this = malloc3(sizeof(Obj_Combo));
+	Obj_Combo *this = (Obj_Combo*)Mem_Alloc(sizeof(Obj_Combo));
 	if (this == NULL)
 		return NULL;
 	
@@ -124,7 +125,7 @@ Obj_Combo *Obj_Combo_New(fixed_t x, fixed_t y, u8 hit_type, u16 combo)
 	this->obj.free = Obj_Combo_Free;
 	
 	//Offset position
-	x /= 2;
+	this->x = (x >> 1) - FIXED_DEC(48,1);
 	y -= FIXED_DEC(48,1);
 	
 	//Setup hit type

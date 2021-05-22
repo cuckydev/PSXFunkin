@@ -1,4 +1,6 @@
 #include "io.h"
+
+#include "mem.h"
 #include "audio.h"
 #include "main.h"
 
@@ -28,7 +30,7 @@ IO_Data IO_Read(const char *path)
 	
 	//Allocate a buffer for the file
 	size_t size;
-	IO_Data buffer = (IO_Data)malloc3(size = (IO_SECT_SIZE * sects));
+	IO_Data buffer = (IO_Data)Mem_Alloc(size = (IO_SECT_SIZE * sects));
 	if (buffer == NULL)
 	{
 		sprintf(error_msg, "[IO_Read] Malloc (size %X) fail", size);
@@ -41,12 +43,5 @@ IO_Data IO_Read(const char *path)
 	CdRead(sects, buffer, CdlModeSpeed);
 	CdReadSync(0, 0);
 	
-	//Realloc buffer so it takes less space in the heap (does this work as I think it does? who knows)
-	if ((buffer = realloc3(buffer, file.size)) == NULL)
-	{
-		sprintf(error_msg, "[IO_Read] Realloc (size %X to %X) fail\n", size, file.size);
-		ErrorLock();
-		return NULL;
-	}
 	return buffer;
 }

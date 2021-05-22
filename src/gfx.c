@@ -1,5 +1,6 @@
 #include "psx.h"
 
+#include "mem.h"
 #include "gfx.h"
 #include "main.h"
 
@@ -133,7 +134,7 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 	
 	//Free data
 	if (flag & GFX_LOADTEX_FREE)
-		free3(data);
+		Mem_Free(data);
 }
 
 void Gfx_BlitTex(Gfx_Tex *tex, const RECT *src, s32 x, s32 y)

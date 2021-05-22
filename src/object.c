@@ -1,23 +1,14 @@
 #include "object.h"
 
+#include "mem.h"
+
 //Object functions
 void ObjectList_Add(ObjectList *list, Object *obj)
 {
-	if (*list != NULL)
-	{
-		//Link to list's head
-		obj->prev = NULL;
-		obj->next = *list;
+	//Link to list
+	obj->prev = NULL;
+	if ((obj->next = *list) != NULL)
 		(*list)->prev = obj;
-	}
-	else
-	{
-		//Nothing to link to
-		obj->prev = NULL;
-		obj->next = NULL;
-	}
-	
-	//Set as head of list
 	*list = obj;
 }
 
@@ -33,7 +24,7 @@ void ObjectList_Remove(ObjectList *list, Object *obj)
 	
 	//Free object
 	obj->free(obj);
-	free3(obj);
+	Mem_Free(obj);
 }
 
 void ObjectList_Tick(ObjectList *list)
@@ -57,7 +48,7 @@ void ObjectList_Free(ObjectList *list)
 		//Free object and iterate on next linked object
 		Object *next = obj->next;
 		obj->free(obj);
-		free3(obj);
+		Mem_Free(obj);
 		obj = next;
 	}
 	

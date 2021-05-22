@@ -1,4 +1,6 @@
 #include "stage.h"
+
+#include "mem.h"
 #include "audio.h"
 #include "pad.h"
 #include "main.h"
@@ -344,7 +346,7 @@ void Character_Load(Character *this, const StageDef_Char *sdef)
 	//Load character textures
 	u8 texs = this->texs = char_def->texs;
 	size_t size;
-	IO_Data *texp = this->load_tex = malloc3(size = texs * sizeof(IO_Data));
+	IO_Data *texp = this->load_tex = (IO_Data*)Mem_Alloc(size = texs * sizeof(IO_Data));
 	if (texp == NULL)
 	{
 		sprintf(error_msg, "[Character_Load] Failed to allocate texture pointer buffer");
@@ -369,8 +371,8 @@ void Character_Unload(Character *this)
 	IO_Data *texp = this->load_tex;
 	u8 texs = this->texs;
 	for (; texs != 0; texs--)
-		free3(*texp++);
-	free3(this->load_tex);
+		Mem_Free(*texp++);
+	Mem_Free(this->load_tex);
 }
 
 void Character_Draw(Character *this, fixed_t bump)
@@ -605,7 +607,7 @@ void Stage_Unload()
 	ObjectList_Free(&stage.objlist_bg);
 	
 	//Unload stage data
-	free3(stage.chart_data);
+	Mem_Free(stage.chart_data);
 	
 	//Unload characters
 	Character_Unload(&stage.character[0]);
