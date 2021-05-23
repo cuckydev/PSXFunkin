@@ -8,6 +8,7 @@ SRCS = src/main.c \
        src/audio.c \
        src/pad.c \
        src/random.c \
+       src/archive.c \
        src/menu.c \
        src/stage.c \
        src/object.c \

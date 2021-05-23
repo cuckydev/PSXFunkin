@@ -4,10 +4,13 @@
 #include "audio.h"
 #include "pad.h"
 #include "main.h"
+#include "archive.h"
 
 #include "object/combo.h"
 
 //Stage constants
+//#define ANIM_TEST
+
 #define INPUT_LEFT  (PAD_LEFT  | PAD_SQUARE)
 #define INPUT_DOWN  (PAD_DOWN  | PAD_CROSS)
 #define INPUT_UP    (PAD_UP    | PAD_TRIANGLE)
@@ -17,44 +20,45 @@
 static const CharDef char_defs[CharId_Max] = {
 	{ //CharId_Boyfriend
 		32 << FIXED_SHIFT,
+		"\\BF\\MAIN.ARC;1",
 		6,
 		(const char*[]){
-			"\\BF\\IDLE.TIM;1",
-			"\\BF\\LEFT.TIM;1",
-			"\\BF\\DOWN.TIM;1",
-			"\\BF\\UP.TIM;1",
-			"\\BF\\RIGHT.TIM;1",
-			"\\BF\\PEACE.TIM;1",
+			"idle.tim",
+			"hit0.tim",
+			"miss0.tim",
+			"hit1.tim",
+			"miss1.tim",
+			"peace.tim",
 		},
 		(const CharFrame[]){
-			{0, {  0,   0, 128, 128}, { 53,  91}}, //0 idle 1
-			{0, {128,   0, 128, 128}, { 53,  91}}, //1 idle 2
-			{0, {  0, 128, 128, 128}, { 52,  92}}, //2 idle 3
-			{0, {128, 128, 128, 128}, { 53,  96}}, //3 idle 4
+			{0, {  0,   0, 128, 128}, { 53,  92}}, //0 idle 1
+			{0, {128,   0, 128, 128}, { 53,  93}}, //1 idle 2
+			{0, {  0, 128, 128, 128}, { 53,  98}}, //2 idle 3
+			{0, {128, 128, 128, 128}, { 53,  98}}, //3 idle 4
 			
-			{1, {  0,   0, 128, 128}, { 54,  93}}, //4 left 1
+			{1, {  0,   0, 128, 128}, { 56,  94}}, //4 left 1
 			{1, {128,   0, 128, 128}, { 56,  94}}, //5 left 2
-			{1, {  0, 128, 128, 128}, { 51,  97}}, //6 left miss 1
-			{1, {128, 128, 128, 128}, { 52, 101}}, //7 left miss 2
+			{2, {  0,   0, 128, 128}, { 52, 102}}, //6 left miss 1
+			{2, {128,   0, 128, 128}, { 53, 102}}, //7 left miss 2
 			
-			{2, {  0,   0, 128, 128}, { 48,  83}}, //8 down 1
-			{2, {128,   0, 128, 128}, { 48,  84}}, //9 down 2
+			{1, {  0, 128, 128, 128}, { 50,  82}}, //8 down 1
+			{1, {128, 128, 128, 128}, { 50,  83}}, //9 down 2
 			{2, {  0, 128, 128, 128}, { 49,  90}}, //10 down miss 1
 			{2, {128, 128, 128, 128}, { 50,  90}}, //11 down miss 2
 			
 			{3, {  0,   0, 128, 128}, { 42, 103}}, //12 up 1
-			{3, {128,   0, 128, 128}, { 43, 102}}, //13 up 2
-			{3, {  0, 128, 128, 128}, { 44,  97}}, //14 up miss 1
-			{3, {128, 128, 128, 128}, { 43,  98}}, //15 up miss 2
+			{3, {128,   0, 128, 128}, { 44, 102}}, //13 up 2
+			{4, {  0,   0, 128, 128}, { 48,  99}}, //14 up miss 1
+			{4, {128,   0, 128, 128}, { 48, 100}}, //15 up miss 2
 			
-			{4, {  0,   0, 128, 128}, { 42,  94}}, //16 right 1
-			{4, {128,   0, 128, 128}, { 42,  94}}, //17 right 2
-			{4, {  0, 128, 128, 128}, { 44, 101}}, //18 right miss 1
-			{4, {128, 128, 128, 128}, { 43, 101}}, //19 right miss 2
+			{3, {  0, 128, 128, 128}, { 42,  94}}, //16 right 1
+			{3, {128, 128, 128, 128}, { 42,  95}}, //17 right 2
+			{4, {  0, 128, 128, 128}, { 45, 102}}, //18 right miss 1
+			{4, {128, 128, 128, 128}, { 43, 102}}, //19 right miss 2
 			
-			{5, {  0,   0, 128, 128}, { 53,  97}}, //20 peace 1
-			{5, {128,   0, 128, 128}, { 53,  96}}, //21 peace 2
-			{5, {  0, 128, 128, 128}, { 53,  96}}, //22 peace 3
+			{5, {  0,   0, 128, 128}, { 53,  98}}, //20 peace 1
+			{5, {128,   0, 128, 128}, { 53,  97}}, //21 peace 2
+			{5, {  0, 128, 128, 128}, { 53,  97}}, //22 peace 3
 		},
 		{
 			{4, (const u8[]){ 0,  1,  2,  3,  ASCR_BACK, 1}},                                          //CharAnim_Idle
@@ -71,14 +75,15 @@ static const CharDef char_defs[CharId_Max] = {
 	},
 	{ //CharId_Dad
 		64 << FIXED_SHIFT,
+		"\\DAD\\MAIN.ARC;1",
 		6,
 		(const char*[]){
-			"\\DAD\\IDLE0.TIM;1",
-			"\\DAD\\IDLE1.TIM;1",
-			"\\DAD\\LEFT.TIM;1",
-			"\\DAD\\DOWN.TIM;1",
-			"\\DAD\\UP.TIM;1",
-			"\\DAD\\RIGHT.TIM;1",
+			"idle0.tim",
+			"idle1.tim",
+			"left.tim",
+			"down.tim",
+			"up.tim",
+			"right.tim",
 		},
 		(const CharFrame[]){
 			{0, {  0,   0, 128, 256}, { 42, 188}}, //0 idle 1
@@ -354,9 +359,10 @@ void Character_Load(Character *this, const StageDef_Char *sdef)
 		return;
 	}
 	
+	this->arc_tex = IO_Read(char_def->arc_tex);
 	const char **dtexp = char_def->tex;
 	for (; texs != 0; texs--)
-		*texp++ = IO_Read(*dtexp++);
+		*texp++ = Archive_Find(this->arc_tex, *dtexp++);
 	
 	//Initialize character state
 	this->x = sdef->x;
@@ -368,10 +374,7 @@ void Character_Load(Character *this, const StageDef_Char *sdef)
 void Character_Unload(Character *this)
 {
 	//Unload character textures
-	IO_Data *texp = this->load_tex;
-	u8 texs = this->texs;
-	for (; texs != 0; texs--)
-		Mem_Free(*texp++);
+	Mem_Free(this->arc_tex);
 	Mem_Free(this->load_tex);
 }
 
@@ -622,8 +625,29 @@ void Stage_Tick()
 	u16 next_step;
 	if (stage.note_scroll < 0)
 	{
-		//Count up scroll
-		fixed_t next_scroll = stage.note_scroll + stage.step_crochet / 60; //TODO: PAL
+		#ifdef ANIM_TEST
+			//Count up scroll
+			fixed_t next_scroll = stage.note_scroll; //DUMMY!
+			
+			//Change animation
+			for (int i = 0; i < 2; i++)
+			{
+				if (pad_state.press & INPUT_LEFT)
+					Character_SetAnim(&stage.character[i], (pad_state.held & PAD_CROSS) ? CharAnim_LeftAlt : CharAnim_Left);
+				if (pad_state.press & INPUT_DOWN)
+					Character_SetAnim(&stage.character[i], (pad_state.held & PAD_CROSS) ? CharAnim_DownAlt : CharAnim_Down);
+				if (pad_state.press & INPUT_UP)
+					Character_SetAnim(&stage.character[i], (pad_state.held & PAD_CROSS) ? CharAnim_UpAlt : CharAnim_Up);
+				if (pad_state.press & INPUT_RIGHT)
+					Character_SetAnim(&stage.character[i], (pad_state.held & PAD_CROSS) ? CharAnim_RightAlt : CharAnim_Right);
+				if (i == 0 && (pad_state.press & PAD_CROSS))
+					Character_SetAnim(&stage.character[i], CharAnim_Peace);
+					
+			}
+		#else
+			//Count up scroll
+			fixed_t next_scroll = stage.note_scroll + stage.step_crochet / 60; //TODO: PAL
+		#endif
 		
 		//3 2 1 GO - pre song start
 		

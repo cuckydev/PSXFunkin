@@ -92,22 +92,12 @@
 			
 			<!-- Boyfriend assets -->
 			<dir name = "bf">
-				<file name = "idle.tim" type = "data" source = "iso/bf/idle.tim"/>
-				<file name = "left.tim" type = "data" source = "iso/bf/left.tim"/>
-				<file name = "down.tim" type = "data" source = "iso/bf/down.tim"/>
-				<file name = "up.tim" type = "data" source = "iso/bf/up.tim"/>
-				<file name = "right.tim" type = "data" source = "iso/bf/right.tim"/>
-				<file name = "peace.tim" type = "data" source = "iso/bf/peace.tim"/>
+				<file name = "main.arc" type = "data" source = "iso/bf/main.arc"/>
 			</dir>
 			
 			<!-- Dad assets -->
 			<dir name = "dad">
-				<file name = "idle0.tim" type = "data" source = "iso/dad/idle0.tim"/>
-				<file name = "idle1.tim" type = "data" source = "iso/dad/idle1.tim"/>
-				<file name = "left.tim" type = "data" source = "iso/dad/left.tim"/>
-				<file name = "down.tim" type = "data" source = "iso/dad/down.tim"/>
-				<file name = "up.tim" type = "data" source = "iso/dad/up.tim"/>
-				<file name = "right.tim" type = "data" source = "iso/dad/right.tim"/>
+				<file name = "main.arc" type = "data" source = "iso/dad/main.arc"/>
 			</dir>
 			
 			<!-- Music -->

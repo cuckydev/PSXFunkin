@@ -94,6 +94,7 @@ typedef struct
 {
 	fixed_t focus_height;
 	
+	const char *arc_tex;
 	u8 texs;
 	const char **tex;
 	
@@ -131,6 +132,7 @@ typedef struct
 	const CharFrame *frame_def;
 	CharId char_id;
 	
+	IO_Data arc_tex;
 	u8 texs;
 	IO_Data *load_tex;
 	

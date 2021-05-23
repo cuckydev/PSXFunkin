@@ -17,9 +17,13 @@ funkin.ps-exe
 *.o
 *.dep
 
-# Exclude tool data and exe
+# Exclude tool data and executables
 tools/funkinchartpak/*.json
 tools/funkinchartpak/*.cht
 tools/funkinchartpak/funkinchartpak.exe
 tools/funkinchartpak/funkinchartpak.elf
 tools/funkinchartpak/funkinchartpak
+
+tools/funkinarcpak/funkinarcpak.exe
+tools/funkinarcpak/funkinarcpak.elf
+tools/funkinarcpak/funkinarcpak
