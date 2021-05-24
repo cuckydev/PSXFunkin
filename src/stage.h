@@ -51,7 +51,7 @@ typedef struct
 	fixed_t speed[3];
 	
 	u8 week, week_song;
-	u8 music_pack, music_channel;
+	u8 music_track, music_channel;
 } StageDef;
 
 //Stage state
@@ -99,7 +99,7 @@ typedef struct
 	struct
 	{
 		fixed_t x, y, zoom;
-		fixed_t tx, ty, td;
+		fixed_t tx, ty, tz, td;
 	} camera;
 	fixed_t bump, sbump;
 	

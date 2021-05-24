@@ -3,9 +3,32 @@
 #include "../mem.h"
 #include "../archive.h"
 #include "../stage.h"
+#include "../random.h"
 #include "../main.h"
 
-//Boyfriend player structureenum
+//Boyfriend skull fragments
+static SkullFragment player_bf_skull[15] = {
+	{ 1 << 3, -87 << 3, -13, -10},
+	{ 9 << 3, -88 << 3,   5, -15},
+	{18 << 3, -87 << 3,   9, -15},
+	{26 << 3, -85 << 3,  13, -10},
+	
+	{-3 << 3, -82 << 3, -13,  -9},
+	{ 8 << 3, -85 << 3,  -9, -13},
+	{20 << 3, -82 << 3,   9, -13},
+	{30 << 3, -79 << 3,  13,  -9},
+	
+	{-1 << 3, -74 << 3, -13, -5},
+	{ 8 << 3, -77 << 3,  -9, -9},
+	{19 << 3, -75 << 3,   9, -9},
+	{26 << 3, -74 << 3,  13, -5},
+	
+	{ 5 << 3, -73 << 3, -5, -3},
+	{14 << 3, -76 << 3,  9, -6},
+	{26 << 3, -67 << 3, 15, -3},
+};
+
+//Boyfriend player types
 enum
 {
 	BF_ArcMain_Idle,
@@ -40,8 +63,13 @@ typedef struct
 	CdlFILE file_dead_arc; //dead.arc file position
 	IO_Data arc_ptr[BF_Arc_Max];
 	
-	Gfx_Tex tex;
+	Gfx_Tex tex, tex_retry;
 	u8 frame, tex_id;
+	
+	u8 retry_bump;
+	
+	SkullFragment skull[COUNT_OF(player_bf_skull)];
+	u8 skull_scale;
 } Player_BF;
 
 //Boyfriend player definitions
@@ -104,12 +132,15 @@ static const Animation player_bf_anim[PlayerAnim_Max] = {
 	{3, (const u8[]){20, 21, 22, 22, 22, 22, 22, 22, 22, ASCR_CHGANI, CharAnim_Idle}},         //PlayerAnim_Peace
 	{3, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},                                             //PlayerAnim_Sweat
 	
-	{5, (const u8[]){23, 24, 25, 26, 26, 26, 26, 26, 26, 26, ASCR_CHGANI, PlayerAnim_Dead1}},  //PlayerAnim_Dead0
-	{5, (const u8[]){26, ASCR_REPEAT}},                                                        //PlayerAnim_Dead1
-	{3, (const u8[]){27, 28, 29, 30, 30, 30, 30, 30, 30, 30, ASCR_CHGANI, PlayerAnim_Dead3}},  //PlayerAnim_Dead2
-	{3, (const u8[]){30, ASCR_REPEAT}},                                                        //PlayerAnim_Dead3
-	{3, (const u8[]){31, 32, 30, 30, 30, 30, 30, ASCR_CHGANI, PlayerAnim_Dead3}},              //PlayerAnim_Dead4
-	{3, (const u8[]){33, 34, 30, 30, 30, 30, 30, ASCR_CHGANI, PlayerAnim_Dead3}},              //PlayerAnim_Dead5
+	{5, (const u8[]){23, 24, 25, 26, 26, 26, 26, 26, 26, 26, ASCR_CHGANI, PlayerAnim_Dead1}}, //PlayerAnim_Dead0
+	{5, (const u8[]){26, ASCR_REPEAT}},                                                       //PlayerAnim_Dead1
+	{3, (const u8[]){27, 28, 29, 30, 30, 30, 30, 30, 30, 30, ASCR_CHGANI, PlayerAnim_Dead3}}, //PlayerAnim_Dead2
+	{3, (const u8[]){30, ASCR_REPEAT}},                                                       //PlayerAnim_Dead3
+	{3, (const u8[]){31, 32, 30, 30, 30, 30, 30, ASCR_CHGANI, PlayerAnim_Dead3}},             //PlayerAnim_Dead4
+	{3, (const u8[]){33, 34, 30, 30, 30, 30, 30, ASCR_CHGANI, PlayerAnim_Dead3}},             //PlayerAnim_Dead5
+	
+	{10, (const u8[]){30, 30, 30, ASCR_BACK, 1}}, //PlayerAnim_Dead4
+	{ 3, (const u8[]){33, 34, 30, ASCR_REPEAT}},  //PlayerAnim_Dead5
 };
 
 //Boyfriend player functions
@@ -131,7 +162,106 @@ void Player_BF_Tick(Character *character)
 {
 	Player_BF *this = (Player_BF*)character;
 	
-	//Animate and draw
+	if (this->player.character.animatable.anim >= PlayerAnim_Dead3)
+	{
+		//Tick skull fragments
+		if (this->skull_scale)
+		{
+			SkullFragment *frag = this->skull;
+			for (int i = 0; i < COUNT_OF_MEMBER(Player_BF, skull); i++, frag++)
+			{
+				//Draw fragment
+				RECT frag_src = {
+					(i & 1) ? 112 : 96,
+					(i >> 1) << 4,
+					16,
+					16
+				};
+				fixed_t skull_dim = (FIXED_DEC(16,1) * this->skull_scale) >> 6;
+				fixed_t skull_rad = skull_dim >> 1;
+				RECT_FIXED frag_dst = {
+					this->player.character.x + (((fixed_t)frag->x << FIXED_SHIFT) >> 3) - skull_rad - stage.camera.x,
+					this->player.character.y + (((fixed_t)frag->y << FIXED_SHIFT) >> 3) - skull_rad - stage.camera.y,
+					skull_dim,
+					skull_dim,
+				};
+				Stage_DrawTex(&this->tex_retry, &frag_src, &frag_dst, FIXED_MUL(stage.camera.zoom, stage.bump));
+				
+				//Move fragment
+				frag->x += frag->xsp;
+				frag->y += ++frag->ysp;
+			}
+			
+			//Decrease scale
+			this->skull_scale--;
+		}
+		
+		//Draw input options
+		u8 input_scale = 16 - this->skull_scale;
+		if (input_scale > 16)
+			input_scale = 0;
+		
+		RECT button_src = {
+			 0, 96,
+			16, 16
+		};
+		RECT_FIXED button_dst = {
+			this->player.character.x - FIXED_DEC(32,1) - stage.camera.x,
+			this->player.character.y - FIXED_DEC(88,1) - stage.camera.y,
+			(FIXED_DEC(16,1) * input_scale) >> 4,
+			FIXED_DEC(16,1),
+		};
+		
+		//Cross - Retry
+		Stage_DrawTex(&this->tex_retry, &button_src, &button_dst, FIXED_MUL(stage.camera.zoom, stage.bump));
+		
+		//Circle - Blueball
+		button_src.x = 16;
+		button_dst.y += FIXED_DEC(56,1);
+		Stage_DrawTex(&this->tex_retry, &button_src, &button_dst, FIXED_MUL(stage.camera.zoom, stage.bump));
+		
+		//Draw 'RETRY'
+		u8 retry_frame;
+		
+		if (this->player.character.animatable.anim == PlayerAnim_Dead6)
+		{
+			//Selected retry
+			retry_frame = 2 - (this->retry_bump >> 3);
+			if (retry_frame >= 3)
+				retry_frame = 0;
+			if (this->retry_bump & 2)
+				retry_frame += 3;
+			
+			if (++this->retry_bump == 0xFF)
+				this->retry_bump = 0xFD;
+		}
+		else
+		{
+			//Idle
+			retry_frame = 1 +  (this->retry_bump >> 2);
+			if (retry_frame >= 3)
+				retry_frame = 0;
+			
+			if (++this->retry_bump >= 55)
+				this->retry_bump = 0;
+		}
+		
+		RECT retry_src = {
+			(retry_frame & 1) ? 48 : 0,
+			(retry_frame >> 1) << 5,
+			48,
+			32
+		};
+		RECT_FIXED retry_dst = {
+			this->player.character.x -  FIXED_DEC(7,1) - stage.camera.x,
+			this->player.character.y - FIXED_DEC(92,1) - stage.camera.y,
+			FIXED_DEC(48,1),
+			FIXED_DEC(32,1),
+		};
+		Stage_DrawTex(&this->tex_retry, &retry_src, &retry_dst, FIXED_MUL(stage.camera.zoom, stage.bump));
+	}
+	
+	//Animate and draw character
 	Animatable_Animate(&character->animatable, (void*)this, Player_BF_SetFrame);
 	Character_Draw(character, &this->tex, &player_bf_frame[this->frame]);
 }
@@ -144,9 +274,10 @@ void Player_BF_SetAnim(Character *character, u8 anim)
 	switch (anim)
 	{
 		case PlayerAnim_Dead0:
-			//Begin reading dead.arc and halve focus height
+			//Begin reading dead.arc and adjust focus
 			this->arc_dead = IO_AsyncReadFile(&this->file_dead_arc);
-			this->player.character.focus_height >>= 1;
+			this->player.character.focus_height = FIXED_DEC(40,1);
+			this->player.character.focus_zoom = FIXED_DEC(115,100);
 			break;
 		case PlayerAnim_Dead2:
 			//Unload main.arc
@@ -163,6 +294,9 @@ void Player_BF_SetAnim(Character *character, u8 anim)
 			IO_Data *arc_ptr = this->arc_ptr;
 			for (u8 i = 0; i < BF_ArcDead_Max; i++)
 				*arc_ptr++ = Archive_Find(this->arc_main, *pathp++);
+			
+			//Load retry art
+			Gfx_LoadTex(&this->tex_retry, this->arc_ptr[BF_ArcDead_Retry], 0);
 			break;
 	}
 	
@@ -199,6 +333,7 @@ Player *Player_BF_New(fixed_t x, fixed_t y)
 	Character_Init((Character*)this, x, y);
 	
 	this->player.character.focus_height = FIXED_DEC(32,1);
+	this->player.character.focus_zoom = FIXED_DEC(105,100);
 	
 	//Load art
 	this->arc_main = IO_Read("\\BF\\MAIN.ARC;1");
@@ -220,6 +355,21 @@ Player *Player_BF_New(fixed_t x, fixed_t y)
 	
 	//Initialize render state
 	this->tex_id = this->frame = 0xFF;
+	
+	//Initialize player state
+	this->retry_bump = 0;
+	
+	//Copy skull fragments
+	memcpy(this->skull, player_bf_skull, sizeof(player_bf_skull));
+	this->skull_scale = 64;
+	
+	SkullFragment *frag = this->skull;
+	for (int i = 0; i < COUNT_OF_MEMBER(Player_BF, skull); i++, frag++)
+	{
+		//Randomize trajectory
+		frag->xsp += RandomRange(-4, 4);
+		frag->ysp += RandomRange(-2, 2);
+	}
 	
 	return (Player*)this;
 }

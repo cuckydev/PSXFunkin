@@ -97,7 +97,7 @@ void Menu_Load(MenuLoadPage page)
 	menu.frame = 0;
 	
 	//Play menu music
-	Audio_PlayXA("\\MUSIC\\MENU.XA;1", 0x40, 0, 1);
+	Audio_PlayXA_Track(XA_GettinFreaky, 0x40, 0, 1);
 }
 
 void Menu_Unload()

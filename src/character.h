@@ -43,7 +43,7 @@ typedef struct Character
 	
 	//Position
 	fixed_t x, y;
-	fixed_t focus_height;
+	fixed_t focus_height, focus_zoom;
 	
 	//Animation state
 	Animatable animatable;

@@ -25,7 +25,7 @@ static const StageDef stage_defs[StageId_Max] = {
 		FIXED_DEC(100,1),
 		{FIXED_DEC(1,1),FIXED_DEC(1,1),FIXED_DEC(13,10)},
 		1, 1,
-		'A', 0,
+		XA_Bopeebo, 0,
 	},
 	{ //StageId_1_2 (Fresh)
 		//Characters
@@ -36,7 +36,7 @@ static const StageDef stage_defs[StageId_Max] = {
 		FIXED_DEC(120,1),
 		{FIXED_DEC(1,1),FIXED_DEC(13,10),FIXED_DEC(18,10)},
 		1, 2,
-		'A', 2,
+		XA_Fresh, 2,
 	},
 	{ //StageId_1_3 (Dadbattle)
 		//Characters
@@ -47,7 +47,7 @@ static const StageDef stage_defs[StageId_Max] = {
 		FIXED_DEC(180,1),
 		{FIXED_DEC(13,10),FIXED_DEC(15,10),FIXED_DEC(23,10)},
 		1, 3,
-		'B', 0,
+		XA_Dadbattle, 0,
 	},
 	
 	{ //StageId_3_1 (Pico)
@@ -59,7 +59,7 @@ static const StageDef stage_defs[StageId_Max] = {
 		FIXED_DEC(150,1),
 		{FIXED_DEC(12,10),FIXED_DEC(14,10),FIXED_DEC(16,10)},
 		3, 1,
-		'A', 0,
+		XA_Pico, 0,
 	},
 	{ //StageId_3_2 (Philly)
 		//Characters
@@ -70,7 +70,7 @@ static const StageDef stage_defs[StageId_Max] = {
 		FIXED_DEC(175,1),
 		{FIXED_DEC(1,1),FIXED_DEC(13,10),FIXED_DEC(2,1)},
 		3, 2,
-		'A', 2,
+		XA_Philly, 2,
 	},
 	{ //StageId_3_3 (Blammed)
 		//Characters
@@ -81,7 +81,7 @@ static const StageDef stage_defs[StageId_Max] = {
 		FIXED_DEC(165,1),
 		{FIXED_DEC(12,10),FIXED_DEC(15,10),FIXED_DEC(23,10)},
 		3, 3,
-		'B', 0,
+		XA_Blammed, 0,
 	},
 	
 	{ //StageId_4_1 (Satin Panties)
@@ -93,7 +93,7 @@ static const StageDef stage_defs[StageId_Max] = {
 		FIXED_DEC(110,1),
 		{FIXED_DEC(13,10),FIXED_DEC(16,10),FIXED_DEC(18,10)},
 		4, 1,
-		'A', 0,
+		XA_SatinPanties, 0,
 	},
 	{ //StageId_4_2 (High)
 		//Characters
@@ -104,7 +104,7 @@ static const StageDef stage_defs[StageId_Max] = {
 		FIXED_DEC(125,1),
 		{FIXED_DEC(13,10),FIXED_DEC(18,10),FIXED_DEC(2,1)},
 		4, 2,
-		'A', 2,
+		XA_High, 2,
 	},
 	{ //StageId_4_3 (MILF)
 		//Characters
@@ -115,7 +115,7 @@ static const StageDef stage_defs[StageId_Max] = {
 		FIXED_DEC(180,1),
 		{FIXED_DEC(14,10),FIXED_DEC(17,10),FIXED_DEC(26,10)},
 		4, 3,
-		'B', 0,
+		XA_MILF, 0,
 	},
 	{ //StageId_4_4 (Test)
 		//Characters
@@ -126,7 +126,7 @@ static const StageDef stage_defs[StageId_Max] = {
 		FIXED_DEC(150,1),
 		{FIXED_DEC(16,10),FIXED_DEC(16,10),FIXED_DEC(16,10)},
 		4, 4,
-		'B', 2,
+		XA_Test, 2,
 	},
 };
 
@@ -321,6 +321,7 @@ void Stage_FocusCharacter(Character *ch, fixed_t div)
 {
 	stage.camera.tx = ch->x * 2 / 3;
 	stage.camera.ty = ch->y / 3 - ch->focus_height;
+	stage.camera.tz = ch->focus_zoom;
 	stage.camera.td = div;
 }
 
@@ -383,15 +384,12 @@ void Stage_Load(StageId id, StageDiff difficulty)
 		Stage_FocusCharacter((Character*)stage.player, FIXED_UNIT / 24);
 	stage.camera.x = stage.camera.tx;
 	stage.camera.y = stage.camera.ty;
-	stage.camera.zoom = FIXED_UNIT;
+	stage.camera.zoom = stage.camera.tz;
 	
 	Gfx_SetClear(62, 48, 64);
 	
 	//Find music file and initialize music state
-	char music_path[64];
-	sprintf(music_path, "\\MUSIC\\WEEK%d%c.XA;1", stage.stage_def->week, stage.stage_def->music_pack);
-	
-	IO_FindFile(&stage.music_file, music_path);
+	Audio_GetXAFile(&stage.music_file, stage_def->music_track);
 	IO_SeekFile(&stage.music_file);
 	stage.vocal_active = false;
 }
@@ -408,6 +406,17 @@ void Stage_Unload()
 	//Free characters
 	Character_Free((Character*)stage.player);
 	Character_Free(stage.opponent);
+}
+
+void Stage_Scroll()
+{
+	//Scroll camera
+	fixed_t dx = stage.camera.tx - stage.camera.x;
+	fixed_t dy = stage.camera.ty - stage.camera.y;
+	fixed_t dz = stage.camera.tz - stage.camera.zoom;
+	stage.camera.x += FIXED_MUL(dx, stage.camera.td);
+	stage.camera.y += FIXED_MUL(dy, stage.camera.td);
+	stage.camera.zoom += FIXED_MUL(dz, stage.camera.td);
 }
 
 void Stage_Tick()
@@ -518,10 +527,7 @@ void Stage_Tick()
 			}
 			
 			//Scroll camera
-			fixed_t dx = stage.camera.tx - stage.camera.x;
-			fixed_t dy = stage.camera.ty - stage.camera.y;
-			stage.camera.x += FIXED_MUL(dx, stage.camera.td);
-			stage.camera.y += FIXED_MUL(dy, stage.camera.td);
+			Stage_Scroll();
 			
 			//Handle player note presses
 			if (playing)
@@ -577,7 +583,11 @@ void Stage_Tick()
 			
 			//Perform health checks
 			if (stage.health <= 0)
+			{
+				//Player has died
+				stage.health = 0;
 				stage.state = StageState_Dead;
+			}
 			if (stage.health > 20000)
 				stage.health = 20000;
 			
@@ -816,17 +826,19 @@ void Stage_Tick()
 			
 			//Run death animation, focus on player, and change state
 			stage.player->character.set_anim((Character*)stage.player, PlayerAnim_Dead0);
-			Stage_FocusCharacter((Character*)stage.player, FIXED_UNIT / 40);
+			
+			stage.camera.tx = stage.player->character.x;
+			stage.camera.ty = stage.player->character.y - stage.player->character.focus_height;
+			stage.camera.tz = stage.player->character.focus_zoom;
+			stage.camera.td = FIXED_UNIT / 40;
+			
 			stage.state = StageState_DeadLoad;
 		}
 	//Fallthrough
 		case StageState_DeadLoad:
 		{
 			//Scroll camera and tick player
-			fixed_t dx = stage.camera.tx - stage.camera.x;
-			fixed_t dy = stage.camera.ty - stage.camera.y;
-			stage.camera.x += FIXED_MUL(dx, stage.camera.td);
-			stage.camera.y += FIXED_MUL(dy, stage.camera.td);
+			Stage_Scroll();
 			stage.player->character.tick((Character*)stage.player);
 			
 			//Drop mic and change state if CD has finished reading and animation has ended
@@ -840,15 +852,15 @@ void Stage_Tick()
 		case StageState_DeadDrop:
 		{
 			//Scroll camera and tick player
-			fixed_t dx = stage.camera.tx - stage.camera.x;
-			fixed_t dy = stage.camera.ty - stage.camera.y;
-			stage.camera.x += FIXED_MUL(dx, stage.camera.td);
-			stage.camera.y += FIXED_MUL(dy, stage.camera.td);
+			Stage_Scroll();
 			stage.player->character.tick((Character*)stage.player);
 			
 			//Enter next state once mic has been dropped
 			if (stage.player->character.animatable.anim == PlayerAnim_Dead3)
+			{
 				stage.state = StageState_DeadRetry;
+				Audio_PlayXA_Track(XA_GameOver, 0x40, 1, true);
+			}
 			break;
 		}
 		case StageState_DeadRetry:
@@ -863,10 +875,7 @@ void Stage_Tick()
 			}
 			
 			//Scroll camera and tick player
-			fixed_t dx = stage.camera.tx - stage.camera.x;
-			fixed_t dy = stage.camera.ty - stage.camera.y;
-			stage.camera.x += FIXED_MUL(dx, stage.camera.td);
-			stage.camera.y += FIXED_MUL(dy, stage.camera.td);
+			Stage_Scroll();
 			stage.player->character.tick((Character*)stage.player);
 			break;
 		}

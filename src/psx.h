@@ -26,6 +26,7 @@ typedef signed int         s32;
 typedef unsigned long long u64;
 typedef signed long long   s64;
 
+//Boolean type
 typedef s8 boolean;
 #ifndef true
 	#define true 1
@@ -33,5 +34,12 @@ typedef s8 boolean;
 #ifndef false
 	#define false 0
 #endif
+
+//Common macros
+#define sizeof_member(type, member) sizeof(((type *)0)->member)
+
+#define COUNT_OF(x) (sizeof(x) / sizeof(0[x]))
+#define COUNT_OF_MEMBER(type, member) (sizeof_member(type, member) / sizeof_member(type, member[0]))
+
 
 #endif

@@ -120,6 +120,7 @@ Character *Char_Dad_New(fixed_t x, fixed_t y)
 	Character_Init((Character*)this, x, y);
 	
 	this->character.focus_height = FIXED_DEC(64,1);
+	this->character.focus_zoom = FIXED_DEC(1,1);
 	
 	//Load art
 	this->arc_main = IO_Read("\\DAD\\MAIN.ARC;1");

@@ -31,9 +31,9 @@ int main()
 	//Initialize system
 	Mem_Init((void*)malloc_heap, sizeof(malloc_heap));
 	
+	IO_Init();
 	Audio_Init();
 	Gfx_Init();
-	IO_Init();
 	Pad_Init();
 	
 	//Start game

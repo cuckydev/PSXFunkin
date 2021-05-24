@@ -12,6 +12,40 @@
 static u8 xa_state;
 static u32 xa_pos, xa_start, xa_end;
 
+//XA files and tracks
+#define XA_LENGTH(x) (((u64)(x) * 75) / 100 * IO_SECT_SIZE) //Centiseconds to sectors in bytes (w)
+
+static CdlFILE xa_files[XA_Max];
+
+typedef struct
+{
+	XA_File file;
+	u32 length;
+} XA_TrackDef;
+
+static const XA_TrackDef xa_tracks[] = {
+	//MENU.XA
+	{XA_Menu, XA_LENGTH(11295)}, //XA_GettinFreaky
+	{XA_Menu, XA_LENGTH(3840)},  //XA_GameOver
+	//WEEK1A.XA
+	{XA_Week1A, XA_LENGTH(7685)}, //XA_Bopeebo
+	{XA_Week1A, XA_LENGTH(8000)}, //XA_Fresh
+	//WEEK1B.XA
+	{XA_Week1B, XA_LENGTH(8667)}, //XA_Dadbattle
+	//WEEK3A.XA
+	{XA_Week3A, XA_LENGTH(8400)},  //XA_Pico
+	{XA_Week3A, XA_LENGTH(10000)}, //XA_Philly
+	//WEEK3B.XA
+	{XA_Week3B, XA_LENGTH(10700)}, //XA_Blammed
+	//WEEK4A.XA
+	{XA_Week4A, XA_LENGTH(9300)},  //XA_SatinPanties
+	{XA_Week4A, XA_LENGTH(10300)}, //XA_High
+	//WEEK4B.XA
+	{XA_Week4B, XA_LENGTH(12300)}, //XA_MILF
+	{XA_Week4B, XA_LENGTH(10300)}, //XA_Test
+};
+
+
 //Internal XA functions
 static u8 XA_BCD(u8 x)
 {
@@ -108,6 +142,28 @@ void Audio_Init()
 	
 	//Set XA state
 	xa_state = 0;
+	
+	//Get file positions
+	const char **pathp = (const char*[]){
+		"\\MUSIC\\MENU.XA;1",   //XA_Menu
+		"\\MUSIC\\WEEK1A.XA;1", //XA_Week1A
+		"\\MUSIC\\WEEK1B.XA;1", //XA_Week1B
+		"\\MUSIC\\WEEK3A.XA;1", //XA_Week3A
+		"\\MUSIC\\WEEK3B.XA;1", //XA_Week3B
+		"\\MUSIC\\WEEK4A.XA;1", //XA_Week4A
+		"\\MUSIC\\WEEK4B.XA;1", //XA_Week4B
+	};
+	CdlFILE *filep = xa_files;
+	for (u8 i = 0; i < XA_Max; i++)
+		IO_FindFile(filep++, *pathp++);
+}
+
+void Audio_GetXAFile(CdlFILE *file, XA_Track track)
+{
+	const XA_TrackDef *track_def = &xa_tracks[track];
+	file->pos = xa_files[track_def->file].pos;
+	file->size = track_def->length;
+	printf("%d\n", track_def->length);
 }
 
 void Audio_PlayXA_File(CdlFILE *file, u8 volume, u8 channel, boolean loop)
@@ -130,6 +186,16 @@ void Audio_PlayXA_File(CdlFILE *file, u8 volume, u8 channel, boolean loop)
 	
 	XA_SetFilter(channel);
 	XA_SetVolume(volume);
+}
+
+void Audio_PlayXA_Track(XA_Track track, u8 volume, u8 channel, boolean loop)
+{
+	//Get track information
+	CdlFILE file;
+	Audio_GetXAFile(&file, track);
+	
+	//Play track
+	Audio_PlayXA_File(&file, volume, channel, loop);
 }
 
 void Audio_PlayXA(const char *path, u8 volume, u8 channel, boolean loop)

@@ -23,10 +23,19 @@ typedef enum
 	PlayerAnim_Dead4, //Body twitch
 	PlayerAnim_Dead5, //Balls twitch
 	
+	PlayerAnim_Dead6, //Retry
+	PlayerAnim_Dead7, //Blueball
+	
 	PlayerAnim_Max,
 } PlayerAnim;
 
-//Player structure
+//Player structures
+typedef struct
+{
+	s16 x, y;
+	s16 xsp, ysp;
+} SkullFragment;
+
 typedef struct Player
 {
 	//Character base structure
