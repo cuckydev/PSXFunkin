@@ -795,16 +795,28 @@ void Stage_Tick()
 			//Stop music immediately
 			Audio_StopXA();
 			
+			//Unload stage data
+			Mem_Free(stage.chart_data);
+			stage.chart_data = NULL;
+			
+			//Free objects
+			ObjectList_Free(&stage.objlist_fg);
+			ObjectList_Free(&stage.objlist_bg);
+			
+			//Free opponent
+			Character_Free(stage.opponent);
+			stage.opponent = NULL;
+			
 			//Change background colour to black
 			Gfx_SetClear(0, 0, 0);
 			
 			//Knock camera about
-			stage.camera.x = RandomRange(FIXED_DEC(-16,1), FIXED_DEC(32,1));
-			stage.camera.y = RandomRange(FIXED_DEC(-16,1), FIXED_DEC(32,1));
+			stage.camera.x += RandomRange(FIXED_DEC(-8,1), FIXED_DEC(8,1));
+			stage.camera.y += RandomRange(FIXED_DEC(-8,1), FIXED_DEC(8,1));
 			
 			//Run death animation, focus on player, and change state
 			stage.player->character.set_anim((Character*)stage.player, PlayerAnim_Dead0);
-			Stage_FocusCharacter((Character*)stage.player, FIXED_UNIT / 16);
+			Stage_FocusCharacter((Character*)stage.player, FIXED_UNIT / 40);
 			stage.state = StageState_DeadLoad;
 		}
 	//Fallthrough

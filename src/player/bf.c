@@ -152,6 +152,7 @@ void Player_BF_SetAnim(Character *character, u8 anim)
 			//Unload main.arc
 			Mem_Free(this->arc_main);
 			this->arc_main = this->arc_dead;
+			this->arc_dead = NULL;
 			
 			//Find dead.arc files
 			const char **pathp = (const char *[]){
@@ -175,6 +176,7 @@ void Player_BF_Free(Character *character)
 	
 	//Free art
 	Mem_Free(this->arc_main);
+	Mem_Free(this->arc_dead);
 }
 
 Player *Player_BF_New(fixed_t x, fixed_t y)

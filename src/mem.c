@@ -8,11 +8,15 @@ typedef struct
 {
 	void *prev, *next;
 	size_t size;
-	u32 pad;
+	u8 i, pad0, pad1, pad2;//u32 pad;
 } Mem_Header;
 
 static Mem_Header *mem = NULL;
 static size_t mem_used, mem_size, mem_max;
+
+#ifdef MEM_LEAK_CHECK
+	const char *signs[256];
+#endif
 
 u8 Mem_Init(void *ptr, size_t size)
 {
@@ -31,6 +35,10 @@ u8 Mem_Init(void *ptr, size_t size)
 	mem->next = NULL;
 	mem->size = mem_size - sizeof(Mem_Header);
 	
+	#ifdef MEM_LEAK_CHECK
+		memset(signs, 0, sizeof(signs));
+	#endif
+	
 	return 0;
 }
 
@@ -41,7 +49,11 @@ static Mem_Header *Mem_GetHeader(void *ptr)
 	return (Mem_Header*)((size_t)ptr - sizeof(Mem_Header));
 }
 
+#ifdef MEM_LEAK_CHECK
+void *Mem_Alloc2(const char *sign, size_t size)
+#else
 void *Mem_Alloc(size_t size)
+#endif
 {
 	size_t header_size;
 	size_t next_pos;
@@ -100,6 +112,18 @@ void *Mem_Alloc(size_t size)
 	if (mem_used > mem_max)
 		mem_max = mem_used;
 	
+	#ifdef MEM_LEAK_CHECK
+		for (int i = 0; i < 256; i++)
+		{
+			if (signs[i] == NULL)
+			{
+				signs[i] = sign;
+				new_header->i = i;
+				break;
+			}
+		}
+	#endif
+	
 	return new_block;
 }
 
@@ -111,6 +135,10 @@ void Mem_Free(void *ptr)
 	header = Mem_GetHeader(ptr);
 	if (header == NULL)
 		return;
+	
+	#ifdef MEM_LEAK_CHECK
+		signs[header->i] = NULL;
+	#endif
 	
 	//Unlink from previous block
 	header2 = Mem_GetHeader(header->prev);
@@ -125,12 +153,20 @@ void Mem_Free(void *ptr)
 	mem_used -= header->size + sizeof(Mem_Header);
 }
 
-void Mem_GetStat(size_t *used, size_t *size, size_t *max)
-{
-	if (used != NULL)
-		*used = mem_used;
-	if (size != NULL)
-		*size = mem_size;
-	if (max != NULL)
-		*max = mem_max;
-}
+#ifdef MEM_STAT
+	void Mem_GetStat(size_t *used, size_t *size, size_t *max)
+	{
+		if (used != NULL)
+			*used = mem_used;
+		if (size != NULL)
+			*size = mem_size;
+		if (max != NULL)
+			*max = mem_max;
+		
+		#ifdef MEM_LEAK_CHECK
+			for (int i = 0; i < 256; i++)
+				if (signs[i] != NULL)
+					FntPrint("%s\n", signs[i]);
+		#endif
+	}
+#endif

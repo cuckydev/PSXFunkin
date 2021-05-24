@@ -42,6 +42,10 @@ void ObjectList_Tick(ObjectList *list)
 
 void ObjectList_Free(ObjectList *list)
 {
+	//Check if list is already free'd
+	if (*list == NULL)
+		return;
+	
 	//Free all contained objects
 	for (Object *obj = *list; obj != NULL;)
 	{

@@ -68,10 +68,12 @@ int main()
 		else
 			Stage_Tick();
 		
-		//Debug output
-		size_t mem_used, mem_size, mem_max;
-		Mem_GetStat(&mem_used, &mem_size, &mem_max);
-		FntPrint("mem: %08X/%08X (max %08X)\n", mem_used, mem_size, mem_max);
+		#ifdef MEM_STAT
+			//Memory stats
+			size_t mem_used, mem_size, mem_max;
+			Mem_GetStat(&mem_used, &mem_size, &mem_max);
+			FntPrint("mem: %08X/%08X (max %08X)\n", mem_used, mem_size, mem_max);
+		#endif
 		
 		//Flip gfx buffers
 		Gfx_Flip();

@@ -19,6 +19,10 @@ Character *Character_New(CharId id, fixed_t x, fixed_t y)
 
 void Character_Free(Character *this)
 {
+	//Check if NULL
+	if (this == NULL)
+		return;
+	
 	//Free character
 	this->free(this);
 	Mem_Free(this);
