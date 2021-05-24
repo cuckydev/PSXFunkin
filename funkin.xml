@@ -93,6 +93,7 @@
 			<!-- Boyfriend assets -->
 			<dir name = "bf">
 				<file name = "main.arc" type = "data" source = "iso/bf/main.arc"/>
+				<file name = "dead.arc" type = "data" source = "iso/bf/dead.arc"/>
 			</dir>
 			
 			<!-- Dad assets -->

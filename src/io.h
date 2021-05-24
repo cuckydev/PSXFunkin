@@ -11,5 +11,8 @@ typedef u32* IO_Data;
 //IO functions
 void IO_Init();
 IO_Data IO_Read(const char *path);
+IO_Data IO_AsyncRead(const char *path);
+boolean IO_IsSeeking();
+boolean IO_IsReading();
 
 #endif

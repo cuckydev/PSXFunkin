@@ -1,4 +1,5 @@
 #include "archive.h"
+#include "main.h"
 
 //Archive structure
 typedef struct
@@ -17,5 +18,9 @@ IO_Data Archive_Find(IO_Data arc, const char *path)
 			continue;
 		return (IO_Data)((u8*)arc + file->pos);
 	}
+	
+	//Failed to find the requested file
+	sprintf(error_msg, "[Archive_Find] Failed to find %s in archive %p", path, arc);
+	ErrorLock();
 	return NULL;
 }

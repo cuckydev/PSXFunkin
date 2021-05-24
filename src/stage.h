@@ -1,51 +1,15 @@
 #ifndef _STAGE_H
 #define _STAGE_H
 
-#include "psx.h"
 #include "io.h"
 #include "gfx.h"
 
+#include "fixed.h"
+#include "character.h"
+#include "player.h"
 #include "object.h"
 
-//Stage fixed point implementation
-typedef s32 fixed_t;
-
-typedef struct
-{
-	fixed_t x, y, w, h;
-} RECT_FIXED;
-
-#define FIXED_SHIFT (10)
-#define FIXED_UNIT  (1 << FIXED_SHIFT)
-#define FIXED_LAND  (FIXED_UNIT - 1)
-#define FIXED_UAND  (~FIXED_LAND)
-
-#define FIXED_DEC(d, f) (((d) << FIXED_SHIFT) / (f))
-
-#define FIXED_MUL(x, y) (((s64)(x) * (y)) >> FIXED_SHIFT)
-#define FIXED_DIV(x, y) (((x) << FIXED_SHIFT) / (y))
-
 //Stage enums
-typedef enum
-{
-	CharId_Boyfriend,
-	CharId_Dad,
-	
-	CharId_Max
-} CharId;
-
-typedef enum
-{
-	CharAnim_Idle,
-	CharAnim_Left,  CharAnim_LeftAlt,
-	CharAnim_Down,  CharAnim_DownAlt,
-	CharAnim_Up,    CharAnim_UpAlt,
-	CharAnim_Right, CharAnim_RightAlt,
-	CharAnim_Peace,
-	
-	CharAnim_Max
-} CharAnim;
-
 typedef enum
 {
 	StageId_1_1, //Bopeebo
@@ -72,48 +36,15 @@ typedef enum
 	StageDiff_Hard,
 } StageDiff;
 
-//Character definitions
-#define ASCR_REPEAT 0xFF
-#define ASCR_CHGANI 0xFE
-#define ASCR_BACK   0xFD
-
-typedef struct
-{
-	u8 spd;
-	const u8 *script;
-} CharAnimDef;
-
-typedef struct
-{
-	u8 tex;
-	u16 src[4];
-	s16 off[2];
-} CharFrame;
-
-typedef struct
-{
-	fixed_t focus_height;
-	
-	const char *arc_tex;
-	u8 texs;
-	const char **tex;
-	
-	const CharFrame *frame;
-	
-	const CharAnimDef anim[CharAnim_Max];
-} CharDef;
-
 //Stage definitions
 typedef struct
 {
-	CharId id;
-	fixed_t x, y;
-} StageDef_Char;
-
-typedef struct
-{
 	//Characters
-	StageDef_Char mchar, ochar;
+	struct
+	{
+		u8 id;
+		fixed_t x, y;
+	} pchar, ochar;
 	
 	//Song info
 	fixed_t bpm;
@@ -122,33 +53,6 @@ typedef struct
 	u8 week, week_song;
 	u8 music_pack, music_channel;
 } StageDef;
-
-//Character state
-typedef struct
-{
-	//Character textures and definition
-	const CharDef *char_def;
-	const CharAnimDef *anim_def;
-	const CharFrame *frame_def;
-	CharId char_id;
-	
-	IO_Data arc_tex;
-	u8 texs;
-	IO_Data *load_tex;
-	
-	//Character state
-	fixed_t x, y;
-	
-	Gfx_Tex tex;
-	u8 tex_i;
-	
-	CharAnim anim;
-	const u8 *anim_p;
-	u8 anim_spd, anim_time;
-	
-	u8 frame;
-	u8 load_tex_i;
-} Character;
 
 //Stage state
 #define SECTION_FLAG_ALTANIM  (1 << 0) //Mom/Dad in Week 5
@@ -197,9 +101,10 @@ typedef struct
 		fixed_t x, y, zoom;
 		fixed_t tx, ty, td;
 	} camera;
-	fixed_t bump;
+	fixed_t bump, sbump;
 	
-	Character character[2];
+	Player *player;
+	Character *opponent;
 	
 	Section *cur_section; //Current section
 	Note *cur_note; //First visible and hittable note, used for drawing and hit detection

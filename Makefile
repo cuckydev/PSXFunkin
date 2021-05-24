@@ -11,6 +11,11 @@ SRCS = src/main.c \
        src/archive.c \
        src/menu.c \
        src/stage.c \
+       src/animation.c \
+       src/character.c \
+       src/character/dad.c \
+       src/player.c \
+       src/player/bf.c \
        src/object.c \
        src/object/combo.c \
        ../common/crt0/crt0.s

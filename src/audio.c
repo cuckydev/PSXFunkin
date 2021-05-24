@@ -4,8 +4,6 @@
 #include "io.h"
 #include "main.h"
 
-#include "pad.h"
-
 //XA state
 #define XA_STATE_INIT    (1 << 0)
 #define XA_STATE_PLAYING (1 << 1)
@@ -57,8 +55,8 @@ static void XA_Init()
 	//Prepare CD drive for XA reading
 	param[0] = CdlModeRT | CdlModeSF | CdlModeSize1;
 	
-	CdControlB(CdlSetmode, param, 0);
-	CdControlF(CdlPause, 0);
+	CdControlB(CdlSetmode, param, NULL);
+	CdControlF(CdlPause, NULL);
 }
 
 static void XA_Quit()
@@ -70,7 +68,7 @@ static void XA_Quit()
 	
 	//Stop playing XA
 	XA_SetVolume(0);
-	CdControlB(CdlPause, 0, 0);
+	CdControlB(CdlPause, NULL, NULL);
 }
 
 static void XA_Play(u32 start)
@@ -89,7 +87,7 @@ static void XA_Pause()
 	xa_state &= ~XA_STATE_PLAYING;
 	
 	//Pause playback
-	CdControlB(CdlPause, 0, 0);
+	CdControlB(CdlPause, NULL, NULL);
 }
 
 static void XA_SetFilter(u8 channel)
@@ -128,7 +126,7 @@ void Audio_PlayXA_Pos(u32 start, u32 end, u8 volume, u8 channel, boolean loop)
 	//Start seeking to XA and use parameters
 	CdlLOC cd_loc;
 	CdIntToPos(start, &cd_loc);
-	CdControlB(CdlSeekL, (u8*)&cd_loc, 0);
+	CdControlB(CdlSeekL, (u8*)&cd_loc, NULL);
 	
 	XA_SetFilter(channel);
 	XA_SetVolume(volume);
@@ -193,7 +191,7 @@ void Audio_ProcessXA()
 		if (xa_state & XA_STATE_SEEKING)
 		{
 			//Check if CD is still seeking to the XA's beginning
-			if (!(CdStatus() & CdlStatSeek))
+			if (!IO_IsSeeking())
 			{
 				//Stopped seeking
 				xa_state &= ~XA_STATE_SEEKING;
@@ -217,7 +215,7 @@ void Audio_ProcessXA()
 				//Reset XA playback
 				CdlLOC cd_loc;
 				CdIntToPos(xa_pos = xa_start, &cd_loc);
-				CdControlB(CdlSeekL, (u8*)&cd_loc, 0);
+				CdControlB(CdlSeekL, (u8*)&cd_loc, NULL);
 				xa_state |= XA_STATE_SEEKING;
 			}
 			else

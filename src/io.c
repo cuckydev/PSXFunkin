@@ -13,7 +13,14 @@ void IO_Init()
 
 IO_Data IO_Read(const char *path)
 {
-	printf("[IO_Read] Reading file %s\n", path);
+	IO_Data buffer = IO_AsyncRead(path);
+	CdReadSync(0, NULL); //Wait for reading to complete
+	return buffer;
+}
+
+IO_Data IO_AsyncRead(const char *path)
+{
+	printf("[IO_ReadAsync] Reading file %s\n", path);
 	
 	//Stop XA playback
 	Audio_StopXA();
@@ -22,7 +29,7 @@ IO_Data IO_Read(const char *path)
 	CdlFILE file;
 	if (!CdSearchFile(&file, (char*)path))
 	{
-		sprintf(error_msg, "[IO_Read] %s not found", path);
+		sprintf(error_msg, "[IO_ReadAsync] %s not found", path);
 		ErrorLock();
 		return NULL;
 	}
@@ -33,15 +40,26 @@ IO_Data IO_Read(const char *path)
 	IO_Data buffer = (IO_Data)Mem_Alloc(size = (IO_SECT_SIZE * sects));
 	if (buffer == NULL)
 	{
-		sprintf(error_msg, "[IO_Read] Malloc (size %X) fail", size);
+		sprintf(error_msg, "[IO_ReadAsync] Malloc (size %X) fail", size);
 		ErrorLock();
 		return NULL;
 	}
 	
 	//Read file
-	CdControl(CdlSetloc, (u8*)&file.pos, 0);
+	CdControl(CdlSetloc, (u8*)&file.pos, NULL);
 	CdRead(sects, buffer, CdlModeSpeed);
-	CdReadSync(0, 0);
 	
-	return buffer;
+	return buffer; //NOT FILLED IN UNTIL IO_IsReading RETURNS FALSE
+}
+
+boolean IO_IsSeeking()
+{
+	CdControl(CdlNop, NULL, NULL);
+	return (CdStatus() & (CdlStatSeek)) != 0;
+}
+
+boolean IO_IsReading()
+{
+	CdControl(CdlNop, NULL, NULL);
+	return (CdStatus() & (CdlStatSeek | CdlStatRead)) != 0;
 }
