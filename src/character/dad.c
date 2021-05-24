@@ -15,7 +15,7 @@ enum
 	Dad_ArcMain_Up,
 	Dad_ArcMain_Right,
 	
-	Dad_ArcMain_Max,
+	Dad_Arc_Max,
 };
 
 typedef struct
@@ -25,7 +25,7 @@ typedef struct
 	
 	//Render data and state
 	IO_Data arc_main;
-	IO_Data arc_ptr[Dad_ArcMain_Max];
+	IO_Data arc_ptr[Dad_Arc_Max];
 	
 	Gfx_Tex tex;
 	u8 frame, tex_id;
@@ -51,7 +51,7 @@ static const CharFrame char_dad_frame[] = {
 };
 
 static const Animation char_dad_anim[CharAnim_Max] = {
-	{4, (const u8[]){ 1,  2,  3,  0,  ASCR_BACK, 1}},                                          //CharAnim_Idle
+	{4, (const u8[]){ 1,  2,  3,  0, ASCR_BACK, 1}},                                           //CharAnim_Idle
 	{2, (const u8[]){ 4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_Left
 	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},                                             //CharAnim_LeftAlt
 	{2, (const u8[]){ 5,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_Down
@@ -115,9 +115,10 @@ Character *Char_Dad_New(fixed_t x, fixed_t y)
 	this->character.tick = Char_Dad_Tick;
 	this->character.set_anim = Char_Dad_SetAnim;
 	this->character.free = Char_Dad_Free;
-	Character_Init((Character*)this, x, y);
 	
 	Animatable_Init(&this->character.animatable, char_dad_anim);
+	Character_Init((Character*)this, x, y);
+	
 	this->character.focus_height = FIXED_DEC(64,1);
 	
 	//Load art
@@ -132,7 +133,7 @@ Character *Char_Dad_New(fixed_t x, fixed_t y)
 		"right.tim", //Dad_ArcMain_Right
 	};
 	IO_Data *arc_ptr = this->arc_ptr;
-	for (u8 i = 0; i < Dad_ArcMain_Max; i++)
+	for (u8 i = 0; i < Dad_Arc_Max; i++)
 		*arc_ptr++ = Archive_Find(this->arc_main, *pathp++);
 	
 	//Initialize render state

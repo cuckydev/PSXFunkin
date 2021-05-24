@@ -110,22 +110,22 @@ void Audio_Init()
 	xa_state = 0;
 }
 
-void Audio_PlayXA_Pos(u32 start, u32 end, u8 volume, u8 channel, boolean loop)
+void Audio_PlayXA_File(CdlFILE *file, u8 volume, u8 channel, boolean loop)
 {
 	//Initialize XA system and stop previous song
 	XA_Init();
 	XA_SetVolume(0);
 	
 	//Set XA state
-	xa_start = xa_pos = start;
-	xa_end = end;
+	xa_start = xa_pos = CdPosToInt(&file->pos);
+	xa_end = xa_start + (file->size / IO_SECT_SIZE) - 1;
 	xa_state = XA_STATE_INIT | XA_STATE_PLAYING | XA_STATE_SEEKING;
 	if (loop)
 		xa_state |= XA_STATE_LOOPS;
 	
 	//Start seeking to XA and use parameters
 	CdlLOC cd_loc;
-	CdIntToPos(start, &cd_loc);
+	CdIntToPos(xa_start, &cd_loc);
 	CdControlB(CdlSeekL, (u8*)&cd_loc, NULL);
 	
 	XA_SetFilter(channel);
@@ -134,18 +134,10 @@ void Audio_PlayXA_Pos(u32 start, u32 end, u8 volume, u8 channel, boolean loop)
 
 void Audio_PlayXA(const char *path, u8 volume, u8 channel, boolean loop)
 {
-	//Search for file
+	//Search for and play file
 	CdlFILE file;
-	if (!CdSearchFile(&file, (char*)path))
-	{
-		sprintf(error_msg, "[Audio_PlayXA] %s not found", path);
-		ErrorLock();
-		return;
-	}
-	
-	//Play file
-	u32 start = CdPosToInt(&file.pos);
-	Audio_PlayXA_Pos(start, start + (file.size / IO_SECT_SIZE) - 1, volume, channel, loop);
+	IO_FindFile(&file, path);
+	Audio_PlayXA_File(&file, volume, channel, loop);
 }
 
 void Audio_PauseXA()

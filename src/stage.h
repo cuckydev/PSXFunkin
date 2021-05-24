@@ -112,13 +112,27 @@ typedef struct
 	fixed_t note_scroll;
 	
 	u16 song_step;
-	boolean just_step, vocal_active;
+	boolean just_step;
 	
 	u8 arrow_hitan[4]; //Arrow hit animation for presses
 	
 	s16 health;
 	s32 score;
 	u16 combo;
+	
+	enum
+	{
+		StageState_Play, //Game is playing as normal
+		StageState_Dead,       //Start BREAK animation and reading extra data from CD
+		StageState_DeadLoad,   //Wait for said data to be read
+		StageState_DeadDrop,   //Mic drop
+		StageState_DeadRetry,  //Retry prompt
+		StageState_DeadDecide, //Decided
+	} state;
+	
+	//Music state
+	CdlFILE music_file;
+	boolean vocal_active;
 	
 	//Object lists
 	ObjectList objlist_fg, objlist_bg;

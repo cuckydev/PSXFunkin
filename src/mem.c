@@ -1,5 +1,7 @@
 #include "mem.h"
 
+#include "main.h"
+
 #define MEM_ALIGN(x) (((size_t)x + 0xF) & ~0xF)
 
 typedef struct
@@ -28,6 +30,7 @@ u8 Mem_Init(void *ptr, size_t size)
 	mem->prev = NULL;
 	mem->next = NULL;
 	mem->size = mem_size - sizeof(Mem_Header);
+	
 	return 0;
 }
 

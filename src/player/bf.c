@@ -14,10 +14,21 @@ enum
 	BF_ArcMain_Hit1,  //Up Right
 	BF_ArcMain_Miss1, //Up Right
 	BF_ArcMain_Peace,
-	BF_ArcMain_Dead,
+	BF_ArcMain_Dead0, //BREAK
 	
 	BF_ArcMain_Max,
 };
+
+enum
+{
+	BF_ArcDead_Dead1, //Mic Drop
+	BF_ArcDead_Dead2, //Twitch
+	BF_ArcDead_Retry, //Retry prompt
+	
+	BF_ArcDead_Max,
+};
+
+#define BF_Arc_Max BF_ArcMain_Max
 
 typedef struct
 {
@@ -25,8 +36,9 @@ typedef struct
 	Player player;
 	
 	//Render data and state
-	IO_Data arc_main;
-	IO_Data arc_ptr[BF_ArcMain_Max];
+	IO_Data arc_main, arc_dead;
+	CdlFILE file_dead_arc; //dead.arc file position
+	IO_Data arc_ptr[BF_Arc_Max];
 	
 	Gfx_Tex tex;
 	u8 frame, tex_id;
@@ -62,10 +74,25 @@ static const CharFrame player_bf_frame[] = {
 	{BF_ArcMain_Peace, {  0,   0, 128, 128}, { 53,  98}}, //20 peace 1
 	{BF_ArcMain_Peace, {128,   0, 128, 128}, { 53,  97}}, //21 peace 2
 	{BF_ArcMain_Peace, {  0, 128, 128, 128}, { 53,  97}}, //22 peace 3
+	
+	{BF_ArcMain_Dead0, {  0,   0, 128, 128}, { 53,  98}}, //23 dead0 0
+	{BF_ArcMain_Dead0, {128,   0, 128, 128}, { 53,  98}}, //24 dead0 1
+	{BF_ArcMain_Dead0, {  0, 128, 128, 128}, { 53,  98}}, //25 dead0 2
+	{BF_ArcMain_Dead0, {128, 128, 128, 128}, { 53,  98}}, //26 dead0 3
+	
+	{BF_ArcDead_Dead1, {  0,   0, 128, 128}, { 53,  98}}, //27 dead1 0
+	{BF_ArcDead_Dead1, {128,   0, 128, 128}, { 53,  98}}, //28 dead1 1
+	{BF_ArcDead_Dead1, {  0, 128, 128, 128}, { 53,  98}}, //29 dead1 2
+	{BF_ArcDead_Dead1, {128, 128, 128, 128}, { 53,  98}}, //30 dead1 3
+	
+	{BF_ArcDead_Dead2, {  0,   0, 128, 128}, { 53,  98}}, //31 dead2 body twitch 0
+	{BF_ArcDead_Dead2, {128,   0, 128, 128}, { 53,  98}}, //32 dead2 body twitch 1
+	{BF_ArcDead_Dead2, {  0, 128, 128, 128}, { 53,  98}}, //33 dead2 balls twitch 0
+	{BF_ArcDead_Dead2, {128, 128, 128, 128}, { 53,  98}}, //34 dead2 balls twitch 1
 };
 
 static const Animation player_bf_anim[PlayerAnim_Max] = {
-	{4, (const u8[]){ 0,  1,  2,  3,  ASCR_BACK, 1}},                                          //CharAnim_Idle
+	{4, (const u8[]){ 0,  1,  2,  3, ASCR_BACK, 1}},                                           //CharAnim_Idle
 	{2, (const u8[]){ 4,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_Left
 	{2, (const u8[]){ 4,  6,  7,  7,  7,  7,  7,  7,  7,  7,  7, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_LeftAlt
 	{2, (const u8[]){ 8,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_Down
@@ -76,6 +103,13 @@ static const Animation player_bf_anim[PlayerAnim_Max] = {
 	{2, (const u8[]){16, 18, 19, 19, 19, 19, 19, 19, 19, 19, 19, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_RightAlt
 	{3, (const u8[]){20, 21, 22, 22, 22, 22, 22, 22, 22, ASCR_CHGANI, CharAnim_Idle}},         //PlayerAnim_Peace
 	{3, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},                                             //PlayerAnim_Sweat
+	
+	{5, (const u8[]){23, 24, 25, 26, 26, 26, 26, 26, 26, 26, ASCR_CHGANI, PlayerAnim_Dead1}},  //PlayerAnim_Dead0
+	{5, (const u8[]){26, ASCR_REPEAT}},                                                        //PlayerAnim_Dead1
+	{3, (const u8[]){27, 28, 29, 30, 30, 30, 30, 30, 30, 30, ASCR_CHGANI, PlayerAnim_Dead3}},  //PlayerAnim_Dead2
+	{3, (const u8[]){30, ASCR_REPEAT}},                                                        //PlayerAnim_Dead3
+	{3, (const u8[]){31, 32, 30, 30, 30, 30, 30, ASCR_CHGANI, PlayerAnim_Dead3}},              //PlayerAnim_Dead4
+	{3, (const u8[]){33, 34, 30, 30, 30, 30, 30, ASCR_CHGANI, PlayerAnim_Dead3}},              //PlayerAnim_Dead5
 };
 
 //Boyfriend player functions
@@ -104,6 +138,33 @@ void Player_BF_Tick(Character *character)
 
 void Player_BF_SetAnim(Character *character, u8 anim)
 {
+	Player_BF *this = (Player_BF*)character;
+	
+	//Perform animation checks
+	switch (anim)
+	{
+		case PlayerAnim_Dead0:
+			//Begin reading dead.arc and halve focus height
+			this->arc_dead = IO_AsyncReadFile(&this->file_dead_arc);
+			this->player.character.focus_height >>= 1;
+			break;
+		case PlayerAnim_Dead2:
+			//Unload main.arc
+			Mem_Free(this->arc_main);
+			this->arc_main = this->arc_dead;
+			
+			//Find dead.arc files
+			const char **pathp = (const char *[]){
+				"dead1.tim", //BF_ArcDead_Dead1
+				"dead2.tim", //BF_ArcDead_Dead2
+				"retry.tim", //BF_ArcDead_Retry
+			};
+			IO_Data *arc_ptr = this->arc_ptr;
+			for (u8 i = 0; i < BF_ArcDead_Max; i++)
+				*arc_ptr++ = Archive_Find(this->arc_main, *pathp++);
+			break;
+	}
+	
 	//Set animation
 	Animatable_SetAnim(&character->animatable, anim);
 }
@@ -139,6 +200,8 @@ Player *Player_BF_New(fixed_t x, fixed_t y)
 	
 	//Load art
 	this->arc_main = IO_Read("\\BF\\MAIN.ARC;1");
+	this->arc_dead = NULL;
+	IO_FindFile(&this->file_dead_arc, "\\BF\\DEAD.ARC;1");
 	
 	const char **pathp = (const char *[]){
 		"idle.tim",  //BF_ArcMain_Idle
@@ -147,7 +210,7 @@ Player *Player_BF_New(fixed_t x, fixed_t y)
 		"hit1.tim",  //BF_ArcMain_Hit1
 		"miss1.tim", //BF_ArcMain_Miss1
 		"peace.tim", //BF_ArcMain_Peace
-		"dead0.tim", //BF_ArcMain_Dead
+		"dead0.tim", //BF_ArcMain_Dead0
 	};
 	IO_Data *arc_ptr = this->arc_ptr;
 	for (u8 i = 0; i < BF_ArcMain_Max; i++)
