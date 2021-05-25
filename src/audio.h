@@ -9,6 +9,8 @@ typedef enum
 	XA_Menu,   //MENU.XA
 	XA_Week1A, //WEEK1A.XA
 	XA_Week1B, //WEEK1B.XA
+	XA_Week2A, //WEEK2A.XA
+	XA_Week2B, //WEEK2B.XA
 	XA_Week3A, //WEEK3A.XA
 	XA_Week3B, //WEEK3B.XA
 	XA_Week4A, //WEEK4A.XA
@@ -27,6 +29,12 @@ typedef enum
 	XA_Fresh,   //Fresh
 	//WEEK1B.XA
 	XA_Dadbattle, //DadBattle
+	XA_Tutorial,  //Tutorial
+	//WEEK2A.XA
+	XA_Spookeez, //Spookeez
+	XA_South,    //South
+	//WEEK2B.XA
+	XA_Monster, //Monster
 	//WEEK3A.XA
 	XA_Pico,   //Pico
 	XA_Philly, //Philly

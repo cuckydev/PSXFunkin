@@ -119,6 +119,9 @@ Character *Char_Dad_New(fixed_t x, fixed_t y)
 	Animatable_Init(&this->character.animatable, char_dad_anim);
 	Character_Init((Character*)this, x, y);
 	
+	//Set character stage information
+	this->character.health_i = 1;
+	
 	this->character.focus_height = FIXED_DEC(64,1);
 	this->character.focus_zoom = FIXED_DEC(1,1);
 	

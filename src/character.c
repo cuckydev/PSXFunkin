@@ -4,9 +4,11 @@
 #include "stage.h"
 
 //Characters
+#include "character/bf.h"
 #include "character/dad.h"
 
 static Character* (*char_new[CharId_Max])(fixed_t, fixed_t) = {
+	Char_BF_New,
 	Char_Dad_New,
 };
 

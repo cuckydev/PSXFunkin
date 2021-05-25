@@ -28,7 +28,7 @@ boolean Obj_Combo_Tick(Object *obj)
 			FIXED_DEC(80,1),
 			(FIXED_DEC(32,1) * clipp) >> 4
 		};
-		Stage_DrawTex(&stage.tex_hud0, &hit_src, &hit_dst, stage.bump);
+		Stage_DrawTex(&stage.tex_hud0, &hit_src, &hit_dst, FIXED_MUL(stage.camera.zoom, stage.bump));
 		
 		//Apply gravity
 		this->hy += this->hv;
@@ -58,7 +58,7 @@ boolean Obj_Combo_Tick(Object *obj)
 			FIXED_DEC(60,1),
 			(FIXED_DEC(24,1) * clipp) >> 4
 		};
-		Stage_DrawTex(&stage.tex_hud0, &combo_src, &combo_dst, stage.bump);
+		Stage_DrawTex(&stage.tex_hud0, &combo_src, &combo_dst, FIXED_MUL(stage.camera.zoom, stage.bump));
 		
 		//Apply gravity
 		this->cy += this->cv;
@@ -94,7 +94,7 @@ boolean Obj_Combo_Tick(Object *obj)
 				FIXED_DEC(24,1),
 				(FIXED_DEC(24,1) * clipp) >> 4
 			};
-			Stage_DrawTex(&stage.tex_hud0, &num_src, &num_dst, stage.bump);
+			Stage_DrawTex(&stage.tex_hud0, &num_src, &num_dst, FIXED_MUL(stage.camera.zoom, stage.bump));
 			
 			//Apply gravity
 			this->numy[i] += this->numv[i];

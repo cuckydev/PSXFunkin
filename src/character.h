@@ -10,6 +10,7 @@
 //Character enums
 typedef enum
 {
+	CharId_BF,
 	CharId_Dad,
 	
 	CharId_Max
@@ -43,6 +44,9 @@ typedef struct Character
 	
 	//Position
 	fixed_t x, y;
+	
+	//Stage information
+	u8 health_i; //hud1.tim
 	fixed_t focus_height, focus_zoom;
 	
 	//Animation state

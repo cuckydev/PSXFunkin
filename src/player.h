@@ -6,13 +6,6 @@
 //Player enums
 typedef enum
 {
-	PlayerId_BF,
-	
-	PlayerId_Max,
-} PlayerId;
-
-typedef enum
-{
 	PlayerAnim_Peace = CharAnim_Max,
 	PlayerAnim_Sweat,
 	
@@ -35,14 +28,5 @@ typedef struct
 	s16 x, y;
 	s16 xsp, ysp;
 } SkullFragment;
-
-typedef struct Player
-{
-	//Character base structure
-	Character character;
-} Player;
-
-//Player functions
-Player *Player_New(PlayerId id, fixed_t x, fixed_t y);
 
 #endif

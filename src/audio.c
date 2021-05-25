@@ -32,6 +32,12 @@ static const XA_TrackDef xa_tracks[] = {
 	{XA_Week1A, XA_LENGTH(8000)}, //XA_Fresh
 	//WEEK1B.XA
 	{XA_Week1B, XA_LENGTH(8667)}, //XA_Dadbattle
+	{XA_Week1B, XA_LENGTH(6800)}, //XA_Tutorial
+	//WEEK2A.XA
+	{XA_Week2A, XA_LENGTH(9923)}, //XA_Spookeez
+	{XA_Week2A, XA_LENGTH(8880)}, //XA_South
+	//WEEK2B.XA
+	{XA_Week2B, XA_LENGTH(17778)}, //XA_Monster
 	//WEEK3A.XA
 	{XA_Week3A, XA_LENGTH(8400)},  //XA_Pico
 	{XA_Week3A, XA_LENGTH(10000)}, //XA_Philly
@@ -148,6 +154,8 @@ void Audio_Init()
 		"\\MUSIC\\MENU.XA;1",   //XA_Menu
 		"\\MUSIC\\WEEK1A.XA;1", //XA_Week1A
 		"\\MUSIC\\WEEK1B.XA;1", //XA_Week1B
+		"\\MUSIC\\WEEK2A.XA;1", //XA_Week2A
+		"\\MUSIC\\WEEK2B.XA;1", //XA_Week2B
 		"\\MUSIC\\WEEK3A.XA;1", //XA_Week3A
 		"\\MUSIC\\WEEK3B.XA;1", //XA_Week3B
 		"\\MUSIC\\WEEK4A.XA;1", //XA_Week4A
@@ -163,7 +171,6 @@ void Audio_GetXAFile(CdlFILE *file, XA_Track track)
 	const XA_TrackDef *track_def = &xa_tracks[track];
 	file->pos = xa_files[track_def->file].pos;
 	file->size = track_def->length;
-	printf("%d\n", track_def->length);
 }
 
 void Audio_PlayXA_File(CdlFILE *file, u8 volume, u8 channel, boolean loop)
@@ -180,10 +187,7 @@ void Audio_PlayXA_File(CdlFILE *file, u8 volume, u8 channel, boolean loop)
 		xa_state |= XA_STATE_LOOPS;
 	
 	//Start seeking to XA and use parameters
-	CdlLOC cd_loc;
-	CdIntToPos(xa_start, &cd_loc);
-	CdControlB(CdlSeekL, (u8*)&cd_loc, NULL);
-	
+	IO_SeekFile(file);
 	XA_SetFilter(channel);
 	XA_SetVolume(volume);
 }

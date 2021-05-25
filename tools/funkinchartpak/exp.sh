@@ -19,6 +19,35 @@ cp dadbattle-easy.json.cht ../../iso/chart/1.3e.cht
 ./funkinchartpak dadbattle-hard.json
 cp dadbattle-hard.json.cht ../../iso/chart/1.3h.cht
 
+./funkinchartpak tutorial.json
+cp tutorial.json.cht ../../iso/chart/1.4n.cht
+./funkinchartpak tutorial-easy.json
+cp tutorial-easy.json.cht ../../iso/chart/1.4e.cht
+./funkinchartpak tutorial-hard.json
+cp tutorial-hard.json.cht ../../iso/chart/1.4h.cht
+
+
+./funkinchartpak spookeez.json
+cp spookeez.json.cht ../../iso/chart/2.1n.cht
+./funkinchartpak spookeez-easy.json
+cp spookeez-easy.json.cht ../../iso/chart/2.1e.cht
+./funkinchartpak spookeez-hard.json
+cp spookeez-hard.json.cht ../../iso/chart/2.1h.cht
+
+./funkinchartpak south.json
+cp south.json.cht ../../iso/chart/2.2n.cht
+./funkinchartpak south-easy.json
+cp south-easy.json.cht ../../iso/chart/2.2e.cht
+./funkinchartpak south-hard.json
+cp south-hard.json.cht ../../iso/chart/2.2h.cht
+
+./funkinchartpak monster.json
+cp monster.json.cht ../../iso/chart/2.3n.cht
+./funkinchartpak monster-easy.json
+cp monster-easy.json.cht ../../iso/chart/2.3e.cht
+./funkinchartpak monster-hard.json
+cp monster-hard.json.cht ../../iso/chart/2.3h.cht
+
 
 ./funkinchartpak pico.json
 cp pico.json.cht ../../iso/chart/3.1n.cht

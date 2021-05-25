@@ -15,6 +15,11 @@ typedef enum
 	StageId_1_1, //Bopeebo
 	StageId_1_2, //Fresh
 	StageId_1_3, //Dadbattle
+	StageId_1_4, //Tutorial
+	
+	StageId_2_1, //Spookeez
+	StageId_2_2, //South
+	StageId_2_3, //Monster
 	
 	StageId_3_1, //Pico
 	StageId_3_2, //Philly
@@ -47,7 +52,6 @@ typedef struct
 	} pchar, ochar;
 	
 	//Song info
-	fixed_t bpm;
 	fixed_t speed[3];
 	
 	u8 week, week_song;
@@ -55,13 +59,14 @@ typedef struct
 } StageDef;
 
 //Stage state
-#define SECTION_FLAG_ALTANIM  (1 << 0) //Mom/Dad in Week 5
-#define SECTION_FLAG_OPPFOCUS (1 << 1) //Focus on opponent
+#define SECTION_FLAG_ALTANIM  (1 << 15) //Mom/Dad in Week 5
+#define SECTION_FLAG_OPPFOCUS (1 << 14) //Focus on opponent
+#define SECTION_FLAG_BPM_MASK 0x3FFF //1/24
 
 typedef struct
 {
 	u16 end;
-	u8 flag, pad;
+	u16 flag;
 } Section;
 
 #define NOTE_FLAG_OPPONENT    (1 << 2) //Note is opponent's
@@ -95,6 +100,10 @@ typedef struct
 	fixed_t early_safe, late_safe;
 	fixed_t note_speed;
 	
+	u16 last_bpm;
+	fixed_t time_base;
+	u16 step_base;
+	
 	//Stage state
 	struct
 	{
@@ -103,7 +112,7 @@ typedef struct
 	} camera;
 	fixed_t bump, sbump;
 	
-	Player *player;
+	Character *player;
 	Character *opponent;
 	
 	Section *cur_section; //Current section

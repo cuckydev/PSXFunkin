@@ -119,6 +119,11 @@ void Menu_Tick()
 		"BOPEEBO",
 		"FRESH",
 		"DADBATTLE",
+		"TUTORIAL",
+		
+		"SPOOKEEZ",
+		"SOUTH",
+		"MONSTER",
 		
 		"PICO",
 		"PHILLY",

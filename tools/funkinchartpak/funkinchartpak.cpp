@@ -12,13 +12,14 @@
 #include "json.hpp"
 using json = nlohmann::json;
 
-#define SECTION_FLAG_ALTANIM  (1 << 0) //Mom/Dad in Week 5
-#define SECTION_FLAG_OPPFOCUS (1 << 1) //Focus on opponent
+#define SECTION_FLAG_ALTANIM  (1 << 15) //Mom/Dad in Week 5
+#define SECTION_FLAG_OPPFOCUS (1 << 14) //Focus on opponent
+#define SECTION_FLAG_BPM_MASK 0x3FFF //1/24
 
 struct Section
 {
 	uint16_t end;
-	uint8_t flag = 0, pad = 0;
+	uint16_t flag = 0;
 };
 
 #define NOTE_FLAG_OPPONENT    (1 << 2) //Note is opponent's
@@ -66,8 +67,13 @@ int main(int argc, char *argv[])
 	double bpm = song_info["bpm"];
 	double crochet = (60.0 / bpm) * 1000.0;
 	double step_crochet = crochet / 4;
+	
 	double speed = song_info["speed"];
-	std::cout << "bpm: " << bpm << " crochet: " << crochet << " step_crochet: " << step_crochet << " speed: " << speed << std::endl;
+	
+	std::cout << argv[1] << " speed: " << speed << " ini bpm: " << bpm << " step_crochet: " << step_crochet << std::endl;
+	
+	double milli_base = 0;
+	uint16_t step_base = 0;
 	
 	std::vector<Section> sections;
 	std::vector<Note> notes;
@@ -79,7 +85,20 @@ int main(int argc, char *argv[])
 		
 		//Read section
 		Section new_section;
+		if (i["changeBPM"] == true)
+		{
+			//Update BPM (THIS IS HELL!)
+			milli_base += step_crochet * (section_end - step_base);
+			step_base = section_end;
+			
+			bpm = i["bpm"];
+			crochet = (60.0 / bpm) * 1000.0;
+			step_crochet = crochet / 4;
+			
+			std::cout << "chg bpm: " << bpm << " step_crochet: " << step_crochet << " milli_base: " << milli_base << " step_base: " << step_base << std::endl;
+		}
 		new_section.end = (section_end += (uint16_t)i["lengthInSteps"]);
+		new_section.flag = PosRound(bpm, 1.0 / 24.0) & SECTION_FLAG_BPM_MASK; 
 		if (i["alt_anim"] == true)
 			new_section.flag |= SECTION_FLAG_ALTANIM;
 		if (is_opponent)
@@ -91,7 +110,7 @@ int main(int argc, char *argv[])
 		{
 			//Push main note
 			Note new_note;
-			new_note.pos = PosRound((double)j[0] * 24.0, step_crochet);
+			new_note.pos = (step_base * 24) + PosRound(((double)j[0] - milli_base) * 24.0, step_crochet);
 			new_note.type = (uint8_t)j[1];
 			if (is_opponent)
 				new_note.type ^= NOTE_FLAG_OPPONENT;
@@ -143,8 +162,7 @@ int main(int argc, char *argv[])
 	for (auto &i : sections)
 	{
 		WriteWord(out, i.end);
-		out.put(i.flag);
-		out.put(0);
+		WriteWord(out, i.flag);
 	}
 	
 	//Write notes
