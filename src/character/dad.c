@@ -81,6 +81,13 @@ void Char_Dad_Tick(Character *character)
 {
 	Char_Dad *this = (Char_Dad*)character;
 	
+	if (stage.just_step)
+	{
+		//Perform idle dance
+		if ((stage.song_step & 0x7) == 0 && character->animatable.anim == CharAnim_Idle)
+			character->set_anim(character, CharAnim_Idle);
+	}
+	
 	//Animate and draw
 	Animatable_Animate(&character->animatable, (void*)this, Char_Dad_SetFrame);
 	Character_Draw(character, &this->tex, &char_dad_frame[this->frame]);

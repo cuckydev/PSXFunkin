@@ -164,73 +164,6 @@ static const StageDef stage_defs[StageId_Max] = {
 //Stage state
 Stage stage;
 
-//Stage drawing functions
-void Stage_DrawTex(Gfx_Tex *tex, RECT *src, RECT_FIXED *dst, fixed_t zoom)
-{
-	fixed_t l = (SCREEN_WIDTH2  << FIXED_SHIFT) + FIXED_MUL(dst->x, zoom);
-	fixed_t t = (SCREEN_HEIGHT2 << FIXED_SHIFT) + FIXED_MUL(dst->y, zoom);
-	fixed_t r = l + FIXED_MUL(dst->w, zoom);
-	fixed_t b = t + FIXED_MUL(dst->h, zoom);
-	
-	l >>= FIXED_SHIFT;
-	t >>= FIXED_SHIFT;
-	r >>= FIXED_SHIFT;
-	b >>= FIXED_SHIFT;
-	
-	RECT sdst = {
-		l,
-		t,
-		r - l,
-		b - t,
-	};
-	Gfx_DrawTex(tex, src, &sdst);
-}
-
-//Stage HUD functions
-void Stage_GetNotePos(s32 i, fixed_t *x, fixed_t *y, u16 pos)
-{
-	//Get X position
-	if (i & 4)
-		*x = ((32 - SCREEN_WIDTH2) + (i & 3) * 34) << FIXED_SHIFT; //Opponent
-	else
-		*x = ((SCREEN_WIDTH2 - 134) + (i & 3) * 34) << FIXED_SHIFT; //BF
-	
-	//Get Y position
-	*y = (32 - SCREEN_HEIGHT2) << FIXED_SHIFT;
-	if (pos != 0xFFFF)
-		*y += FIXED_MUL((((fixed_t)pos << FIXED_SHIFT) / 24) - stage.note_scroll, stage.note_speed);
-	else if (stage.note_scroll < (-2 << FIXED_SHIFT))
-		*y += FIXED_MUL(stage.note_scroll + FIXED_DEC(2,1), stage.note_speed);
-}
-
-void Stage_DrawHealth(u8 i, s8 ox)
-{
-	//Check if we should use 'dying' frame
-	s8 dying;
-	if (ox < 0)
-		dying = (stage.health >= 18000) * 24;
-	else
-		dying = (stage.health <= 2000) * 24;
-	
-	//Get src and dst
-	fixed_t hx = (128 << FIXED_SHIFT) * (10000 - stage.health) / 10000;
-	RECT src = {
-		(i % 5) * 48 + dying,
-		16 + (i / 5) * 24,
-		24,
-		24
-	};
-	RECT_FIXED dst = {
-		hx + ox * FIXED_DEC(11,1) - FIXED_DEC(12,1),
-		(SCREEN_HEIGHT2 - 32 + 4 - 12) << FIXED_SHIFT,
-		src.w << FIXED_SHIFT,
-		src.h << FIXED_SHIFT
-	};
-	
-	//Draw health icon
-	Stage_DrawTex(&stage.tex_hud1, &src, &dst, FIXED_MUL(stage.bump, stage.sbump));
-}
-
 //Stage music functions
 void Stage_StartVocal()
 {
@@ -248,6 +181,97 @@ void Stage_CutVocal()
 		Audio_ChannelXA(stage.stage_def->music_channel + 1);
 		stage.vocal_active = false;
 	}
+}
+
+//Stage camera functions
+void Stage_FocusCharacter(Character *ch, fixed_t div)
+{
+	//Use character focus settings to update target position and zoom
+	stage.camera.tx = ch->x * 2 / 3;
+	stage.camera.ty = ch->y / 3 - ch->focus_height;
+	stage.camera.tz = ch->focus_zoom;
+	stage.camera.td = div;
+}
+
+void Stage_ScrollCamera()
+{
+	//Get delta position
+	fixed_t dx = stage.camera.tx - stage.camera.x;
+	fixed_t dy = stage.camera.ty - stage.camera.y;
+	fixed_t dz = stage.camera.tz - stage.camera.zoom;
+	
+	//Scroll based off current divisor
+	stage.camera.x += FIXED_MUL(dx, stage.camera.td);
+	stage.camera.y += FIXED_MUL(dy, stage.camera.td);
+	stage.camera.zoom += FIXED_MUL(dz, stage.camera.td);
+}
+
+//Stage section functions
+void Stage_ChangeBPM(u16 bpm, u16 step)
+{
+	//Update last BPM
+	stage.last_bpm = bpm;
+	
+	//Update timing base
+	if (stage.step_crochet)
+		stage.time_base += FIXED_DIV(((fixed_t)step - stage.step_base) << FIXED_SHIFT, stage.step_crochet);
+	stage.step_base = step;
+	
+	//Get new crochet
+	fixed_t bpm_dec = ((fixed_t)bpm << FIXED_SHIFT) / 24;
+	stage.step_crochet = FIXED_DIV(bpm_dec, FIXED_DEC(15,1));
+	
+	//Get new crochet based values
+	stage.note_speed = FIXED_MUL(FIXED_DIV(FIXED_DEC(140,1), stage.step_crochet), stage.speed);
+	
+	stage.late_safe = stage.step_crochet / 6; //10 frames
+	stage.early_safe = stage.late_safe >> 1;
+}
+
+Section *Stage_GetPrevSection(Section *section)
+{
+	if (section > stage.sections)
+		return section - 1;
+	return NULL;
+}
+
+u16 Stage_GetSectionLength(Section *section)
+{
+	Section *prev = Stage_GetPrevSection(section);
+	if (prev == NULL)
+		return section->end;
+	return section->end - prev->end;
+}
+
+u16 Stage_GetSectionStart(Section *section)
+{
+	Section *prev = Stage_GetPrevSection(section);
+	if (prev == NULL)
+		return 0;
+	return prev->end;
+}
+
+//Section scroll structure
+typedef struct
+{
+	fixed_t start;   //Seconds
+	fixed_t length;  //Seconds
+	u16 start_step;  //Sub-steps
+	u16 length_step; //Sub-steps
+} SectionScroll;
+
+void Stage_GetSectionScroll(SectionScroll *scroll, Section *section)
+{
+	//Get BPM
+	u16 bpm = section->flag & SECTION_FLAG_BPM_MASK;
+	fixed_t bpm_dec = ((fixed_t)bpm << FIXED_SHIFT) / 24;
+	
+	//Get section step info
+	scroll->start_step = Stage_GetSectionStart(section) * 24;
+	scroll->length_step = (section->end * 24) - scroll->start_step;
+	
+	//Get section time length            15/24
+	scroll->length = FIXED_DIV(FIXED_DEC(625,1000) * scroll->length_step, bpm_dec);
 }
 
 //Note hit detection
@@ -380,41 +404,206 @@ void Stage_SustainCheck(u8 type)
 		stage.player->set_anim(stage.player, note_anims[type][0]);
 }
 
-//Stage functions
-void Stage_ChangeBPM(u16 bpm, u16 step)
+//Stage drawing functions
+void Stage_DrawTex(Gfx_Tex *tex, RECT *src, RECT_FIXED *dst, fixed_t zoom)
 {
-	//Check if BPM has changed
-	if (bpm == stage.last_bpm)
-		return;
-	stage.last_bpm = bpm;
+	fixed_t l = (SCREEN_WIDTH2  << FIXED_SHIFT) + FIXED_MUL(dst->x, zoom);
+	fixed_t t = (SCREEN_HEIGHT2 << FIXED_SHIFT) + FIXED_MUL(dst->y, zoom);
+	fixed_t r = l + FIXED_MUL(dst->w, zoom);
+	fixed_t b = t + FIXED_MUL(dst->h, zoom);
 	
-	//Update timing base
-	if (stage.step_crochet)
+	l >>= FIXED_SHIFT;
+	t >>= FIXED_SHIFT;
+	r >>= FIXED_SHIFT;
+	b >>= FIXED_SHIFT;
+	
+	RECT sdst = {
+		l,
+		t,
+		r - l,
+		b - t,
+	};
+	Gfx_DrawTex(tex, src, &sdst);
+}
+
+//Stage HUD functions and constants
+static const fixed_t note_x[8] = {
+	//BF
+	 FIXED_DEC(26,1),
+	 FIXED_DEC(60,1),//+34
+	 FIXED_DEC(94,1),
+	FIXED_DEC(128,1),
+	//Opponent
+	FIXED_DEC(-128,1),
+	 FIXED_DEC(-94,1),//+34
+	 FIXED_DEC(-60,1),
+	 FIXED_DEC(-26,1),
+};
+static const fixed_t note_y = (32 - SCREEN_HEIGHT2) << FIXED_SHIFT;
+
+void Stage_DrawHealth(u8 i, s8 ox)
+{
+	//Check if we should use 'dying' frame
+	s8 dying;
+	if (ox < 0)
+		dying = (stage.health >= 18000) * 24;
+	else
+		dying = (stage.health <= 2000) * 24;
+	
+	//Get src and dst
+	fixed_t hx = (128 << FIXED_SHIFT) * (10000 - stage.health) / 10000;
+	RECT src = {
+		(i % 5) * 48 + dying,
+		16 + (i / 5) * 24,
+		24,
+		24
+	};
+	RECT_FIXED dst = {
+		hx + ox * FIXED_DEC(11,1) - FIXED_DEC(12,1),
+		(SCREEN_HEIGHT2 - 32 + 4 - 12) << FIXED_SHIFT,
+		src.w << FIXED_SHIFT,
+		src.h << FIXED_SHIFT
+	};
+	
+	//Draw health icon
+	Stage_DrawTex(&stage.tex_hud1, &src, &dst, FIXED_MUL(stage.bump, stage.sbump));
+}
+
+void Stage_DrawNotes()
+{
+	//Initialize scroll state
+	SectionScroll scroll;
+	scroll.start = stage.time_base;
+	
+	Section *scroll_section = stage.section_base;
+	Stage_GetSectionScroll(&scroll, scroll_section);
+	
+	//Push scroll back until cur_note is properly contained
+	while (scroll.start_step > stage.cur_note->pos)
 	{
-		stage.time_base += FIXED_DIV(((fixed_t)step - stage.step_base) << FIXED_SHIFT, stage.step_crochet);
+		//Look for previous section
+		Section *prev_section = Stage_GetPrevSection(scroll_section);
+		if (prev_section == NULL)
+			break;
+		
+		//Push scroll back
+		scroll_section = prev_section;
+		Stage_GetSectionScroll(&scroll, scroll_section);
+		scroll.start -= scroll.length;
 	}
-	stage.step_base = step;
 	
-	//Get new crochet
-	fixed_t bpm_dec = ((fixed_t)bpm << FIXED_SHIFT) / 24;
-	stage.crochet = FIXED_DIV(bpm_dec, FIXED_DEC(60,1));
-	stage.step_crochet = stage.crochet << 2;
-	
-	//Get new crochet based values
-	stage.note_speed = FIXED_MUL(FIXED_DIV(FIXED_DEC(140,1), stage.step_crochet), stage.speed);
-	
-	stage.late_safe = stage.step_crochet / 6; //10 frames
-	stage.early_safe = stage.late_safe >> 1;
+	//Draw notes
+	for (Note *note = stage.cur_note;; note++)
+	{
+		//Update scroll
+		while (note->pos >= scroll_section->end * 24)
+		{
+			//Push scroll forward
+			scroll.start += scroll.length;
+			Stage_GetSectionScroll(&scroll, ++scroll_section);
+		}
+		
+		//Get note time
+		fixed_t time = (scroll.start - stage.song_time) + (scroll.length * (note->pos - scroll.start_step) / scroll.length_step);
+		fixed_t y = note_y + FIXED_MUL(stage.speed, time * 140);
+		
+		//Check if went above screen
+		if (y < ((-16 - SCREEN_HEIGHT2) << FIXED_SHIFT))
+		{
+			//Miss note if player's note
+			if (!(note->type & (NOTE_FLAG_OPPONENT | NOTE_FLAG_HIT)))
+			{
+				//Missed note
+				Stage_CutVocal();
+				Stage_MissNote(note->type & 0x3);
+				stage.health -= 475;
+			}
+			
+			//Update current note
+			stage.cur_note++;
+		}
+		else
+		{
+			//Don't draw if below screen
+			if (y > ((SCREEN_HEIGHT2 + 16) << FIXED_SHIFT) || note->pos == 0xFFFF)
+				break;
+			
+			//Draw note
+			if (note->type & NOTE_FLAG_SUSTAIN)
+			{
+				//Check for sustain clipping
+				fixed_t clip;
+				if (note->type & (NOTE_FLAG_HIT | NOTE_FLAG_OPPONENT))
+				{
+					clip = (((32 + 16) - SCREEN_HEIGHT2) << FIXED_SHIFT) - y;
+					if (clip < 0)
+						clip = 0;
+				}
+				else
+				{
+					clip = 0;
+				}
+				
+				//Draw sustain
+				if (note->type & NOTE_FLAG_SUSTAIN_END)
+				{
+					if (clip < (24 << FIXED_SHIFT))
+					{
+						RECT note_src = {
+							160,
+							((note->type & 0x3) << 5) + 8 + (clip >> FIXED_SHIFT),
+							32,
+							24 - (clip >> FIXED_SHIFT)
+						};
+						RECT_FIXED note_dst = {
+							note_x[note->type & 0x7] - FIXED_DEC(16,1),
+							y - FIXED_DEC(12,1) + clip,
+							note_src.w << FIXED_SHIFT,
+							(note_src.h << FIXED_SHIFT)
+						};
+						Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, stage.bump);
+					}
+				}
+				else
+				{
+					if (clip < stage.note_speed)
+					{
+						RECT note_src = {
+							160,
+							((note->type & 0x3) << 5),
+							32,
+							16
+						};
+						RECT_FIXED note_dst = {
+							note_x[note->type & 0x7] - FIXED_DEC(16,1),
+							y - FIXED_DEC(12,1) + clip,
+							note_src.w << FIXED_SHIFT,
+							stage.note_speed - clip
+						};
+						Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, stage.bump);
+					}
+				}
+			}
+			else
+			{
+				//Draw note
+				if (note->type & NOTE_FLAG_HIT)
+					continue;
+				
+				RECT note_src = {32 + ((note->type & 0x3) << 5), 0, 32, 32};
+				RECT_FIXED note_dst = {
+					note_x[note->type & 0x7] - FIXED_DEC(16,1),
+					y - FIXED_DEC(16,1),
+					note_src.w << FIXED_SHIFT,
+					note_src.h << FIXED_SHIFT
+				};
+				Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, stage.bump);
+			}
+		}
+	}
 }
 
-void Stage_FocusCharacter(Character *ch, fixed_t div)
-{
-	stage.camera.tx = ch->x * 2 / 3;
-	stage.camera.ty = ch->y / 3 - ch->focus_height;
-	stage.camera.tz = ch->focus_zoom;
-	stage.camera.td = div;
-}
-
+//Stage functions
 void Stage_Load(StageId id, StageDiff difficulty)
 {
 	//Get stage definition
@@ -444,9 +633,9 @@ void Stage_Load(StageId id, StageDiff difficulty)
 	stage.speed = stage_def->speed[difficulty];
 	
 	stage.step_crochet = 0;
-	stage.last_bpm = 0xFFFF;
 	stage.time_base = 0;
 	stage.step_base = 0;
+	stage.section_base = stage.cur_section;
 	Stage_ChangeBPM(stage.cur_section->flag & SECTION_FLAG_BPM_MASK, 0);
 	
 	//Initialize stage state
@@ -496,17 +685,6 @@ void Stage_Unload()
 	Character_Free(stage.opponent);
 }
 
-void Stage_Scroll()
-{
-	//Scroll camera
-	fixed_t dx = stage.camera.tx - stage.camera.x;
-	fixed_t dy = stage.camera.ty - stage.camera.y;
-	fixed_t dz = stage.camera.tz - stage.camera.zoom;
-	stage.camera.x += FIXED_MUL(dx, stage.camera.td);
-	stage.camera.y += FIXED_MUL(dy, stage.camera.td);
-	stage.camera.zoom += FIXED_MUL(dz, stage.camera.td);
-}
-
 void Stage_Tick()
 {
 	switch (stage.state)
@@ -516,10 +694,9 @@ void Stage_Tick()
 			//Get song position
 			boolean playing;
 			
-			u16 next_step;
 			if (stage.note_scroll < 0)
 			{
-				//Count up scroll
+				//Song hasn't started yet
 				fixed_t next_scroll = stage.note_scroll + stage.step_crochet / 60; //TODO: PAL
 				
 				//3 2 1 GO - pre song start
@@ -527,47 +704,84 @@ void Stage_Tick()
 				//Update song
 				if (next_scroll >= 0)
 				{
-					//Start song
+					//Song has started
+					playing = true;
 					Audio_PlayXA_File(&stage.music_file, 0x40, stage.stage_def->music_channel, 0);
 					stage.note_scroll = 0;
+					stage.song_time = 0;
+					stage.just_step = true;
 				}
 				else
 				{
-					//Update scroll
+					//Still scrolling
+					playing = false;
+					if ((stage.note_scroll & FIXED_UAND) != (next_scroll & FIXED_UAND))
+						stage.just_step = true;
+					else
+						stage.just_step = false;
 					stage.note_scroll = next_scroll;
+					
+					//Extrapolate song time from note scroll
+					stage.song_time = FIXED_DIV(stage.note_scroll, stage.step_crochet);
 				}
-				
-				next_step = 0;
-				playing = false;
 			}
 			else if (Audio_PlayingXA())
 			{
-				//XA position
+				//Get playing song position
 				fixed_t song_time = (Audio_TellXA_Milli() << FIXED_SHIFT) / 1000;
-				
-				//Get step position and bump
-				fixed_t next_scroll = ((fixed_t)stage.step_base << FIXED_SHIFT) + FIXED_MUL(song_time - stage.time_base, stage.step_crochet);
-				FntPrint("st %08X\nns %08X\ntb %08X\nsb %d\n", song_time, next_scroll, stage.time_base, stage.step_base);
-				if (next_scroll > stage.note_scroll) //Skipping?
-					stage.note_scroll = next_scroll;
-				next_step = stage.note_scroll >> FIXED_SHIFT;
 				playing = true;
+				
+				//Update scroll
+				fixed_t next_scroll = ((fixed_t)stage.step_base << FIXED_SHIFT) + FIXED_MUL(song_time - stage.time_base, stage.step_crochet);
+				
+				if (next_scroll > stage.note_scroll) //Skipping?
+				{
+					if ((stage.note_scroll & FIXED_UAND) != (next_scroll & FIXED_UAND))
+						stage.just_step = true;
+					else
+						stage.just_step = false;
+					stage.note_scroll = next_scroll;
+					stage.song_time = song_time;
+				}
 			}
 			else
 			{
 				//Song has ended
-				stage.note_scroll += stage.step_crochet / 60; //TODO: PAL
-				
-				next_step = stage.note_scroll >> FIXED_SHIFT;
+				fixed_t next_scroll = stage.note_scroll + stage.step_crochet / 60; //TODO: PAL
 				playing = false;
+				
+				//Update scroll
+				if ((stage.note_scroll & FIXED_UAND) != (next_scroll & FIXED_UAND))
+					stage.just_step = true;
+				else
+					stage.just_step = false;
+				stage.note_scroll = next_scroll;
+				
+				//Extrapolate song time from note scroll
+				stage.song_time = stage.time_base + FIXED_DIV(stage.note_scroll - ((fixed_t)stage.step_base << FIXED_SHIFT), stage.step_crochet);
 			}
 			
-			//Update step
-			if (next_step > stage.song_step)
-				stage.just_step = true;
-			else
-				stage.just_step = false;
-			stage.song_step = next_step;
+			//Get song step
+			stage.song_step = stage.note_scroll >> FIXED_SHIFT;
+			
+			//Update section
+			while (stage.note_scroll >= 0)
+			{
+				//Check if current section has ended
+				if (stage.song_step < stage.cur_section->end)
+					break;
+				
+				//Update BPM
+				Stage_ChangeBPM(stage.cur_section[1].flag & SECTION_FLAG_BPM_MASK, stage.cur_section->end);
+				stage.section_base = stage.cur_section + 1;
+				
+				//Start next section
+				stage.cur_section++;
+				if (stage.cur_section->flag & SECTION_FLAG_OPPFOCUS)
+					Stage_FocusCharacter(stage.opponent, FIXED_UNIT / 24);
+				else
+					Stage_FocusCharacter(stage.player, FIXED_UNIT / 24);
+			}
 			
 			//Get bump
 			if (playing)
@@ -591,26 +805,8 @@ void Stage_Tick()
 				stage.sbump = FIXED_UNIT;
 			}
 			
-			//Update section
-			while (1)
-			{
-				//Check if current section has ended
-				if (stage.song_step < stage.cur_section->end)
-					break;
-				
-				//Change BPM
-				Stage_ChangeBPM(stage.cur_section[1].flag & SECTION_FLAG_BPM_MASK, stage.cur_section->end);
-				
-				//Start next section
-				stage.cur_section++;
-				if (stage.cur_section->flag & SECTION_FLAG_OPPFOCUS)
-					Stage_FocusCharacter(stage.opponent, FIXED_UNIT / 24);
-				else
-					Stage_FocusCharacter(stage.player, FIXED_UNIT / 24);
-			}
-			
 			//Scroll camera
-			Stage_Scroll();
+			Stage_ScrollCamera();
 			
 			//Handle player note presses
 			if (playing)
@@ -674,118 +870,17 @@ void Stage_Tick()
 			health_dst.w = health_back.w << FIXED_SHIFT;
 			Stage_DrawTex(&stage.tex_hud1, &health_back, &health_dst, stage.bump);
 			
-			//Draw notes
-			for (Note *note = stage.cur_note;; note++)
-			{
-				//Get note position
-				fixed_t x, y;
-				Stage_GetNotePos(note->type & 0x7, &x, &y, note->pos);
-				
-				//Check if went above screen
-				if (y < ((-16 - SCREEN_HEIGHT2) << FIXED_SHIFT))
-				{
-					//Miss note if player's note
-					if (!(note->type & (NOTE_FLAG_OPPONENT | NOTE_FLAG_HIT)))
-					{
-						//Missed note
-						Stage_CutVocal();
-						Stage_MissNote(note->type & 0x3);
-						stage.health -= 475;
-					}
-					
-					//Update current note
-					stage.cur_note++;
-				}
-				else
-				{
-					//Don't draw if below screen
-					if (y > ((SCREEN_HEIGHT2 + 16) << FIXED_SHIFT) || note->pos == 0xFFFF)
-						break;
-					
-					//Draw note
-					if (note->type & NOTE_FLAG_SUSTAIN)
-					{
-						//Check for sustain clipping
-						fixed_t clip;
-						if (note->type & (NOTE_FLAG_HIT | NOTE_FLAG_OPPONENT))
-						{
-							clip = (((32 + 16) - SCREEN_HEIGHT2) << FIXED_SHIFT) - y;
-							if (clip < 0)
-								clip = 0;
-						}
-						else
-						{
-							clip = 0;
-						}
-						
-						//Draw sustain
-						if (note->type & NOTE_FLAG_SUSTAIN_END)
-						{
-							if (clip < (24 << FIXED_SHIFT))
-							{
-								RECT note_src = {
-									160,
-									((note->type & 0x3) << 5) + 8 + (clip >> FIXED_SHIFT),
-									32,
-									24 - (clip >> FIXED_SHIFT)
-								};
-								RECT_FIXED note_dst = {
-									x - FIXED_DEC(16,1),
-									y - FIXED_DEC(12,1) + clip,
-									note_src.w << FIXED_SHIFT,
-									(note_src.h << FIXED_SHIFT)
-								};
-								Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, stage.bump);
-							}
-						}
-						else
-						{
-							if (clip < stage.note_speed)
-							{
-								RECT note_src = {
-									160,
-									((note->type & 0x3) << 5),
-									32,
-									16
-								};
-								RECT_FIXED note_dst = {
-									x - FIXED_DEC(16,1),
-									y - FIXED_DEC(12,1) + clip,
-									note_src.w << FIXED_SHIFT,
-									stage.note_speed - clip
-								};
-								Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, stage.bump);
-							}
-						}
-					}
-					else
-					{
-						//Draw note
-						if (note->type & NOTE_FLAG_HIT)
-							continue;
-						
-						RECT note_src = {32 + ((note->type & 0x3) << 5), 0, 32, 32};
-						RECT_FIXED note_dst = {
-							x - FIXED_DEC(16,1),
-							y - FIXED_DEC(16,1),
-							note_src.w << FIXED_SHIFT,
-							note_src.h << FIXED_SHIFT
-						};
-						Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, stage.bump);
-					}
-				}
-			}
+			//Draw stage notes
+			Stage_DrawNotes();
 			
 			//Draw note HUD
 			RECT note_src = {0, 0, 32, 32};
-			RECT_FIXED note_dst = {0, 0, FIXED_DEC(32,1), FIXED_DEC(32,1)};
+			RECT_FIXED note_dst = {0, note_y - FIXED_DEC(16,1), FIXED_DEC(32,1), FIXED_DEC(32,1)};
 			
 			for (u8 i = 0; i < 4; i++)
 			{
 				//BF
-				Stage_GetNotePos(i, &note_dst.x, &note_dst.y, 0xFFFF);
-				note_dst.x -= FIXED_DEC(16,1);
-				note_dst.y -= FIXED_DEC(16,1);
+				note_dst.x = note_x[i] - FIXED_DEC(16,1);
 				
 				if (stage.arrow_hitan[i] != 0)
 				{
@@ -802,9 +897,7 @@ void Stage_Tick()
 				Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, stage.bump);
 				
 				//Opponent
-				Stage_GetNotePos(4 + i, &note_dst.x, &note_dst.y, 0xFFFF);
-				note_dst.x -= FIXED_DEC(16,1);
-				note_dst.y -= FIXED_DEC(16,1);
+				note_dst.x = note_x[i | 0x4] - FIXED_DEC(16,1);
 				
 				note_src.x = 0;
 				note_src.y = i << 5;
@@ -901,7 +994,7 @@ void Stage_Tick()
 		case StageState_DeadLoad:
 		{
 			//Scroll camera and tick player
-			Stage_Scroll();
+			Stage_ScrollCamera();
 			stage.player->tick(stage.player);
 			
 			//Drop mic and change state if CD has finished reading and animation has ended
@@ -915,7 +1008,7 @@ void Stage_Tick()
 		case StageState_DeadDrop:
 		{
 			//Scroll camera and tick player
-			Stage_Scroll();
+			Stage_ScrollCamera();
 			stage.player->tick(stage.player);
 			
 			//Enter next state once mic has been dropped
@@ -938,7 +1031,7 @@ void Stage_Tick()
 			}
 			
 			//Scroll camera and tick player
-			Stage_Scroll();
+			Stage_ScrollCamera();
 			stage.player->tick(stage.player);
 			break;
 		}

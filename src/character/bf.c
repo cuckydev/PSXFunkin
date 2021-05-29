@@ -162,24 +162,27 @@ void Char_BF_Tick(Character *character)
 {
 	Char_BF *this = (Char_BF*)character;
 	
-	//Stage specific animations
-	switch (stage.stage_id)
+	if (stage.just_step)
 	{
-		case StageId_1_4: //Tutorial
-			if (stage.just_step && stage.song_step > 64 && stage.song_step < 192 && (stage.song_step & 0x3F) == 60)
-				character->set_anim(character, PlayerAnim_Peace);
-			break;
-		case StageId_1_1: //Bopeebo peace
-			if (stage.just_step && (stage.song_step & 0x1F) == 28)
-				character->set_anim(character, PlayerAnim_Peace);
-			break;
-		default:
-			break;
+		//Stage specific animations
+		switch (stage.stage_id)
+		{
+			case StageId_1_4: //Tutorial
+				if (stage.song_step > 64 && stage.song_step < 192 && (stage.song_step & 0x3F) == 60)
+					character->set_anim(character, PlayerAnim_Peace);
+				break;
+			case StageId_1_1: //Bopeebo peace
+				if ((stage.song_step & 0x1F) == 28)
+					character->set_anim(character, PlayerAnim_Peace);
+				break;
+			default:
+				break;
+		}
+		
+		//Perform idle dance
+		if ((stage.song_step & 0x7) == 0 && character->animatable.anim == CharAnim_Idle)
+			character->set_anim(character, CharAnim_Idle);
 	}
-	
-	//Perform idle dance
-	if (stage.just_step && (stage.song_step & 0x7) == 0 && character->animatable.anim == CharAnim_Idle)
-		character->set_anim(character, CharAnim_Idle);
 	
 	//Retry screen
 	if (character->animatable.anim >= PlayerAnim_Dead3)

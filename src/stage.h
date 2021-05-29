@@ -96,13 +96,9 @@ typedef struct
 	Note *notes;
 	
 	fixed_t speed;
-	fixed_t crochet, step_crochet;
+	fixed_t step_crochet;
 	fixed_t early_safe, late_safe;
 	fixed_t note_speed;
-	
-	u16 last_bpm;
-	fixed_t time_base;
-	u16 step_base;
 	
 	//Stage state
 	struct
@@ -118,7 +114,13 @@ typedef struct
 	Section *cur_section; //Current section
 	Note *cur_note; //First visible and hittable note, used for drawing and hit detection
 	
-	fixed_t note_scroll;
+	fixed_t note_scroll, song_time;
+	
+	u16 last_bpm;
+	
+	fixed_t time_base;
+	u16 step_base;
+	Section *section_base;
 	
 	u16 song_step;
 	boolean just_step;
