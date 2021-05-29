@@ -164,19 +164,22 @@ void Char_BF_Tick(Character *character)
 	
 	if (stage.just_step)
 	{
-		//Stage specific animations
-		switch (stage.stage_id)
+		if (stage.note_scroll >= 0)
 		{
-			case StageId_1_4: //Tutorial
-				if (stage.song_step > 64 && stage.song_step < 192 && (stage.song_step & 0x3F) == 60)
-					character->set_anim(character, PlayerAnim_Peace);
-				break;
-			case StageId_1_1: //Bopeebo peace
-				if ((stage.song_step & 0x1F) == 28)
-					character->set_anim(character, PlayerAnim_Peace);
-				break;
-			default:
-				break;
+			//Stage specific animations
+			switch (stage.stage_id)
+			{
+				case StageId_1_4: //Tutorial
+					if (stage.song_step > 64 && stage.song_step < 192 && (stage.song_step & 0x3F) == 60)
+						character->set_anim(character, PlayerAnim_Peace);
+					break;
+				case StageId_1_1: //Bopeebo peace
+					if ((stage.song_step & 0x1F) == 28)
+						character->set_anim(character, PlayerAnim_Peace);
+					break;
+				default:
+					break;
+			}
 		}
 		
 		//Perform idle dance
@@ -342,7 +345,7 @@ Character *Char_BF_New(fixed_t x, fixed_t y)
 	Char_BF *this = Mem_Alloc(sizeof(Char_BF));
 	if (this == NULL)
 	{
-		sprintf(error_msg, "[char_bf_New] Failed to allocate boyfriend object");
+		sprintf(error_msg, "[Char_BF_New] Failed to allocate boyfriend object");
 		ErrorLock();
 		return NULL;
 	}

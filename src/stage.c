@@ -219,7 +219,7 @@ void Stage_ChangeBPM(u16 bpm, u16 step)
 	
 	//Get new crochet
 	fixed_t bpm_dec = ((fixed_t)bpm << FIXED_SHIFT) / 24;
-	stage.step_crochet = FIXED_DIV(bpm_dec, FIXED_DEC(15,1));
+	stage.step_crochet = FIXED_DIV(bpm_dec, FIXED_DEC(625,1000)); //15/24
 	
 	//Get new crochet based values
 	stage.note_speed = FIXED_MUL(FIXED_DIV(FIXED_DEC(140,1), stage.step_crochet), stage.speed);
@@ -258,6 +258,8 @@ typedef struct
 	fixed_t length;  //Seconds
 	u16 start_step;  //Sub-steps
 	u16 length_step; //Sub-steps
+	
+	fixed_t size; //Note height
 } SectionScroll;
 
 void Stage_GetSectionScroll(SectionScroll *scroll, Section *section)
@@ -267,11 +269,14 @@ void Stage_GetSectionScroll(SectionScroll *scroll, Section *section)
 	fixed_t bpm_dec = ((fixed_t)bpm << FIXED_SHIFT) / 24;
 	
 	//Get section step info
-	scroll->start_step = Stage_GetSectionStart(section) * 24;
-	scroll->length_step = (section->end * 24) - scroll->start_step;
+	scroll->start_step = Stage_GetSectionStart(section);
+	scroll->length_step = section->end - scroll->start_step;
 	
 	//Get section time length            15/24
 	scroll->length = FIXED_DIV(FIXED_DEC(625,1000) * scroll->length_step, bpm_dec);
+	
+	//Get note height
+	scroll->size = FIXED_MUL(stage.speed, scroll->length * (24 * 140) / scroll->length_step) + FIXED_UNIT;
 }
 
 //Note hit detection
@@ -337,7 +342,7 @@ void Stage_NoteCheck(u8 type)
 	for (Note *note = stage.cur_note;; note++)
 	{
 		//Check if note can be hit
-		fixed_t note_fp = ((fixed_t)note->pos << FIXED_SHIFT) / 24;
+		fixed_t note_fp = (fixed_t)note->pos << FIXED_SHIFT;
 		if (note_fp - stage.early_safe > stage.note_scroll)
 			break;
 		if (note_fp + stage.late_safe < stage.note_scroll)
@@ -376,7 +381,7 @@ void Stage_SustainCheck(u8 type)
 	for (Note *note = stage.cur_note;; note++)
 	{
 		//Check if note can be hit
-		fixed_t note_fp = ((fixed_t)note->pos << FIXED_SHIFT) / 24;
+		fixed_t note_fp = (fixed_t)note->pos << FIXED_SHIFT;
 		if (note_fp - stage.early_safe > stage.note_scroll)
 			break;
 		if (note_fp + stage.late_safe < stage.note_scroll)
@@ -493,17 +498,17 @@ void Stage_DrawNotes()
 	}
 	
 	//Draw notes
-	for (Note *note = stage.cur_note;; note++)
+	for (Note *note = stage.cur_note; note->pos != 0xFFFF; note++)
 	{
 		//Update scroll
-		while (note->pos >= scroll_section->end * 24)
+		while (note->pos >= scroll_section->end)
 		{
 			//Push scroll forward
 			scroll.start += scroll.length;
 			Stage_GetSectionScroll(&scroll, ++scroll_section);
 		}
 		
-		//Get note time
+		//Get note position
 		fixed_t time = (scroll.start - stage.song_time) + (scroll.length * (note->pos - scroll.start_step) / scroll.length_step);
 		fixed_t y = note_y + FIXED_MUL(stage.speed, time * 140);
 		
@@ -551,9 +556,9 @@ void Stage_DrawNotes()
 					{
 						RECT note_src = {
 							160,
-							((note->type & 0x3) << 5) + 8 + (clip >> FIXED_SHIFT),
+							((note->type & 0x3) << 5) + 10 + (clip >> FIXED_SHIFT),
 							32,
-							24 - (clip >> FIXED_SHIFT)
+							22 - (clip >> FIXED_SHIFT)
 						};
 						RECT_FIXED note_dst = {
 							note_x[note->type & 0x7] - FIXED_DEC(16,1),
@@ -566,7 +571,7 @@ void Stage_DrawNotes()
 				}
 				else
 				{
-					if (clip < stage.note_speed)
+					if (clip < scroll.size)
 					{
 						RECT note_src = {
 							160,
@@ -578,7 +583,7 @@ void Stage_DrawNotes()
 							note_x[note->type & 0x7] - FIXED_DEC(16,1),
 							y - FIXED_DEC(12,1) + clip,
 							note_src.w << FIXED_SHIFT,
-							stage.note_speed - clip
+							scroll.size - clip
 						};
 						Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, stage.bump);
 					}
@@ -639,7 +644,7 @@ void Stage_Load(StageId id, StageDiff difficulty)
 	Stage_ChangeBPM(stage.cur_section->flag & SECTION_FLAG_BPM_MASK, 0);
 	
 	//Initialize stage state
-	stage.note_scroll = FIXED_DEC(-8,1);
+	stage.note_scroll = FIXED_DEC(-8 * 24,1);
 	
 	stage.just_step = false;
 	
@@ -715,7 +720,7 @@ void Stage_Tick()
 				{
 					//Still scrolling
 					playing = false;
-					if ((stage.note_scroll & FIXED_UAND) != (next_scroll & FIXED_UAND))
+					if (((stage.note_scroll / 24) & FIXED_UAND) != ((next_scroll / 24) & FIXED_UAND))
 						stage.just_step = true;
 					else
 						stage.just_step = false;
@@ -736,7 +741,7 @@ void Stage_Tick()
 				
 				if (next_scroll > stage.note_scroll) //Skipping?
 				{
-					if ((stage.note_scroll & FIXED_UAND) != (next_scroll & FIXED_UAND))
+					if (((stage.note_scroll / 24) & FIXED_UAND) != ((next_scroll / 24) & FIXED_UAND))
 						stage.just_step = true;
 					else
 						stage.just_step = false;
@@ -751,7 +756,7 @@ void Stage_Tick()
 				playing = false;
 				
 				//Update scroll
-				if ((stage.note_scroll & FIXED_UAND) != (next_scroll & FIXED_UAND))
+				if (((stage.note_scroll / 24) & FIXED_UAND) != ((next_scroll / 24) & FIXED_UAND))
 					stage.just_step = true;
 				else
 					stage.just_step = false;
@@ -762,13 +767,13 @@ void Stage_Tick()
 			}
 			
 			//Get song step
-			stage.song_step = stage.note_scroll >> FIXED_SHIFT;
+			stage.song_step = (stage.note_scroll >> FIXED_SHIFT) / 24;
 			
 			//Update section
 			while (stage.note_scroll >= 0)
 			{
 				//Check if current section has ended
-				if (stage.song_step < stage.cur_section->end)
+				if ((stage.note_scroll >> FIXED_SHIFT) < stage.cur_section->end)
 					break;
 				
 				//Update BPM
@@ -788,13 +793,13 @@ void Stage_Tick()
 			{
 				//Bump every 16 steps
 				if ((stage.song_step & 0xF) == 0)
-					stage.bump = (fixed_t)FIXED_UNIT + ((fixed_t)(FIXED_DEC(75,100) - (stage.note_scroll & FIXED_LAND)) / 16);
+					stage.bump = (fixed_t)FIXED_UNIT + ((fixed_t)(FIXED_DEC(75,100) - ((stage.note_scroll / 24) & FIXED_LAND)) / 16);
 				else
 					stage.bump = FIXED_UNIT;
 				
 				//Bump every 4 steps
 				if ((stage.song_step & 0x3) == 0)
-					stage.sbump = (fixed_t)FIXED_UNIT + ((fixed_t)(FIXED_DEC(75,100) - (stage.note_scroll & FIXED_LAND)) / 24);
+					stage.sbump = (fixed_t)FIXED_UNIT + ((fixed_t)(FIXED_DEC(75,100) - ((stage.note_scroll / 24) & FIXED_LAND)) / 24);
 				else
 					stage.sbump = FIXED_UNIT;
 			}
@@ -833,7 +838,7 @@ void Stage_Tick()
 			//Process notes
 			for (Note *note = stage.cur_note;; note++)
 			{
-				if (note->pos > ((stage.note_scroll * 24) >> FIXED_SHIFT))
+				if (note->pos > (stage.note_scroll >> FIXED_SHIFT))
 					break;
 				
 				//Opponent note hits

@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
 			
 			std::cout << "chg bpm: " << bpm << " step_crochet: " << step_crochet << " milli_base: " << milli_base << " step_base: " << step_base << std::endl;
 		}
-		new_section.end = (section_end += (uint16_t)i["lengthInSteps"]);
+		new_section.end = (section_end += (uint16_t)i["lengthInSteps"]) * 24;
 		new_section.flag = PosRound(bpm, 1.0 / 24.0) & SECTION_FLAG_BPM_MASK; 
 		if (i["alt_anim"] == true)
 			new_section.flag |= SECTION_FLAG_ALTANIM;
@@ -139,10 +139,10 @@ int main(int argc, char *argv[])
 	});
 	
 	//Push dummy section and note
-	//Section dum_section;
-	//dum_section.end = 0xFFFF;
-	//sections.push_back(dum_section);
-	sections[sections.size() - 1].end = 0xFFFF;
+	Section dum_section;
+	dum_section.end = 0xFFFF;
+	dum_section.flag = sections[sections.size() - 1].flag;
+	sections.push_back(dum_section);
 	
 	Note dum_note;
 	dum_note.pos = 0xFFFF;
