@@ -11,6 +11,8 @@
 //Stage constants
 //#define STAGE_PERFECT //Play all notes perfectly
 
+const boolean downscroll = true;
+
 #define INPUT_LEFT  (PAD_LEFT  | PAD_SQUARE)
 #define INPUT_DOWN  (PAD_DOWN  | PAD_CROSS)
 #define INPUT_UP    (PAD_UP    | PAD_TRIANGLE)
@@ -533,6 +535,8 @@ void Stage_DrawHealth(u8 i, s8 ox)
 		src.w << FIXED_SHIFT,
 		src.h << FIXED_SHIFT
 	};
+	if (downscroll)
+		dst.y = -dst.y - dst.h;
 	
 	//Draw health icon
 	Stage_DrawTex(&stage.tex_hud1, &src, &dst, FIXED_MUL(stage.bump, stage.sbump));
@@ -630,6 +634,11 @@ void Stage_DrawNotes()
 							note_src.w << FIXED_SHIFT,
 							(note_src.h << FIXED_SHIFT)
 						};
+						if (downscroll)
+						{
+							note_dst.y = -note_dst.y;
+							note_dst.h = -note_dst.h;
+						}
 						Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, stage.bump);
 					}
 				}
@@ -649,6 +658,8 @@ void Stage_DrawNotes()
 							note_src.w << FIXED_SHIFT,
 							scroll.size - clip
 						};
+						if (downscroll)
+							note_dst.y = -note_dst.y - note_dst.h;
 						Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, stage.bump);
 					}
 				}
@@ -666,6 +677,8 @@ void Stage_DrawNotes()
 					note_src.w << FIXED_SHIFT,
 					note_src.h << FIXED_SHIFT
 				};
+				if (downscroll)
+					note_dst.y = -note_dst.y - note_dst.h;
 				Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, stage.bump);
 			}
 		}
@@ -978,6 +991,8 @@ void Stage_Tick()
 			RECT health_fill = {0, 0, 256 - (256 * stage.health / 20000), 8};
 			RECT health_back = {0, 8, 256, 8};
 			RECT_FIXED health_dst = {FIXED_DEC(-128,1), (SCREEN_HEIGHT2 - 32) << FIXED_SHIFT, 0, FIXED_DEC(8,1)};
+			if (downscroll)
+				health_dst.y = -health_dst.y - health_dst.h;
 			
 			health_dst.w = health_fill.w << FIXED_SHIFT;
 			Stage_DrawTex(&stage.tex_hud1, &health_fill, &health_dst, stage.bump);
@@ -990,6 +1005,8 @@ void Stage_Tick()
 			//Draw note HUD
 			RECT note_src = {0, 0, 32, 32};
 			RECT_FIXED note_dst = {0, note_y - FIXED_DEC(16,1), FIXED_DEC(32,1), FIXED_DEC(32,1)};
+			if (downscroll)
+				note_dst.y = -note_dst.y - note_dst.h;
 			
 			for (u8 i = 0; i < 4; i++)
 			{
