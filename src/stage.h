@@ -31,6 +31,14 @@ typedef enum
 	
 	StageId_4_4, //Test
 	
+	StageId_5_1, //Cocoa
+	StageId_5_2, //Eggnog
+	StageId_5_3, //Winter Horrorland
+	
+	StageId_6_1, //Senpai
+	StageId_6_2, //Roses
+	StageId_6_3, //Thorns
+	
 	StageId_Max
 } StageId;
 

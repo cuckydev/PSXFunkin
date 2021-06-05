@@ -9,6 +9,8 @@
 #include "object/combo.h"
 
 //Stage constants
+//#define STAGE_PERFECT //Play all notes perfectly
+
 #define INPUT_LEFT  (PAD_LEFT  | PAD_SQUARE)
 #define INPUT_DOWN  (PAD_DOWN  | PAD_CROSS)
 #define INPUT_UP    (PAD_UP    | PAD_TRIANGLE)
@@ -158,6 +160,68 @@ static const StageDef stage_defs[StageId_Max] = {
 		{FIXED_DEC(16,10),FIXED_DEC(16,10),FIXED_DEC(16,10)},
 		4, 4,
 		XA_Test, 2,
+	},
+	
+	{ //StageId_5_1 (Cocoa)
+		//Characters
+		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
+		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		
+		//Song info
+		{FIXED_DEC(13,10),FIXED_DEC(13,10),FIXED_DEC(13,10)},
+		5, 1,
+		XA_Cocoa, 0,
+	},
+	{ //StageId_5_2 (Eggnog)
+		//Characters
+		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
+		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		
+		//Song info
+		{FIXED_DEC(14,10),FIXED_DEC(16,10),FIXED_DEC(19,10)},
+		5, 2,
+		XA_Eggnog, 2,
+	},
+	{ //StageId_5_3 (Winter Horrorland)
+		//Characters
+		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
+		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		
+		//Song info
+		{FIXED_DEC(1,1),FIXED_DEC(11,10),FIXED_DEC(13,10)},
+		5, 3,
+		XA_WinterHorrorland, 0,
+	},
+	
+	{ //StageId_6_1 (Senpai)
+		//Characters
+		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
+		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		
+		//Song info
+		{FIXED_DEC(1,1),FIXED_DEC(12,10),FIXED_DEC(13,10)},
+		6, 1,
+		XA_Senpai, 0,
+	},
+	{ //StageId_6_2 (Roses)
+		//Characters
+		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
+		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		
+		//Song info
+		{FIXED_DEC(12,10),FIXED_DEC(13,10),FIXED_DEC(15,10)},
+		6, 2,
+		XA_Roses, 2,
+	},
+	{ //StageId_6_3 (Thorns)
+		//Characters
+		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
+		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		
+		//Song info
+		{FIXED_DEC(11,10),FIXED_DEC(13,10),FIXED_DEC(15,10)},
+		6, 3,
+		XA_Thorns, 0,
 	},
 };
 
@@ -696,6 +760,9 @@ void Stage_Tick()
 	{
 		case StageState_Play:
 		{
+			//Clear per frame flags
+			stage.just_step = false;
+			
 			//Get song position
 			boolean playing;
 			
@@ -722,8 +789,6 @@ void Stage_Tick()
 					playing = false;
 					if (((stage.note_scroll / 24) & FIXED_UAND) != ((next_scroll / 24) & FIXED_UAND))
 						stage.just_step = true;
-					else
-						stage.just_step = false;
 					stage.note_scroll = next_scroll;
 					
 					//Extrapolate song time from note scroll
@@ -732,6 +797,7 @@ void Stage_Tick()
 			}
 			else if (Audio_PlayingXA())
 			{
+				RecalcSongPosition:;
 				//Get playing song position
 				fixed_t song_time = (Audio_TellXA_Milli() << FIXED_SHIFT) / 1000;
 				playing = true;
@@ -743,8 +809,6 @@ void Stage_Tick()
 				{
 					if (((stage.note_scroll / 24) & FIXED_UAND) != ((next_scroll / 24) & FIXED_UAND))
 						stage.just_step = true;
-					else
-						stage.just_step = false;
 					stage.note_scroll = next_scroll;
 					stage.song_time = song_time;
 				}
@@ -756,10 +820,6 @@ void Stage_Tick()
 				playing = false;
 				
 				//Update scroll
-				if (((stage.note_scroll / 24) & FIXED_UAND) != ((next_scroll / 24) & FIXED_UAND))
-					stage.just_step = true;
-				else
-					stage.just_step = false;
 				stage.note_scroll = next_scroll;
 				
 				//Extrapolate song time from note scroll
@@ -770,22 +830,28 @@ void Stage_Tick()
 			stage.song_step = (stage.note_scroll >> FIXED_SHIFT) / 24;
 			
 			//Update section
-			while (stage.note_scroll >= 0)
+			if (stage.note_scroll >= 0)
 			{
 				//Check if current section has ended
-				if ((stage.note_scroll >> FIXED_SHIFT) < stage.cur_section->end)
-					break;
-				
-				//Update BPM
-				Stage_ChangeBPM(stage.cur_section[1].flag & SECTION_FLAG_BPM_MASK, stage.cur_section->end);
-				stage.section_base = stage.cur_section + 1;
-				
-				//Start next section
-				stage.cur_section++;
-				if (stage.cur_section->flag & SECTION_FLAG_OPPFOCUS)
-					Stage_FocusCharacter(stage.opponent, FIXED_UNIT / 24);
-				else
-					Stage_FocusCharacter(stage.player, FIXED_UNIT / 24);
+				u16 end = stage.cur_section->end;
+				if ((stage.note_scroll >> FIXED_SHIFT) >= end)
+				{
+					//Start next section
+					stage.cur_section++;
+					if (stage.cur_section->flag & SECTION_FLAG_OPPFOCUS)
+						Stage_FocusCharacter(stage.opponent, FIXED_UNIT / 24);
+					else
+						Stage_FocusCharacter(stage.player, FIXED_UNIT / 24);
+					
+					//Update BPM
+					u16 next_bpm = stage.cur_section->flag & SECTION_FLAG_BPM_MASK;
+					Stage_ChangeBPM(next_bpm, end);
+					stage.section_base = stage.cur_section;
+					
+					//Recalculate song position based off new BPM
+					if (playing)
+						goto RecalcSongPosition;
+				}
 			}
 			
 			//Get bump
@@ -813,27 +879,29 @@ void Stage_Tick()
 			//Scroll camera
 			Stage_ScrollCamera();
 			
-			//Handle player note presses
-			if (playing)
-			{
-				if (pad_state.press & INPUT_LEFT)
-					Stage_NoteCheck(0);
-				if (pad_state.press & INPUT_DOWN)
-					Stage_NoteCheck(1);
-				if (pad_state.press & INPUT_UP)
-					Stage_NoteCheck(2);
-				if (pad_state.press & INPUT_RIGHT)
-					Stage_NoteCheck(3);
-				
-				if (pad_state.held & INPUT_LEFT)
-					Stage_SustainCheck(0);
-				if (pad_state.held & INPUT_DOWN)
-					Stage_SustainCheck(1);
-				if (pad_state.held & INPUT_UP)
-					Stage_SustainCheck(2);
-				if (pad_state.held & INPUT_RIGHT)
-					Stage_SustainCheck(3);
-			}
+			#ifndef STAGE_PERFECT
+				//Handle player note presses
+				if (playing)
+				{
+					if (pad_state.press & INPUT_LEFT)
+						Stage_NoteCheck(0);
+					if (pad_state.press & INPUT_DOWN)
+						Stage_NoteCheck(1);
+					if (pad_state.press & INPUT_UP)
+						Stage_NoteCheck(2);
+					if (pad_state.press & INPUT_RIGHT)
+						Stage_NoteCheck(3);
+					
+					if (pad_state.held & INPUT_LEFT)
+						Stage_SustainCheck(0);
+					if (pad_state.held & INPUT_DOWN)
+						Stage_SustainCheck(1);
+					if (pad_state.held & INPUT_UP)
+						Stage_SustainCheck(2);
+					if (pad_state.held & INPUT_RIGHT)
+						Stage_SustainCheck(3);
+				}
+			#endif
 			
 			//Process notes
 			for (Note *note = stage.cur_note;; note++)
@@ -850,6 +918,47 @@ void Stage_Tick()
 					note->type |= NOTE_FLAG_HIT;
 				}
 			}
+			
+			#ifdef STAGE_PERFECT
+				//Do perfect note checks
+				if (playing)
+				{
+					boolean hit[4] = {0, 0, 0, 0};
+					for (Note *note = stage.cur_note;; note++)
+					{
+						//Check if note can be hit
+						fixed_t note_fp = (fixed_t)note->pos << FIXED_SHIFT;
+						if (note_fp - stage.early_safe > stage.note_scroll)
+							break;
+						if (note_fp + stage.late_safe < stage.note_scroll)
+							continue;
+						if (note->type & NOTE_FLAG_OPPONENT)
+							continue;
+						
+						//Handle note hit
+						if (!(note->type & NOTE_FLAG_SUSTAIN))
+						{
+							if (note->type & NOTE_FLAG_HIT)
+								continue;
+							if (stage.note_scroll >= note_fp)
+								hit[note->type & 0x3] |= 1;
+							else
+								hit[note->type & 0x3] |= 2;
+						}
+						else if (!(hit[note->type & 0x3] & 2))
+							hit[note->type & 0x3] |= 4;
+					}
+					
+					//Handle input
+					for (u8 i = 0; i < 4; i++)
+					{
+						if (hit[i] & 1)
+							Stage_NoteCheck(i);
+						if (hit[i] & 4)
+							Stage_SustainCheck(i);
+					}
+				}
+			#endif
 			
 			//Perform health checks
 			if (stage.health <= 0)
@@ -981,17 +1090,13 @@ void Stage_Tick()
 			//Change background colour to black
 			Gfx_SetClear(0, 0, 0);
 			
-			//Knock camera about
-			stage.camera.x += RandomRange(FIXED_DEC(-8,1), FIXED_DEC(8,1));
-			stage.camera.y += RandomRange(FIXED_DEC(-8,1), FIXED_DEC(8,1));
-			
 			//Run death animation, focus on player, and change state
 			stage.player->set_anim(stage.player, PlayerAnim_Dead0);
 			
 			stage.camera.tx = stage.player->x;
 			stage.camera.ty = stage.player->y - stage.player->focus_height;
 			stage.camera.tz = stage.player->focus_zoom;
-			stage.camera.td = FIXED_UNIT / 40;
+			stage.song_time = 0;
 			
 			stage.state = StageState_DeadLoad;
 		}
@@ -999,7 +1104,11 @@ void Stage_Tick()
 		case StageState_DeadLoad:
 		{
 			//Scroll camera and tick player
-			Stage_ScrollCamera();
+			if (stage.song_time < FIXED_UNIT)
+				stage.song_time += FIXED_UNIT / 60;
+			stage.camera.td = FIXED_DEC(-2, 100) + FIXED_MUL(stage.song_time, FIXED_DEC(45, 1000));
+			if (stage.camera.td > 0)
+				Stage_ScrollCamera();
 			stage.player->tick(stage.player);
 			
 			//Drop mic and change state if CD has finished reading and animation has ended
@@ -1007,6 +1116,7 @@ void Stage_Tick()
 				break;
 			
 			stage.player->set_anim(stage.player, PlayerAnim_Dead2);
+			stage.camera.td = FIXED_DEC(25, 1000);
 			stage.state = StageState_DeadDrop;
 			break;
 		}

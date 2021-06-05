@@ -134,11 +134,19 @@ void Menu_Tick()
 		"MILF",
 		
 		"TEST",
+		
+		"COCOA",
+		"EGGNOG",
+		"WINTER HORRORLAND",
+		
+		"SENPAI",
+		"ROSES",
+		"THORNS",
 	};
 	
 	if (pad_state.press & PAD_DOWN)
-		if (++stid > StageId_4_4)
-			stid = StageId_4_4;
+		if (++stid > StageId_6_3)
+			stid = StageId_6_3;
 	if (pad_state.press & PAD_UP)
 		if (--stid < 0)
 			stid = 0;

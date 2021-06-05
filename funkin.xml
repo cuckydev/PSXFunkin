@@ -116,6 +116,38 @@
 				<file name = "4.4h.cht" type = "data" source = "iso/chart/4.4h.cht"/>
 			</dir>
 			
+			<!-- Week 5 assets -->
+			<dir name = "week5">
+				<!-- Cocoa charts -->
+				<file name = "5.1e.cht" type = "data" source = "iso/chart/5.1e.cht"/>
+				<file name = "5.1n.cht" type = "data" source = "iso/chart/5.1n.cht"/>
+				<file name = "5.1h.cht" type = "data" source = "iso/chart/5.1h.cht"/>
+				<!-- Eggnog charts -->
+				<file name = "5.2e.cht" type = "data" source = "iso/chart/5.2e.cht"/>
+				<file name = "5.2n.cht" type = "data" source = "iso/chart/5.2n.cht"/>
+				<file name = "5.2h.cht" type = "data" source = "iso/chart/5.2h.cht"/>
+				<!-- Winter Horrorland charts -->
+				<file name = "5.3e.cht" type = "data" source = "iso/chart/5.3e.cht"/>
+				<file name = "5.3n.cht" type = "data" source = "iso/chart/5.3n.cht"/>
+				<file name = "5.3h.cht" type = "data" source = "iso/chart/5.3h.cht"/>
+			</dir>
+			
+			<!-- Week 6 assets -->
+			<dir name = "week6">
+				<!-- Senpai charts -->
+				<file name = "6.1e.cht" type = "data" source = "iso/chart/6.1e.cht"/>
+				<file name = "6.1n.cht" type = "data" source = "iso/chart/6.1n.cht"/>
+				<file name = "6.1h.cht" type = "data" source = "iso/chart/6.1h.cht"/>
+				<!-- Roses charts -->
+				<file name = "6.2e.cht" type = "data" source = "iso/chart/6.2e.cht"/>
+				<file name = "6.2n.cht" type = "data" source = "iso/chart/6.2n.cht"/>
+				<file name = "6.2h.cht" type = "data" source = "iso/chart/6.2h.cht"/>
+				<!-- Thorns charts -->
+				<file name = "6.3e.cht" type = "data" source = "iso/chart/6.3e.cht"/>
+				<file name = "6.3n.cht" type = "data" source = "iso/chart/6.3n.cht"/>
+				<file name = "6.3h.cht" type = "data" source = "iso/chart/6.3h.cht"/>
+			</dir>
+			
 			<!-- Boyfriend assets -->
 			<dir name = "bf">
 				<file name = "main.arc" type = "data" source = "iso/bf/main.arc"/>
@@ -146,6 +178,14 @@
 				<file name = "week4a.xa" type = "xa" source = "iso/music/week4a.xa"/>
 				<dummy sectors="128"/>
 				<file name = "week4b.xa" type = "xa" source = "iso/music/week4b.xa"/>
+				<dummy sectors="128"/>
+				<file name = "week5a.xa" type = "xa" source = "iso/music/week5a.xa"/>
+				<dummy sectors="128"/>
+				<file name = "week5b.xa" type = "xa" source = "iso/music/week5b.xa"/>
+				<dummy sectors="128"/>
+				<file name = "week6a.xa" type = "xa" source = "iso/music/week6a.xa"/>
+				<dummy sectors="128"/>
+				<file name = "week6b.xa" type = "xa" source = "iso/music/week6b.xa"/>
 				<dummy sectors="128"/>
 			</dir>
 			

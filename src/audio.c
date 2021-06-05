@@ -49,6 +49,16 @@ static const XA_TrackDef xa_tracks[] = {
 	//WEEK4B.XA
 	{XA_Week4B, XA_LENGTH(12300)}, //XA_MILF
 	{XA_Week4B, XA_LENGTH(10300)}, //XA_Test
+	//WEEK5A.XA
+	{XA_Week5A, XA_LENGTH(15520)}, //XA_Cocoa
+	{XA_Week5A, XA_LENGTH(13401)}, //XA_Eggnog
+	//WEEK5B.XA
+	{XA_Week5B, XA_LENGTH(21223)}, //XA_WinterHorrorland
+	//WEEK6A.XA
+	{XA_Week6A, XA_LENGTH(13829)}, //XA_Senpai
+	{XA_Week6A, XA_LENGTH(12928)}, //XA_Roses
+	//WEEK6B.XA
+	{XA_Week6B, XA_LENGTH(14298)}, //XA_Thorns
 };
 
 
@@ -160,6 +170,10 @@ void Audio_Init()
 		"\\MUSIC\\WEEK3B.XA;1", //XA_Week3B
 		"\\MUSIC\\WEEK4A.XA;1", //XA_Week4A
 		"\\MUSIC\\WEEK4B.XA;1", //XA_Week4B
+		"\\MUSIC\\WEEK5A.XA;1", //XA_Week5A
+		"\\MUSIC\\WEEK5B.XA;1", //XA_Week5B
+		"\\MUSIC\\WEEK6A.XA;1", //XA_Week6A
+		"\\MUSIC\\WEEK6B.XA;1", //XA_Week6B
 	};
 	CdlFILE *filep = xa_files;
 	for (u8 i = 0; i < XA_Max; i++)

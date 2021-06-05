@@ -15,6 +15,10 @@ typedef enum
 	XA_Week3B, //WEEK3B.XA
 	XA_Week4A, //WEEK4A.XA
 	XA_Week4B, //WEEK4B.XA
+	XA_Week5A, //WEEK5A.XA
+	XA_Week5B, //WEEK5B.XA
+	XA_Week6A, //WEEK6A.XA
+	XA_Week6B, //WEEK6B.XA
 	
 	XA_Max,
 } XA_File;
@@ -46,6 +50,16 @@ typedef enum
 	//WEEK4B.XA
 	XA_MILF, //M.I.L.F
 	XA_Test, //Test
+	//WEEK5A.XA
+	XA_Cocoa,  //Cocoa
+	XA_Eggnog, //Eggnog
+	//WEEK5B.XA
+	XA_WinterHorrorland, //Winter Horrorland
+	//WEEK6A.XA
+	XA_Senpai, //Senpai
+	XA_Roses,  //Roses
+	//WEEK6B.XA
+	XA_Thorns, //Thorns
 } XA_Track;
 
 //Audio functions

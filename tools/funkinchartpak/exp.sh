@@ -96,3 +96,45 @@ cp milf-hard.json.cht ../../iso/chart/4.3h.cht
 cp test.json.cht ../../iso/chart/4.4n.cht
 cp test.json.cht ../../iso/chart/4.4e.cht
 cp test.json.cht ../../iso/chart/4.4h.cht
+
+./funkinchartpak cocoa.json
+cp cocoa.json.cht ../../iso/chart/5.1n.cht
+./funkinchartpak cocoa-easy.json
+cp cocoa-easy.json.cht ../../iso/chart/5.1e.cht
+./funkinchartpak cocoa-hard.json
+cp cocoa-hard.json.cht ../../iso/chart/5.1h.cht
+
+./funkinchartpak eggnog.json
+cp eggnog.json.cht ../../iso/chart/5.2n.cht
+./funkinchartpak eggnog-easy.json
+cp eggnog-easy.json.cht ../../iso/chart/5.2e.cht
+./funkinchartpak eggnog-hard.json
+cp eggnog-hard.json.cht ../../iso/chart/5.2h.cht
+
+./funkinchartpak winter-horrorland.json
+cp winter-horrorland.json.cht ../../iso/chart/5.3n.cht
+./funkinchartpak winter-horrorland-easy.json
+cp winter-horrorland-easy.json.cht ../../iso/chart/5.3e.cht
+./funkinchartpak winter-horrorland-hard.json
+cp winter-horrorland-hard.json.cht ../../iso/chart/5.3h.cht
+
+./funkinchartpak senpai.json
+cp senpai.json.cht ../../iso/chart/6.1n.cht
+./funkinchartpak senpai-easy.json
+cp senpai-easy.json.cht ../../iso/chart/6.1e.cht
+./funkinchartpak senpai-hard.json
+cp senpai-hard.json.cht ../../iso/chart/6.1h.cht
+
+./funkinchartpak roses.json
+cp roses.json.cht ../../iso/chart/6.2n.cht
+./funkinchartpak roses-easy.json
+cp roses-easy.json.cht ../../iso/chart/6.2e.cht
+./funkinchartpak roses-hard.json
+cp roses-hard.json.cht ../../iso/chart/6.2h.cht
+
+./funkinchartpak thorns.json
+cp thorns.json.cht ../../iso/chart/6.3n.cht
+./funkinchartpak thorns-easy.json
+cp thorns-easy.json.cht ../../iso/chart/6.3e.cht
+./funkinchartpak thorns-hard.json
+cp thorns-hard.json.cht ../../iso/chart/6.3h.cht

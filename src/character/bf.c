@@ -362,7 +362,7 @@ Character *Char_BF_New(fixed_t x, fixed_t y)
 	this->character.health_i = 0;
 	
 	this->character.focus_height = FIXED_DEC(32,1);
-	this->character.focus_zoom = FIXED_DEC(105,100);
+	this->character.focus_zoom = FIXED_DEC(1,1);
 	
 	//Load art
 	this->arc_main = IO_Read("\\BF\\MAIN.ARC;1");
