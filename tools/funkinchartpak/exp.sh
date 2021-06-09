@@ -138,3 +138,25 @@ cp thorns.json.cht ../../iso/chart/6.3n.cht
 cp thorns-easy.json.cht ../../iso/chart/6.3e.cht
 ./funkinchartpak thorns-hard.json
 cp thorns-hard.json.cht ../../iso/chart/6.3h.cht
+
+
+./funkinchartpak ugh.json
+cp ugh.json.cht ../../iso/chart/7.1n.cht
+./funkinchartpak ugh-easy.json
+cp ugh-easy.json.cht ../../iso/chart/7.1e.cht
+./funkinchartpak ugh-hard.json
+cp ugh-hard.json.cht ../../iso/chart/7.1h.cht
+
+./funkinchartpak guns.json
+cp guns.json.cht ../../iso/chart/7.2n.cht
+./funkinchartpak guns-easy.json
+cp guns-easy.json.cht ../../iso/chart/7.2e.cht
+./funkinchartpak guns-hard.json
+cp guns-hard.json.cht ../../iso/chart/7.2h.cht
+
+./funkinchartpak stress.json
+cp stress.json.cht ../../iso/chart/7.3n.cht
+./funkinchartpak stress-easy.json
+cp stress-easy.json.cht ../../iso/chart/7.3e.cht
+./funkinchartpak stress-hard.json
+cp stress-hard.json.cht ../../iso/chart/7.3h.cht

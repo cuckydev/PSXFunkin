@@ -47,7 +47,7 @@ typedef struct Character
 	
 	//Stage information
 	u8 health_i; //hud1.tim
-	fixed_t focus_height, focus_zoom;
+	fixed_t focus_x, focus_y, focus_zoom;
 	
 	//Animation state
 	Animatable animatable;

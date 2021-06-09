@@ -19,6 +19,8 @@ typedef enum
 	XA_Week5B, //WEEK5B.XA
 	XA_Week6A, //WEEK6A.XA
 	XA_Week6B, //WEEK6B.XA
+	//XA_Week7A, //WEEK7A.XA
+	//XA_Week7B, //WEEK7B.XA
 	
 	XA_Max,
 } XA_File;
@@ -60,6 +62,11 @@ typedef enum
 	XA_Roses,  //Roses
 	//WEEK6B.XA
 	XA_Thorns, //Thorns
+	//WEEK7A.XA
+	XA_Ugh,  //Ugh
+	XA_Guns, //Guns
+	//WEEK7B.XA
+	XA_Stress, //Stress
 } XA_Track;
 
 //Audio functions

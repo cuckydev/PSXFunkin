@@ -39,6 +39,10 @@ typedef enum
 	StageId_6_2, //Roses
 	StageId_6_3, //Thorns
 	
+	StageId_7_1, //Ugh
+	StageId_7_2, //Guns
+	StageId_7_3, //Stress
+	
 	StageId_Max
 } StageId;
 
@@ -48,6 +52,16 @@ typedef enum
 	StageDiff_Normal,
 	StageDiff_Hard,
 } StageDiff;
+
+//Stage background
+typedef struct StageBack
+{
+	//Stage background functions
+	void (*draw_fg)(struct StageBack*);
+	void (*draw_md)(struct StageBack*);
+	void (*draw_bg)(struct StageBack*);
+	void (*free)(struct StageBack*);
+} StageBack;
 
 //Stage definitions
 typedef struct
@@ -59,6 +73,9 @@ typedef struct
 		fixed_t x, y;
 	} pchar, ochar;
 	
+	//Stage background
+	StageBack* (*back)();
+	
 	//Song info
 	fixed_t speed[3];
 	
@@ -67,9 +84,8 @@ typedef struct
 } StageDef;
 
 //Stage state
-#define SECTION_FLAG_ALTANIM  (1 << 15) //Mom/Dad in Week 5
-#define SECTION_FLAG_OPPFOCUS (1 << 14) //Focus on opponent
-#define SECTION_FLAG_BPM_MASK 0x3FFF //1/24
+#define SECTION_FLAG_OPPFOCUS (1 << 15) //Focus on opponent
+#define SECTION_FLAG_BPM_MASK 0x7FFF //1/24
 
 typedef struct
 {
@@ -80,6 +96,7 @@ typedef struct
 #define NOTE_FLAG_OPPONENT    (1 << 2) //Note is opponent's
 #define NOTE_FLAG_SUSTAIN     (1 << 3) //Note is a sustain note
 #define NOTE_FLAG_SUSTAIN_END (1 << 4) //Draw as sustain ending (this sucks)
+#define NOTE_FLAG_ALT_ANIM    (1 << 5) //Note plays alt animation
 #define NOTE_FLAG_HIT         (1 << 7) //Note has been hit
 
 typedef struct
@@ -94,8 +111,6 @@ typedef struct
 	Gfx_Tex tex_hud0, tex_hud1;
 	
 	//Stage data
-	Gfx_Tex tex_back0, tex_back1;
-	
 	const StageDef *stage_def;
 	StageId stage_id;
 	
@@ -115,6 +130,8 @@ typedef struct
 		fixed_t tx, ty, tz, td;
 	} camera;
 	fixed_t bump, sbump;
+	
+	StageBack *back;
 	
 	Character *player;
 	Character *opponent;

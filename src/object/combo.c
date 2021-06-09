@@ -32,7 +32,7 @@ boolean Obj_Combo_Tick(Object *obj)
 		
 		//Apply gravity
 		this->hy += this->hv;
-		this->hv += FIXED_DEC(3,100);
+		this->hv += FIXED_DEC(5,100);
 	}
 	
 	//Increment hit type timer
@@ -124,9 +124,8 @@ Obj_Combo *Obj_Combo_New(fixed_t x, fixed_t y, u8 hit_type, u16 combo)
 	this->obj.tick = Obj_Combo_Tick;
 	this->obj.free = Obj_Combo_Free;
 	
-	//Offset position
-	this->x = (x >> 1) - FIXED_DEC(48,1);
-	y -= FIXED_DEC(48,1);
+	//Use set position
+	this->x = x - FIXED_DEC(48,1);
 	
 	//Setup hit type
 	if ((this->hit_type = hit_type) != 0xFF)
@@ -185,9 +184,9 @@ Obj_Combo *Obj_Combo_New(fixed_t x, fixed_t y, u8 hit_type, u16 combo)
 	}
 	
 	//Initialize timers
-	this->ht = -44;
-	this->ct = -44;
-	this->numt = -40;
+	this->ht = -30;
+	this->ct = -53;
+	this->numt = -56;
 	
 	return this;
 }

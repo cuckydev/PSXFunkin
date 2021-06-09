@@ -302,7 +302,8 @@ void Char_BF_SetAnim(Character *character, u8 anim)
 		case PlayerAnim_Dead0:
 			//Begin reading dead.arc and adjust focus
 			this->arc_dead = IO_AsyncReadFile(&this->file_dead_arc);
-			character->focus_height = FIXED_DEC(40,1);
+			character->focus_x = FIXED_DEC(0,1);
+			character->focus_y = FIXED_DEC(-90,1);
 			character->focus_zoom = FIXED_DEC(115,100);
 			break;
 		case PlayerAnim_Dead2:
@@ -361,7 +362,8 @@ Character *Char_BF_New(fixed_t x, fixed_t y)
 	//Set character stage information
 	this->character.health_i = 0;
 	
-	this->character.focus_height = FIXED_DEC(32,1);
+	this->character.focus_x = FIXED_DEC(-50,1);
+	this->character.focus_y = FIXED_DEC(-65,1);
 	this->character.focus_zoom = FIXED_DEC(1,1);
 	
 	//Load art

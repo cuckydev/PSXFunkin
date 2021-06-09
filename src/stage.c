@@ -11,7 +11,7 @@
 //Stage constants
 //#define STAGE_PERFECT //Play all notes perfectly
 
-const boolean downscroll = true;
+const boolean downscroll = false;
 
 #define INPUT_LEFT  (PAD_LEFT  | PAD_SQUARE)
 #define INPUT_DOWN  (PAD_DOWN  | PAD_CROSS)
@@ -19,11 +19,16 @@ const boolean downscroll = true;
 #define INPUT_RIGHT (PAD_RIGHT | PAD_CIRCLE)
 
 //Stage definitions
+#include "stage/week4.h"
+
 static const StageDef stage_defs[StageId_Max] = {
 	{ //StageId_1_1 (Bopeebo)
 		//Characters
 		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
 		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		
+		//Stage background
+		Back_Week4_New,
 		
 		//Song info
 		{FIXED_DEC(1,1),FIXED_DEC(1,1),FIXED_DEC(13,10)},
@@ -35,6 +40,9 @@ static const StageDef stage_defs[StageId_Max] = {
 		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
 		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
 		
+		//Stage background
+		Back_Week4_New,
+		
 		//Song info
 		{FIXED_DEC(1,1),FIXED_DEC(13,10),FIXED_DEC(18,10)},
 		1, 2,
@@ -45,6 +53,9 @@ static const StageDef stage_defs[StageId_Max] = {
 		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
 		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
 		
+		//Stage background
+		Back_Week4_New,
+		
 		//Song info
 		{FIXED_DEC(13,10),FIXED_DEC(15,10),FIXED_DEC(23,10)},
 		1, 3,
@@ -54,6 +65,9 @@ static const StageDef stage_defs[StageId_Max] = {
 		//Characters
 		{CharId_BF,  FIXED_DEC(120,1),  FIXED_DEC(100,1)},
 		{CharId_Dad,   FIXED_DEC(0,1),    FIXED_DEC(0,1)},
+		
+		//Stage background
+		Back_Week4_New,
 		
 		//Song info
 		{FIXED_DEC(1,1),FIXED_DEC(1,1),FIXED_DEC(1,1)},
@@ -66,6 +80,9 @@ static const StageDef stage_defs[StageId_Max] = {
 		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
 		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
 		
+		//Stage background
+		Back_Week4_New,
+		
 		//Song info
 		{FIXED_DEC(1,1),FIXED_DEC(17,10),FIXED_DEC(24,10)},
 		2, 1,
@@ -76,6 +93,9 @@ static const StageDef stage_defs[StageId_Max] = {
 		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
 		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
 		
+		//Stage background
+		Back_Week4_New,
+		
 		//Song info
 		{FIXED_DEC(11,10),FIXED_DEC(15,10),FIXED_DEC(22,10)},
 		2, 2,
@@ -85,6 +105,9 @@ static const StageDef stage_defs[StageId_Max] = {
 		//Characters
 		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
 		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		
+		//Stage background
+		Back_Week4_New,
 		
 		//Song info
 		{FIXED_DEC(13,10),FIXED_DEC(13,10),FIXED_DEC(16,10)},
@@ -97,6 +120,9 @@ static const StageDef stage_defs[StageId_Max] = {
 		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
 		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
 		
+		//Stage background
+		Back_Week4_New,
+		
 		//Song info
 		{FIXED_DEC(12,10),FIXED_DEC(14,10),FIXED_DEC(16,10)},
 		3, 1,
@@ -106,6 +132,9 @@ static const StageDef stage_defs[StageId_Max] = {
 		//Characters
 		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
 		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		
+		//Stage background
+		Back_Week4_New,
 		
 		//Song info
 		{FIXED_DEC(1,1),FIXED_DEC(13,10),FIXED_DEC(2,1)},
@@ -117,6 +146,9 @@ static const StageDef stage_defs[StageId_Max] = {
 		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
 		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
 		
+		//Stage background
+		Back_Week4_New,
+		
 		//Song info
 		{FIXED_DEC(12,10),FIXED_DEC(15,10),FIXED_DEC(23,10)},
 		3, 3,
@@ -125,8 +157,11 @@ static const StageDef stage_defs[StageId_Max] = {
 	
 	{ //StageId_4_1 (Satin Panties)
 		//Characters
-		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
+		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(40,1)},
 		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		
+		//Stage background
+		Back_Week4_New,
 		
 		//Song info
 		{FIXED_DEC(13,10),FIXED_DEC(16,10),FIXED_DEC(18,10)},
@@ -135,8 +170,11 @@ static const StageDef stage_defs[StageId_Max] = {
 	},
 	{ //StageId_4_2 (High)
 		//Characters
-		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
+		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(40,1)},
 		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		
+		//Stage background
+		Back_Week4_New,
 		
 		//Song info
 		{FIXED_DEC(13,10),FIXED_DEC(18,10),FIXED_DEC(2,1)},
@@ -145,8 +183,11 @@ static const StageDef stage_defs[StageId_Max] = {
 	},
 	{ //StageId_4_3 (MILF)
 		//Characters
-		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
+		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(40,1)},
 		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		
+		//Stage background
+		Back_Week4_New,
 		
 		//Song info
 		{FIXED_DEC(14,10),FIXED_DEC(17,10),FIXED_DEC(26,10)},
@@ -157,6 +198,9 @@ static const StageDef stage_defs[StageId_Max] = {
 		//Characters
 		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
 		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		
+		//Stage background
+		Back_Week4_New,
 		
 		//Song info
 		{FIXED_DEC(16,10),FIXED_DEC(16,10),FIXED_DEC(16,10)},
@@ -169,6 +213,9 @@ static const StageDef stage_defs[StageId_Max] = {
 		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
 		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
 		
+		//Stage background
+		Back_Week4_New,
+		
 		//Song info
 		{FIXED_DEC(13,10),FIXED_DEC(13,10),FIXED_DEC(13,10)},
 		5, 1,
@@ -179,6 +226,9 @@ static const StageDef stage_defs[StageId_Max] = {
 		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
 		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
 		
+		//Stage background
+		Back_Week4_New,
+		
 		//Song info
 		{FIXED_DEC(14,10),FIXED_DEC(16,10),FIXED_DEC(19,10)},
 		5, 2,
@@ -188,6 +238,9 @@ static const StageDef stage_defs[StageId_Max] = {
 		//Characters
 		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
 		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		
+		//Stage background
+		Back_Week4_New,
 		
 		//Song info
 		{FIXED_DEC(1,1),FIXED_DEC(11,10),FIXED_DEC(13,10)},
@@ -200,6 +253,9 @@ static const StageDef stage_defs[StageId_Max] = {
 		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
 		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
 		
+		//Stage background
+		Back_Week4_New,
+		
 		//Song info
 		{FIXED_DEC(1,1),FIXED_DEC(12,10),FIXED_DEC(13,10)},
 		6, 1,
@@ -209,6 +265,9 @@ static const StageDef stage_defs[StageId_Max] = {
 		//Characters
 		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
 		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		
+		//Stage background
+		Back_Week4_New,
 		
 		//Song info
 		{FIXED_DEC(12,10),FIXED_DEC(13,10),FIXED_DEC(15,10)},
@@ -220,10 +279,53 @@ static const StageDef stage_defs[StageId_Max] = {
 		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
 		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
 		
+		//Stage background
+		Back_Week4_New,
+		
 		//Song info
 		{FIXED_DEC(11,10),FIXED_DEC(13,10),FIXED_DEC(15,10)},
 		6, 3,
 		XA_Thorns, 0,
+	},
+	
+	{ //StageId_7_1 (Ugh)
+		//Characters
+		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
+		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		
+		//Stage background
+		Back_Week4_New,
+		
+		//Song info
+		{FIXED_DEC(125,100),FIXED_DEC(18,10),FIXED_DEC(23,10)},
+		7, 1,
+		XA_Ugh, 0,
+	},
+	{ //StageId_7_2 (Guns)
+		//Characters
+		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
+		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		
+		//Stage background
+		Back_Week4_New,
+		
+		//Song info
+		{FIXED_DEC(14,10),FIXED_DEC(2,1),FIXED_DEC(25,10)},
+		7, 2,
+		XA_Guns, 2,
+	},
+	{ //StageId_7_3 (Stress)
+		//Characters
+		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
+		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		
+		//Stage background
+		Back_Week4_New,
+		
+		//Song info
+		{FIXED_DEC(175,100),FIXED_DEC(22,10),FIXED_DEC(26,10)},
+		7, 3,
+		XA_Stress, 0,
 	},
 };
 
@@ -253,8 +355,8 @@ void Stage_CutVocal()
 void Stage_FocusCharacter(Character *ch, fixed_t div)
 {
 	//Use character focus settings to update target position and zoom
-	stage.camera.tx = ch->x * 2 / 3;
-	stage.camera.ty = ch->y / 3 - ch->focus_height;
+	stage.camera.tx = ch->x + ch->focus_x;
+	stage.camera.ty = ch->y + ch->focus_y;
 	stage.camera.tz = ch->focus_zoom;
 	stage.camera.td = div;
 }
@@ -374,8 +476,8 @@ void Stage_HitNote(fixed_t offset)
 	
 	//Create combo object telling of our combo
 	Obj_Combo *combo = Obj_Combo_New(
-		stage.player->x,
-		stage.player->y - stage.player->focus_height,
+		stage.player->x + stage.player->focus_x,
+		stage.player->y + stage.player->focus_y,
 		hit_type,
 		stage.combo >= 10 ? stage.combo : 0xFFFF
 	);
@@ -392,8 +494,8 @@ void Stage_MissNote(u8 type)
 		
 		//Create combo object telling of our lost combo
 		Obj_Combo *combo = Obj_Combo_New(
-			stage.player->x,
-			stage.player->y - stage.player->focus_height,
+			stage.player->x + stage.player->focus_x,
+			stage.player->y + stage.player->focus_y,
 			0xFF,
 			0
 		);
@@ -694,8 +796,10 @@ void Stage_Load(StageId id, StageDiff difficulty)
 	//Load HUD textures
 	Gfx_LoadTex(&stage.tex_hud0, IO_Read("\\STAGE\\HUD0.TIM;1"), GFX_LOADTEX_FREE);
 	Gfx_LoadTex(&stage.tex_hud1, IO_Read("\\STAGE\\HUD1.TIM;1"), GFX_LOADTEX_FREE);
-	Gfx_LoadTex(&stage.tex_back0, IO_Read("\\WEEK1\\BACK0.TIM;1"), GFX_LOADTEX_FREE);
-	Gfx_LoadTex(&stage.tex_back1, IO_Read("\\WEEK1\\BACK1.TIM;1"), GFX_LOADTEX_FREE);
+	
+	//Load stage background
+	stage.back = stage_def->back();
+	//Gfx_SetClear(62, 48, 64);
 	
 	//Load characters
 	stage.player = Character_New(stage_def->pchar.id, stage_def->pchar.x, stage_def->pchar.y);
@@ -744,8 +848,6 @@ void Stage_Load(StageId id, StageDiff difficulty)
 	stage.camera.x = stage.camera.tx;
 	stage.camera.y = stage.camera.ty;
 	stage.camera.zoom = stage.camera.tz;
-	
-	Gfx_SetClear(62, 48, 64);
 	
 	//Find music file and initialize music state
 	Audio_GetXAFile(&stage.music_file, stage_def->music_track);
@@ -927,7 +1029,7 @@ void Stage_Tick()
 				{
 					//Opponent hits note
 					Stage_StartVocal();
-					stage.opponent->set_anim(stage.opponent, note_anims[note->type & 0x3][(stage.cur_section->flag & SECTION_FLAG_ALTANIM) != 0]);
+					stage.opponent->set_anim(stage.opponent, note_anims[note->type & 0x3][(note->type & NOTE_FLAG_ALT_ANIM) != 0]);
 					note->type |= NOTE_FLAG_HIT;
 				}
 			}
@@ -1035,6 +1137,10 @@ void Stage_Tick()
 				Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, stage.bump);
 			}
 			
+			//Draw stage foreground
+			if (stage.back->draw_fg != NULL)
+				stage.back->draw_fg(stage.back);
+			
 			//Tick foreground objects
 			ObjectList_Tick(&stage.objlist_fg);
 			
@@ -1042,9 +1148,18 @@ void Stage_Tick()
 			stage.player->tick(stage.player);
 			stage.opponent->tick(stage.opponent);
 			
+			//Draw stage middle
+			if (stage.back->draw_md != NULL)
+				stage.back->draw_md(stage.back);
+			
 			//Tick background objects
 			ObjectList_Tick(&stage.objlist_bg);
 			
+			//Draw stage background
+			if (stage.back->draw_bg != NULL)
+				stage.back->draw_bg(stage.back);
+			
+			/*
 			//Draw curtains
 			RECT curtain_src = {0, 0, 128, 256};
 			RECT_FIXED curtain1_dst = {
@@ -1081,6 +1196,7 @@ void Stage_Tick()
 			
 			Stage_DrawTex(&stage.tex_back0, &stagel_src, &stage1_dst, stage.bump);
 			Stage_DrawTex(&stage.tex_back0, &stager_src, &stager_dst, stage.bump);
+			*/
 			break;
 		}
 		case StageState_Dead: //Start BREAK animation and reading extra data from CD
@@ -1091,6 +1207,10 @@ void Stage_Tick()
 			//Unload stage data
 			Mem_Free(stage.chart_data);
 			stage.chart_data = NULL;
+			
+			//Free background
+			stage.back->free(stage.back);
+			stage.back = NULL;
 			
 			//Free objects
 			ObjectList_Free(&stage.objlist_fg);
@@ -1110,9 +1230,7 @@ void Stage_Tick()
 			//Run death animation, focus on player, and change state
 			stage.player->set_anim(stage.player, PlayerAnim_Dead0);
 			
-			stage.camera.tx = stage.player->x;
-			stage.camera.ty = stage.player->y - stage.player->focus_height;
-			stage.camera.tz = stage.player->focus_zoom;
+			Stage_FocusCharacter(stage.player, 0);
 			stage.song_time = 0;
 			
 			stage.state = StageState_DeadLoad;

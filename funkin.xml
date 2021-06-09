@@ -98,6 +98,10 @@
 			
 			<!-- Week 4 assets -->
 			<dir name = "week4">
+				<!-- Background art -->
+				<file name = "back.arc" type = "data" source = "iso/week4/back.arc"/>
+				<file name = "hench.arc" type = "data" source = "iso/week4/hench.arc"/>
+				
 				<!-- Satin Panties charts -->
 				<file name = "4.1e.cht" type = "data" source = "iso/chart/4.1e.cht"/>
 				<file name = "4.1n.cht" type = "data" source = "iso/chart/4.1n.cht"/>

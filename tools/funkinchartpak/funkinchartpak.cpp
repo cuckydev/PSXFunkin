@@ -12,9 +12,8 @@
 #include "json.hpp"
 using json = nlohmann::json;
 
-#define SECTION_FLAG_ALTANIM  (1 << 15) //Mom/Dad in Week 5
-#define SECTION_FLAG_OPPFOCUS (1 << 14) //Focus on opponent
-#define SECTION_FLAG_BPM_MASK 0x3FFF //1/24
+#define SECTION_FLAG_OPPFOCUS (1 << 15) //Focus on opponent
+#define SECTION_FLAG_BPM_MASK 0x7FFF //1/24
 
 struct Section
 {
@@ -25,6 +24,7 @@ struct Section
 #define NOTE_FLAG_OPPONENT    (1 << 2) //Note is opponent's
 #define NOTE_FLAG_SUSTAIN     (1 << 3) //Note is a sustain note
 #define NOTE_FLAG_SUSTAIN_END (1 << 4) //Draw as sustain ending (this sucks)
+#define NOTE_FLAG_ALT_ANIM    (1 << 5) //Note plays alt animation
 #define NOTE_FLAG_HIT         (1 << 7) //Note has been hit
 
 struct Note
@@ -99,8 +99,7 @@ int main(int argc, char *argv[])
 		}
 		new_section.end = (section_end += (uint16_t)i["lengthInSteps"]) * 24;
 		new_section.flag = PosRound(bpm, 1.0 / 24.0) & SECTION_FLAG_BPM_MASK; 
-		if (i["alt_anim"] == true)
-			new_section.flag |= SECTION_FLAG_ALTANIM;
+		bool is_alt = i["altAnim"] == true;
 		if (is_opponent)
 			new_section.flag |= SECTION_FLAG_OPPFOCUS;
 		sections.push_back(new_section);
@@ -113,7 +112,13 @@ int main(int argc, char *argv[])
 			new_note.pos = (step_base * 24) + PosRound(((double)j[0] - milli_base) * 24.0, step_crochet);
 			new_note.type = (uint8_t)j[1];
 			if (is_opponent)
+			{
 				new_note.type ^= NOTE_FLAG_OPPONENT;
+				if (is_alt)
+					new_note.type |= NOTE_FLAG_ALT_ANIM;
+			}
+			if (j[3] == true)
+				new_note.type |= NOTE_FLAG_ALT_ANIM;
 			notes.push_back(new_note);
 			
 			//Push sustain notes
