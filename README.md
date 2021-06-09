@@ -8,7 +8,7 @@ You can find all the information required for this here: https://github.com/ABel
 
 mkpsxiso is also required to create the final .iso and .cue files for the game: https://github.com/Lameguy64/mkpsxiso
 
-You'll also need to either get a PSX license file, or remove the referencing line `<license file="licensea.dat"/>` from funkin.xml, and save it as licensea.dat
+You'll also need to either get a PSX license file and save it as licensea.dat in the same directory as funkin.xml, or remove the referencing line `<license file="licensea.dat"/>` from funkin.xml
 
 Once you have everything set up, run `make` then `mkpsxiso funkin.xml`
 
