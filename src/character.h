@@ -10,14 +10,6 @@
 //Character enums
 typedef enum
 {
-	CharId_BF,
-	CharId_Dad,
-	
-	CharId_Max
-} CharId;
-
-typedef enum
-{
 	CharAnim_Idle,
 	CharAnim_Left,  CharAnim_LeftAlt,
 	CharAnim_Down,  CharAnim_DownAlt,
@@ -54,9 +46,7 @@ typedef struct Character
 } Character;
 
 //Character functions
-Character *Character_New(CharId id, fixed_t x, fixed_t y);
 void Character_Free(Character *this);
-
 void Character_Init(Character *this, fixed_t x, fixed_t y);
 void Character_Draw(Character *this, Gfx_Tex *tex, const CharFrame *cframe);
 

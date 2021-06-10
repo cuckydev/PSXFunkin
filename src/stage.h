@@ -69,7 +69,7 @@ typedef struct
 	//Characters
 	struct
 	{
-		u8 id;
+		Character* (*new)();
 		fixed_t x, y;
 	} pchar, ochar;
 	

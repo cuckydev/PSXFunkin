@@ -19,13 +19,17 @@ const boolean downscroll = false;
 #define INPUT_RIGHT (PAD_RIGHT | PAD_CIRCLE)
 
 //Stage definitions
+#include "character/bf.h"
+#include "character/dad.h"
+#include "character/mom.h"
+
 #include "stage/week4.h"
 
 static const StageDef stage_defs[StageId_Max] = {
 	{ //StageId_1_1 (Bopeebo)
 		//Characters
-		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
-		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
+		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
 		
 		//Stage background
 		Back_Week4_New,
@@ -37,8 +41,8 @@ static const StageDef stage_defs[StageId_Max] = {
 	},
 	{ //StageId_1_2 (Fresh)
 		//Characters
-		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
-		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
+		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
 		
 		//Stage background
 		Back_Week4_New,
@@ -50,8 +54,8 @@ static const StageDef stage_defs[StageId_Max] = {
 	},
 	{ //StageId_1_3 (Dadbattle)
 		//Characters
-		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
-		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
+		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
 		
 		//Stage background
 		Back_Week4_New,
@@ -63,8 +67,8 @@ static const StageDef stage_defs[StageId_Max] = {
 	},
 	{ //StageId_1_4 (Tutorial)
 		//Characters
-		{CharId_BF,  FIXED_DEC(120,1),  FIXED_DEC(100,1)},
-		{CharId_Dad,   FIXED_DEC(0,1),    FIXED_DEC(0,1)},
+		{Char_BF_New,  FIXED_DEC(120,1),  FIXED_DEC(100,1)},
+		{Char_Dad_New,   FIXED_DEC(0,1),    FIXED_DEC(0,1)},
 		
 		//Stage background
 		Back_Week4_New,
@@ -77,8 +81,8 @@ static const StageDef stage_defs[StageId_Max] = {
 	
 	{ //StageId_2_1 (Spookeez)
 		//Characters
-		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
-		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
+		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
 		
 		//Stage background
 		Back_Week4_New,
@@ -90,8 +94,8 @@ static const StageDef stage_defs[StageId_Max] = {
 	},
 	{ //StageId_2_2 (South)
 		//Characters
-		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
-		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
+		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
 		
 		//Stage background
 		Back_Week4_New,
@@ -103,8 +107,8 @@ static const StageDef stage_defs[StageId_Max] = {
 	},
 	{ //StageId_2_3 (Monster)
 		//Characters
-		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
-		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
+		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
 		
 		//Stage background
 		Back_Week4_New,
@@ -117,8 +121,8 @@ static const StageDef stage_defs[StageId_Max] = {
 	
 	{ //StageId_3_1 (Pico)
 		//Characters
-		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
-		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
+		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
 		
 		//Stage background
 		Back_Week4_New,
@@ -130,8 +134,8 @@ static const StageDef stage_defs[StageId_Max] = {
 	},
 	{ //StageId_3_2 (Philly)
 		//Characters
-		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
-		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
+		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
 		
 		//Stage background
 		Back_Week4_New,
@@ -143,8 +147,8 @@ static const StageDef stage_defs[StageId_Max] = {
 	},
 	{ //StageId_3_3 (Blammed)
 		//Characters
-		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
-		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
+		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
 		
 		//Stage background
 		Back_Week4_New,
@@ -157,8 +161,8 @@ static const StageDef stage_defs[StageId_Max] = {
 	
 	{ //StageId_4_1 (Satin Panties)
 		//Characters
-		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(40,1)},
-		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(40,1)},
+		{Char_Mom_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
 		
 		//Stage background
 		Back_Week4_New,
@@ -170,8 +174,8 @@ static const StageDef stage_defs[StageId_Max] = {
 	},
 	{ //StageId_4_2 (High)
 		//Characters
-		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(40,1)},
-		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(40,1)},
+		{Char_Mom_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
 		
 		//Stage background
 		Back_Week4_New,
@@ -183,8 +187,8 @@ static const StageDef stage_defs[StageId_Max] = {
 	},
 	{ //StageId_4_3 (MILF)
 		//Characters
-		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(40,1)},
-		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(40,1)},
+		{Char_Mom_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
 		
 		//Stage background
 		Back_Week4_New,
@@ -196,8 +200,8 @@ static const StageDef stage_defs[StageId_Max] = {
 	},
 	{ //StageId_4_4 (Test)
 		//Characters
-		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
-		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
+		{Char_BF_New,  FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
 		
 		//Stage background
 		Back_Week4_New,
@@ -210,8 +214,8 @@ static const StageDef stage_defs[StageId_Max] = {
 	
 	{ //StageId_5_1 (Cocoa)
 		//Characters
-		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
-		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
+		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
 		
 		//Stage background
 		Back_Week4_New,
@@ -223,8 +227,8 @@ static const StageDef stage_defs[StageId_Max] = {
 	},
 	{ //StageId_5_2 (Eggnog)
 		//Characters
-		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
-		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
+		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
 		
 		//Stage background
 		Back_Week4_New,
@@ -236,8 +240,8 @@ static const StageDef stage_defs[StageId_Max] = {
 	},
 	{ //StageId_5_3 (Winter Horrorland)
 		//Characters
-		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
-		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
+		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
 		
 		//Stage background
 		Back_Week4_New,
@@ -250,8 +254,8 @@ static const StageDef stage_defs[StageId_Max] = {
 	
 	{ //StageId_6_1 (Senpai)
 		//Characters
-		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
-		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
+		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
 		
 		//Stage background
 		Back_Week4_New,
@@ -263,8 +267,8 @@ static const StageDef stage_defs[StageId_Max] = {
 	},
 	{ //StageId_6_2 (Roses)
 		//Characters
-		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
-		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
+		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
 		
 		//Stage background
 		Back_Week4_New,
@@ -276,8 +280,8 @@ static const StageDef stage_defs[StageId_Max] = {
 	},
 	{ //StageId_6_3 (Thorns)
 		//Characters
-		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
-		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
+		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
 		
 		//Stage background
 		Back_Week4_New,
@@ -290,8 +294,8 @@ static const StageDef stage_defs[StageId_Max] = {
 	
 	{ //StageId_7_1 (Ugh)
 		//Characters
-		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
-		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
+		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
 		
 		//Stage background
 		Back_Week4_New,
@@ -303,8 +307,8 @@ static const StageDef stage_defs[StageId_Max] = {
 	},
 	{ //StageId_7_2 (Guns)
 		//Characters
-		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
-		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
+		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
 		
 		//Stage background
 		Back_Week4_New,
@@ -316,8 +320,8 @@ static const StageDef stage_defs[StageId_Max] = {
 	},
 	{ //StageId_7_3 (Stress)
 		//Characters
-		{CharId_BF,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
-		{CharId_Dad, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
+		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
 		
 		//Stage background
 		Back_Week4_New,
@@ -802,8 +806,8 @@ void Stage_Load(StageId id, StageDiff difficulty)
 	//Gfx_SetClear(62, 48, 64);
 	
 	//Load characters
-	stage.player = Character_New(stage_def->pchar.id, stage_def->pchar.x, stage_def->pchar.y);
-	stage.opponent = Character_New(stage_def->ochar.id, stage_def->ochar.x, stage_def->ochar.y);
+	stage.player =   stage_def->pchar.new(stage_def->pchar.x, stage_def->pchar.y);
+	stage.opponent = stage_def->ochar.new(stage_def->ochar.x, stage_def->ochar.y);
 	
 	//Load stage data
 	char chart_path[64];
@@ -857,6 +861,9 @@ void Stage_Load(StageId id, StageDiff difficulty)
 
 void Stage_Unload()
 {
+	//Unload stage background
+	stage.back->free(stage.back);
+	
 	//Unload stage data
 	Mem_Free(stage.chart_data);
 	

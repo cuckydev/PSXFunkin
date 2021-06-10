@@ -163,6 +163,11 @@
 				<file name = "main.arc" type = "data" source = "iso/dad/main.arc"/>
 			</dir>
 			
+			<!-- Mom assets -->
+			<dir name = "mom">
+				<file name = "main.arc" type = "data" source = "iso/mom/main.arc"/>
+			</dir>
+			
 			<!-- Music -->
 			<dir name = "music">
 				<file name = "menu.xa" type = "xa" source = "iso/music/menu.xa"/>

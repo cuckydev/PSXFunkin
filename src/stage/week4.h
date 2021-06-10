@@ -3,6 +3,7 @@
 
 #include "../stage.h"
 #include "../gfx.h"
+#include "../animation.h"
 
 //Week 4 background structure
 typedef struct
@@ -18,7 +19,15 @@ typedef struct
 	Gfx_Tex tex_back2; //Sunset
 	Gfx_Tex tex_back3; //Car
 	
+	//Car state
+	fixed_t car_x;
+	u16 car_timer;
+	
+	//Henchmen state
 	Gfx_Tex tex_hench;
+	u8 hench_frame, hench_tex_id;
+	
+	Animatable hench_animatable;
 } Back_Week4;
 
 //Week 4 functions

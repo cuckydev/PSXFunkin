@@ -3,22 +3,7 @@
 #include "mem.h"
 #include "stage.h"
 
-//Characters
-#include "character/bf.h"
-#include "character/dad.h"
-
-static Character* (*char_new[CharId_Max])(fixed_t, fixed_t) = {
-	Char_BF_New,
-	Char_Dad_New,
-};
-
 //Character functions
-Character *Character_New(CharId id, fixed_t x, fixed_t y)
-{
-	//Allocate new character from given id
-	return char_new[id](x, y);
-}
-
 void Character_Free(Character *this)
 {
 	//Check if NULL
