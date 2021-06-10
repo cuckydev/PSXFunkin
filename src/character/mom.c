@@ -29,13 +29,17 @@ typedef struct
 	
 	Gfx_Tex tex;
 	u8 frame, tex_id;
+	
+	//Hair texture
+	Gfx_Tex tex_hair;
+	u8 hair_i;
 } Char_Mom;
 
 //Mom character definitions
 static const CharFrame char_mom_frame[] = {
 	{Mom_ArcMain_Idle0, {  0,   0, 128, 256}, { 42, 163}}, //0 idle 1
-	{Mom_ArcMain_Idle0, {128,   0, 128, 256}, { 41, 165}}, //1 idle 2
-	{Mom_ArcMain_Idle1, {  0,   0, 128, 256}, { 41, 166}}, //2 idle 3
+	{Mom_ArcMain_Idle0, {128,   0, 128, 256}, { 41, 164}}, //1 idle 2
+	{Mom_ArcMain_Idle1, {  0,   0, 128, 256}, { 41, 165}}, //2 idle 3
 	{Mom_ArcMain_Idle1, {128,   0, 128, 256}, { 41, 165}}, //3 idle 4
 	
 	{Mom_ArcMain_Left, {  0,   0, 128, 256}, { 65, 151}}, //4 left 1
@@ -92,6 +96,46 @@ void Char_Mom_Tick(Character *character)
 	//Animate and draw
 	Animatable_Animate(&character->animatable, (void*)this, Char_Mom_SetFrame);
 	Character_Draw(character, &this->tex, &char_mom_frame[this->frame]);
+	
+	//Draw hair
+	static const struct Char_Mom_HairDef
+	{
+		boolean sy;
+		u8 ox, oy;
+	} hair_defs[] = {
+		{0,  43, 196}, //idle 1
+		{0,  43, 196}, //idle 2
+		{0,  43, 197}, //idle 3
+		{0,  43, 197}, //idle 4
+		
+		{1,  87, 197}, //left 1
+		{1,  86, 197}, //left 2
+		
+		{1,  43, 159}, //down 1
+		{1,  43, 161}, //down 2
+		
+		{0,  60, 215}, //up 1
+		{0,  59, 214}, //up 2
+		
+		{0,  16, 182}, //right 1
+		{0,  15, 182}, //right 2
+	};
+	
+	const struct Char_Mom_HairDef *hair_def = &hair_defs[this->frame];
+	RECT hair_src = {
+		((this->hair_i += 1) & 2) << 6,
+		hair_def->sy << 7,
+		128,
+		128
+	};
+	RECT_FIXED hair_dst = {
+		character->x - ((fixed_t)hair_def->ox << FIXED_SHIFT) - stage.camera.x,
+		character->y - ((fixed_t)hair_def->oy << FIXED_SHIFT) - stage.camera.y,
+		FIXED_DEC(128,1),
+		FIXED_DEC(128,1)
+	};
+	
+	Stage_DrawTex(&this->tex_hair, &hair_src, &hair_dst, stage.bump);
 }
 
 void Char_Mom_SetAnim(Character *character, u8 anim)
@@ -128,11 +172,15 @@ Character *Char_Mom_New(fixed_t x, fixed_t y)
 	Character_Init((Character*)this, x, y);
 	
 	//Set character stage information
-	this->character.health_i = 1;
+	this->character.health_i = 4;
 	
 	this->character.focus_x = FIXED_DEC(65,1);
 	this->character.focus_y = FIXED_DEC(-115,1);
 	this->character.focus_zoom = FIXED_DEC(1,1);
+	
+	//Load hair art
+	Gfx_LoadTex(&this->tex_hair, IO_Read("\\MOM\\HAIR.TIM;1"), GFX_LOADTEX_FREE);
+	this->hair_i = 0;
 	
 	//Load art
 	this->arc_main = IO_Read("\\MOM\\MAIN.ARC;1");

@@ -166,6 +166,7 @@
 			<!-- Mom assets -->
 			<dir name = "mom">
 				<file name = "main.arc" type = "data" source = "iso/mom/main.arc"/>
+				<file name = "hair.tim" type = "data" source = "iso/mom/hair.tim"/>
 			</dir>
 			
 			<!-- Music -->
