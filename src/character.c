@@ -32,5 +32,5 @@ void Character_Draw(Character *this, Gfx_Tex *tex, const CharFrame *cframe)
 	
 	RECT src = {cframe->src[0], cframe->src[1], cframe->src[2], cframe->src[3]};
 	RECT_FIXED dst = {x, y, src.w << FIXED_SHIFT, src.h << FIXED_SHIFT};
-	Stage_DrawTex(tex, &src, &dst, FIXED_MUL(stage.camera.zoom, stage.bump));
+	Stage_DrawTex(tex, &src, &dst, stage.camera.bzoom);
 }

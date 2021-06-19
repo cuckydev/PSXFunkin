@@ -20,9 +20,11 @@ const boolean downscroll = false;
 
 //Stage definitions
 #include "character/bf.h"
+#include "character/gf.h"
 #include "character/dad.h"
 #include "character/mom.h"
 
+#include "stage/dummy.h"
 #include "stage/week4.h"
 
 static const StageDef stage_defs[StageId_Max] = {
@@ -30,9 +32,10 @@ static const StageDef stage_defs[StageId_Max] = {
 		//Characters
 		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
 		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_GF_New,     FIXED_DEC(0,1),    FIXED_DEC(0,1)},
 		
 		//Stage background
-		Back_Week4_New,
+		Back_Dummy_New,
 		
 		//Song info
 		{FIXED_DEC(1,1),FIXED_DEC(1,1),FIXED_DEC(13,10)},
@@ -43,9 +46,10 @@ static const StageDef stage_defs[StageId_Max] = {
 		//Characters
 		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
 		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_GF_New,     FIXED_DEC(0,1),    FIXED_DEC(0,1)},
 		
 		//Stage background
-		Back_Week4_New,
+		Back_Dummy_New,
 		
 		//Song info
 		{FIXED_DEC(1,1),FIXED_DEC(13,10),FIXED_DEC(18,10)},
@@ -56,9 +60,10 @@ static const StageDef stage_defs[StageId_Max] = {
 		//Characters
 		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
 		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_GF_New,     FIXED_DEC(0,1),    FIXED_DEC(0,1)},
 		
 		//Stage background
-		Back_Week4_New,
+		Back_Dummy_New,
 		
 		//Song info
 		{FIXED_DEC(13,10),FIXED_DEC(15,10),FIXED_DEC(23,10)},
@@ -68,10 +73,11 @@ static const StageDef stage_defs[StageId_Max] = {
 	{ //StageId_1_4 (Tutorial)
 		//Characters
 		{Char_BF_New,  FIXED_DEC(120,1),  FIXED_DEC(100,1)},
-		{Char_Dad_New,   FIXED_DEC(0,1),    FIXED_DEC(0,1)},
+		{Char_Dad_New,   FIXED_DEC(0,1),    FIXED_DEC(0,1)}, //TODO
+		{Char_GF_New,    FIXED_DEC(0,1),    FIXED_DEC(0,1)},
 		
 		//Stage background
-		Back_Week4_New,
+		Back_Dummy_New,
 		
 		//Song info
 		{FIXED_DEC(1,1),FIXED_DEC(1,1),FIXED_DEC(1,1)},
@@ -83,9 +89,10 @@ static const StageDef stage_defs[StageId_Max] = {
 		//Characters
 		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
 		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_GF_New,     FIXED_DEC(0,1),    FIXED_DEC(0,1)},
 		
 		//Stage background
-		Back_Week4_New,
+		Back_Dummy_New,
 		
 		//Song info
 		{FIXED_DEC(1,1),FIXED_DEC(17,10),FIXED_DEC(24,10)},
@@ -96,9 +103,10 @@ static const StageDef stage_defs[StageId_Max] = {
 		//Characters
 		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
 		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_GF_New,     FIXED_DEC(0,1),    FIXED_DEC(0,1)},
 		
 		//Stage background
-		Back_Week4_New,
+		Back_Dummy_New,
 		
 		//Song info
 		{FIXED_DEC(11,10),FIXED_DEC(15,10),FIXED_DEC(22,10)},
@@ -109,9 +117,10 @@ static const StageDef stage_defs[StageId_Max] = {
 		//Characters
 		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
 		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_GF_New,     FIXED_DEC(0,1),    FIXED_DEC(0,1)},
 		
 		//Stage background
-		Back_Week4_New,
+		Back_Dummy_New,
 		
 		//Song info
 		{FIXED_DEC(13,10),FIXED_DEC(13,10),FIXED_DEC(16,10)},
@@ -123,9 +132,10 @@ static const StageDef stage_defs[StageId_Max] = {
 		//Characters
 		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
 		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_GF_New,     FIXED_DEC(0,1),    FIXED_DEC(0,1)},
 		
 		//Stage background
-		Back_Week4_New,
+		Back_Dummy_New,
 		
 		//Song info
 		{FIXED_DEC(12,10),FIXED_DEC(14,10),FIXED_DEC(16,10)},
@@ -136,9 +146,10 @@ static const StageDef stage_defs[StageId_Max] = {
 		//Characters
 		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
 		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_GF_New,     FIXED_DEC(0,1),    FIXED_DEC(0,1)},
 		
 		//Stage background
-		Back_Week4_New,
+		Back_Dummy_New,
 		
 		//Song info
 		{FIXED_DEC(1,1),FIXED_DEC(13,10),FIXED_DEC(2,1)},
@@ -149,9 +160,10 @@ static const StageDef stage_defs[StageId_Max] = {
 		//Characters
 		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
 		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_GF_New,     FIXED_DEC(0,1),    FIXED_DEC(0,1)},
 		
 		//Stage background
-		Back_Week4_New,
+		Back_Dummy_New,
 		
 		//Song info
 		{FIXED_DEC(12,10),FIXED_DEC(15,10),FIXED_DEC(23,10)},
@@ -161,8 +173,9 @@ static const StageDef stage_defs[StageId_Max] = {
 	
 	{ //StageId_4_1 (Satin Panties)
 		//Characters
-		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(40,1)},
+		{Char_BF_New,   FIXED_DEC(120,1),   FIXED_DEC(40,1)},
 		{Char_Mom_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_GF_New,     FIXED_DEC(0,1),    FIXED_DEC(0,1)},
 		
 		//Stage background
 		Back_Week4_New,
@@ -174,8 +187,9 @@ static const StageDef stage_defs[StageId_Max] = {
 	},
 	{ //StageId_4_2 (High)
 		//Characters
-		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(40,1)},
+		{Char_BF_New,   FIXED_DEC(120,1),   FIXED_DEC(40,1)},
 		{Char_Mom_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_GF_New,     FIXED_DEC(0,1),    FIXED_DEC(0,1)},
 		
 		//Stage background
 		Back_Week4_New,
@@ -187,8 +201,9 @@ static const StageDef stage_defs[StageId_Max] = {
 	},
 	{ //StageId_4_3 (MILF)
 		//Characters
-		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(40,1)},
+		{Char_BF_New,   FIXED_DEC(120,1),   FIXED_DEC(40,1)},
 		{Char_Mom_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_GF_New,     FIXED_DEC(0,1),    FIXED_DEC(0,1)},
 		
 		//Stage background
 		Back_Week4_New,
@@ -202,9 +217,10 @@ static const StageDef stage_defs[StageId_Max] = {
 		//Characters
 		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
 		{Char_BF_New,  FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_GF_New,     FIXED_DEC(0,1),    FIXED_DEC(0,1)},
 		
 		//Stage background
-		Back_Week4_New,
+		Back_Dummy_New,
 		
 		//Song info
 		{FIXED_DEC(16,10),FIXED_DEC(16,10),FIXED_DEC(16,10)},
@@ -216,9 +232,10 @@ static const StageDef stage_defs[StageId_Max] = {
 		//Characters
 		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
 		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_GF_New,     FIXED_DEC(0,1),    FIXED_DEC(0,1)},
 		
 		//Stage background
-		Back_Week4_New,
+		Back_Dummy_New,
 		
 		//Song info
 		{FIXED_DEC(13,10),FIXED_DEC(13,10),FIXED_DEC(13,10)},
@@ -229,9 +246,10 @@ static const StageDef stage_defs[StageId_Max] = {
 		//Characters
 		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
 		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_GF_New,     FIXED_DEC(0,1),    FIXED_DEC(0,1)},
 		
 		//Stage background
-		Back_Week4_New,
+		Back_Dummy_New,
 		
 		//Song info
 		{FIXED_DEC(14,10),FIXED_DEC(16,10),FIXED_DEC(19,10)},
@@ -242,9 +260,10 @@ static const StageDef stage_defs[StageId_Max] = {
 		//Characters
 		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
 		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_GF_New,     FIXED_DEC(0,1),    FIXED_DEC(0,1)},
 		
 		//Stage background
-		Back_Week4_New,
+		Back_Dummy_New,
 		
 		//Song info
 		{FIXED_DEC(1,1),FIXED_DEC(11,10),FIXED_DEC(13,10)},
@@ -256,9 +275,10 @@ static const StageDef stage_defs[StageId_Max] = {
 		//Characters
 		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
 		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_GF_New,     FIXED_DEC(0,1),    FIXED_DEC(0,1)},
 		
 		//Stage background
-		Back_Week4_New,
+		Back_Dummy_New,
 		
 		//Song info
 		{FIXED_DEC(1,1),FIXED_DEC(12,10),FIXED_DEC(13,10)},
@@ -269,9 +289,10 @@ static const StageDef stage_defs[StageId_Max] = {
 		//Characters
 		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
 		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_GF_New,     FIXED_DEC(0,1),    FIXED_DEC(0,1)},
 		
 		//Stage background
-		Back_Week4_New,
+		Back_Dummy_New,
 		
 		//Song info
 		{FIXED_DEC(12,10),FIXED_DEC(13,10),FIXED_DEC(15,10)},
@@ -282,9 +303,10 @@ static const StageDef stage_defs[StageId_Max] = {
 		//Characters
 		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
 		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_GF_New,     FIXED_DEC(0,1),    FIXED_DEC(0,1)},
 		
 		//Stage background
-		Back_Week4_New,
+		Back_Dummy_New,
 		
 		//Song info
 		{FIXED_DEC(11,10),FIXED_DEC(13,10),FIXED_DEC(15,10)},
@@ -296,9 +318,10 @@ static const StageDef stage_defs[StageId_Max] = {
 		//Characters
 		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
 		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_GF_New,     FIXED_DEC(0,1),    FIXED_DEC(0,1)},
 		
 		//Stage background
-		Back_Week4_New,
+		Back_Dummy_New,
 		
 		//Song info
 		{FIXED_DEC(125,100),FIXED_DEC(18,10),FIXED_DEC(23,10)},
@@ -309,9 +332,10 @@ static const StageDef stage_defs[StageId_Max] = {
 		//Characters
 		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
 		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_GF_New,     FIXED_DEC(0,1),    FIXED_DEC(0,1)},
 		
 		//Stage background
-		Back_Week4_New,
+		Back_Dummy_New,
 		
 		//Song info
 		{FIXED_DEC(14,10),FIXED_DEC(2,1),FIXED_DEC(25,10)},
@@ -320,11 +344,12 @@ static const StageDef stage_defs[StageId_Max] = {
 	},
 	{ //StageId_7_3 (Stress)
 		//Characters
-		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
+		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)}, //TODO: carry gf
 		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_GF_New,     FIXED_DEC(0,1),    FIXED_DEC(0,1)}, //TODO: pico funny
 		
 		//Stage background
-		Back_Week4_New,
+		Back_Dummy_New,
 		
 		//Song info
 		{FIXED_DEC(175,100),FIXED_DEC(22,10),FIXED_DEC(26,10)},
@@ -376,6 +401,9 @@ void Stage_ScrollCamera()
 	stage.camera.x += FIXED_MUL(dx, stage.camera.td);
 	stage.camera.y += FIXED_MUL(dy, stage.camera.td);
 	stage.camera.zoom += FIXED_MUL(dz, stage.camera.td);
+	
+	//Update other camera stuff
+	stage.camera.bzoom = FIXED_MUL(stage.camera.zoom, stage.bump);
 }
 
 //Stage section functions
@@ -689,6 +717,11 @@ void Stage_DrawNotes()
 		//Check if went above screen
 		if (y < ((-16 - SCREEN_HEIGHT2) << FIXED_SHIFT))
 		{
+			//Wait for note to exit late time
+			fixed_t note_fp = (fixed_t)note->pos << FIXED_SHIFT;
+			if (note_fp + stage.late_safe >= stage.note_scroll)
+				continue;
+			
 			//Miss note if player's note
 			if (!(note->type & (NOTE_FLAG_OPPONENT | NOTE_FLAG_HIT)))
 			{
@@ -806,8 +839,9 @@ void Stage_Load(StageId id, StageDiff difficulty)
 	//Gfx_SetClear(62, 48, 64);
 	
 	//Load characters
-	stage.player =   stage_def->pchar.new(stage_def->pchar.x, stage_def->pchar.y);
+	stage.player   = stage_def->pchar.new(stage_def->pchar.x, stage_def->pchar.y);
 	stage.opponent = stage_def->ochar.new(stage_def->ochar.x, stage_def->ochar.y);
+	stage.gf       = stage_def->gchar.new(stage_def->gchar.x, stage_def->gchar.y);
 	
 	//Load stage data
 	char chart_path[64];
@@ -832,6 +866,8 @@ void Stage_Load(StageId id, StageDiff difficulty)
 	stage.note_scroll = FIXED_DEC(-8 * 24,1);
 	
 	stage.just_step = false;
+	
+	stage.gf_speed = 1 << 2;
 	
 	memset(stage.arrow_hitan, 0, sizeof(stage.arrow_hitan));
 	
@@ -862,7 +898,8 @@ void Stage_Load(StageId id, StageDiff difficulty)
 void Stage_Unload()
 {
 	//Unload stage background
-	stage.back->free(stage.back);
+	if (stage.back != NULL)
+		stage.back->free(stage.back);
 	
 	//Unload stage data
 	Mem_Free(stage.chart_data);
@@ -874,6 +911,7 @@ void Stage_Unload()
 	//Free characters
 	Character_Free(stage.player);
 	Character_Free(stage.opponent);
+	Character_Free(stage.gf);
 }
 
 void Stage_Tick()
@@ -922,6 +960,9 @@ void Stage_Tick()
 				RecalcSongPosition:;
 				//Get playing song position
 				fixed_t song_time = (Audio_TellXA_Milli() << FIXED_SHIFT) / 1000;
+				if (song_time < stage.time_base)
+					song_time = stage.time_base;
+				
 				playing = true;
 				
 				//Update scroll
@@ -1144,6 +1185,30 @@ void Stage_Tick()
 				Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, stage.bump);
 			}
 			
+			//Hardcoded stage stuff
+			switch (stage.stage_id)
+			{
+				case StageId_1_2: //Fresh GF bop
+					switch (stage.song_step)
+					{
+						case 16 << 2:
+							stage.gf_speed = 2 << 2;
+							break;
+						case 48 << 2:
+							stage.gf_speed = 1 << 2;
+							break;
+						case 80 << 2:
+							stage.gf_speed = 2 << 2;
+							break;
+						case 112 << 2:
+							stage.gf_speed = 1 << 2;
+							break;
+					}
+					break;
+				default:
+					break;
+			}
+			
 			//Draw stage foreground
 			if (stage.back->draw_fg != NULL)
 				stage.back->draw_fg(stage.back);
@@ -1158,6 +1223,9 @@ void Stage_Tick()
 			//Draw stage middle
 			if (stage.back->draw_md != NULL)
 				stage.back->draw_md(stage.back);
+			
+			//Tick girlfriend
+			stage.gf->tick(stage.gf);
 			
 			//Tick background objects
 			ObjectList_Tick(&stage.objlist_bg);
@@ -1223,9 +1291,11 @@ void Stage_Tick()
 			ObjectList_Free(&stage.objlist_fg);
 			ObjectList_Free(&stage.objlist_bg);
 			
-			//Free opponent
+			//Free opponent and girlfriend
 			Character_Free(stage.opponent);
 			stage.opponent = NULL;
+			Character_Free(stage.gf);
+			stage.gf = NULL;
 			
 			//Reset stage state
 			stage.just_step = false;

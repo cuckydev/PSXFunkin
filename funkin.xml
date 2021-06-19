@@ -152,10 +152,31 @@
 				<file name = "6.3h.cht" type = "data" source = "iso/chart/6.3h.cht"/>
 			</dir>
 			
+			<!-- Week 7 assets -->
+			<dir name = "week7">
+				<!-- Ugh charts -->
+				<file name = "7.1e.cht" type = "data" source = "iso/chart/7.1e.cht"/>
+				<file name = "7.1n.cht" type = "data" source = "iso/chart/7.1n.cht"/>
+				<file name = "7.1h.cht" type = "data" source = "iso/chart/7.1h.cht"/>
+				<!-- Guns charts -->
+				<file name = "7.2e.cht" type = "data" source = "iso/chart/7.2e.cht"/>
+				<file name = "7.2n.cht" type = "data" source = "iso/chart/7.2n.cht"/>
+				<file name = "7.2h.cht" type = "data" source = "iso/chart/7.2h.cht"/>
+				<!-- Stress charts -->
+				<file name = "7.3e.cht" type = "data" source = "iso/chart/7.3e.cht"/>
+				<file name = "7.3n.cht" type = "data" source = "iso/chart/7.3n.cht"/>
+				<file name = "7.3h.cht" type = "data" source = "iso/chart/7.3h.cht"/>
+			</dir>
+			
 			<!-- Boyfriend assets -->
 			<dir name = "bf">
 				<file name = "main.arc" type = "data" source = "iso/bf/main.arc"/>
 				<file name = "dead.arc" type = "data" source = "iso/bf/dead.arc"/>
+			</dir>
+			
+			<!-- Girlfriend assets -->
+			<dir name = "gf">
+				<file name = "main.arc" type = "data" source = "iso/gf/main.arc"/>
 			</dir>
 			
 			<!-- Dad assets -->
@@ -196,6 +217,10 @@
 				<file name = "week6a.xa" type = "xa" source = "iso/music/week6a.xa"/>
 				<dummy sectors="128"/>
 				<file name = "week6b.xa" type = "xa" source = "iso/music/week6b.xa"/>
+				<dummy sectors="128"/>
+				<file name = "week7a.xa" type = "xa" source = "iso/music/week7a.xa"/>
+				<dummy sectors="128"/>
+				<file name = "week7b.xa" type = "xa" source = "iso/music/week7b.xa"/>
 				<dummy sectors="128"/>
 			</dir>
 			

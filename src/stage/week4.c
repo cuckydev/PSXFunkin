@@ -50,7 +50,7 @@ void Week4_Henchmen_Draw(Back_Week4 *this, fixed_t x, fixed_t y)
 	
 	RECT src = {cframe->src[0], cframe->src[1], cframe->src[2], cframe->src[3]};
 	RECT_FIXED dst = {ox, oy, src.w << FIXED_SHIFT, src.h << FIXED_SHIFT};
-	Stage_DrawTex(&this->tex_hench, &src, &dst, FIXED_MUL(stage.camera.zoom, stage.bump));
+	Stage_DrawTex(&this->tex_hench, &src, &dst, stage.camera.bzoom);
 }
 
 //Week 4 background functions
@@ -89,10 +89,10 @@ void Back_Week4_DrawFG(StageBack *back)
 		FIXED_DEC(200,1)
 	};
 	
-	Stage_DrawTex(&this->tex_back3, &car_src, &car_dst, stage.bump);
+	Stage_DrawTex(&this->tex_back3, &car_src, &car_dst, stage.camera.bzoom);
 }
 
-void Back_Week4_DrawBG(StageBack *back)
+void Back_Week4_DrawMD(StageBack *back)
 {
 	Back_Week4 *this = (Back_Week4*)back;
 	
@@ -110,11 +110,18 @@ void Back_Week4_DrawBG(StageBack *back)
 		FIXED_DEC(128,1)
 	};
 	
-	Stage_DrawTex(&this->tex_back0, &fglimo_src, &fglimo_dst, stage.bump);
+	Stage_DrawTex(&this->tex_back0, &fglimo_src, &fglimo_dst, stage.camera.bzoom);
 	fglimo_dst.x += fglimo_dst.w;
 	fglimo_dst.y -= (fglimo_dst.h * 22) >> 7;
 	fglimo_src.y += 128;
-	Stage_DrawTex(&this->tex_back0, &fglimo_src, &fglimo_dst, stage.bump);
+	Stage_DrawTex(&this->tex_back0, &fglimo_src, &fglimo_dst, stage.camera.bzoom);
+}
+
+void Back_Week4_DrawBG(StageBack *back)
+{
+	Back_Week4 *this = (Back_Week4*)back;
+	
+	fixed_t fx, fy;
 	
 	//Animate and draw henchmen
 	fx = stage.camera.x / 2;
@@ -149,10 +156,10 @@ void Back_Week4_DrawBG(StageBack *back)
 		FIXED_DEC(128,1)
 	};
 	
-	Stage_DrawTex(&this->tex_back1, &bglimo_src, &bglimo_dst, stage.bump);
+	Stage_DrawTex(&this->tex_back1, &bglimo_src, &bglimo_dst, stage.camera.bzoom);
 	bglimo_dst.x += bglimo_dst.w;
 	bglimo_src.y += 128;
-	Stage_DrawTex(&this->tex_back1, &bglimo_src, &bglimo_dst, stage.bump);
+	Stage_DrawTex(&this->tex_back1, &bglimo_src, &bglimo_dst, stage.camera.bzoom);
 	
 	//Draw sunset
 	fx = stage.camera.x / 8;
@@ -166,7 +173,7 @@ void Back_Week4_DrawBG(StageBack *back)
 		FIXED_DEC(260,1)
 	};
 	
-	Stage_DrawTex(&this->tex_back2, &sunset_src, &sunset_dst, stage.bump);
+	Stage_DrawTex(&this->tex_back2, &sunset_src, &sunset_dst, stage.camera.bzoom);
 }
 
 void Back_Week4_Free(StageBack *back)
@@ -189,7 +196,7 @@ StageBack *Back_Week4_New()
 	
 	//Set background functions
 	this->back.draw_fg = Back_Week4_DrawFG;
-	this->back.draw_md = NULL;
+	this->back.draw_md = Back_Week4_DrawMD;
 	this->back.draw_bg = Back_Week4_DrawBG;
 	this->back.free = Back_Week4_Free;
 	

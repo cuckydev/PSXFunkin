@@ -11,17 +11,19 @@ SRCS = src/main.c \
        src/archive.c \
        src/menu.c \
        src/stage.c \
+       src/stage/dummy.c \
        src/stage/week4.c \
        src/animation.c \
        src/character.c \
        src/character/bf.c \
+       src/character/gf.c \
        src/character/dad.c \
        src/character/mom.c \
        src/object.c \
        src/object/combo.c \
        ../common/crt0/crt0.s
 
-CPPFLAGS += -I../psyq/include -Wall -O3
+CPPFLAGS += -I../psyq/include -Wall -O2
 LDFLAGS += -L../psyq/lib
 LDFLAGS += -Wl,--start-group
 LDFLAGS += -lapi

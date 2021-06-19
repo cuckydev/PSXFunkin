@@ -17,10 +17,6 @@ funkin.ps-exe
 *.o
 *.dep
 
-# Exclude Week 7 files
-iso/chart/7.*.cht
-iso/music/week7*.xa
-
 # Exclude tool data and executables
 tools/funkinchartpak/*.json
 tools/funkinchartpak/*.cht

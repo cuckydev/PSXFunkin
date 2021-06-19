@@ -9,7 +9,7 @@
 #define XA_STATE_PLAYING (1 << 1)
 #define XA_STATE_LOOPS   (1 << 2)
 #define XA_STATE_SEEKING (1 << 3)
-static u8 xa_state;
+static u8 xa_state, xa_resync, xa_volume, xa_channel;
 static u32 xa_pos, xa_start, xa_end;
 
 //XA files and tracks
@@ -60,10 +60,10 @@ static const XA_TrackDef xa_tracks[] = {
 	//WEEK6B.XA
 	{XA_Week6B, XA_LENGTH(10298)}, //XA_Thorns
 	//WEEK7A.XA
-	//{XA_Week7A, XA_LENGTH(8493)},  //XA_Ugh
-	//{XA_Week7A, XA_LENGTH(13866)}, //XA_Guns
+	{XA_Week7A, XA_LENGTH(8493)},  //XA_Ugh
+	{XA_Week7A, XA_LENGTH(13866)}, //XA_Guns
 	//WEEK7B.XA
-	//{XA_Week7B, XA_LENGTH(12200)}, //XA_Stress
+	{XA_Week7B, XA_LENGTH(12200)}, //XA_Stress
 };
 
 
@@ -84,7 +84,7 @@ static void XA_SetVolume(u8 x)
 {
 	//Set CD mix volume
 	CdlATV cd_vol;
-	cd_vol.val0 = cd_vol.val1 = cd_vol.val2 = cd_vol.val3 = x;
+	xa_volume = cd_vol.val0 = cd_vol.val1 = cd_vol.val2 = cd_vol.val3 = x;
 	CdMix(&cd_vol);
 }
 
@@ -96,6 +96,7 @@ static void XA_Init()
 	if (xa_state & XA_STATE_INIT)
 		return;
 	xa_state = XA_STATE_INIT;
+	xa_resync = 0;
 	
 	//Set CD mix flag
 	SpuCommonAttr spu_attr;
@@ -150,7 +151,7 @@ static void XA_SetFilter(u8 channel)
 	//Change CD filter
 	CdlFILTER filter;
 	filter.file = 1;
-	filter.chan = channel;
+	xa_channel = filter.chan = channel;
 	CdControlF(CdlSetfilter, (u8*)&filter);
 }
 
@@ -179,8 +180,8 @@ void Audio_Init()
 		"\\MUSIC\\WEEK5B.XA;1", //XA_Week5B
 		"\\MUSIC\\WEEK6A.XA;1", //XA_Week6A
 		"\\MUSIC\\WEEK6B.XA;1", //XA_Week6B
-		//"\\MUSIC\\WEEK7A.XA;1", //XA_Week7A
-		//"\\MUSIC\\WEEK7B.XA;1", //XA_Week7B
+		"\\MUSIC\\WEEK7A.XA;1", //XA_Week7A
+		"\\MUSIC\\WEEK7B.XA;1", //XA_Week7B
 	};
 	CdlFILE *filep = xa_files;
 	for (u8 i = 0; i < XA_Max; i++)
@@ -204,6 +205,7 @@ void Audio_PlayXA_File(CdlFILE *file, u8 volume, u8 channel, boolean loop)
 	xa_start = xa_pos = CdPosToInt(&file->pos);
 	xa_end = xa_start + (file->size / IO_SECT_SIZE) - 1;
 	xa_state = XA_STATE_INIT | XA_STATE_PLAYING | XA_STATE_SEEKING;
+	xa_resync = 0;
 	if (loop)
 		xa_state |= XA_STATE_LOOPS;
 	
@@ -270,15 +272,67 @@ void Audio_ProcessXA()
 	//Handle playing state
 	if (xa_state & XA_STATE_PLAYING)
 	{
+		//Retrieve CD status
+		CdControl(CdlNop, NULL, NULL);
+		u8 cd_status = CdStatus();
+		
+		//Handle resync timer
+		if (xa_resync != 0)
+		{
+			//Wait for resync timer
+			if (--xa_resync != 0)
+				return;
+			
+			//Check if we're in a proper state
+			if (cd_status & CdlStatShellOpen)
+				return;
+			
+			//Attempt to get CD drive active
+			while (1)
+			{
+				CdControl(CdlNop, NULL, NULL);
+				cd_status = CdStatus();
+				if (cd_status & CdlStatStandby)
+					break;
+			}
+			
+			//Re-initialize XA system
+			u8 prev_state = xa_state;
+			XA_Init();
+			xa_state = prev_state;
+			
+			XA_SetFilter(xa_channel);
+			XA_SetVolume(xa_volume);
+			
+			//Get new CD status
+			CdControl(CdlNop, NULL, NULL);
+			cd_status = CdStatus();
+		}
+		
+		//Check CD status for issues
+		if (cd_status & CdlStatShellOpen)
+		{
+			//Seek just ahead of last reported valid position
+			if (!(xa_state & XA_STATE_SEEKING))
+			{
+				xa_pos++;
+				xa_state |= XA_STATE_SEEKING;
+			}
+			
+			//Wait a moment before attempting the actual resync
+			xa_resync = 60;
+			return;
+		}
+		
 		//Handle seeking state
 		if (xa_state & XA_STATE_SEEKING)
 		{
 			//Check if CD is still seeking to the XA's beginning
-			if (!IO_IsSeeking())
+			if (!(cd_status & CdlStatSeek))
 			{
 				//Stopped seeking
 				xa_state &= ~XA_STATE_SEEKING;
-				XA_Play(xa_start);
+				XA_Play(xa_pos);
 			}
 			else
 			{
@@ -288,7 +342,9 @@ void Audio_ProcessXA()
 		}
 		
 		//Get CD position
-		xa_pos = XA_TellSector();
+		u32 next_pos = XA_TellSector();
+		if (next_pos > xa_pos)
+			xa_pos = next_pos;
 		
 		//Check position
 		if (xa_pos >= xa_end)

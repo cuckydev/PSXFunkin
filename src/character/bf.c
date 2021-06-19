@@ -303,8 +303,8 @@ void Char_BF_SetAnim(Character *character, u8 anim)
 			//Begin reading dead.arc and adjust focus
 			this->arc_dead = IO_AsyncReadFile(&this->file_dead_arc);
 			character->focus_x = FIXED_DEC(0,1);
-			character->focus_y = FIXED_DEC(-90,1);
-			character->focus_zoom = FIXED_DEC(115,100);
+			character->focus_y = FIXED_DEC(-40,1);
+			character->focus_zoom = FIXED_DEC(125,100);
 			break;
 		case PlayerAnim_Dead2:
 			//Unload main.arc

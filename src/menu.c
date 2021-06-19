@@ -142,11 +142,15 @@ void Menu_Tick()
 		"SENPAI",
 		"ROSES",
 		"THORNS",
+		
+		"UGH",
+		"GUNS",
+		"STRESS",
 	};
 	
 	if (pad_state.press & PAD_DOWN)
-		if (++stid > StageId_6_3)
-			stid = StageId_6_3;
+		if (++stid > StageId_7_3)
+			stid = StageId_7_3;
 	if (pad_state.press & PAD_UP)
 		if (--stid < 0)
 			stid = 0;

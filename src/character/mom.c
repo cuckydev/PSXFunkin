@@ -135,7 +135,7 @@ void Char_Mom_Tick(Character *character)
 		FIXED_DEC(128,1)
 	};
 	
-	Stage_DrawTex(&this->tex_hair, &hair_src, &hair_dst, stage.bump);
+	Stage_DrawTex(&this->tex_hair, &hair_src, &hair_dst, stage.camera.bzoom);
 }
 
 void Char_Mom_SetAnim(Character *character, u8 anim)

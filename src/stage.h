@@ -71,7 +71,7 @@ typedef struct
 	{
 		Character* (*new)();
 		fixed_t x, y;
-	} pchar, ochar;
+	} pchar, ochar, gchar;
 	
 	//Stage background
 	StageBack* (*back)();
@@ -128,6 +128,7 @@ typedef struct
 	{
 		fixed_t x, y, zoom;
 		fixed_t tx, ty, tz, td;
+		fixed_t bzoom;
 	} camera;
 	fixed_t bump, sbump;
 	
@@ -135,6 +136,7 @@ typedef struct
 	
 	Character *player;
 	Character *opponent;
+	Character *gf;
 	
 	Section *cur_section; //Current section
 	Note *cur_note; //First visible and hittable note, used for drawing and hit detection
@@ -149,6 +151,8 @@ typedef struct
 	
 	u16 song_step;
 	boolean just_step;
+	
+	u8 gf_speed; //Typically 4, changes in Fresh
 	
 	u8 arrow_hitan[4]; //Arrow hit animation for presses
 	
