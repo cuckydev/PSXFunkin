@@ -102,7 +102,7 @@ void Back_Week4_DrawMD(StageBack *back)
 	fx = stage.camera.x;
 	fy = stage.camera.y;
 	
-	RECT fglimo_src = {0, 0, 256, 128};
+	RECT fglimo_src = {0, 0, 255, 128};
 	RECT_FIXED fglimo_dst = {
 		FIXED_DEC(-220,1) - fx,
 		FIXED_DEC(50,1) - fy,
@@ -124,10 +124,10 @@ void Back_Week4_DrawBG(StageBack *back)
 	fixed_t fx, fy;
 	
 	//Animate and draw henchmen
-	fx = stage.camera.x / 2;
-	fy = stage.camera.y / 2;
+	fx = stage.camera.x >> 1;
+	fy = stage.camera.y >> 1;
 	
-	if (stage.just_step)
+	if (stage.flag & STAGE_FLAG_JUST_STEP)
 	{
 		switch (stage.song_step & 7)
 		{
@@ -148,7 +148,7 @@ void Back_Week4_DrawBG(StageBack *back)
 	
 	//Draw background limo
 	//Use same scroll as henchmen
-	RECT bglimo_src = {0, 0, 256, 128};
+	RECT bglimo_src = {0, 0, 255, 128};
 	RECT_FIXED bglimo_dst = {
 		FIXED_DEC(-210,1) - fx,
 		FIXED_DEC(30,1) - fy,
@@ -162,8 +162,8 @@ void Back_Week4_DrawBG(StageBack *back)
 	Stage_DrawTex(&this->tex_back1, &bglimo_src, &bglimo_dst, stage.camera.bzoom);
 	
 	//Draw sunset
-	fx = stage.camera.x / 8;
-	fy = stage.camera.y / 8;
+	fx = stage.camera.x >> 3;
+	fy = stage.camera.y >> 3;
 	
 	RECT sunset_src = {0, 0, 256, 256};
 	RECT_FIXED sunset_dst = {

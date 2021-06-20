@@ -51,15 +51,15 @@ static const CharFrame char_dad_frame[] = {
 };
 
 static const Animation char_dad_anim[CharAnim_Max] = {
-	{4, (const u8[]){ 1,  2,  3,  0, ASCR_BACK, 1}},                                           //CharAnim_Idle
-	{2, (const u8[]){ 4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_Left
-	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},                                             //CharAnim_LeftAlt
-	{2, (const u8[]){ 5,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_Down
-	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},                                             //CharAnim_DownAlt
-	{2, (const u8[]){ 7,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_Up
-	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},                                             //CharAnim_UpAlt
-	{2, (const u8[]){ 9, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_Right
-	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},                                             //CharAnim_RightAlt
+	{4, (const u8[]){ 1,  2,  3,  0, ASCR_BACK, 1}}, //CharAnim_Idle
+	{2, (const u8[]){ 4, ASCR_BACK, 1}},             //CharAnim_Left
+	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},   //CharAnim_LeftAlt
+	{2, (const u8[]){ 5,  6, ASCR_BACK, 1}},         //CharAnim_Down
+	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},   //CharAnim_DownAlt
+	{2, (const u8[]){ 7,  8, ASCR_BACK, 1}},         //CharAnim_Up
+	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},   //CharAnim_UpAlt
+	{2, (const u8[]){ 9, 10, ASCR_BACK, 1}},         //CharAnim_Right
+	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},   //CharAnim_RightAlt
 };
 
 //Dad character functions
@@ -81,10 +81,16 @@ void Char_Dad_Tick(Character *character)
 {
 	Char_Dad *this = (Char_Dad*)character;
 	
-	if (stage.just_step)
+	//Perform idle dance
+	Character_CheckEndSing(character);
+	
+	if (stage.flag & STAGE_FLAG_JUST_STEP)
 	{
-		//Perform idle dance
-		if ((stage.song_step & 0x7) == 0 && character->animatable.anim == CharAnim_Idle)
+		if ((character->animatable.anim != CharAnim_Left &&
+		     character->animatable.anim != CharAnim_Down &&
+		     character->animatable.anim != CharAnim_Up &&
+		     character->animatable.anim != CharAnim_Right) &&
+		    (stage.song_step & 0x7) == 0)
 			character->set_anim(character, CharAnim_Idle);
 	}
 	
@@ -97,6 +103,7 @@ void Char_Dad_SetAnim(Character *character, u8 anim)
 {
 	//Set animation
 	Animatable_SetAnim(&character->animatable, anim);
+	Character_CheckStartSing(character);
 }
 
 void Char_Dad_Free(Character *character)
@@ -143,10 +150,11 @@ Character *Char_Dad_New(fixed_t x, fixed_t y)
 		"down.tim",  //Dad_ArcMain_Down
 		"up.tim",    //Dad_ArcMain_Up
 		"right.tim", //Dad_ArcMain_Right
+		NULL
 	};
 	IO_Data *arc_ptr = this->arc_ptr;
-	for (u8 i = 0; i < Dad_Arc_Max; i++)
-		*arc_ptr++ = Archive_Find(this->arc_main, *pathp++);
+	for (; *pathp != NULL; pathp++)
+		*arc_ptr++ = Archive_Find(this->arc_main, *pathp);
 	
 	//Initialize render state
 	this->tex_id = this->frame = 0xFF;

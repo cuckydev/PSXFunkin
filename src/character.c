@@ -34,3 +34,23 @@ void Character_Draw(Character *this, Gfx_Tex *tex, const CharFrame *cframe)
 	RECT_FIXED dst = {x, y, src.w << FIXED_SHIFT, src.h << FIXED_SHIFT};
 	Stage_DrawTex(tex, &src, &dst, stage.camera.bzoom);
 }
+
+void Character_CheckStartSing(Character *this)
+{
+	//Update sing end if singing animation
+	if (this->animatable.anim == CharAnim_Left ||
+	    this->animatable.anim == CharAnim_Down ||
+	    this->animatable.anim == CharAnim_Up ||
+	    this->animatable.anim == CharAnim_Right)
+		this->sing_end = stage.note_scroll + (FIXED_DEC(24,1) << 2); //1 beat
+}
+
+void Character_CheckEndSing(Character *this)
+{
+	if ((this->animatable.anim == CharAnim_Left ||
+	     this->animatable.anim == CharAnim_Down ||
+	     this->animatable.anim == CharAnim_Up ||
+	     this->animatable.anim == CharAnim_Right) &&
+	    stage.note_scroll >= this->sing_end)
+		this->set_anim(this, CharAnim_Idle);
+}

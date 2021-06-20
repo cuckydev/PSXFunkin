@@ -79,7 +79,7 @@ void Char_GF_Tick(Character *character)
 {
 	Char_GF *this = (Char_GF*)character;
 	
-	if (stage.just_step)
+	if (stage.flag & STAGE_FLAG_JUST_STEP)
 	{
 		//Perform dance
 		if ((stage.song_step % stage.gf_speed) == 0)
@@ -143,10 +143,11 @@ Character *Char_GF_New(fixed_t x, fixed_t y)
 		"bopleft.tim",  //GF_ArcMain_BopLeft
 		"bopright.tim", //GF_ArcMain_BopRight
 		"cry.tim",      //GF_ArcMain_Cry
+		NULL
 	};
 	IO_Data *arc_ptr = this->arc_ptr;
-	for (u8 i = 0; i < GF_Arc_Max; i++)
-		*arc_ptr++ = Archive_Find(this->arc_main, *pathp++);
+	for (; *pathp != NULL; pathp++)
+		*arc_ptr++ = Archive_Find(this->arc_main, *pathp);
 	
 	//Initialize render state
 	this->tex_id = this->frame = 0xFF;

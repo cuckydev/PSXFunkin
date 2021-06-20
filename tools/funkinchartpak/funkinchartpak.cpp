@@ -79,6 +79,7 @@ int main(int argc, char *argv[])
 	std::vector<Note> notes;
 	
 	uint16_t section_end = 0;
+	int score = 0;
 	for (auto &i : song_info["notes"]) //Iterate through sections
 	{
 		bool is_opponent = i["mustHitSection"] != true; //Note: swapped
@@ -120,6 +121,8 @@ int main(int argc, char *argv[])
 			if (j[3] == true)
 				new_note.type |= NOTE_FLAG_ALT_ANIM;
 			notes.push_back(new_note);
+			if (!(new_note.type & NOTE_FLAG_OPPONENT))
+				score += 350;
 			
 			//Push sustain notes
 			int sustain = (int)PosRound(j[2], step_crochet) - 1;
@@ -134,6 +137,7 @@ int main(int argc, char *argv[])
 			}
 		}
 	}
+	std::cout << "max score: " << score << std::endl;
 	
 	//Sort notes
 	std::sort(notes.begin(), notes.end(), [](Note a, Note b) {

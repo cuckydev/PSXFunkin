@@ -3,11 +3,22 @@
 
 #include "io.h"
 #include "gfx.h"
+#include "pad.h"
 
 #include "fixed.h"
 #include "character.h"
 #include "player.h"
 #include "object.h"
+
+//Stage constants
+#define INPUT_LEFT  (PAD_LEFT  | PAD_SQUARE)
+#define INPUT_DOWN  (PAD_DOWN  | PAD_CROSS)
+#define INPUT_UP    (PAD_UP    | PAD_TRIANGLE)
+#define INPUT_RIGHT (PAD_RIGHT | PAD_CIRCLE)
+
+#define STAGE_FLAG_JUST_STEP     (1 << 0) //Song just stepped this frame
+#define STAGE_FLAG_VOCAL_ACTIVE  (1 << 1) //Song's vocal track is currently active
+#define STAGE_FLAG_SCORE_REFRESH (1 << 2) //Score text should be refreshed
 
 //Stage enums
 typedef enum
@@ -124,6 +135,8 @@ typedef struct
 	fixed_t note_speed;
 	
 	//Stage state
+	u8 flag;
+	
 	struct
 	{
 		fixed_t x, y, zoom;
@@ -150,15 +163,16 @@ typedef struct
 	Section *section_base;
 	
 	u16 song_step;
-	boolean just_step;
 	
-	u8 gf_speed; //Typically 4, changes in Fresh
+	u8 gf_speed; //Typically 4 steps, changes in Fresh
 	
 	u8 arrow_hitan[4]; //Arrow hit animation for presses
 	
 	s16 health;
-	s32 score;
 	u16 combo;
+	
+	s32 score;
+	char score_text[13];
 	
 	enum
 	{
@@ -170,9 +184,8 @@ typedef struct
 		StageState_DeadDecide, //Decided
 	} state;
 	
-	//Music state
+	//Music file
 	CdlFILE music_file;
-	boolean vocal_active;
 	
 	//Object lists
 	ObjectList objlist_fg, objlist_bg;

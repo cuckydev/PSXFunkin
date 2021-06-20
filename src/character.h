@@ -43,11 +43,15 @@ typedef struct Character
 	
 	//Animation state
 	Animatable animatable;
+	fixed_t sing_end;
 } Character;
 
 //Character functions
 void Character_Free(Character *this);
 void Character_Init(Character *this, fixed_t x, fixed_t y);
 void Character_Draw(Character *this, Gfx_Tex *tex, const CharFrame *cframe);
+
+void Character_CheckStartSing(Character *this);
+void Character_CheckEndSing(Character *this);
 
 #endif

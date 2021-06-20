@@ -13,19 +13,16 @@
 
 const boolean downscroll = false;
 
-#define INPUT_LEFT  (PAD_LEFT  | PAD_SQUARE)
-#define INPUT_DOWN  (PAD_DOWN  | PAD_CROSS)
-#define INPUT_UP    (PAD_UP    | PAD_TRIANGLE)
-#define INPUT_RIGHT (PAD_RIGHT | PAD_CIRCLE)
-
 //Stage definitions
 #include "character/bf.h"
 #include "character/gf.h"
 #include "character/dad.h"
 #include "character/mom.h"
+#include "character/tank.h"
 
 #include "stage/dummy.h"
 #include "stage/week4.h"
+#include "stage/week7.h"
 
 static const StageDef stage_defs[StageId_Max] = {
 	{ //StageId_1_1 (Bopeebo)
@@ -215,9 +212,9 @@ static const StageDef stage_defs[StageId_Max] = {
 	},
 	{ //StageId_4_4 (Test)
 		//Characters
-		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
-		{Char_BF_New,  FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),    FIXED_DEC(0,1)},
+		{Char_BF_New,     FIXED_DEC(120,1),  FIXED_DEC(100,1)},
+		{Char_Tank_New,  FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_GF_New,       FIXED_DEC(0,1),    FIXED_DEC(0,1)},
 		
 		//Stage background
 		Back_Dummy_New,
@@ -316,12 +313,12 @@ static const StageDef stage_defs[StageId_Max] = {
 	
 	{ //StageId_7_1 (Ugh)
 		//Characters
-		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
-		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),    FIXED_DEC(0,1)},
+		{Char_BF_New,    FIXED_DEC(105,1),  FIXED_DEC(100,1)},
+		{Char_Tank_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_GF_New,      FIXED_DEC(0,1),    FIXED_DEC(0,1)},
 		
 		//Stage background
-		Back_Dummy_New,
+		Back_Week7_New,
 		
 		//Song info
 		{FIXED_DEC(125,100),FIXED_DEC(18,10),FIXED_DEC(23,10)},
@@ -330,12 +327,12 @@ static const StageDef stage_defs[StageId_Max] = {
 	},
 	{ //StageId_7_2 (Guns)
 		//Characters
-		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)},
-		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),    FIXED_DEC(0,1)},
+		{Char_BF_New,    FIXED_DEC(105,1),  FIXED_DEC(100,1)},
+		{Char_Tank_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_GF_New,      FIXED_DEC(0,1),    FIXED_DEC(0,1)},
 		
 		//Stage background
-		Back_Dummy_New,
+		Back_Week7_New,
 		
 		//Song info
 		{FIXED_DEC(14,10),FIXED_DEC(2,1),FIXED_DEC(25,10)},
@@ -344,12 +341,12 @@ static const StageDef stage_defs[StageId_Max] = {
 	},
 	{ //StageId_7_3 (Stress)
 		//Characters
-		{Char_BF_New,   FIXED_DEC(120,1),  FIXED_DEC(100,1)}, //TODO: carry gf
-		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),    FIXED_DEC(0,1)}, //TODO: pico funny
+		{Char_BF_New,    FIXED_DEC(105,1),  FIXED_DEC(100,1)}, //TODO: carry gf
+		{Char_Tank_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_GF_New,      FIXED_DEC(0,1),    FIXED_DEC(0,1)}, //TODO: pico funny
 		
 		//Stage background
-		Back_Dummy_New,
+		Back_Week7_New,
 		
 		//Song info
 		{FIXED_DEC(175,100),FIXED_DEC(22,10),FIXED_DEC(26,10)},
@@ -364,19 +361,19 @@ Stage stage;
 //Stage music functions
 void Stage_StartVocal()
 {
-	if (!stage.vocal_active)
+	if (!(stage.flag & STAGE_FLAG_VOCAL_ACTIVE))
 	{
 		Audio_ChannelXA(stage.stage_def->music_channel);
-		stage.vocal_active = true;
+		stage.flag |= STAGE_FLAG_VOCAL_ACTIVE;
 	}
 }
 
 void Stage_CutVocal()
 {
-	if (stage.vocal_active)
+	if (stage.flag & STAGE_FLAG_VOCAL_ACTIVE)
 	{
 		Audio_ChannelXA(stage.stage_def->music_channel + 1);
-		stage.vocal_active = false;
+		stage.flag &= ~STAGE_FLAG_VOCAL_ACTIVE;
 	}
 }
 
@@ -503,8 +500,17 @@ void Stage_HitNote(fixed_t offset)
 	else
 		hit_type = 0; //SICK
 	
-	//Increment combo
+	//Increment combo and score
 	stage.combo++;
+	
+	static const s32 score_inc[] = {
+		35, //SICK
+		20, //GOOD
+		10, //BAD
+		 5, //SHIT
+	};
+	stage.score += score_inc[hit_type];
+	stage.flag |= STAGE_FLAG_SCORE_REFRESH;
 	
 	//Create combo object telling of our combo
 	Obj_Combo *combo = Obj_Combo_New(
@@ -567,6 +573,8 @@ void Stage_NoteCheck(u8 type)
 	Stage_MissNote(type);
 	
 	stage.health -= 400;
+	stage.score -= 1;
+	stage.flag |= STAGE_FLAG_SCORE_REFRESH;
 }
 
 void Stage_SustainCheck(u8 type)
@@ -576,8 +584,6 @@ void Stage_SustainCheck(u8 type)
 		stage.arrow_hitan[type] = 1;
 	
 	//Perform note check
-	boolean near_note = false;
-	
 	for (Note *note = stage.cur_note;; note++)
 	{
 		//Check if note can be hit
@@ -586,27 +592,19 @@ void Stage_SustainCheck(u8 type)
 			break;
 		if (note_fp + stage.late_safe < stage.note_scroll)
 			continue;
-		if ((note->type & (NOTE_FLAG_OPPONENT | 0x3)) != type)
-			continue;
-		near_note = true;
-		if ((note->type & NOTE_FLAG_HIT) || !(note->type & NOTE_FLAG_SUSTAIN))
+		if ((note->type & NOTE_FLAG_HIT) || (note->type & (NOTE_FLAG_OPPONENT | 0x3)) != type || !(note->type & NOTE_FLAG_SUSTAIN))
 			continue;
 		
 		//Hit the note
 		note->type |= NOTE_FLAG_HIT;
 		
-		if (stage.player->animatable.anim != note_anims[type][0])
-			stage.player->set_anim(stage.player, note_anims[type][0]);
+		stage.player->set_anim(stage.player, note_anims[type][0]);
 		
 		Stage_StartVocal();
 		stage.health += 230;
 		stage.arrow_hitan[type] = 6;
 		return;
 	}
-	
-	//Hold animation
-	if ((stage.just_step || !near_note) && stage.player->animatable.anim == note_anims[type][0])
-		stage.player->set_anim(stage.player, note_anims[type][0]);
 }
 
 //Stage drawing functions
@@ -836,7 +834,6 @@ void Stage_Load(StageId id, StageDiff difficulty)
 	
 	//Load stage background
 	stage.back = stage_def->back();
-	//Gfx_SetClear(62, 48, 64);
 	
 	//Load characters
 	stage.player   = stage_def->pchar.new(stage_def->pchar.x, stage_def->pchar.y);
@@ -863,17 +860,18 @@ void Stage_Load(StageId id, StageDiff difficulty)
 	Stage_ChangeBPM(stage.cur_section->flag & SECTION_FLAG_BPM_MASK, 0);
 	
 	//Initialize stage state
-	stage.note_scroll = FIXED_DEC(-8 * 24,1);
+	stage.flag = 0;
 	
-	stage.just_step = false;
+	stage.note_scroll = FIXED_DEC(-8 * 24,1);
 	
 	stage.gf_speed = 1 << 2;
 	
 	memset(stage.arrow_hitan, 0, sizeof(stage.arrow_hitan));
 	
 	stage.health = 10000;
-	stage.score = 0;
 	stage.combo = 0;
+	stage.score = 0;
+	strcpy(stage.score_text, "0");
 	
 	stage.state = StageState_Play;
 	
@@ -889,10 +887,9 @@ void Stage_Load(StageId id, StageDiff difficulty)
 	stage.camera.y = stage.camera.ty;
 	stage.camera.zoom = stage.camera.tz;
 	
-	//Find music file and initialize music state
+	//Find music file and begin seeking to it
 	Audio_GetXAFile(&stage.music_file, stage_def->music_track);
 	IO_SeekFile(&stage.music_file);
-	stage.vocal_active = false;
 }
 
 void Stage_Unload()
@@ -921,7 +918,7 @@ void Stage_Tick()
 		case StageState_Play:
 		{
 			//Clear per frame flags
-			stage.just_step = false;
+			stage.flag &= ~(STAGE_FLAG_JUST_STEP | STAGE_FLAG_SCORE_REFRESH);
 			
 			//Get song position
 			boolean playing;
@@ -941,14 +938,14 @@ void Stage_Tick()
 					Audio_PlayXA_File(&stage.music_file, 0x40, stage.stage_def->music_channel, 0);
 					stage.note_scroll = 0;
 					stage.song_time = 0;
-					stage.just_step = true;
+					stage.flag |= STAGE_FLAG_JUST_STEP;
 				}
 				else
 				{
 					//Still scrolling
 					playing = false;
 					if (((stage.note_scroll / 24) & FIXED_UAND) != ((next_scroll / 24) & FIXED_UAND))
-						stage.just_step = true;
+						stage.flag |= STAGE_FLAG_JUST_STEP;
 					stage.note_scroll = next_scroll;
 					
 					//Extrapolate song time from note scroll
@@ -971,7 +968,7 @@ void Stage_Tick()
 				if (next_scroll > stage.note_scroll) //Skipping?
 				{
 					if (((stage.note_scroll / 24) & FIXED_UAND) != ((next_scroll / 24) & FIXED_UAND))
-						stage.just_step = true;
+						stage.flag |= STAGE_FLAG_JUST_STEP;
 					stage.note_scroll = next_scroll;
 					stage.song_time = song_time;
 				}
@@ -1020,8 +1017,15 @@ void Stage_Tick()
 			//Get bump
 			if (playing)
 			{
-				//Bump every 16 steps
-				if ((stage.song_step & 0xF) == 0)
+				//Check if screen should bump
+				boolean is_bump_step = (stage.song_step & 0xF) == 0;
+				
+				//M.I.L.F bumps
+				if (stage.stage_id == StageId_4_3 && stage.song_step >= (168 << 2) && stage.song_step < (200 << 2))
+					is_bump_step = (stage.song_step & 0x3) == 0;
+				
+				//Bump screen
+				if (is_bump_step)
 					stage.bump = (fixed_t)FIXED_UNIT + ((fixed_t)(FIXED_DEC(75,100) - ((stage.note_scroll / 24) & FIXED_LAND)) / 16);
 				else
 					stage.bump = FIXED_UNIT;
@@ -1122,6 +1126,48 @@ void Stage_Tick()
 					}
 				}
 			#endif
+			
+			//Display score
+			RECT score_src = {80, 224, 40, 10};
+			RECT_FIXED score_dst = {FIXED_DEC(14,1), (SCREEN_HEIGHT2 - 42) << FIXED_SHIFT, FIXED_DEC(40,1), FIXED_DEC(10,1)};
+			if (downscroll)
+				score_dst.y = -score_dst.y - score_dst.h;
+			
+			Stage_DrawTex(&stage.tex_hud0, &score_src, &score_dst, stage.bump);
+			
+			//Get string representing number
+			if (stage.flag & STAGE_FLAG_SCORE_REFRESH)
+			{
+				if (stage.score != 0)
+					sprintf(stage.score_text, "%d0", stage.score);
+				else
+					strcpy(stage.score_text, "0");
+			}
+			
+			//Draw number
+			score_src.y = 240;
+			score_src.w = 8;
+			score_dst.x += FIXED_DEC(40,1);
+			score_dst.w = FIXED_DEC(8,1);
+			
+			for (const char *p = stage.score_text; ; p++)
+			{
+				//Get character
+				char c = *p;
+				if (c == '\0')
+					break;
+				
+				//Draw character
+				if (c == '-')
+					score_src.x = 160;
+				else //Should be a number
+					score_src.x = 80 + ((c - '0') << 3);
+				
+				Stage_DrawTex(&stage.tex_hud0, &score_src, &score_dst, stage.bump);
+				
+				//Move character right
+				score_dst.x += FIXED_DEC(7,1);
+			}
 			
 			//Perform health checks
 			if (stage.health <= 0)
@@ -1298,7 +1344,7 @@ void Stage_Tick()
 			stage.gf = NULL;
 			
 			//Reset stage state
-			stage.just_step = false;
+			stage.flag = 0;
 			stage.bump = stage.sbump = FIXED_UNIT;
 			
 			//Change background colour to black

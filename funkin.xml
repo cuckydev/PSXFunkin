@@ -154,6 +154,9 @@
 			
 			<!-- Week 7 assets -->
 			<dir name = "week7">
+				<!-- Background art -->
+				<file name = "back.arc" type = "data" source = "iso/week7/back.arc"/>
+				
 				<!-- Ugh charts -->
 				<file name = "7.1e.cht" type = "data" source = "iso/chart/7.1e.cht"/>
 				<file name = "7.1n.cht" type = "data" source = "iso/chart/7.1n.cht"/>
@@ -188,6 +191,13 @@
 			<dir name = "mom">
 				<file name = "main.arc" type = "data" source = "iso/mom/main.arc"/>
 				<file name = "hair.tim" type = "data" source = "iso/mom/hair.tim"/>
+			</dir>
+			
+			<!-- Tankman Captain assets -->
+			<dir name = "tank">
+				<file name = "main.arc" type = "data" source = "iso/tank/main.arc"/>
+				<file name = "ugh.arc" type = "data" source = "iso/tank/ugh.arc"/>
+				<file name = "good.arc" type = "data" source = "iso/tank/good.arc"/>
 			</dir>
 			
 			<!-- Music -->

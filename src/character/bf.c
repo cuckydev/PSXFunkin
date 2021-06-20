@@ -120,17 +120,17 @@ static const CharFrame char_bf_frame[] = {
 };
 
 static const Animation char_bf_anim[PlayerAnim_Max] = {
-	{4, (const u8[]){ 0,  1,  2,  3, ASCR_BACK, 1}},                                           //CharAnim_Idle
-	{2, (const u8[]){ 4,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_Left
-	{2, (const u8[]){ 4,  6,  7,  7,  7,  7,  7,  7,  7,  7,  7, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_LeftAlt
-	{2, (const u8[]){ 8,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_Down
-	{2, (const u8[]){ 8, 10, 11, 11, 11, 11, 11, 11, 11, 11, 11, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_DownAlt
-	{2, (const u8[]){12, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_Up
-	{2, (const u8[]){12, 14, 15, 15, 15, 15, 15, 15, 15, 15, 15, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_UpAlt
-	{2, (const u8[]){16, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_Right
-	{2, (const u8[]){16, 18, 19, 19, 19, 19, 19, 19, 19, 19, 19, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_RightAlt
-	{3, (const u8[]){20, 21, 22, 22, 22, 22, 22, 22, 22, ASCR_CHGANI, CharAnim_Idle}},         //PlayerAnim_Peace
-	{3, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},                                             //PlayerAnim_Sweat
+	{4, (const u8[]){ 0,  1,  2,  3, ASCR_BACK, 1}}, //CharAnim_Idle
+	{2, (const u8[]){ 4,  5, ASCR_BACK, 1}},         //CharAnim_Left
+	{2, (const u8[]){ 4,  6, ASCR_BACK, 1}},         //CharAnim_LeftAlt
+	{2, (const u8[]){ 8,  9, ASCR_BACK, 1}},         //CharAnim_Down
+	{2, (const u8[]){ 8, 10, ASCR_BACK, 1}},         //CharAnim_DownAlt
+	{2, (const u8[]){12, 13, ASCR_BACK, 1}},         //CharAnim_Up
+	{2, (const u8[]){12, 14, ASCR_BACK, 1}},         //CharAnim_UpAlt
+	{2, (const u8[]){16, 17, ASCR_BACK, 1}},         //CharAnim_Right
+	{2, (const u8[]){16, 18, ASCR_BACK, 1}},         //CharAnim_RightAlt
+	{3, (const u8[]){20, 21, 22, ASCR_BACK, 1}},     //PlayerAnim_Peace
+	{3, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},   //PlayerAnim_Sweat
 	
 	{5, (const u8[]){23, 24, 25, 26, 26, 26, 26, 26, 26, 26, ASCR_CHGANI, PlayerAnim_Dead1}}, //PlayerAnim_Dead0
 	{5, (const u8[]){26, ASCR_REPEAT}},                                                       //PlayerAnim_Dead1
@@ -162,14 +162,26 @@ void Char_BF_Tick(Character *character)
 {
 	Char_BF *this = (Char_BF*)character;
 	
-	if (stage.just_step)
+	//Handle animation updates
+	if ((pad_state.held & (INPUT_LEFT | INPUT_DOWN | INPUT_UP | INPUT_RIGHT)) == 0)
+		Character_CheckEndSing(character);
+	
+	if (stage.flag & STAGE_FLAG_JUST_STEP)
 	{
+		//Perform idle dance
+		if ((character->animatable.anim != CharAnim_Left &&
+			 character->animatable.anim != CharAnim_Down &&
+			 character->animatable.anim != CharAnim_Up &&
+			 character->animatable.anim != CharAnim_Right) &&
+			(stage.song_step & 0x7) == 0)
+			character->set_anim(character, CharAnim_Idle);
+		
+		//Stage specific animations
 		if (stage.note_scroll >= 0)
 		{
-			//Stage specific animations
 			switch (stage.stage_id)
 			{
-				case StageId_1_4: //Tutorial
+				case StageId_1_4: //Tutorial peace
 					if (stage.song_step > 64 && stage.song_step < 192 && (stage.song_step & 0x3F) == 60)
 						character->set_anim(character, PlayerAnim_Peace);
 					break;
@@ -181,10 +193,6 @@ void Char_BF_Tick(Character *character)
 					break;
 			}
 		}
-		
-		//Perform idle dance
-		if ((stage.song_step & 0x7) == 0 && character->animatable.anim == CharAnim_Idle)
-			character->set_anim(character, CharAnim_Idle);
 	}
 	
 	//Retry screen
@@ -317,10 +325,11 @@ void Char_BF_SetAnim(Character *character, u8 anim)
 				"dead1.tim", //BF_ArcDead_Dead1
 				"dead2.tim", //BF_ArcDead_Dead2
 				"retry.tim", //BF_ArcDead_Retry
+				NULL
 			};
 			IO_Data *arc_ptr = this->arc_ptr;
-			for (u8 i = 0; i < BF_ArcDead_Max; i++)
-				*arc_ptr++ = Archive_Find(this->arc_main, *pathp++);
+			for (; *pathp != NULL; pathp++)
+				*arc_ptr++ = Archive_Find(this->arc_main, *pathp);
 			
 			//Load retry art
 			Gfx_LoadTex(&this->tex_retry, this->arc_ptr[BF_ArcDead_Retry], 0);
@@ -329,6 +338,7 @@ void Char_BF_SetAnim(Character *character, u8 anim)
 	
 	//Set animation
 	Animatable_SetAnim(&character->animatable, anim);
+	Character_CheckStartSing(character);
 }
 
 void Char_BF_Free(Character *character)
@@ -379,10 +389,11 @@ Character *Char_BF_New(fixed_t x, fixed_t y)
 		"miss1.tim", //BF_ArcMain_Miss1
 		"peace.tim", //BF_ArcMain_Peace
 		"dead0.tim", //BF_ArcMain_Dead0
+		NULL
 	};
 	IO_Data *arc_ptr = this->arc_ptr;
-	for (u8 i = 0; i < BF_ArcMain_Max; i++)
-		*arc_ptr++ = Archive_Find(this->arc_main, *pathp++);
+	for (; *pathp != NULL; pathp++)
+		*arc_ptr++ = Archive_Find(this->arc_main, *pathp);
 	
 	//Initialize render state
 	this->tex_id = this->frame = 0xFF;

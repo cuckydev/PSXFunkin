@@ -24,5 +24,8 @@ StageBack *Back_Dummy_New()
 	this->back.draw_bg = NULL;
 	this->back.free = Back_Dummy_Free;
 	
+	//Use non-pitch black background
+	Gfx_SetClear(62, 48, 64);
+	
 	return (StageBack*)this;
 }
