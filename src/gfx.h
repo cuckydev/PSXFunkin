@@ -32,5 +32,6 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag free);
 
 void Gfx_BlitTex(Gfx_Tex *tex, const RECT *src, s32 x, s32 y);
 void Gfx_DrawTex(Gfx_Tex *tex, const RECT *src, const RECT *dst);
+void Gfx_DrawTexArb(Gfx_Tex *tex, const RECT *src, const POINT *p0, const POINT *p1, const POINT *p2, const POINT *p3);
 
 #endif

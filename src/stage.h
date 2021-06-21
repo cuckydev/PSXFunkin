@@ -195,6 +195,7 @@ extern Stage stage;
 
 //Stage drawing functions
 void Stage_DrawTex(Gfx_Tex *tex, RECT *src, RECT_FIXED *dst, fixed_t zoom);
+void Stage_DrawTexArb(Gfx_Tex *tex, RECT *src, POINT_FIXED *p0, POINT_FIXED *p1, POINT_FIXED *p2, POINT_FIXED *p3, fixed_t zoom);
 
 //Stage functions
 void Stage_Load(StageId id, StageDiff difficulty);

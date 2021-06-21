@@ -35,6 +35,12 @@ typedef s8 boolean;
 	#define false 0
 #endif
 
+//Point type
+typedef struct
+{
+	short x, y;
+} POINT;
+
 //Common macros
 #define sizeof_member(type, member) sizeof(((type *)0)->member)
 

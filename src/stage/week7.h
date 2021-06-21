@@ -10,6 +10,11 @@ typedef struct
 	//Stage background base structure
 	StageBack back;
 	
+	//Car state
+	fixed_t tank_x;
+	u8 tank_i;
+	u16 tank_timer;
+	
 	//Textures
 	IO_Data arc_hench, arc_hench_ptr[2];
 	

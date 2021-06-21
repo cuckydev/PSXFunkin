@@ -20,7 +20,7 @@ IO_Data Archive_Find(IO_Data arc, const char *path)
 	}
 	
 	//Failed to find the requested file
-	sprintf(error_msg, "[Archive_Find] Failed to find %s in archive %p", path, arc);
+	sprintf(error_msg, "[Archive_Find] Failed to find %s in %p", path, arc);
 	ErrorLock();
 	return NULL;
 }

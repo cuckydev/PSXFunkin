@@ -11,6 +11,11 @@ typedef struct
 	fixed_t x, y, w, h;
 } RECT_FIXED;
 
+typedef struct
+{
+	fixed_t x, y;
+} POINT_FIXED;
+
 #define FIXED_SHIFT (10)
 #define FIXED_UNIT  (1 << FIXED_SHIFT)
 #define FIXED_LAND  (FIXED_UNIT - 1)

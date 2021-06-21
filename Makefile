@@ -3,6 +3,7 @@ TYPE = ps-exe
 
 SRCS = src/main.c \
        src/mem.c \
+       src/mutil.c \
        src/io.c \
        src/gfx.c \
        src/audio.c \
@@ -29,6 +30,7 @@ SRCS = src/main.c \
 CPPFLAGS += -I../psyq/include -Wall -O2
 LDFLAGS += -L../psyq/lib
 LDFLAGS += -Wl,--start-group
+# TODO: remove unused libraries
 LDFLAGS += -lapi
 LDFLAGS += -lc
 LDFLAGS += -lc2
@@ -42,7 +44,7 @@ LDFLAGS += -lgs
 LDFLAGS += -lgte
 LDFLAGS += -lgun
 LDFLAGS += -lhmd
-LDFLAGS += -lmath
+#LDFLAGS += -lmath
 LDFLAGS += -lmcrd
 LDFLAGS += -lmcx
 LDFLAGS += -lpad

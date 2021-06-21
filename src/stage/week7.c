@@ -4,8 +4,14 @@
 #include "../mem.h"
 #include "../stage.h"
 #include "../random.h"
+#include "../mutil.h"
 
 //Week 7 background functions
+#define TANK_START_X FIXED_DEC(-400,1)
+#define TANK_END_X    FIXED_DEC(400,1)
+#define TANK_TIME_A 800
+#define TANK_TIME_B 1600
+
 void Back_Week7_DrawFG(StageBack *back)
 {
 	Back_Week7 *this = (Back_Week7*)back;
@@ -35,6 +41,66 @@ void Back_Week7_DrawBG(StageBack *back)
 	fg_dst.x += fg_dst.w;
 	fg_src.y += 128;
 	Stage_DrawTex(&this->tex_back0, &fg_src, &fg_dst, stage.camera.bzoom);
+	
+	//Move tank
+	if (this->tank_timer)
+	{
+		if (--this->tank_timer == 0)
+		{
+			this->tank_timer = RandomRange(TANK_TIME_A, TANK_TIME_B);
+			this->tank_x = TANK_START_X;
+		}
+	}
+	if (this->tank_x < TANK_END_X)
+		this->tank_x += FIXED_DEC(1,1);
+	
+	//Get tank position
+	fx = stage.camera.x * 2 / 3;
+	fy = stage.camera.y * 2 / 3;
+	
+	u8 tank_angle = this->tank_x * 0x18 / TANK_END_X;
+	
+	s16 tank_sin = MUtil_Sin(tank_angle);
+	s16 tank_cos = MUtil_Cos(tank_angle);
+	
+	fixed_t tank_y = FIXED_DEC(360,1) - (tank_cos * FIXED_DEC(380,1) / 0x100);
+	
+	//Get tank rotated points
+	POINT tank_p0 = {-45, -45};
+	MUtil_RotatePoint(&tank_p0, tank_sin, tank_cos);
+	
+	POINT tank_p1 = { 45, -45};
+	MUtil_RotatePoint(&tank_p1, tank_sin, tank_cos);
+	
+	POINT tank_p2 = {-45,  45};
+	MUtil_RotatePoint(&tank_p2, tank_sin, tank_cos);
+	
+	POINT tank_p3 = { 45,  45};
+	MUtil_RotatePoint(&tank_p3, tank_sin, tank_cos);
+	
+	//Draw tank
+	RECT tank_src = {129, 1, 126, 126};
+	if (this->tank_i++ & 4)
+		tank_src.y += 128;
+	
+	POINT_FIXED tank_d0 = {
+		this->tank_x + ((fixed_t)tank_p0.x << FIXED_SHIFT) - fx,
+		      tank_y + ((fixed_t)tank_p0.y << FIXED_SHIFT) - fy
+	};
+	POINT_FIXED tank_d1 = {
+		this->tank_x + ((fixed_t)tank_p1.x << FIXED_SHIFT) - fx,
+		      tank_y + ((fixed_t)tank_p1.y << FIXED_SHIFT) - fy
+	};
+	POINT_FIXED tank_d2 = {
+		this->tank_x + ((fixed_t)tank_p2.x << FIXED_SHIFT) - fx,
+		      tank_y + ((fixed_t)tank_p2.y << FIXED_SHIFT) - fy
+	};
+	POINT_FIXED tank_d3 = {
+		this->tank_x + ((fixed_t)tank_p3.x << FIXED_SHIFT) - fx,
+		      tank_y + ((fixed_t)tank_p3.y << FIXED_SHIFT) - fy
+	};
+	
+	Stage_DrawTexArb(&this->tex_back2, &tank_src, &tank_d0, &tank_d1, &tank_d2, &tank_d3, stage.camera.bzoom);
 	
 	//Draw sniper
 	fx = stage.camera.x >> 1;
@@ -153,6 +219,10 @@ StageBack *Back_Week7_New()
 	Gfx_LoadTex(&this->tex_back2, Archive_Find(arc_back, "back2.tim"), 0);
 	Gfx_LoadTex(&this->tex_back3, Archive_Find(arc_back, "back3.tim"), 0);
 	Mem_Free(arc_back);
+	
+	//Initialize tank state
+	this->tank_x = TANK_END_X;
+	this->tank_timer = RandomRange(TANK_TIME_A, TANK_TIME_B);
 	
 	//Use sky coloured background
 	Gfx_SetClear(245, 202, 81);

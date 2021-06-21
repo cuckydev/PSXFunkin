@@ -629,6 +629,17 @@ void Stage_DrawTex(Gfx_Tex *tex, RECT *src, RECT_FIXED *dst, fixed_t zoom)
 	Gfx_DrawTex(tex, src, &sdst);
 }
 
+void Stage_DrawTexArb(Gfx_Tex *tex, RECT *src, POINT_FIXED *p0, POINT_FIXED *p1, POINT_FIXED *p2, POINT_FIXED *p3, fixed_t zoom)
+{
+	//Get screen-space points
+	POINT s0 = {SCREEN_WIDTH2 + (FIXED_MUL(p0->x, zoom) >> FIXED_SHIFT), SCREEN_HEIGHT2 + (FIXED_MUL(p0->y, zoom) >> FIXED_SHIFT)};
+	POINT s1 = {SCREEN_WIDTH2 + (FIXED_MUL(p1->x, zoom) >> FIXED_SHIFT), SCREEN_HEIGHT2 + (FIXED_MUL(p1->y, zoom) >> FIXED_SHIFT)};
+	POINT s2 = {SCREEN_WIDTH2 + (FIXED_MUL(p2->x, zoom) >> FIXED_SHIFT), SCREEN_HEIGHT2 + (FIXED_MUL(p2->y, zoom) >> FIXED_SHIFT)};
+	POINT s3 = {SCREEN_WIDTH2 + (FIXED_MUL(p3->x, zoom) >> FIXED_SHIFT), SCREEN_HEIGHT2 + (FIXED_MUL(p3->y, zoom) >> FIXED_SHIFT)};
+	
+	Gfx_DrawTexArb(tex, src, &s0, &s1, &s2, &s3);
+}
+
 //Stage HUD functions and constants
 static const fixed_t note_x[8] = {
 	//BF
