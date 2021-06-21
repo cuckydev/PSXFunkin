@@ -5,6 +5,8 @@
 #include "../stage.h"
 #include "../main.h"
 
+#include "speaker.h"
+
 //GF character structure
 enum
 {
@@ -26,26 +28,29 @@ typedef struct
 	
 	Gfx_Tex tex;
 	u8 frame, tex_id;
+	
+	//Speaker
+	Speaker speaker;
 } Char_GF;
 
 //GF character definitions
 static const CharFrame char_gf_frame[] = {
-	{GF_ArcMain_BopLeft, {  0,   0,  74, 103}, { 40,  74}}, //0 bop left 1
-	{GF_ArcMain_BopLeft, { 74,   0,  73, 102}, { 39,  74}}, //1 bop left 2
-	{GF_ArcMain_BopLeft, {147,   0,  73, 102}, { 39,  74}}, //2 bop left 3
-	{GF_ArcMain_BopLeft, {  0, 103,  73, 103}, { 39,  75}}, //3 bop left 4
-	{GF_ArcMain_BopLeft, { 73, 102,  82, 105}, { 43,  77}}, //4 bop left 5
-	{GF_ArcMain_BopLeft, {155, 102,  81, 105}, { 43,  77}}, //5 bop left 6
+	{GF_ArcMain_BopLeft, {  0,   0,  74, 103}, { 40,  73}}, //0 bop left 1
+	{GF_ArcMain_BopLeft, { 74,   0,  73, 102}, { 39,  73}}, //1 bop left 2
+	{GF_ArcMain_BopLeft, {147,   0,  73, 102}, { 39,  73}}, //2 bop left 3
+	{GF_ArcMain_BopLeft, {  0, 103,  73, 103}, { 39,  74}}, //3 bop left 4
+	{GF_ArcMain_BopLeft, { 73, 102,  82, 105}, { 43,  76}}, //4 bop left 5
+	{GF_ArcMain_BopLeft, {155, 102,  81, 105}, { 43,  76}}, //5 bop left 6
 	
-	{GF_ArcMain_BopRight, {  0,   0,  81, 103}, { 43,  75}}, //6 bop right 1
-	{GF_ArcMain_BopRight, { 81,   0,  81, 103}, { 43,  75}}, //7 bop right 2
-	{GF_ArcMain_BopRight, {162,   0,  80, 103}, { 42,  75}}, //8 bop right 3
-	{GF_ArcMain_BopRight, {  0, 103,  79, 103}, { 41,  75}}, //9 bop right 4
-	{GF_ArcMain_BopRight, { 79, 103,  73, 105}, { 35,  77}}, //10 bop right 5
-	{GF_ArcMain_BopRight, {152, 103,  74, 104}, { 35,  76}}, //11 bop right 6
+	{GF_ArcMain_BopRight, {  0,   0,  81, 103}, { 43,  74}}, //6 bop right 1
+	{GF_ArcMain_BopRight, { 81,   0,  81, 103}, { 43,  74}}, //7 bop right 2
+	{GF_ArcMain_BopRight, {162,   0,  80, 103}, { 42,  74}}, //8 bop right 3
+	{GF_ArcMain_BopRight, {  0, 103,  79, 103}, { 41,  74}}, //9 bop right 4
+	{GF_ArcMain_BopRight, { 79, 103,  73, 105}, { 35,  76}}, //10 bop right 5
+	{GF_ArcMain_BopRight, {152, 103,  74, 104}, { 35,  75}}, //11 bop right 6
 	
-	{GF_ArcMain_Cry, {  0,   0,  73, 101}, { 37,  74}}, //12 cry
-	{GF_ArcMain_Cry, { 73,   0,  73, 101}, { 37,  74}}, //13 cry
+	{GF_ArcMain_Cry, {  0,   0,  73, 101}, { 37,  73}}, //12 cry
+	{GF_ArcMain_Cry, { 73,   0,  73, 101}, { 37,  73}}, //13 cry
 };
 
 static const Animation char_gf_anim[CharAnim_Max] = {
@@ -84,16 +89,23 @@ void Char_GF_Tick(Character *character)
 		//Perform dance
 		if ((stage.song_step % stage.gf_speed) == 0)
 		{
+			//Switch animation
 			if (character->animatable.anim == CharAnim_Left)
 				character->set_anim(character, CharAnim_Right);
 			else
 				character->set_anim(character, CharAnim_Left);
+			
+			//Bump speakers
+			Speaker_Bump(&this->speaker);
 		}
 	}
 	
 	//Animate and draw
 	Animatable_Animate(&character->animatable, (void*)this, Char_GF_SetFrame);
 	Character_Draw(character, &this->tex, &char_gf_frame[this->frame]);
+	
+	//Tick speakers
+	Speaker_Tick(&this->speaker, character->x, character->y);
 }
 
 void Char_GF_SetAnim(Character *character, u8 anim)
@@ -134,7 +146,7 @@ Character *Char_GF_New(fixed_t x, fixed_t y)
 	
 	this->character.focus_x = FIXED_DEC(16,1);
 	this->character.focus_y = FIXED_DEC(-50,1);
-	this->character.focus_zoom = FIXED_DEC(15,10);
+	this->character.focus_zoom = FIXED_DEC(13,10);
 	
 	//Load art
 	this->arc_main = IO_Read("\\GF\\MAIN.ARC;1");
@@ -151,6 +163,9 @@ Character *Char_GF_New(fixed_t x, fixed_t y)
 	
 	//Initialize render state
 	this->tex_id = this->frame = 0xFF;
+	
+	//Initialize speaker
+	Speaker_Init(&this->speaker);
 	
 	return (Character*)this;
 }

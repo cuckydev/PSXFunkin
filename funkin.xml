@@ -180,6 +180,7 @@
 			<!-- Girlfriend assets -->
 			<dir name = "gf">
 				<file name = "main.arc" type = "data" source = "iso/gf/main.arc"/>
+				<file name = "speaker.tim" type = "data" source = "iso/gf/speaker.tim"/>
 			</dir>
 			
 			<!-- Dad assets -->

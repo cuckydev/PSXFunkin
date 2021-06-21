@@ -18,6 +18,7 @@ SRCS = src/main.c \
        src/character.c \
        src/character/bf.c \
        src/character/gf.c \
+       src/character/speaker.c \
        src/character/dad.c \
        src/character/mom.c \
        src/character/tank.c \
@@ -50,6 +51,6 @@ LDFLAGS += -lsio
 LDFLAGS += -lsnd
 LDFLAGS += -lspu
 LDFLAGS += -ltap
-LDFLAGS += -Wl,--end-group
+LDFLAGS += -flto -Wl,--end-group
 
 include ../common.mk

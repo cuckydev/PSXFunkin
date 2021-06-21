@@ -50,7 +50,7 @@ void Back_Week7_DrawBG(StageBack *back)
 	
 	fixed_t snipe_bop;
 	if ((stage.song_step & 0x3) == 0)
-		snipe_bop = FIXED_UNIT - (stage.note_scroll & FIXED_LAND);
+		snipe_bop = FIXED_UNIT - ((stage.note_scroll / 24) & FIXED_LAND);
 	else
 		snipe_bop = 0;
 	
@@ -87,6 +87,25 @@ void Back_Week7_DrawBG(StageBack *back)
 	};
 	
 	Stage_DrawTex(&this->tex_back1, &ruinsb_src, &ruinsb_dst, stage.camera.bzoom);
+	
+	//Draw clouds
+	fx = stage.camera.x / 7;
+	fy = stage.camera.y / 7;
+	
+	RECT cloud_src = {0, 116, 255, 53};
+	RECT_FIXED cloud_dst = {
+		FIXED_DEC(-260,1) - fx,
+		FIXED_DEC(-130,1) - fy,
+		FIXED_DEC(260,1),
+		FIXED_DEC(260,1) * 53 / 256
+	};
+	
+	Stage_DrawTex(&this->tex_back1, &cloud_src, &cloud_dst, stage.camera.bzoom);
+	cloud_dst.x += cloud_dst.w;
+	cloud_dst.h = cloud_dst.w * 83 / 256;
+	cloud_src.y = 173;
+	cloud_src.h = 83;
+	Stage_DrawTex(&this->tex_back1, &cloud_src, &cloud_dst, stage.camera.bzoom);
 	
 	//Draw mountains
 	fx = stage.camera.x >> 3;

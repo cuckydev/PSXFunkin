@@ -161,6 +161,7 @@ void Gfx_BlitTex(Gfx_Tex *tex, const RECT *src, s32 x, s32 y)
 
 void Gfx_DrawTex(Gfx_Tex *tex, const RECT *src, const RECT *dst)
 {
+	//Manipulate rects to comply with GPU restrictions
 	RECT csrc, cdst;
 	memcpy(&csrc, src, sizeof(RECT));
 	memcpy(&cdst, dst, sizeof(RECT));
@@ -174,6 +175,48 @@ void Gfx_DrawTex(Gfx_Tex *tex, const RECT *src, const RECT *dst)
 	{
 		csrc.h = 0xFF - csrc.y;
 		cdst.h = cdst.h * csrc.h / src->h;
+	}
+	
+	//Subdivide if particularly large
+	if (csrc.w > 0x80)
+	{
+		RECT csrc2, cdst2;
+		
+		int srcs = csrc.w / 2;
+		csrc2.x = csrc.x + srcs;
+		csrc2.w = csrc.w - srcs;
+		csrc2.y = csrc.y;
+		csrc2.h = csrc.h;
+		csrc.w = srcs;
+		
+		int dsts = cdst.w / 2;
+		cdst2.x = cdst.x + dsts;
+		cdst2.w = cdst.w - dsts;
+		cdst2.y = cdst.y;
+		cdst2.h = cdst.h;
+		cdst.w = dsts;
+		
+		Gfx_DrawTex(tex, &csrc2, &cdst2);
+	}
+	if (csrc.h > 0x80)
+	{
+		RECT csrc2, cdst2;
+		
+		int srcs = csrc.h / 2;
+		csrc2.x = csrc.x;
+		csrc2.w = csrc.w;
+		csrc2.y = csrc.y + srcs;
+		csrc2.h = csrc.h - srcs;
+		csrc.h = srcs;
+		
+		int dsts = cdst.h / 2;
+		cdst2.x = cdst.x;
+		cdst2.w = cdst.w;
+		cdst2.y = cdst.y + dsts;
+		cdst2.h = cdst.h - dsts;
+		cdst.h = dsts;
+		
+		Gfx_DrawTex(tex, &csrc2, &cdst2);
 	}
 	
 	//Add quad
