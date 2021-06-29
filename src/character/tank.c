@@ -200,7 +200,7 @@ Character *Char_Tank_New(fixed_t x, fixed_t y)
 	this->character.focus_zoom = FIXED_DEC(1,1);
 	
 	//Load art
-	this->arc_main = IO_Read("\\TANK\\MAIN.ARC;1");
+	this->arc_main = IO_Read("\\CHAR\\TANK.ARC;1");
 	
 	const char **pathp = (const char *[]){
 		"idle0.tim", //Tank_ArcMain_Idle0
@@ -221,7 +221,7 @@ Character *Char_Tank_New(fixed_t x, fixed_t y)
 		case StageId_7_1: //Ugh
 		{
 			//Load "Ugh" art
-			this->arc_scene = IO_Read("\\TANK\\UGH.ARC;1");
+			this->arc_scene = IO_Read("\\CHAR\\TANKUGH.ARC;1");
 			
 			const char **pathp = (const char *[]){
 				"ugh0.tim", //Tank_ArcScene_0
@@ -236,7 +236,7 @@ Character *Char_Tank_New(fixed_t x, fixed_t y)
 		case StageId_7_3: //Stress
 		{
 			//Load "Heh, pretty good!" art
-			this->arc_scene = IO_Read("\\TANK\\GOOD.ARC;1");
+			this->arc_scene = IO_Read("\\CHAR\\TANKGOOD.ARC;1");
 			
 			const char **pathp = (const char *[]){
 				"good0.tim", //Tank_ArcScene_0

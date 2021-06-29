@@ -21,6 +21,8 @@ typedef enum
 	XA_Week6B, //WEEK6B.XA
 	XA_Week7A, //WEEK7A.XA
 	XA_Week7B, //WEEK7B.XA
+	XA_KapiA,  //KAPIA.XA
+	XA_KapiB,  //KAPIB.XA
 	
 	XA_Max,
 } XA_File;
@@ -67,6 +69,12 @@ typedef enum
 	XA_Guns, //Guns
 	//WEEK7B.XA
 	XA_Stress, //Stress
+	//KAPIA.XA
+	XA_Wocky,     //Wocky
+	XA_Beathoven, //Beathoven
+	//KAPIB.XA
+	XA_Hairball, //Hairball
+	XA_Nyaw,     //Nyaw
 } XA_Track;
 
 //Audio functions
@@ -81,6 +89,7 @@ void Audio_ChannelXA(u8 channel);
 s32 Audio_TellXA_Sector();
 s32 Audio_TellXA_Milli();
 boolean Audio_PlayingXA();
+void Audio_WaitPlayXA();
 void Audio_ProcessXA();
 
 #endif

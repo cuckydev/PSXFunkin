@@ -6,12 +6,16 @@
 #include "main.h"
 #include "random.h"
 
+#include "menu.h"
+#include "trans.h"
+#include "loadscr.h"
+
 #include "object/combo.h"
 
 //Stage constants
 //#define STAGE_PERFECT //Play all notes perfectly
 
-const boolean downscroll = false;
+boolean downscroll = false;
 
 //Stage definitions
 #include "character/bf.h"
@@ -38,6 +42,8 @@ static const StageDef stage_defs[StageId_Max] = {
 		{FIXED_DEC(1,1),FIXED_DEC(1,1),FIXED_DEC(13,10)},
 		1, 1,
 		XA_Bopeebo, 0,
+		
+		StageId_1_2,
 	},
 	{ //StageId_1_2 (Fresh)
 		//Characters
@@ -52,6 +58,8 @@ static const StageDef stage_defs[StageId_Max] = {
 		{FIXED_DEC(1,1),FIXED_DEC(13,10),FIXED_DEC(18,10)},
 		1, 2,
 		XA_Fresh, 2,
+		
+		StageId_1_3,
 	},
 	{ //StageId_1_3 (Dadbattle)
 		//Characters
@@ -66,6 +74,8 @@ static const StageDef stage_defs[StageId_Max] = {
 		{FIXED_DEC(13,10),FIXED_DEC(15,10),FIXED_DEC(23,10)},
 		1, 3,
 		XA_Dadbattle, 0,
+		
+		StageId_1_3,
 	},
 	{ //StageId_1_4 (Tutorial)
 		//Characters
@@ -80,6 +90,8 @@ static const StageDef stage_defs[StageId_Max] = {
 		{FIXED_DEC(1,1),FIXED_DEC(1,1),FIXED_DEC(1,1)},
 		1, 4,
 		XA_Tutorial, 2,
+		
+		StageId_1_4,
 	},
 	
 	{ //StageId_2_1 (Spookeez)
@@ -95,6 +107,8 @@ static const StageDef stage_defs[StageId_Max] = {
 		{FIXED_DEC(1,1),FIXED_DEC(17,10),FIXED_DEC(24,10)},
 		2, 1,
 		XA_Spookeez, 0,
+		
+		StageId_2_2,
 	},
 	{ //StageId_2_2 (South)
 		//Characters
@@ -109,6 +123,8 @@ static const StageDef stage_defs[StageId_Max] = {
 		{FIXED_DEC(11,10),FIXED_DEC(15,10),FIXED_DEC(22,10)},
 		2, 2,
 		XA_South, 2,
+		
+		StageId_2_3,
 	},
 	{ //StageId_2_3 (Monster)
 		//Characters
@@ -123,6 +139,8 @@ static const StageDef stage_defs[StageId_Max] = {
 		{FIXED_DEC(13,10),FIXED_DEC(13,10),FIXED_DEC(16,10)},
 		2, 3,
 		XA_Monster, 0,
+		
+		StageId_2_3,
 	},
 	
 	{ //StageId_3_1 (Pico)
@@ -138,6 +156,8 @@ static const StageDef stage_defs[StageId_Max] = {
 		{FIXED_DEC(12,10),FIXED_DEC(14,10),FIXED_DEC(16,10)},
 		3, 1,
 		XA_Pico, 0,
+		
+		StageId_3_2,
 	},
 	{ //StageId_3_2 (Philly)
 		//Characters
@@ -152,6 +172,8 @@ static const StageDef stage_defs[StageId_Max] = {
 		{FIXED_DEC(1,1),FIXED_DEC(13,10),FIXED_DEC(2,1)},
 		3, 2,
 		XA_Philly, 2,
+		
+		StageId_3_3,
 	},
 	{ //StageId_3_3 (Blammed)
 		//Characters
@@ -166,6 +188,8 @@ static const StageDef stage_defs[StageId_Max] = {
 		{FIXED_DEC(12,10),FIXED_DEC(15,10),FIXED_DEC(23,10)},
 		3, 3,
 		XA_Blammed, 0,
+		
+		StageId_3_3,
 	},
 	
 	{ //StageId_4_1 (Satin Panties)
@@ -181,6 +205,8 @@ static const StageDef stage_defs[StageId_Max] = {
 		{FIXED_DEC(13,10),FIXED_DEC(16,10),FIXED_DEC(18,10)},
 		4, 1,
 		XA_SatinPanties, 0,
+		
+		StageId_4_2,
 	},
 	{ //StageId_4_2 (High)
 		//Characters
@@ -195,6 +221,8 @@ static const StageDef stage_defs[StageId_Max] = {
 		{FIXED_DEC(13,10),FIXED_DEC(18,10),FIXED_DEC(2,1)},
 		4, 2,
 		XA_High, 2,
+		
+		StageId_4_3,
 	},
 	{ //StageId_4_3 (MILF)
 		//Characters
@@ -209,6 +237,8 @@ static const StageDef stage_defs[StageId_Max] = {
 		{FIXED_DEC(14,10),FIXED_DEC(17,10),FIXED_DEC(26,10)},
 		4, 3,
 		XA_MILF, 0,
+		
+		StageId_4_3,
 	},
 	{ //StageId_4_4 (Test)
 		//Characters
@@ -223,6 +253,8 @@ static const StageDef stage_defs[StageId_Max] = {
 		{FIXED_DEC(16,10),FIXED_DEC(16,10),FIXED_DEC(16,10)},
 		4, 4,
 		XA_Test, 2,
+		
+		StageId_4_4,
 	},
 	
 	{ //StageId_5_1 (Cocoa)
@@ -238,6 +270,8 @@ static const StageDef stage_defs[StageId_Max] = {
 		{FIXED_DEC(13,10),FIXED_DEC(13,10),FIXED_DEC(13,10)},
 		5, 1,
 		XA_Cocoa, 0,
+		
+		StageId_5_2,
 	},
 	{ //StageId_5_2 (Eggnog)
 		//Characters
@@ -252,6 +286,8 @@ static const StageDef stage_defs[StageId_Max] = {
 		{FIXED_DEC(14,10),FIXED_DEC(16,10),FIXED_DEC(19,10)},
 		5, 2,
 		XA_Eggnog, 2,
+		
+		StageId_5_3,
 	},
 	{ //StageId_5_3 (Winter Horrorland)
 		//Characters
@@ -266,6 +302,8 @@ static const StageDef stage_defs[StageId_Max] = {
 		{FIXED_DEC(1,1),FIXED_DEC(11,10),FIXED_DEC(13,10)},
 		5, 3,
 		XA_WinterHorrorland, 0,
+		
+		StageId_5_3,
 	},
 	
 	{ //StageId_6_1 (Senpai)
@@ -281,6 +319,8 @@ static const StageDef stage_defs[StageId_Max] = {
 		{FIXED_DEC(1,1),FIXED_DEC(12,10),FIXED_DEC(13,10)},
 		6, 1,
 		XA_Senpai, 0,
+		
+		StageId_6_2,
 	},
 	{ //StageId_6_2 (Roses)
 		//Characters
@@ -295,6 +335,8 @@ static const StageDef stage_defs[StageId_Max] = {
 		{FIXED_DEC(12,10),FIXED_DEC(13,10),FIXED_DEC(15,10)},
 		6, 2,
 		XA_Roses, 2,
+		
+		StageId_6_3,
 	},
 	{ //StageId_6_3 (Thorns)
 		//Characters
@@ -309,6 +351,8 @@ static const StageDef stage_defs[StageId_Max] = {
 		{FIXED_DEC(11,10),FIXED_DEC(13,10),FIXED_DEC(15,10)},
 		6, 3,
 		XA_Thorns, 0,
+		
+		StageId_6_3,
 	},
 	
 	{ //StageId_7_1 (Ugh)
@@ -324,6 +368,8 @@ static const StageDef stage_defs[StageId_Max] = {
 		{FIXED_DEC(125,100),FIXED_DEC(18,10),FIXED_DEC(23,10)},
 		7, 1,
 		XA_Ugh, 0,
+		
+		StageId_7_2,
 	},
 	{ //StageId_7_2 (Guns)
 		//Characters
@@ -338,6 +384,8 @@ static const StageDef stage_defs[StageId_Max] = {
 		{FIXED_DEC(14,10),FIXED_DEC(2,1),FIXED_DEC(25,10)},
 		7, 2,
 		XA_Guns, 2,
+		
+		StageId_7_3,
 	},
 	{ //StageId_7_3 (Stress)
 		//Characters
@@ -352,6 +400,73 @@ static const StageDef stage_defs[StageId_Max] = {
 		{FIXED_DEC(175,100),FIXED_DEC(22,10),FIXED_DEC(26,10)},
 		7, 3,
 		XA_Stress, 0,
+		
+		StageId_7_3,
+	},
+	
+	{ //StageId_Kapi_1 (Wocky)
+		//Characters
+		{Char_BF_New,   FIXED_DEC(105,1),  FIXED_DEC(100,1)},
+		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_GF_New,     FIXED_DEC(0,1),    FIXED_DEC(0,1)},
+		
+		//Stage background
+		Back_Dummy_New,
+		
+		//Song info
+		{FIXED_DEC(22,10),FIXED_DEC(22,10),FIXED_DEC(22,10)},
+		0x80, 1,
+		XA_Wocky, 0,
+		
+		StageId_Kapi_2,
+	},
+	{ //StageId_Kapi_2 (Beathoven)
+		//Characters
+		{Char_BF_New,   FIXED_DEC(105,1),  FIXED_DEC(100,1)},
+		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_GF_New,     FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
+		
+		//Stage background
+		Back_Dummy_New,
+		
+		//Song info
+		{FIXED_DEC(21,10),FIXED_DEC(21,10),FIXED_DEC(21,10)},
+		0x80, 2,
+		XA_Beathoven, 2,
+		
+		StageId_Kapi_3,
+	},
+	{ //StageId_Kapi_3 (Hairball)
+		//Characters
+		{Char_BF_New,   FIXED_DEC(105,1),  FIXED_DEC(100,1)},
+		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_GF_New,     FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
+		
+		//Stage background
+		Back_Dummy_New,
+		
+		//Song info
+		{FIXED_DEC(19,10),FIXED_DEC(19,10),FIXED_DEC(19,10)},
+		0x80, 3,
+		XA_Hairball, 0,
+		
+		StageId_Kapi_4,
+	},
+	{ //StageId_Kapi_4 (Nyaw)
+		//Characters
+		{Char_BF_New,   FIXED_DEC(105,1),  FIXED_DEC(100,1)},
+		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_GF_New,     FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
+		
+		//Stage background
+		Back_Dummy_New,
+		
+		//Song info
+		{FIXED_DEC(25,10),FIXED_DEC(25,10),FIXED_DEC(25,10)},
+		0x80, 4,
+		XA_Nyaw, 2,
+		
+		StageId_Kapi_4,
 	},
 };
 
@@ -528,6 +643,8 @@ void Stage_MissNote(u8 type)
 	if (stage.combo)
 	{
 		//Kill combo
+		if (stage.combo > 5)
+			stage.gf->set_anim(stage.gf, CharAnim_Down); //Cry if we lost a large combo
 		stage.combo = 0;
 		
 		//Create combo object telling of our lost combo
@@ -834,10 +951,12 @@ void Stage_DrawNotes()
 }
 
 //Stage functions
-void Stage_Load(StageId id, StageDiff difficulty)
+void Stage_Load(StageId id, StageDiff difficulty, boolean story)
 {
 	//Get stage definition
 	const StageDef *stage_def = stage.stage_def = &stage_defs[stage.stage_id = id];
+	stage.stage_diff = difficulty;
+	stage.story = story;
 	
 	//Load HUD textures
 	Gfx_LoadTex(&stage.tex_hud0, IO_Read("\\STAGE\\HUD0.TIM;1"), GFX_LOADTEX_FREE);
@@ -853,7 +972,20 @@ void Stage_Load(StageId id, StageDiff difficulty)
 	
 	//Load stage data
 	char chart_path[64];
-	sprintf(chart_path, "\\WEEK%d\\%d.%d%c.CHT;1", stage_def->week, stage_def->week, stage_def->week_song, "ENH"[difficulty]);
+	if (stage_def->week & 0x80)
+	{
+		//Use mod path convention
+		static const char *mod_format[] = {
+			"\\KAPI\\KAPI.%d%c.CHT;1" //Kapi
+		};
+		
+		sprintf(chart_path, mod_format[stage_def->week & 0x7F], stage_def->week_song, "ENH"[difficulty]);
+	}
+	else
+	{
+		//Use standard path convention
+		sprintf(chart_path, "\\WEEK%d\\%d.%d%c.CHT;1", stage_def->week, stage_def->week, stage_def->week_song, "ENH"[difficulty]);
+	}
 	
 	stage.chart_data = IO_Read(chart_path);
 	stage.sections = (Section*)((u8*)stage.chart_data + 2);
@@ -871,6 +1003,7 @@ void Stage_Load(StageId id, StageDiff difficulty)
 	Stage_ChangeBPM(stage.cur_section->flag & SECTION_FLAG_BPM_MASK, 0);
 	
 	//Initialize stage state
+	stage.story = story;
 	stage.flag = 0;
 	
 	stage.note_scroll = FIXED_DEC(-8 * 24,1);
@@ -898,6 +1031,9 @@ void Stage_Load(StageId id, StageDiff difficulty)
 	stage.camera.y = stage.camera.ty;
 	stage.camera.zoom = stage.camera.tz;
 	
+	stage.bump = FIXED_UNIT;
+	stage.sbump = FIXED_UNIT;
+	
 	//Find music file and begin seeking to it
 	Audio_GetXAFile(&stage.music_file, stage_def->music_track);
 	IO_SeekFile(&stage.music_file);
@@ -924,11 +1060,62 @@ void Stage_Unload()
 
 void Stage_Tick()
 {
+	//Tick transition
+	if (pad_state.press & PAD_START)
+	{
+		//Return to menu
+		stage.trans = (stage.state == StageState_Play) ? StageTrans_Menu : StageTrans_Reload;
+		Trans_Start();
+	}
+	
+	if (Trans_Tick())
+	{
+		switch (stage.trans)
+		{
+			case StageTrans_Menu:
+				//Load appropriate menu
+				Stage_Unload();
+				
+				LoadScr_Start();
+				if (stage.stage_id <= StageId_LastVanilla)
+				{
+					if (stage.story)
+						Menu_Load(MenuPage_Story);
+					else
+						Menu_Load(MenuPage_Freeplay);
+				}
+				else
+				{
+					Menu_Load(MenuPage_Mods);
+				}
+				LoadScr_End();
+				
+				gameloop = GameLoop_Menu;
+				return;
+			case StageTrans_NextSong:
+				//Load next song
+				Stage_Unload();
+				
+				LoadScr_Start();
+				Stage_Load(stage.stage_def->next_stage, stage.stage_diff, stage.story);
+				LoadScr_End();
+				break;
+			case StageTrans_Reload:
+				//Reload song
+				Stage_Unload();
+				
+				LoadScr_Start();
+				Stage_Load(stage.stage_id, stage.stage_diff, stage.story);
+				LoadScr_End();
+				break;
+		}
+	}
+	
 	switch (stage.state)
 	{
 		case StageState_Play:
 		{
-			//Clear per frame flags
+			//Clear per-frame flags
 			stage.flag &= ~(STAGE_FLAG_JUST_STEP | STAGE_FLAG_SCORE_REFRESH);
 			
 			//Get song position
@@ -995,6 +1182,18 @@ void Stage_Tick()
 				
 				//Extrapolate song time from note scroll
 				stage.song_time = stage.time_base + FIXED_DIV(stage.note_scroll - ((fixed_t)stage.step_base << FIXED_SHIFT), stage.step_crochet);
+				
+				//Transition to menu or next song
+				if (stage.story && stage.stage_def->next_stage != stage.stage_id)
+				{
+					stage.trans = StageTrans_NextSong;
+					Trans_Start();
+				}
+				else
+				{
+					stage.trans = StageTrans_Menu;
+					Trans_Start();
+				}
 			}
 			
 			//Get song step
@@ -1025,8 +1224,11 @@ void Stage_Tick()
 				}
 			}
 			
-			//Get bump
-			if (playing)
+			//Handle bump
+			stage.bump = FIXED_UNIT + FIXED_MUL(stage.bump - FIXED_UNIT, FIXED_DEC(95,100));
+			stage.sbump = FIXED_UNIT + FIXED_MUL(stage.sbump - FIXED_UNIT, FIXED_DEC(60,100));
+			
+			if (playing && (stage.flag & STAGE_FLAG_JUST_STEP))
 			{
 				//Check if screen should bump
 				boolean is_bump_step = (stage.song_step & 0xF) == 0;
@@ -1037,21 +1239,11 @@ void Stage_Tick()
 				
 				//Bump screen
 				if (is_bump_step)
-					stage.bump = (fixed_t)FIXED_UNIT + ((fixed_t)(FIXED_DEC(75,100) - ((stage.note_scroll / 24) & FIXED_LAND)) / 16);
-				else
-					stage.bump = FIXED_UNIT;
+					stage.bump = FIXED_DEC(103,100);
 				
-				//Bump every 4 steps
+				//Bump health every 4 steps
 				if ((stage.song_step & 0x3) == 0)
-					stage.sbump = (fixed_t)FIXED_UNIT + ((fixed_t)(FIXED_DEC(75,100) - ((stage.note_scroll / 24) & FIXED_LAND)) / 24);
-				else
-					stage.sbump = FIXED_UNIT;
-			}
-			else
-			{
-				//Song isn't playing yet
-				stage.bump = FIXED_UNIT;
-				stage.sbump = FIXED_UNIT;
+					stage.sbump = FIXED_DEC(103,100);
 			}
 			
 			//Scroll camera
@@ -1101,7 +1293,7 @@ void Stage_Tick()
 				//Do perfect note checks
 				if (playing)
 				{
-					boolean hit[4] = {0, 0, 0, 0};
+					u8 hit[4] = {0, 0, 0, 0};
 					for (Note *note = stage.cur_note;; note++)
 					{
 						//Check if note can be hit

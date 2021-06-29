@@ -54,8 +54,15 @@ typedef enum
 	StageId_7_2, //Guns
 	StageId_7_3, //Stress
 	
+	StageId_Kapi_1, //Wocky
+	StageId_Kapi_2, //Beathoven
+	StageId_Kapi_3, //Hairball
+	StageId_Kapi_4, //Nyaw
+	
 	StageId_Max
 } StageId;
+
+#define StageId_LastVanilla StageId_7_3
 
 typedef enum
 {
@@ -63,6 +70,13 @@ typedef enum
 	StageDiff_Normal,
 	StageDiff_Hard,
 } StageDiff;
+
+typedef enum
+{
+	StageTrans_Menu,
+	StageTrans_NextSong,
+	StageTrans_Reload,
+} StageTrans;
 
 //Stage background
 typedef struct StageBack
@@ -92,6 +106,8 @@ typedef struct
 	
 	u8 week, week_song;
 	u8 music_track, music_channel;
+	
+	StageId next_stage;
 } StageDef;
 
 //Stage state
@@ -124,6 +140,7 @@ typedef struct
 	//Stage data
 	const StageDef *stage_def;
 	StageId stage_id;
+	StageDiff stage_diff;
 	
 	IO_Data chart_data;
 	Section *sections;
@@ -135,7 +152,9 @@ typedef struct
 	fixed_t note_speed;
 	
 	//Stage state
+	boolean story;
 	u8 flag;
+	StageTrans trans;
 	
 	struct
 	{
@@ -198,7 +217,7 @@ void Stage_DrawTex(Gfx_Tex *tex, RECT *src, RECT_FIXED *dst, fixed_t zoom);
 void Stage_DrawTexArb(Gfx_Tex *tex, RECT *src, POINT_FIXED *p0, POINT_FIXED *p1, POINT_FIXED *p2, POINT_FIXED *p3, fixed_t zoom);
 
 //Stage functions
-void Stage_Load(StageId id, StageDiff difficulty);
+void Stage_Load(StageId id, StageDiff difficulty, boolean story);
 void Stage_Unload();
 void Stage_Tick();
 

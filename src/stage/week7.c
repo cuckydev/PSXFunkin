@@ -9,8 +9,8 @@
 //Week 7 background functions
 #define TANK_START_X FIXED_DEC(-400,1)
 #define TANK_END_X    FIXED_DEC(400,1)
-#define TANK_TIME_A 800
-#define TANK_TIME_B 1600
+#define TANK_TIME_A 1600
+#define TANK_TIME_B 4000
 
 void Back_Week7_DrawFG(StageBack *back)
 {
@@ -63,7 +63,7 @@ void Back_Week7_DrawBG(StageBack *back)
 	s16 tank_sin = MUtil_Sin(tank_angle);
 	s16 tank_cos = MUtil_Cos(tank_angle);
 	
-	fixed_t tank_y = FIXED_DEC(360,1) - (tank_cos * FIXED_DEC(380,1) / 0x100);
+	fixed_t tank_y = FIXED_DEC(375,1) - ((tank_cos * FIXED_DEC(380,1)) >> 8);
 	
 	//Get tank rotated points
 	POINT tank_p0 = {-45, -45};

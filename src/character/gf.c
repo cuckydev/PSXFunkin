@@ -149,7 +149,7 @@ Character *Char_GF_New(fixed_t x, fixed_t y)
 	this->character.focus_zoom = FIXED_DEC(13,10);
 	
 	//Load art
-	this->arc_main = IO_Read("\\GF\\MAIN.ARC;1");
+	this->arc_main = IO_Read("\\CHAR\\GF.ARC;1");
 	
 	const char **pathp = (const char *[]){
 		"bopleft.tim",  //GF_ArcMain_BopLeft

@@ -1,4 +1,4 @@
-#include "psx.h"
+#include "main.h"
 
 #include "mem.h"
 #include "io.h"
@@ -8,6 +8,12 @@
 
 #include "menu.h"
 #include "stage.h"
+
+//Global frame counter
+u32 frame_count;
+
+//Game loop
+GameLoop gameloop;
 
 //Error handler
 char error_msg[0x200];
@@ -24,8 +30,6 @@ void ErrorLock()
 //Entry point
 u32 malloc_heap[0x100000 / sizeof(u32)];
 
-int stid;
-
 int main()
 {
 	//Initialize system
@@ -33,13 +37,14 @@ int main()
 	
 	IO_Init();
 	Audio_Init();
-	Gfx_Init();
 	Pad_Init();
+	Gfx_Init();
+	
+	frame_count = 0;
 	
 	//Start game
-	boolean md = 0;
-	stid = StageId_1_1;
-	Menu_Load(MenuLoadPage_Title);
+	gameloop = GameLoop_Menu;
+	Menu_Load(MenuPage_Opening);
 	
 	//Game loop
 	while (1)
@@ -49,24 +54,15 @@ int main()
 		Pad_Update();
 		
 		//Tick and draw game
-		if (pad_state.press & PAD_START)
+		switch (gameloop)
 		{
-			if (md)
-			{
-				Stage_Unload();
-				Menu_Load(MenuLoadPage_Title);
-			}
-			else
-			{
-				Menu_Unload();
-				Stage_Load(stid, StageDiff_Hard);
-			}
-			md ^= 1;
+			case GameLoop_Menu:
+				Menu_Tick();
+				break;
+			case GameLoop_Stage:
+				Stage_Tick();
+				break;
 		}
-		if (!md)
-			Menu_Tick();
-		else
-			Stage_Tick();
 		
 		#ifdef MEM_STAT
 			//Memory stats
@@ -77,6 +73,7 @@ int main()
 		
 		//Flip gfx buffers
 		Gfx_Flip();
+		frame_count++;
 	}
 	return 0;
 }

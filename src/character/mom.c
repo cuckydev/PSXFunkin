@@ -186,11 +186,11 @@ Character *Char_Mom_New(fixed_t x, fixed_t y)
 	this->character.focus_zoom = FIXED_DEC(1,1);
 	
 	//Load hair art
-	Gfx_LoadTex(&this->tex_hair, IO_Read("\\MOM\\HAIR.TIM;1"), GFX_LOADTEX_FREE);
+	Gfx_LoadTex(&this->tex_hair, IO_Read("\\CHAR\\MOMHAIR.TIM;1"), GFX_LOADTEX_FREE);
 	this->hair_i = 0;
 	
 	//Load art
-	this->arc_main = IO_Read("\\MOM\\MAIN.ARC;1");
+	this->arc_main = IO_Read("\\CHAR\\MOM.ARC;1");
 	
 	const char **pathp = (const char *[]){
 		"idle0.tim", //Mom_ArcMain_Idle0

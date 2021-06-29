@@ -10,6 +10,9 @@ SRCS = src/main.c \
        src/pad.c \
        src/random.c \
        src/archive.c \
+       src/font.c \
+       src/trans.c \
+       src/loadscr.c \
        src/menu.c \
        src/stage.c \
        src/stage/dummy.c \
@@ -32,27 +35,27 @@ LDFLAGS += -L../psyq/lib
 LDFLAGS += -Wl,--start-group
 # TODO: remove unused libraries
 LDFLAGS += -lapi
-LDFLAGS += -lc
+#LDFLAGS += -lc
 LDFLAGS += -lc2
-LDFLAGS += -lcard
+#LDFLAGS += -lcard
 LDFLAGS += -lcd
-LDFLAGS += -lcomb
-LDFLAGS += -lds
+#LDFLAGS += -lcomb
+#LDFLAGS += -lds
 LDFLAGS += -letc
 LDFLAGS += -lgpu
-LDFLAGS += -lgs
-LDFLAGS += -lgte
-LDFLAGS += -lgun
-LDFLAGS += -lhmd
+#LDFLAGS += -lgs
+#LDFLAGS += -lgte
+#LDFLAGS += -lgun
+#LDFLAGS += -lhmd
 #LDFLAGS += -lmath
-LDFLAGS += -lmcrd
-LDFLAGS += -lmcx
+#LDFLAGS += -lmcrd
+#LDFLAGS += -lmcx
 LDFLAGS += -lpad
-LDFLAGS += -lpress
-LDFLAGS += -lsio
+#LDFLAGS += -lpress
+#LDFLAGS += -lsio
 LDFLAGS += -lsnd
 LDFLAGS += -lspu
-LDFLAGS += -ltap
+#LDFLAGS += -ltap
 LDFLAGS += -flto -Wl,--end-group
 
 include ../common.mk

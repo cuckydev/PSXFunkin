@@ -64,6 +64,12 @@ static const XA_TrackDef xa_tracks[] = {
 	{XA_Week7A, XA_LENGTH(13866)}, //XA_Guns
 	//WEEK7B.XA
 	{XA_Week7B, XA_LENGTH(12200)}, //XA_Stress
+	//KAPIA.XA
+	{XA_KapiA, XA_LENGTH(12138)}, //XA_Wocky
+	{XA_KapiA, XA_LENGTH(12000)}, //XA_Beathoven
+	//KAPIB.XA
+	{XA_KapiB, XA_LENGTH(17159)}, //XA_Hairball
+	{XA_KapiB, XA_LENGTH(15157)}, //XA_Nyaw
 };
 
 
@@ -182,6 +188,8 @@ void Audio_Init()
 		"\\MUSIC\\WEEK6B.XA;1", //XA_Week6B
 		"\\MUSIC\\WEEK7A.XA;1", //XA_Week7A
 		"\\MUSIC\\WEEK7B.XA;1", //XA_Week7B
+		"\\MUSIC\\KAPIA.XA;1",  //XA_KapiA
+		"\\MUSIC\\KAPIB.XA;1",  //XA_KapiB
 	};
 	CdlFILE *filep = xa_files;
 	for (u8 i = 0; i < XA_Max; i++)
@@ -265,6 +273,17 @@ s32 Audio_TellXA_Milli()
 boolean Audio_PlayingXA()
 {
 	return (xa_state & XA_STATE_PLAYING) != 0;
+}
+
+void Audio_WaitPlayXA()
+{
+	while (1)
+	{
+		Audio_ProcessXA();
+		if (Audio_PlayingXA())
+			return;
+		VSync(0);
+	}
 }
 
 void Audio_ProcessXA()

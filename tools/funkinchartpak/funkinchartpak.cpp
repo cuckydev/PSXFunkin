@@ -29,13 +29,13 @@ struct Section
 
 struct Note
 {
-	uint16_t pos; //Quarter steps
+	uint16_t pos; //1/24 steps
 	uint8_t type, pad = 0;
 };
 
 uint16_t PosRound(double pos, double crochet)
 {
-	return (uint16_t)std::floor(pos / crochet + 0.5f);
+	return (uint16_t)std::floor(pos / crochet + 0.5);
 }
 
 void WriteWord(std::ostream &out, uint16_t word)
@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
 			
 			std::cout << "chg bpm: " << bpm << " step_crochet: " << step_crochet << " milli_base: " << milli_base << " step_base: " << step_base << std::endl;
 		}
-		new_section.end = (section_end += (uint16_t)i["lengthInSteps"]) * 24;
+		new_section.end = (section_end += 16) * 24; //(uint16_t)i["lengthInSteps"]) * 24; //I had to do this for compatibility
 		new_section.flag = PosRound(bpm, 1.0 / 24.0) & SECTION_FLAG_BPM_MASK; 
 		bool is_alt = i["altAnim"] == true;
 		if (is_opponent)

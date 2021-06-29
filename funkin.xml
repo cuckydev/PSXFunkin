@@ -23,15 +23,13 @@
 			
 			<!-- Menu assets -->
 			<dir name = "menu">
-				<file name = "whitefnt.tim" type = "data" source = "iso/menu/whitefnt.tim"/>
-				<file name = "title0.tim" type = "data" source = "iso/menu/title0.tim"/>
-				<file name = "title1.tim" type = "data" source = "iso/menu/title1.tim"/>
-				<file name = "ng.tim" type = "data" source = "iso/menu/ng.tim"/>
-				<file name = "gf0.tim" type = "data" source = "iso/menu/gf0.tim"/>
-				<file name = "gf1.tim" type = "data" source = "iso/menu/gf1.tim"/>
-				<file name = "gf2.tim" type = "data" source = "iso/menu/gf2.tim"/>
-				<file name = "gf3.tim" type = "data" source = "iso/menu/gf3.tim"/>
-				<file name = "gf4.tim" type = "data" source = "iso/menu/gf4.tim"/>
+				<file name = "loading.tim" type = "data" source = "iso/menu/loading.tim"/>
+				<file name = "menu.arc" type = "data" source = "iso/menu/menu.arc"/>
+			</dir>
+			
+			<!-- Fonts -->
+			<dir name = "font">
+				<file name = "boldfont.tim" type = "data" source = "iso/font/boldfont.tim"/>
 			</dir>
 			
 			<!-- Stage assets -->
@@ -171,34 +169,47 @@
 				<file name = "7.3h.cht" type = "data" source = "iso/chart/7.3h.cht"/>
 			</dir>
 			
-			<!-- Boyfriend assets -->
-			<dir name = "bf">
-				<file name = "main.arc" type = "data" source = "iso/bf/main.arc"/>
-				<file name = "dead.arc" type = "data" source = "iso/bf/dead.arc"/>
+			<!-- Kapi assets -->
+			<dir name = "kapi">
+				<!-- Wocky charts -->
+				<file name = "kapi.1e.cht" type = "data" source = "iso/chart/kapi.1e.cht"/>
+				<file name = "kapi.1n.cht" type = "data" source = "iso/chart/kapi.1n.cht"/>
+				<file name = "kapi.1h.cht" type = "data" source = "iso/chart/kapi.1h.cht"/>
+				<!-- Beathoven charts -->
+				<file name = "kapi.2e.cht" type = "data" source = "iso/chart/kapi.2e.cht"/>
+				<file name = "kapi.2n.cht" type = "data" source = "iso/chart/kapi.2n.cht"/>
+				<file name = "kapi.2h.cht" type = "data" source = "iso/chart/kapi.2h.cht"/>
+				<!-- Hairball charts -->
+				<file name = "kapi.3e.cht" type = "data" source = "iso/chart/kapi.3e.cht"/>
+				<file name = "kapi.3n.cht" type = "data" source = "iso/chart/kapi.3n.cht"/>
+				<file name = "kapi.3h.cht" type = "data" source = "iso/chart/kapi.3h.cht"/>
+				<!-- Nyaw charts -->
+				<file name = "kapi.4e.cht" type = "data" source = "iso/chart/kapi.4e.cht"/>
+				<file name = "kapi.4n.cht" type = "data" source = "iso/chart/kapi.4n.cht"/>
+				<file name = "kapi.4h.cht" type = "data" source = "iso/chart/kapi.4h.cht"/>
 			</dir>
 			
-			<!-- Girlfriend assets -->
-			<dir name = "gf">
-				<file name = "main.arc" type = "data" source = "iso/gf/main.arc"/>
+			<!-- Character assets -->
+			<dir name = "char">
+				<!-- Boyfriend assets -->
+				<file name = "bf.arc" type = "data" source = "iso/bf/main.arc"/>
+				<file name = "bfdead.arc" type = "data" source = "iso/bf/dead.arc"/>
+				
+				<!-- Girlfriend assets -->
+				<file name = "gf.arc" type = "data" source = "iso/gf/main.arc"/>
 				<file name = "speaker.tim" type = "data" source = "iso/gf/speaker.tim"/>
-			</dir>
-			
-			<!-- Dad assets -->
-			<dir name = "dad">
-				<file name = "main.arc" type = "data" source = "iso/dad/main.arc"/>
-			</dir>
-			
-			<!-- Mom assets -->
-			<dir name = "mom">
-				<file name = "main.arc" type = "data" source = "iso/mom/main.arc"/>
-				<file name = "hair.tim" type = "data" source = "iso/mom/hair.tim"/>
-			</dir>
-			
-			<!-- Tankman Captain assets -->
-			<dir name = "tank">
-				<file name = "main.arc" type = "data" source = "iso/tank/main.arc"/>
-				<file name = "ugh.arc" type = "data" source = "iso/tank/ugh.arc"/>
-				<file name = "good.arc" type = "data" source = "iso/tank/good.arc"/>
+				
+				<!-- Dad assets -->
+				<file name = "dad.arc" type = "data" source = "iso/dad/main.arc"/>
+				
+				<!-- Mom assets -->
+				<file name = "mom.arc" type = "data" source = "iso/mom/main.arc"/>
+				<file name = "momhair.tim" type = "data" source = "iso/mom/hair.tim"/>
+				
+				<!-- Tankman Captain assets -->
+				<file name = "tank.arc" type = "data" source = "iso/tank/main.arc"/>
+				<file name = "tankugh.arc" type = "data" source = "iso/tank/ugh.arc"/>
+				<file name = "tankgood.arc" type = "data" source = "iso/tank/good.arc"/>
 			</dir>
 			
 			<!-- Music -->
@@ -232,6 +243,10 @@
 				<file name = "week7a.xa" type = "xa" source = "iso/music/week7a.xa"/>
 				<dummy sectors="128"/>
 				<file name = "week7b.xa" type = "xa" source = "iso/music/week7b.xa"/>
+				<dummy sectors="128"/>
+				<file name = "kapia.xa" type = "xa" source = "iso/music/kapia.xa"/>
+				<dummy sectors="128"/>
+				<file name = "kapib.xa" type = "xa" source = "iso/music/kapib.xa"/>
 				<dummy sectors="128"/>
 			</dir>
 			

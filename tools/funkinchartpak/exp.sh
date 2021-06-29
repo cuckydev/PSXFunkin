@@ -160,3 +160,24 @@ cp stress.json.cht ../../iso/chart/7.3n.cht
 cp stress-easy.json.cht ../../iso/chart/7.3e.cht
 ./funkinchartpak stress-hard.json
 cp stress-hard.json.cht ../../iso/chart/7.3h.cht
+
+
+./funkinchartpak wocky-hard.json
+cp wocky-hard.json.cht ../../iso/chart/kapi.1n.cht
+cp wocky-hard.json.cht ../../iso/chart/kapi.1e.cht
+cp wocky-hard.json.cht ../../iso/chart/kapi.1h.cht
+
+./funkinchartpak beathoven-hard.json
+cp beathoven-hard.json.cht ../../iso/chart/kapi.2n.cht
+cp beathoven-hard.json.cht ../../iso/chart/kapi.2e.cht
+cp beathoven-hard.json.cht ../../iso/chart/kapi.2h.cht
+
+./funkinchartpak hairball-hard.json
+cp hairball-hard.json.cht ../../iso/chart/kapi.3n.cht
+cp hairball-hard.json.cht ../../iso/chart/kapi.3e.cht
+cp hairball-hard.json.cht ../../iso/chart/kapi.3h.cht
+
+./funkinchartpak nyaw-hard.json
+cp nyaw-hard.json.cht ../../iso/chart/kapi.4n.cht
+cp nyaw-hard.json.cht ../../iso/chart/kapi.4e.cht
+cp nyaw-hard.json.cht ../../iso/chart/kapi.4h.cht

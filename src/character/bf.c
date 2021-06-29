@@ -377,9 +377,9 @@ Character *Char_BF_New(fixed_t x, fixed_t y)
 	this->character.focus_zoom = FIXED_DEC(1,1);
 	
 	//Load art
-	this->arc_main = IO_Read("\\BF\\MAIN.ARC;1");
+	this->arc_main = IO_Read("\\CHAR\\BF.ARC;1");
 	this->arc_dead = NULL;
-	IO_FindFile(&this->file_dead_arc, "\\BF\\DEAD.ARC;1");
+	IO_FindFile(&this->file_dead_arc, "\\CHAR\\BFDEAD.ARC;1");
 	
 	const char **pathp = (const char *[]){
 		"idle.tim",  //BF_ArcMain_Idle

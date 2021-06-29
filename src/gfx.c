@@ -17,7 +17,7 @@ static u8 pribuff[2][32768]; //Primitive buffer
 static u8 *nextpri;          //Next primitive pointer
 
 //Gfx functions
-void Gfx_Init()
+void Gfx_Init(void)
 {
 	//Reset GPU
 	ResetGraph(0);
@@ -59,7 +59,7 @@ void Gfx_Init()
 	Gfx_Flip();
 }
 
-void Gfx_Flip()
+void Gfx_Flip(void)
 {
 	//Sync
 	DrawSync(0);
@@ -86,6 +86,16 @@ void Gfx_SetClear(u8 r, u8 g, u8 b)
 {
 	setRGB0(&draw[0], r, g, b);
     setRGB0(&draw[1], r, g, b);
+}
+
+void Gfx_EnableClear(void)
+{
+	draw[0].isbg = draw[1].isbg = 1;
+}
+
+void Gfx_DisableClear(void)
+{
+	draw[0].isbg = draw[1].isbg = 0;
 }
 
 void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
@@ -137,7 +147,19 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 		Mem_Free(data);
 }
 
-void Gfx_BlitTex(Gfx_Tex *tex, const RECT *src, s32 x, s32 y)
+void Gfx_DrawRect(const RECT *rect, u8 r, u8 g, u8 b)
+{
+	//Add quad
+	POLY_F4 *quad = (POLY_F4*)nextpri;
+	setPolyF4(quad);
+	setXYWH(quad, rect->x, rect->y, rect->w, rect->h);
+	setRGB0(quad, r, g, b);
+	
+	addPrim(ot[db], quad);
+	nextpri += sizeof(POLY_F4);
+}
+
+void Gfx_BlitTexCol(Gfx_Tex *tex, const RECT *src, s32 x, s32 y, u8 r, u8 g, u8 b)
 {
 	//Add sprite
 	SPRT *sprt = (SPRT*)nextpri;
@@ -145,13 +167,13 @@ void Gfx_BlitTex(Gfx_Tex *tex, const RECT *src, s32 x, s32 y)
 	setXY0(sprt, x, y);
 	setWH(sprt, src->w, src->h);
 	setUV0(sprt, src->x, src->y);
-	setRGB0(sprt, 128, 128, 128);
+	setRGB0(sprt, r, g, b);
 	sprt->clut = tex->clut;
 	
 	addPrim(ot[db], sprt);
 	nextpri += sizeof(SPRT);
 	
-	//Add tpage change
+	//Add tpage change (TODO: reduce tpage changes)
 	DR_TPAGE *tpage = (DR_TPAGE*)nextpri;
 	setDrawTPage(tpage, 0, 1, tex->tpage);
 	
@@ -159,7 +181,13 @@ void Gfx_BlitTex(Gfx_Tex *tex, const RECT *src, s32 x, s32 y)
 	nextpri += sizeof(DR_TPAGE);
 }
 
-void Gfx_DrawTex(Gfx_Tex *tex, const RECT *src, const RECT *dst)
+void Gfx_BlitTex(Gfx_Tex *tex, const RECT *src, s32 x, s32 y)
+{
+	Gfx_BlitTexCol(tex, src, x, y, 0x80, 0x80, 0x80);
+}
+
+
+void Gfx_DrawTexCol(Gfx_Tex *tex, const RECT *src, const RECT *dst, u8 r, u8 g, u8 b)
 {
 	//Manipulate rects to comply with GPU restrictions
 	RECT csrc, cdst;
@@ -196,7 +224,7 @@ void Gfx_DrawTex(Gfx_Tex *tex, const RECT *src, const RECT *dst)
 		cdst2.h = cdst.h;
 		cdst.w = dsts;
 		
-		Gfx_DrawTex(tex, &csrc2, &cdst2);
+		Gfx_DrawTexCol(tex, &csrc2, &cdst2, r, g, b);
 	}
 	if (csrc.h > 0x80)
 	{
@@ -216,7 +244,7 @@ void Gfx_DrawTex(Gfx_Tex *tex, const RECT *src, const RECT *dst)
 		cdst2.h = cdst.h - dsts;
 		cdst.h = dsts;
 		
-		Gfx_DrawTex(tex, &csrc2, &cdst2);
+		Gfx_DrawTexCol(tex, &csrc2, &cdst2, r, g, b);
 	}
 	
 	//Add quad
@@ -224,12 +252,17 @@ void Gfx_DrawTex(Gfx_Tex *tex, const RECT *src, const RECT *dst)
 	setPolyFT4(quad);
 	setUVWH(quad, csrc.x, csrc.y, csrc.w, csrc.h);
 	setXYWH(quad, dst->x, dst->y, cdst.w, cdst.h);
-	setRGB0(quad, 128, 128, 128);
+	setRGB0(quad, r, g, b);
 	quad->tpage = tex->tpage;
 	quad->clut = tex->clut;
 	
 	addPrim(ot[db], quad);
 	nextpri += sizeof(POLY_FT4);
+}
+
+void Gfx_DrawTex(Gfx_Tex *tex, const RECT *src, const RECT *dst)
+{
+	Gfx_DrawTexCol(tex, src, dst, 0x80, 0x80, 0x80);
 }
 
 void Gfx_DrawTexArb(Gfx_Tex *tex, const RECT *src, const POINT *p0, const POINT *p1, const POINT *p2, const POINT *p3)
@@ -239,7 +272,7 @@ void Gfx_DrawTexArb(Gfx_Tex *tex, const RECT *src, const POINT *p0, const POINT 
 	setPolyFT4(quad);
 	setUVWH(quad, src->x, src->y, src->w, src->h);
 	setXY4(quad, p0->x, p0->y, p1->x, p1->y, p2->x, p2->y, p3->x, p3->y);
-	setRGB0(quad, 128, 128, 128);
+	setRGB0(quad, 0x80, 0x80, 0x80);
 	quad->tpage = tex->tpage;
 	quad->clut = tex->clut;
 	
