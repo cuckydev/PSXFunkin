@@ -194,6 +194,11 @@ void Gfx_DrawTexCol(Gfx_Tex *tex, const RECT *src, const RECT *dst, u8 r, u8 g, 
 	memcpy(&csrc, src, sizeof(RECT));
 	memcpy(&cdst, dst, sizeof(RECT));
 	
+	if (dst->w < 0)
+		csrc.x--;
+	if (dst->h < 0)
+		csrc.y--;
+	
 	if ((csrc.x + csrc.w) >= 0x100)
 	{
 		csrc.w = 0xFF - csrc.x;

@@ -479,7 +479,7 @@ void Menu_Tick(void)
 							menu.next_page = MenuPage_Mods;
 							break;
 						case 3: //Options
-							menu.next_page = MenuPage_Main;//Options;
+							menu.next_page = MenuPage_Options;
 							break;
 					}
 					menu.next_select = 0;
@@ -826,6 +826,106 @@ void Menu_Tick(void)
 				true,
 				-8,
 				197 >> 1, 240 >> 1, 95 >> 1,
+				0, 0, 0
+			);
+			break;
+		}
+		case MenuPage_Options:
+		{
+			static const struct
+			{
+				enum
+				{
+					OptType_Boolean,
+				} type;
+				const char *text;
+				void *value;
+			} menu_options[] = {
+				{OptType_Boolean, "DOWNSCROLL", &stage.downscroll},
+			};
+			
+			//Initialize page
+			if (menu.page_swap)
+				menu.scroll = -(COUNT_OF(menu_options) * 24 + SCREEN_HEIGHT2);
+			
+			//Draw page label
+			menu.font_bold.draw(&menu.font_bold,
+				"OPTIONS",
+				16,
+				SCREEN_HEIGHT - 32,
+				FontAlign_Left
+			);
+			
+			//Handle option and selection
+			if (menu.next_page == menu.page && Trans_Idle())
+			{
+				//Change option
+				if (pad_state.press & PAD_UP)
+				{
+					if (menu.select > 0)
+						menu.select--;
+					else
+						menu.select = COUNT_OF(menu_options) - 1;
+				}
+				if (pad_state.press & PAD_DOWN)
+				{
+					if (menu.select < COUNT_OF(menu_options) - 1)
+						menu.select++;
+					else
+						menu.select = 0;
+				}
+				
+				//Handle option changing
+				switch (menu_options[menu.select].type)
+				{
+					case OptType_Boolean:
+						if (pad_state.press & (PAD_CROSS | PAD_LEFT | PAD_RIGHT))
+							*((boolean*)menu_options[menu.select].value) ^= 1;
+						break;
+				}
+				
+				//Return to main menu if circle is pressed
+				if (pad_state.press & PAD_CIRCLE)
+				{
+					menu.next_page = MenuPage_Main;
+					menu.next_select = 3; //Options
+					Trans_Start();
+				}
+			}
+			
+			//Draw options
+			menu.scroll += (((s32)menu.select * -24) - menu.scroll) >> 4;
+			
+			for (u8 i = 0; i < COUNT_OF(menu_options); i++)
+			{
+				//Get position on screen
+				s32 y = (i * 24) - 8 + menu.scroll;
+				if (y <= -SCREEN_HEIGHT2 - 8)
+					continue;
+				if (y >= SCREEN_HEIGHT2 + 8)
+					break;
+				
+				//Draw text
+				char text[0x80];
+				switch (menu_options[i].type)
+				{
+					case OptType_Boolean:
+						sprintf(text, "%s %s", menu_options[i].text, *((boolean*)menu_options[i].value) ? "ON" : "OFF");
+						menu.font_bold.draw(&menu.font_bold,
+							Menu_LowerIf(text, menu.select != i),
+							48 + (y >> 2),
+							SCREEN_HEIGHT2 + y - 8,
+							FontAlign_Left
+						);
+						break;
+				}
+			}
+			
+			//Draw background
+			Menu_DrawBack(
+				true,
+				-8,
+				253 >> 1, 113 >> 1, 155 >> 1,
 				0, 0, 0
 			);
 			break;

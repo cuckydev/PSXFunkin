@@ -134,6 +134,9 @@ typedef struct
 
 typedef struct
 {
+	//Stage settings
+	boolean downscroll;
+	
 	//HUD textures
 	Gfx_Tex tex_hud0, tex_hud1;
 	

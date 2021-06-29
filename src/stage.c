@@ -15,8 +15,6 @@
 //Stage constants
 //#define STAGE_PERFECT //Play all notes perfectly
 
-boolean downscroll = false;
-
 //Stage definitions
 #include "character/bf.h"
 #include "character/gf.h"
@@ -795,7 +793,7 @@ void Stage_DrawHealth(u8 i, s8 ox)
 		src.w << FIXED_SHIFT,
 		src.h << FIXED_SHIFT
 	};
-	if (downscroll)
+	if (stage.downscroll)
 		dst.y = -dst.y - dst.h;
 	
 	//Draw health icon
@@ -899,7 +897,7 @@ void Stage_DrawNotes()
 							note_src.w << FIXED_SHIFT,
 							(note_src.h << FIXED_SHIFT)
 						};
-						if (downscroll)
+						if (stage.downscroll)
 						{
 							note_dst.y = -note_dst.y;
 							note_dst.h = -note_dst.h;
@@ -923,7 +921,7 @@ void Stage_DrawNotes()
 							note_src.w << FIXED_SHIFT,
 							scroll.size - clip
 						};
-						if (downscroll)
+						if (stage.downscroll)
 							note_dst.y = -note_dst.y - note_dst.h;
 						Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, stage.bump);
 					}
@@ -942,7 +940,7 @@ void Stage_DrawNotes()
 					note_src.w << FIXED_SHIFT,
 					note_src.h << FIXED_SHIFT
 				};
-				if (downscroll)
+				if (stage.downscroll)
 					note_dst.y = -note_dst.y - note_dst.h;
 				Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, stage.bump);
 			}
@@ -1333,7 +1331,7 @@ void Stage_Tick()
 			//Display score
 			RECT score_src = {80, 224, 40, 10};
 			RECT_FIXED score_dst = {FIXED_DEC(14,1), (SCREEN_HEIGHT2 - 42) << FIXED_SHIFT, FIXED_DEC(40,1), FIXED_DEC(10,1)};
-			if (downscroll)
+			if (stage.downscroll)
 				score_dst.y = -score_dst.y - score_dst.h;
 			
 			Stage_DrawTex(&stage.tex_hud0, &score_src, &score_dst, stage.bump);
@@ -1390,7 +1388,7 @@ void Stage_Tick()
 			RECT health_fill = {0, 0, 256 - (256 * stage.health / 20000), 8};
 			RECT health_back = {0, 8, 256, 8};
 			RECT_FIXED health_dst = {FIXED_DEC(-128,1), (SCREEN_HEIGHT2 - 32) << FIXED_SHIFT, 0, FIXED_DEC(8,1)};
-			if (downscroll)
+			if (stage.downscroll)
 				health_dst.y = -health_dst.y - health_dst.h;
 			
 			health_dst.w = health_fill.w << FIXED_SHIFT;
@@ -1404,7 +1402,7 @@ void Stage_Tick()
 			//Draw note HUD
 			RECT note_src = {0, 0, 32, 32};
 			RECT_FIXED note_dst = {0, note_y - FIXED_DEC(16,1), FIXED_DEC(32,1), FIXED_DEC(32,1)};
-			if (downscroll)
+			if (stage.downscroll)
 				note_dst.y = -note_dst.y - note_dst.h;
 			
 			for (u8 i = 0; i < 4; i++)
