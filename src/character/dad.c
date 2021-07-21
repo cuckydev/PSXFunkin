@@ -86,7 +86,8 @@ void Char_Dad_Tick(Character *character)
 	
 	if (stage.flag & STAGE_FLAG_JUST_STEP)
 	{
-		if ((character->animatable.anim != CharAnim_Left &&
+		if (Animatable_Ended(&character->animatable) &&
+		    (character->animatable.anim != CharAnim_Left &&
 		     character->animatable.anim != CharAnim_Down &&
 		     character->animatable.anim != CharAnim_Up &&
 		     character->animatable.anim != CharAnim_Right) &&

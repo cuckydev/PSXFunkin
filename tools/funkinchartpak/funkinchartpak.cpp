@@ -110,6 +110,7 @@ int main(int argc, char *argv[])
 		{
 			//Push main note
 			Note new_note;
+			int sustain = (int)PosRound(j[2], step_crochet) - 1;
 			new_note.pos = (step_base * 24) + PosRound(((double)j[0] - milli_base) * 24.0, step_crochet);
 			new_note.type = (uint8_t)j[1];
 			if (is_opponent)
@@ -120,19 +121,21 @@ int main(int argc, char *argv[])
 			}
 			if (j[3] == true)
 				new_note.type |= NOTE_FLAG_ALT_ANIM;
+			if (sustain >= 0)
+				new_note.type |= NOTE_FLAG_SUSTAIN_END;
+				
 			notes.push_back(new_note);
 			if (!(new_note.type & NOTE_FLAG_OPPONENT))
 				score += 350;
 			
 			//Push sustain notes
-			int sustain = (int)PosRound(j[2], step_crochet) - 1;
 			for (int k = 0; k <= sustain; k++)
 			{
 				Note sus_note; //jerma
-				sus_note.pos = new_note.pos + (k * 24); //Starts at first note's position?
+				sus_note.pos = new_note.pos + ((k + 1) * 24);
 				sus_note.type = new_note.type | NOTE_FLAG_SUSTAIN;
-				if (k == sustain)
-					sus_note.type |= NOTE_FLAG_SUSTAIN_END;
+				if (k != sustain)
+					sus_note.type &= ~NOTE_FLAG_SUSTAIN_END;
 				notes.push_back(sus_note);
 			}
 		}

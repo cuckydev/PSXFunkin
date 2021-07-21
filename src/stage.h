@@ -135,7 +135,7 @@ typedef struct
 typedef struct
 {
 	//Stage settings
-	boolean downscroll;
+	boolean kade, ghost, downscroll;
 	
 	//HUD textures
 	Gfx_Tex tex_hud0, tex_hud1;
@@ -151,7 +151,7 @@ typedef struct
 	
 	fixed_t speed;
 	fixed_t step_crochet;
-	fixed_t early_safe, late_safe;
+	fixed_t early_safe, late_safe, early_sus_safe, late_sus_safe;
 	fixed_t note_speed;
 	
 	//Stage state
@@ -205,6 +205,8 @@ typedef struct
 		StageState_DeadRetry,  //Retry prompt
 		StageState_DeadDecide, //Decided
 	} state;
+	
+	u16 pad_held, pad_press;
 	
 	//Music file
 	CdlFILE music_file;

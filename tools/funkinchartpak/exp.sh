@@ -147,12 +147,12 @@ cp ugh-easy.json.cht ../../iso/chart/7.1e.cht
 ./funkinchartpak ugh-hard.json
 cp ugh-hard.json.cht ../../iso/chart/7.1h.cht
 
-./funkinchartpak guns.json
-cp guns.json.cht ../../iso/chart/7.2n.cht
-./funkinchartpak guns-easy.json
-cp guns-easy.json.cht ../../iso/chart/7.2e.cht
-./funkinchartpak guns-hard.json
-cp guns-hard.json.cht ../../iso/chart/7.2h.cht
+#./funkinchartpak guns.json
+#cp guns.json.cht ../../iso/chart/7.2n.cht
+#./funkinchartpak guns-easy.json
+#cp guns-easy.json.cht ../../iso/chart/7.2e.cht
+#./funkinchartpak guns-hard.json
+#cp guns-hard.json.cht ../../iso/chart/7.2h.cht
 
 ./funkinchartpak stress.json
 cp stress.json.cht ../../iso/chart/7.3n.cht

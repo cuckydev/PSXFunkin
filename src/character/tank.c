@@ -110,7 +110,8 @@ void Char_Tank_Tick(Character *character)
 	
 	if (stage.flag & STAGE_FLAG_JUST_STEP)
 	{
-		if ((character->animatable.anim != CharAnim_Left &&
+		if (Animatable_Ended(&character->animatable) &&
+		    (character->animatable.anim != CharAnim_Left &&
 		     character->animatable.anim != CharAnim_Down &&
 		     character->animatable.anim != CharAnim_DownAlt && //Don't interrupt "Heh, pretty good!" sequence
 		     character->animatable.anim != CharAnim_Up &&

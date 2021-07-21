@@ -21,11 +21,13 @@ typedef struct
 	const Animation *anims;
 	const u8 *anim_p;
 	u8 anim, anim_spd, anim_time;
+	boolean ended;
 } Animatable;
 
 //Animation functions
 void Animatable_Init(Animatable *this, const Animation *anims);
 void Animatable_SetAnim(Animatable *this, u8 anim);
 void Animatable_Animate(Animatable *this, void *user, void (*set_frame)(void*, u8));
+boolean Animatable_Ended(Animatable *this);
 
 #endif
