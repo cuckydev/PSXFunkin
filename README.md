@@ -1,16 +1,22 @@
 # PSXFunkin
-Friday Night Funkin' on the PSX lol
+Friday Night Funkin' on the PSX LOL
 
 ## Compilation
-This port uses modern GCC and the PsyQ SDK, along with pcsx-redux's.. stuff
+This port uses the Nugget + PsyQ SDK.
 
-You can find all the information required for this here: https://github.com/ABelliqueux/nolibgs_hello_worlds
+First, you'll need to install MIPS GCC stuff in order to compile the source.
 
-mkpsxiso is also required to create the final .iso and .cue files for the game: https://github.com/Lameguy64/mkpsxiso
+Then, you'll need to get the converted PsyQ SDK's include and lib folders, and extract them to mips/psyq/.
 
-You'll also need to either get a PSX license file and save it as licensea.dat in the same directory as funkin.xml, or remove the referencing line `<license file="licensea.dat"/>` from funkin.xml
+You can find more information regarding these here: https://github.com/ABelliqueux/nolibgs_hello_worlds
 
-Once you have everything set up, run `make` then `mkpsxiso funkin.xml`
+Once you have the SDK setup and have compiled the game into funkin.ps-exe, you'll need mkpsxiso to create a .iso for the game.
+
+You can find mkpsxiso here, you will have to compile it yourself since the latest release is broken: https://github.com/Lameguy64/mkpsxiso
+
+You'll also need to either get a PSX license file and save it as licensea.dat in the same directory as funkin.xml, or remove the referencing line `<license file="licensea.dat"/>` from funkin.xml.
 
 ## Disclaimer
 This project is not endorsed by the original Friday Night Funkin' devs, this is just an unofficial fan project because I was bored.
+
+Assets such as Week 7, VS Kapi, VS Tricky are used with permission from their respective owners.

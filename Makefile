@@ -28,9 +28,9 @@ SRCS = src/main.c \
        src/character/tank.c \
        src/object.c \
        src/object/combo.c \
-       ../common/crt0/crt0.s
+       mips/common/crt0/crt0.s
 
-CPPFLAGS += -I../psyq/include -Wall -O2
+CPPFLAGS += -I../psyq/include -Wall
 LDFLAGS += -L../psyq/lib
 LDFLAGS += -Wl,--start-group
 # TODO: remove unused libraries
@@ -58,4 +58,4 @@ LDFLAGS += -lspu
 #LDFLAGS += -ltap
 LDFLAGS += -flto -Wl,--end-group
 
-include ../common.mk
+include mips/common.mk
