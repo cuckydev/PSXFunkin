@@ -7,6 +7,7 @@ SRCS = src/main.c \
        src/io.c \
        src/gfx.c \
        src/audio.c \
+	   src/movie.c \
        src/pad.c \
        src/random.c \
        src/archive.c \
@@ -21,6 +22,7 @@ SRCS = src/main.c \
        src/animation.c \
        src/character.c \
        src/character/bf.c \
+       src/character/bfweeb.c \
        src/character/gf.c \
        src/character/speaker.c \
        src/character/dad.c \
@@ -30,8 +32,7 @@ SRCS = src/main.c \
        src/object/combo.c \
        mips/common/crt0/crt0.s
 
-CPPFLAGS += -I../psyq/include -Wall
-LDFLAGS += -L../psyq/lib
+CPPFLAGS += -Wall
 LDFLAGS += -Wl,--start-group
 # TODO: remove unused libraries
 LDFLAGS += -lapi
@@ -40,7 +41,7 @@ LDFLAGS += -lc2
 #LDFLAGS += -lcard
 LDFLAGS += -lcd
 #LDFLAGS += -lcomb
-#LDFLAGS += -lds
+LDFLAGS += -lds
 LDFLAGS += -letc
 LDFLAGS += -lgpu
 #LDFLAGS += -lgs
@@ -51,7 +52,7 @@ LDFLAGS += -lgpu
 #LDFLAGS += -lmcrd
 #LDFLAGS += -lmcx
 LDFLAGS += -lpad
-#LDFLAGS += -lpress
+LDFLAGS += -lpress
 #LDFLAGS += -lsio
 LDFLAGS += -lsnd
 LDFLAGS += -lspu

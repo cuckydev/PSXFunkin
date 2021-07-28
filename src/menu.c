@@ -542,7 +542,7 @@ void Menu_Tick(void)
 				{NULL, StageId_1_4, "TUTORIAL", {"TUTORIAL", NULL, NULL}},
 				{"1", StageId_1_1, "DADDY DEAREST", {"BOPEEBO", "FRESH", "DADBATTLE"}},
 				{"2", StageId_2_1, "SPOOKY MONTH", {"SPOOKEEZ", "SOUTH", "MONSTER"}},
-				{"3", StageId_3_1, "PICO", {"PICO", "PHILLY", "BLAMMED"}},
+				{"3", StageId_3_1, "PICO", {"PICO", "PHILLY NICE", "BLAMMED"}},
 				{"4", StageId_4_1, "MOMMY MUST MURDER", {"SATIN PANTIES", "HIGH", "MILF"}},
 				{"5", StageId_5_1, "RED SNOW", {"COCOA", "EGGNOG", "WINTER HORRORLAND"}},
 				{"6", StageId_6_1, "HATING SIMULATOR", {"SENPAI", "ROSES", "THORNS"}},
@@ -669,7 +669,7 @@ void Menu_Tick(void)
 				{StageId_2_2, "SOUTH"},
 				{StageId_2_3, "MONSTER"},
 				{StageId_3_1, "PICO"},
-				{StageId_3_2, "PHILLY"},
+				{StageId_3_2, "PHILLY NICE"},
 				{StageId_3_3, "BLAMMED"},
 				{StageId_4_1, "SATIN PANTIES"},
 				{StageId_4_2, "HIGH"},
@@ -772,22 +772,63 @@ void Menu_Tick(void)
 		}
 		case MenuPage_Mods:
 		{
+			static const struct
+			{
+				StageId stage;
+				const char *text;
+				boolean difficulty;
+			} menu_options[] = {
+				{StageId_Kapi_1, "VS KAPI", false},
+				{StageId_Clwn_1, "VS TRICKY", true},
+				{StageId_Clwn_4, "   EXPURGATION", false},
+			};
+			
 			//Initialize page
 			if (menu.page_swap)
-				menu.scroll = 0;
+			{
+				menu.scroll = -(COUNT_OF(menu_options) * 24 + SCREEN_HEIGHT2);
+				menu.page_param.stage.diff = StageDiff_Normal;
+			}
+			
+			//Draw page label
+			menu.font_bold.draw(&menu.font_bold,
+				"MODS",
+				16,
+				SCREEN_HEIGHT - 32,
+				FontAlign_Left
+			);
+			
+			//Draw difficulty selector
+			if (menu_options[menu.select].difficulty)
+				Menu_DifficultySelector(SCREEN_WIDTH - 100, SCREEN_HEIGHT2 - 48);
 			
 			//Handle option and selection
 			if (menu.next_page == menu.page && Trans_Idle())
 			{
 				//Change option
+				if (pad_state.press & PAD_UP)
+				{
+					if (menu.select > 0)
+						menu.select--;
+					else
+						menu.select = COUNT_OF(menu_options) - 1;
+				}
+				if (pad_state.press & PAD_DOWN)
+				{
+					if (menu.select < COUNT_OF(menu_options) - 1)
+						menu.select++;
+					else
+						menu.select = 0;
+				}
 				
 				//Select option if cross is pressed
-				if (pad_state.press & PAD_TRIANGLE) //Secret
+				if (pad_state.press & (PAD_START | PAD_CROSS))
 				{
 					menu.next_page = MenuPage_Stage;
-					menu.page_param.stage.id = StageId_Kapi_1;
-					menu.page_param.stage.diff = StageDiff_Hard;
+					menu.page_param.stage.id = menu_options[menu.select].stage;
 					menu.page_param.stage.story = true;
+					if (!menu_options[menu.select].difficulty)
+						menu.page_param.stage.diff = StageDiff_Hard;
 					Trans_Start();
 				}
 				
@@ -800,26 +841,26 @@ void Menu_Tick(void)
 				}
 			}
 			
-			//Draw page label
-			menu.font_bold.draw(&menu.font_bold,
-				"vs kapi",
-				SCREEN_WIDTH2,
-				SCREEN_HEIGHT2 - 8,
-				FontAlign_Center
-			);
+			//Draw options
+			menu.scroll += (((s32)menu.select * -24) - menu.scroll) >> 4;
 			
-			menu.font_bold.draw(&menu.font_bold,
-				"MODS",
-				16,
-				SCREEN_HEIGHT - 48,
-				FontAlign_Left
-			);
-			menu.font_bold.draw(&menu.font_bold,
-				"COMING SOON",
-				16,
-				SCREEN_HEIGHT - 32,
-				FontAlign_Left
-			);
+			for (u8 i = 0; i < COUNT_OF(menu_options); i++)
+			{
+				//Get position on screen
+				s32 y = (i * 24) - 8 + menu.scroll;
+				if (y <= -SCREEN_HEIGHT2 - 8)
+					continue;
+				if (y >= SCREEN_HEIGHT2 + 8)
+					break;
+				
+				//Draw text
+				menu.font_bold.draw(&menu.font_bold,
+					Menu_LowerIf(menu_options[i].text, menu.select != i),
+					48 + (y >> 2),
+					SCREEN_HEIGHT2 + y - 8,
+					FontAlign_Left
+				);
+			}
 			
 			//Draw background
 			Menu_DrawBack(

@@ -147,12 +147,12 @@ cp ugh-easy.json.cht ../../iso/chart/7.1e.cht
 ./funkinchartpak ugh-hard.json
 cp ugh-hard.json.cht ../../iso/chart/7.1h.cht
 
-#./funkinchartpak guns.json
-#cp guns.json.cht ../../iso/chart/7.2n.cht
-#./funkinchartpak guns-easy.json
-#cp guns-easy.json.cht ../../iso/chart/7.2e.cht
-#./funkinchartpak guns-hard.json
-#cp guns-hard.json.cht ../../iso/chart/7.2h.cht
+./funkinchartpak guns.json
+cp guns.json.cht ../../iso/chart/7.2n.cht
+./funkinchartpak guns-easy.json
+cp guns-easy.json.cht ../../iso/chart/7.2e.cht
+./funkinchartpak guns-hard.json
+cp guns-hard.json.cht ../../iso/chart/7.2h.cht
 
 ./funkinchartpak stress.json
 cp stress.json.cht ../../iso/chart/7.3n.cht
@@ -181,3 +181,28 @@ cp hairball-hard.json.cht ../../iso/chart/kapi.3h.cht
 cp nyaw-hard.json.cht ../../iso/chart/kapi.4n.cht
 cp nyaw-hard.json.cht ../../iso/chart/kapi.4e.cht
 cp nyaw-hard.json.cht ../../iso/chart/kapi.4h.cht
+
+
+./funkinchartpak improbable-outset.json
+./funkinchartpak improbable-outset-easy.json
+./funkinchartpak improbable-outset-hard.json
+cp improbable-outset.json.cht ../../iso/chart/clwn.1n.cht
+cp improbable-outset-easy.json.cht ../../iso/chart/clwn.1e.cht
+cp improbable-outset-hard.json.cht ../../iso/chart/clwn.1h.cht
+
+./funkinchartpak madness.json
+./funkinchartpak madness-easy.json
+./funkinchartpak madness-hard.json
+cp madness.json.cht ../../iso/chart/clwn.2n.cht
+cp madness-easy.json.cht ../../iso/chart/clwn.2e.cht
+cp madness-hard.json.cht ../../iso/chart/clwn.2h.cht
+
+./funkinchartpak hellclown.json
+./funkinchartpak hellclown-easy.json
+./funkinchartpak hellclown-hard.json
+cp hellclown.json.cht ../../iso/chart/clwn.3n.cht
+cp hellclown-easy.json.cht ../../iso/chart/clwn.3e.cht
+cp hellclown-hard.json.cht ../../iso/chart/clwn.3h.cht
+
+./funkinchartpak expurgation-hard.json
+cp expurgation-hard.json.cht ../../iso/chart/clwn.4h.cht

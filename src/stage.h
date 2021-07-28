@@ -20,6 +20,12 @@
 #define STAGE_FLAG_VOCAL_ACTIVE  (1 << 1) //Song's vocal track is currently active
 #define STAGE_FLAG_SCORE_REFRESH (1 << 2) //Score text should be refreshed
 
+#define STAGE_LOAD_PLAYER     (1 << 0) //Reload player character
+#define STAGE_LOAD_OPPONENT   (1 << 1) //Reload opponent character
+#define STAGE_LOAD_GIRLFRIEND (1 << 2) //Reload girlfriend character
+#define STAGE_LOAD_STAGE      (1 << 3) //Reload stage
+#define STAGE_LOAD_FLAG       (1 << 7)
+
 //Stage enums
 typedef enum
 {
@@ -58,6 +64,11 @@ typedef enum
 	StageId_Kapi_2, //Beathoven
 	StageId_Kapi_3, //Hairball
 	StageId_Kapi_4, //Nyaw
+	
+	StageId_Clwn_1, //Improbable Outset
+	StageId_Clwn_2, //Madness
+	StageId_Clwn_3, //Hellclown
+	StageId_Clwn_4, //Expurgation
 	
 	StageId_Max
 } StageId;
@@ -108,6 +119,7 @@ typedef struct
 	u8 music_track, music_channel;
 	
 	StageId next_stage;
+	u8 next_load;
 } StageDef;
 
 //Stage state
@@ -116,19 +128,20 @@ typedef struct
 
 typedef struct
 {
-	u16 end;
+	u16 end; //1/12 steps
 	u16 flag;
 } Section;
 
 #define NOTE_FLAG_OPPONENT    (1 << 2) //Note is opponent's
 #define NOTE_FLAG_SUSTAIN     (1 << 3) //Note is a sustain note
-#define NOTE_FLAG_SUSTAIN_END (1 << 4) //Draw as sustain ending (this sucks)
+#define NOTE_FLAG_SUSTAIN_END (1 << 4) //Is either end of sustain
 #define NOTE_FLAG_ALT_ANIM    (1 << 5) //Note plays alt animation
+#define NOTE_FLAG_MINE        (1 << 6) //Note is a mine
 #define NOTE_FLAG_HIT         (1 << 7) //Note has been hit
 
 typedef struct
 {
-	u16 pos; //1/24 steps
+	u16 pos; //1/12 steps
 	u8 type, pad;
 } Note;
 

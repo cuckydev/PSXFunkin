@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!-- Defines the ISO project -->
-<iso_project image_name="funkin.iso" cue_sheet="funkin.cue" no_xa="0">
+<iso_project image_name="funkin.bin" cue_sheet="funkin.cue" no_xa="0">
 	<!-- Data track -->
 	<track type="data">
 		<!-- Identifiers -->
@@ -189,11 +189,30 @@
 				<file name = "kapi.4h.cht" type = "data" source = "iso/chart/kapi.4h.cht"/>
 			</dir>
 			
+			<!-- Tricky assets -->
+			<dir name = "clwn">
+				<!-- Improbable Outset charts -->
+				<file name = "clwn.1e.cht" type = "data" source = "iso/chart/clwn.1e.cht"/>
+				<file name = "clwn.1n.cht" type = "data" source = "iso/chart/clwn.1n.cht"/>
+				<file name = "clwn.1h.cht" type = "data" source = "iso/chart/clwn.1h.cht"/>
+				<!-- Madness charts -->
+				<file name = "clwn.2e.cht" type = "data" source = "iso/chart/clwn.2e.cht"/>
+				<file name = "clwn.2n.cht" type = "data" source = "iso/chart/clwn.2n.cht"/>
+				<file name = "clwn.2h.cht" type = "data" source = "iso/chart/clwn.2h.cht"/>
+				<!-- Hellclown charts -->
+				<file name = "clwn.3e.cht" type = "data" source = "iso/chart/clwn.3e.cht"/>
+				<file name = "clwn.3n.cht" type = "data" source = "iso/chart/clwn.3n.cht"/>
+				<file name = "clwn.3h.cht" type = "data" source = "iso/chart/clwn.3h.cht"/>
+				<!-- Expurgation charts -->
+				<file name = "clwn.4h.cht" type = "data" source = "iso/chart/clwn.4h.cht"/>
+			</dir>
+			
 			<!-- Character assets -->
 			<dir name = "char">
 				<!-- Boyfriend assets -->
 				<file name = "bf.arc" type = "data" source = "iso/bf/main.arc"/>
 				<file name = "bfdead.arc" type = "data" source = "iso/bf/dead.arc"/>
+				<file name = "bfweeb.arc" type = "data" source = "iso/bf/weeb.arc"/>
 				
 				<!-- Girlfriend assets -->
 				<file name = "gf.arc" type = "data" source = "iso/gf/main.arc"/>
@@ -210,6 +229,11 @@
 				<file name = "tank.arc" type = "data" source = "iso/tank/main.arc"/>
 				<file name = "tankugh.arc" type = "data" source = "iso/tank/ugh.arc"/>
 				<file name = "tankgood.arc" type = "data" source = "iso/tank/good.arc"/>
+			</dir>
+			
+			<!-- Movies -->
+			<dir name = "movie">
+				<file name = "ugh.str" type = "str" source = "iso/movie/ugh.str"/>
 			</dir>
 			
 			<!-- Music -->
@@ -247,6 +271,10 @@
 				<file name = "kapia.xa" type = "xa" source = "iso/music/kapia.xa"/>
 				<dummy sectors="128"/>
 				<file name = "kapib.xa" type = "xa" source = "iso/music/kapib.xa"/>
+				<dummy sectors="128"/>
+				<file name = "clwna.xa" type = "xa" source = "iso/music/clwna.xa"/>
+				<dummy sectors="128"/>
+				<file name = "clwnb.xa" type = "xa" source = "iso/music/clwnb.xa"/>
 				<dummy sectors="128"/>
 			</dir>
 			

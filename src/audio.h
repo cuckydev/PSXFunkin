@@ -23,6 +23,8 @@ typedef enum
 	XA_Week7B, //WEEK7B.XA
 	XA_KapiA,  //KAPIA.XA
 	XA_KapiB,  //KAPIB.XA
+	XA_ClwnA,  //CLWNA.XA
+	XA_ClwnB,  //CLWNB.XA
 	
 	XA_Max,
 } XA_File;
@@ -75,6 +77,12 @@ typedef enum
 	//KAPIB.XA
 	XA_Hairball, //Hairball
 	XA_Nyaw,     //Nyaw
+	//CLWNA.XA
+	XA_ImprobableOutset, //Improbable Outset
+	XA_Madness,          //Madness
+	//CLWNB.XA
+	XA_Hellclown,   //Hellclown
+	XA_Expurgation, //Expurgation
 } XA_Track;
 
 //Audio functions

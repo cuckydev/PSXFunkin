@@ -55,7 +55,7 @@ static const XA_TrackDef xa_tracks[] = {
 	//WEEK5B.XA
 	{XA_Week5B, XA_LENGTH(13223)}, //XA_WinterHorrorland
 	//WEEK6A.XA
-	{XA_Week6A, XA_LENGTH(9829)}, //XA_Senpai
+	{XA_Week6A, XA_LENGTH(9800)}, //XA_Senpai
 	{XA_Week6A, XA_LENGTH(8928)}, //XA_Roses
 	//WEEK6B.XA
 	{XA_Week6B, XA_LENGTH(10298)}, //XA_Thorns
@@ -70,6 +70,12 @@ static const XA_TrackDef xa_tracks[] = {
 	//KAPIB.XA
 	{XA_KapiB, XA_LENGTH(17159)}, //XA_Hairball
 	{XA_KapiB, XA_LENGTH(15157)}, //XA_Nyaw
+	//CLWNA.XA
+	{XA_ClwnA, XA_LENGTH(10740)}, //XA_ImprobableOutset
+	{XA_ClwnA, XA_LENGTH(15169)}, //XA_Madness
+	//CLWNB.XA
+	{XA_ClwnB, XA_LENGTH(21886)}, //XA_Hellclown
+	{XA_ClwnB, XA_LENGTH(19607)}, //XA_Expurgation
 };
 
 
@@ -190,6 +196,8 @@ void Audio_Init()
 		"\\MUSIC\\WEEK7B.XA;1", //XA_Week7B
 		"\\MUSIC\\KAPIA.XA;1",  //XA_KapiA
 		"\\MUSIC\\KAPIB.XA;1",  //XA_KapiB
+		"\\MUSIC\\CLWNA.XA;1",  //XA_ClwnA
+		"\\MUSIC\\CLWNB.XA;1",  //XA_ClwnB
 	};
 	CdlFILE *filep = xa_files;
 	for (u8 i = 0; i < XA_Max; i++)
