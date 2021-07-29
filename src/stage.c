@@ -14,6 +14,9 @@
 
 //Stage constants
 //#define STAGE_PERFECT //Play all notes perfectly
+//#define STAGE_NOHUD //Disable the HUD
+
+//#define STAGE_FREECAM //Freecam
 
 //Stage definitions
 #include "character/bf.h"
@@ -21,6 +24,7 @@
 #include "character/gf.h"
 #include "character/dad.h"
 #include "character/mom.h"
+#include "character/senpai.h"
 #include "character/tank.h"
 
 #include "stage/dummy.h"
@@ -123,7 +127,7 @@ static const StageDef stage_defs[StageId_Max] = {
 		2, 2,
 		XA_South, 2,
 		
-		StageId_2_3
+		StageId_2_3, STAGE_LOAD_FLAG | STAGE_LOAD_OPPONENT
 	},
 	{ //StageId_2_3 (Monster)
 		//Characters
@@ -307,9 +311,9 @@ static const StageDef stage_defs[StageId_Max] = {
 	
 	{ //StageId_6_1 (Senpai)
 		//Characters
-		{Char_BFWeeb_New, FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Dad_New,   FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_BFWeeb_New,       FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
+		{Char_BFWeeb_New,  FIXED_DEC(52,1),  FIXED_DEC(50,1)},
+		{Char_Senpai_New, FIXED_DEC(-60,1),  FIXED_DEC(50,1)},
+		{Char_BFWeeb_New,   FIXED_DEC(0,1),  FIXED_DEC(-8,1)},
 		
 		//Stage background
 		Back_Dummy_New,
@@ -323,9 +327,9 @@ static const StageDef stage_defs[StageId_Max] = {
 	},
 	{ //StageId_6_2 (Roses)
 		//Characters
-		{Char_BFWeeb_New, FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Dad_New,   FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_BFWeeb_New,       FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
+		{Char_BFWeeb_New,  FIXED_DEC(52,1),  FIXED_DEC(50,1)},
+		{Char_Senpai_New, FIXED_DEC(-60,1),  FIXED_DEC(50,1)},
+		{Char_BFWeeb_New,   FIXED_DEC(0,1),  FIXED_DEC(-8,1)},
 		
 		//Stage background
 		Back_Dummy_New,
@@ -335,13 +339,13 @@ static const StageDef stage_defs[StageId_Max] = {
 		6, 2,
 		XA_Roses, 2,
 		
-		StageId_6_3, STAGE_LOAD_FLAG | STAGE_LOAD_OPPONENT | STAGE_LOAD_STAGE
+		StageId_6_3, 0
 	},
 	{ //StageId_6_3 (Thorns)
 		//Characters
-		{Char_BFWeeb_New, FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Dad_New,   FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_BFWeeb_New,       FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
+		{Char_BFWeeb_New,  FIXED_DEC(52,1),  FIXED_DEC(50,1)},
+		{Char_Senpai_New, FIXED_DEC(-60,1),  FIXED_DEC(50,1)},
+		{Char_BFWeeb_New,   FIXED_DEC(0,1),  FIXED_DEC(-8,1)},
 		
 		//Stage background
 		Back_Dummy_New,
@@ -568,15 +572,30 @@ void Stage_FocusCharacter(Character *ch, fixed_t div)
 
 void Stage_ScrollCamera()
 {
-	//Get delta position
-	fixed_t dx = stage.camera.tx - stage.camera.x;
-	fixed_t dy = stage.camera.ty - stage.camera.y;
-	fixed_t dz = stage.camera.tz - stage.camera.zoom;
-	
-	//Scroll based off current divisor
-	stage.camera.x += FIXED_MUL(dx, stage.camera.td);
-	stage.camera.y += FIXED_MUL(dy, stage.camera.td);
-	stage.camera.zoom += FIXED_MUL(dz, stage.camera.td);
+	#ifdef STAGE_FREECAM
+		if (pad_state.held & PAD_LEFT)
+			stage.camera.x -= FIXED_DEC(2,1);
+		if (pad_state.held & PAD_UP)
+			stage.camera.y -= FIXED_DEC(2,1);
+		if (pad_state.held & PAD_RIGHT)
+			stage.camera.x += FIXED_DEC(2,1);
+		if (pad_state.held & PAD_DOWN)
+			stage.camera.y += FIXED_DEC(2,1);
+		if (pad_state.held & PAD_TRIANGLE)
+			stage.camera.zoom -= FIXED_DEC(1,100);
+		if (pad_state.held & PAD_CROSS)
+			stage.camera.zoom += FIXED_DEC(1,100);
+	#else
+		//Get delta position
+		fixed_t dx = stage.camera.tx - stage.camera.x;
+		fixed_t dy = stage.camera.ty - stage.camera.y;
+		fixed_t dz = stage.camera.tz - stage.camera.zoom;
+		
+		//Scroll based off current divisor
+		stage.camera.x += FIXED_MUL(dx, stage.camera.td);
+		stage.camera.y += FIXED_MUL(dy, stage.camera.td);
+		stage.camera.zoom += FIXED_MUL(dz, stage.camera.td);
+	#endif
 	
 	//Update other camera stuff
 	stage.camera.bzoom = FIXED_MUL(stage.camera.zoom, stage.bump);
@@ -905,10 +924,29 @@ void Stage_SustainCheck(u8 type)
 //Stage drawing functions
 void Stage_DrawTex(Gfx_Tex *tex, RECT *src, RECT_FIXED *dst, fixed_t zoom)
 {
-	fixed_t l = (SCREEN_WIDTH2  << FIXED_SHIFT) + FIXED_MUL(dst->x, zoom);
-	fixed_t t = (SCREEN_HEIGHT2 << FIXED_SHIFT) + FIXED_MUL(dst->y, zoom);
-	fixed_t r = l + FIXED_MUL(dst->w, zoom);
-	fixed_t b = t + FIXED_MUL(dst->h, zoom);
+	#ifdef STAGE_NOHUD
+		if (tex == &stage.tex_hud0 || tex == &stage.tex_hud1)
+			return;
+	#endif
+	
+	fixed_t xz = dst->x;
+	fixed_t yz = dst->y;
+	fixed_t wz = dst->w;
+	fixed_t hz = dst->h;
+	
+	if (stage.stage_id >= StageId_6_1 && stage.stage_id <= StageId_6_3)
+	{
+		//Pixel perfect scrolling in Week 6
+		xz &= FIXED_UAND;
+		yz &= FIXED_UAND;
+		wz &= FIXED_UAND;
+		hz &= FIXED_UAND;
+	}
+	
+	fixed_t l = (SCREEN_WIDTH2  << FIXED_SHIFT) + FIXED_MUL(xz, zoom);
+	fixed_t t = (SCREEN_HEIGHT2 << FIXED_SHIFT) + FIXED_MUL(yz, zoom);
+	fixed_t r = l + FIXED_MUL(wz, zoom);
+	fixed_t b = t + FIXED_MUL(hz, zoom);
 	
 	l >>= FIXED_SHIFT;
 	t >>= FIXED_SHIFT;
@@ -1289,6 +1327,9 @@ void Stage_LoadMusic(void)
 	
 	//Initialize music state
 	stage.note_scroll = FIXED_DEC(-8 * 24,1);
+	
+	stage.player->sing_end = stage.note_scroll;
+	stage.opponent->sing_end = stage.note_scroll;
 }
 
 void Stage_LoadState(void)

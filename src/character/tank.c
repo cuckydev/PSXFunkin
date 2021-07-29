@@ -161,6 +161,18 @@ void Char_Tank_Tick(Character *character)
 void Char_Tank_SetAnim(Character *character, u8 anim)
 {
 	//Set animation
+	if (anim == CharAnim_DownAlt && character->animatable.anim != CharAnim_DownAlt)
+	{
+		character->focus_x = FIXED_DEC(120,1);
+		character->focus_y = FIXED_DEC(-100,1);
+		character->focus_zoom = FIXED_DEC(78, 100);
+	}
+	else if (anim != CharAnim_DownAlt && character->animatable.anim == CharAnim_DownAlt)
+	{
+		character->focus_x = FIXED_DEC(65,1);
+		character->focus_y = FIXED_DEC(-80,1);
+		character->focus_zoom = FIXED_UNIT;
+	}
 	Animatable_SetAnim(&character->animatable, anim);
 	Character_CheckStartSing(character);
 }

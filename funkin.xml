@@ -225,15 +225,13 @@
 				<file name = "mom.arc" type = "data" source = "iso/mom/main.arc"/>
 				<file name = "momhair.tim" type = "data" source = "iso/mom/hair.tim"/>
 				
+				<!-- Senpai assets -->
+				<file name = "senpai.arc" type = "data" source = "iso/senpai/main.arc"/>
+				
 				<!-- Tankman Captain assets -->
 				<file name = "tank.arc" type = "data" source = "iso/tank/main.arc"/>
 				<file name = "tankugh.arc" type = "data" source = "iso/tank/ugh.arc"/>
 				<file name = "tankgood.arc" type = "data" source = "iso/tank/good.arc"/>
-			</dir>
-			
-			<!-- Movies -->
-			<dir name = "movie">
-				<file name = "ugh.str" type = "str" source = "iso/movie/ugh.str"/>
 			</dir>
 			
 			<!-- Music -->
