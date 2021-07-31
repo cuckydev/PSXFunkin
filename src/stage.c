@@ -924,17 +924,19 @@ void Stage_SustainCheck(u8 type)
 //Stage drawing functions
 void Stage_DrawTex(Gfx_Tex *tex, RECT *src, RECT_FIXED *dst, fixed_t zoom)
 {
-	#ifdef STAGE_NOHUD
-		if (tex == &stage.tex_hud0 || tex == &stage.tex_hud1)
-			return;
-	#endif
-	
 	fixed_t xz = dst->x;
 	fixed_t yz = dst->y;
 	fixed_t wz = dst->w;
 	fixed_t hz = dst->h;
 	
-	if (stage.stage_id >= StageId_6_1 && stage.stage_id <= StageId_6_3)
+	if (tex == &stage.tex_hud0 || tex == &stage.tex_hud1)
+	{
+		//Don't draw if HUD and HUD is disabled
+		#ifdef STAGE_NOHUD
+			return;
+		#endif
+	}
+	else if (stage.stage_id >= StageId_6_1 && stage.stage_id <= StageId_6_3)
 	{
 		//Pixel perfect scrolling in Week 6
 		xz &= FIXED_UAND;
