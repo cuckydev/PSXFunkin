@@ -16,15 +16,15 @@ typedef struct
 	fixed_t x;
 	
 	fixed_t hy, hv; //Hit type
-	s8 ht;
+	fixed_t ht;
 	
 	fixed_t cy, cv; //COMBO
-	s8 ct;
+	fixed_t ct;
 	
 	u8 num[5]; //0-9
 	fixed_t numy[5];
 	fixed_t numv[5];
-	s8 numt;
+	fixed_t numt;
 } Obj_Combo;
 
 //Combo object functions

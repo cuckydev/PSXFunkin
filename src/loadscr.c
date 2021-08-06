@@ -1,6 +1,7 @@
 #include "loadscr.h"
 
 #include "gfx.h"
+#include "timer.h"
 #include "io.h"
 #include "audio.h"
 #include "trans.h"
@@ -25,6 +26,7 @@ void LoadScr_Start(void)
 	while (!Trans_Idle())
 	{
 		//Draw loading screen and end frame
+		Timer_Tick();
 		Trans_Tick();
 		Gfx_DrawTex(&loading_tex, &loading_src, &loading_dst);
 		Gfx_Flip();
@@ -41,6 +43,9 @@ void LoadScr_End(void)
 	Trans_Start();
 	Gfx_DisableClear();
 	while (!Trans_Tick())
+	{
+		Timer_Tick();
 		Gfx_Flip();
+	}
 	Gfx_EnableClear();
 }

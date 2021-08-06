@@ -58,12 +58,12 @@ void Back_Week7_DrawBG(StageBack *back)
 	fx = stage.camera.x * 2 / 3;
 	fy = stage.camera.y * 2 / 3;
 	
-	u8 tank_angle = this->tank_x * 0x18 / TANK_END_X;
+	u8 tank_angle = this->tank_x * 0x34 / TANK_END_X;
 	
 	s16 tank_sin = MUtil_Sin(tank_angle);
 	s16 tank_cos = MUtil_Cos(tank_angle);
 	
-	fixed_t tank_y = FIXED_DEC(375,1) - ((tank_cos * FIXED_DEC(380,1)) >> 8);
+	fixed_t tank_y = FIXED_DEC(175,1) - ((tank_cos * FIXED_DEC(180,1)) >> 8);
 	
 	//Get tank rotated points
 	POINT tank_p0 = {-45, -45};

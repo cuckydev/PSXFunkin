@@ -87,7 +87,7 @@ static const CharFrame char_bfweeb_frame[] = {
 };
 
 static const Animation char_bfweeb_anim[PlayerAnim_Max] = {
-	{4, (const u8[]){ 0,  1,  2,  3, 4, ASCR_BACK, 1}}, //CharAnim_Idle
+	{2, (const u8[]){ 0,  1,  2,  3, 4, ASCR_BACK, 1}}, //CharAnim_Idle
 	{2, (const u8[]){ 5,  6, ASCR_BACK, 1}},            //CharAnim_Left
 	{2, (const u8[]){ 5,  6, ASCR_BACK, 1}},            //CharAnim_LeftAlt
 	{2, (const u8[]){ 7,  8, ASCR_BACK, 1}},            //CharAnim_Down
@@ -96,8 +96,8 @@ static const Animation char_bfweeb_anim[PlayerAnim_Max] = {
 	{2, (const u8[]){ 5,  6, ASCR_BACK, 1}},            //CharAnim_UpAlt
 	{2, (const u8[]){11, 12, ASCR_BACK, 1}},            //CharAnim_Right
 	{2, (const u8[]){ 5,  6, ASCR_BACK, 1}},            //CharAnim_RightAlt
-	{3, (const u8[]){20, 21, 22, ASCR_BACK, 1}},        //PlayerAnim_Peace
-	{3, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},      //PlayerAnim_Sweat
+	{2, (const u8[]){20, 21, 22, ASCR_BACK, 1}},        //PlayerAnim_Peace
+	{2, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},      //PlayerAnim_Sweat
 	
 	{5, (const u8[]){23, 24, 25, 26, 26, 26, 26, 26, 26, 26, ASCR_CHGANI, PlayerAnim_Dead1}}, //PlayerAnim_Dead0
 	{5, (const u8[]){26, ASCR_REPEAT}},                                                       //PlayerAnim_Dead1

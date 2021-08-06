@@ -24,6 +24,6 @@ typedef struct
 #define FIXED_DEC(d, f) (((fixed_t)(d) << FIXED_SHIFT) / (f))
 
 #define FIXED_MUL(x, y) (((s64)(x) * (y)) >> FIXED_SHIFT)
-#define FIXED_DIV(x, y) (((x) << FIXED_SHIFT) / (y))
+#define FIXED_DIV(x, y) (((s32)(x) << FIXED_SHIFT) / (y))
 
 #endif

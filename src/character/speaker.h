@@ -9,7 +9,7 @@ typedef struct
 {
 	//Speaker state
 	Gfx_Tex tex;
-	u8 bump;
+	fixed_t bump;
 } Speaker;
 
 //Speaker functions

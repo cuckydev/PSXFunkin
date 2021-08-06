@@ -1,6 +1,7 @@
 #include "main.h"
 
 #include "mem.h"
+#include "timer.h"
 #include "io.h"
 #include "gfx.h"
 #include "audio.h"
@@ -8,9 +9,6 @@
 
 #include "menu.h"
 #include "stage.h"
-
-//Global frame counter
-u32 frame_count;
 
 //Game loop
 GameLoop gameloop;
@@ -40,7 +38,7 @@ int main()
 	Pad_Init();
 	Gfx_Init();
 	
-	frame_count = 0;
+	Timer_Init();
 	
 	//Start game
 	gameloop = GameLoop_Menu;
@@ -50,8 +48,18 @@ int main()
 	while (1)
 	{
 		//Prepare frame
+		Timer_Tick();
 		Audio_ProcessXA();
 		Pad_Update();
+		
+		#ifdef MEM_STAT
+			//Memory stats
+			size_t mem_used, mem_size, mem_max;
+			Mem_GetStat(&mem_used, &mem_size, &mem_max);
+			#ifndef MEM_BAR
+				FntPrint("mem: %08X/%08X (max %08X)\n", mem_used, mem_size, mem_max);
+			#endif
+		#endif
 		
 		//Tick and draw game
 		switch (gameloop)
@@ -64,16 +72,8 @@ int main()
 				break;
 		}
 		
-		#ifdef MEM_STAT
-			//Memory stats
-			size_t mem_used, mem_size, mem_max;
-			Mem_GetStat(&mem_used, &mem_size, &mem_max);
-			FntPrint("mem: %08X/%08X (max %08X)\n", mem_used, mem_size, mem_max);
-		#endif
-		
 		//Flip gfx buffers
 		Gfx_Flip();
-		frame_count++;
 	}
 	return 0;
 }

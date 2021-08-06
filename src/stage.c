@@ -1,6 +1,7 @@
 #include "stage.h"
 
 #include "mem.h"
+#include "timer.h"
 #include "audio.h"
 #include "pad.h"
 #include "main.h"
@@ -18,525 +19,10 @@
 
 //#define STAGE_FREECAM //Freecam
 
+//#define STAGE_FUNKYFRIDAY //Funky Friday
+
 //Stage definitions
-#include "character/bf.h"
-#include "character/bfweeb.h"
-#include "character/gf.h"
-#include "character/dad.h"
-#include "character/mom.h"
-#include "character/senpai.h"
-#include "character/tank.h"
-
-#include "stage/dummy.h"
-#include "stage/week4.h"
-#include "stage/week7.h"
-
-static const StageDef stage_defs[StageId_Max] = {
-	{ //StageId_1_1 (Bopeebo)
-		//Characters
-		{Char_BF_New,   FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),    FIXED_DEC(0,1)},
-		
-		//Stage background
-		Back_Dummy_New,
-		
-		//Song info
-		{FIXED_DEC(1,1),FIXED_DEC(1,1),FIXED_DEC(13,10)},
-		1, 1,
-		XA_Bopeebo, 0,
-		
-		StageId_1_2, STAGE_LOAD_FLAG
-	},
-	{ //StageId_1_2 (Fresh)
-		//Characters
-		{Char_BF_New,   FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
-		
-		//Stage background
-		Back_Dummy_New,
-		
-		//Song info
-		{FIXED_DEC(1,1),FIXED_DEC(13,10),FIXED_DEC(18,10)},
-		1, 2,
-		XA_Fresh, 2,
-		
-		StageId_1_3, STAGE_LOAD_FLAG
-	},
-	{ //StageId_1_3 (Dadbattle)
-		//Characters
-		{Char_BF_New,   FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
-		
-		//Stage background
-		Back_Dummy_New,
-		
-		//Song info
-		{FIXED_DEC(13,10),FIXED_DEC(15,10),FIXED_DEC(23,10)},
-		1, 3,
-		XA_Dadbattle, 0,
-		
-		StageId_1_3, 0
-	},
-	{ //StageId_1_4 (Tutorial)
-		//Characters
-		{Char_BF_New,  FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Dad_New,   FIXED_DEC(0,1),  FIXED_DEC(-15,1)}, //TODO
-		{Char_GF_New,    FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
-		
-		//Stage background
-		Back_Dummy_New,
-		
-		//Song info
-		{FIXED_DEC(1,1),FIXED_DEC(1,1),FIXED_DEC(1,1)},
-		1, 4,
-		XA_Tutorial, 2,
-		
-		StageId_1_4, 0
-	},
-	
-	{ //StageId_2_1 (Spookeez)
-		//Characters
-		{Char_BF_New,   FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
-		
-		//Stage background
-		Back_Dummy_New,
-		
-		//Song info
-		{FIXED_DEC(1,1),FIXED_DEC(17,10),FIXED_DEC(24,10)},
-		2, 1,
-		XA_Spookeez, 0,
-		
-		StageId_2_2, STAGE_LOAD_FLAG
-	},
-	{ //StageId_2_2 (South)
-		//Characters
-		{Char_BF_New,   FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
-		
-		//Stage background
-		Back_Dummy_New,
-		
-		//Song info
-		{FIXED_DEC(11,10),FIXED_DEC(15,10),FIXED_DEC(22,10)},
-		2, 2,
-		XA_South, 2,
-		
-		StageId_2_3, STAGE_LOAD_FLAG | STAGE_LOAD_OPPONENT
-	},
-	{ //StageId_2_3 (Monster)
-		//Characters
-		{Char_BF_New,   FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
-		
-		//Stage background
-		Back_Dummy_New,
-		
-		//Song info
-		{FIXED_DEC(13,10),FIXED_DEC(13,10),FIXED_DEC(16,10)},
-		2, 3,
-		XA_Monster, 0,
-		
-		StageId_2_3, 0
-	},
-	
-	{ //StageId_3_1 (Pico)
-		//Characters
-		{Char_BF_New,   FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
-		
-		//Stage background
-		Back_Dummy_New,
-		
-		//Song info
-		{FIXED_DEC(12,10),FIXED_DEC(14,10),FIXED_DEC(16,10)},
-		3, 1,
-		XA_Pico, 0,
-		
-		StageId_3_2, STAGE_LOAD_FLAG
-	},
-	{ //StageId_3_2 (Philly)
-		//Characters
-		{Char_BF_New,   FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
-		
-		//Stage background
-		Back_Dummy_New,
-		
-		//Song info
-		{FIXED_DEC(1,1),FIXED_DEC(13,10),FIXED_DEC(2,1)},
-		3, 2,
-		XA_Philly, 2,
-		
-		StageId_3_3, STAGE_LOAD_FLAG
-	},
-	{ //StageId_3_3 (Blammed)
-		//Characters
-		{Char_BF_New,   FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
-		
-		//Stage background
-		Back_Dummy_New,
-		
-		//Song info
-		{FIXED_DEC(12,10),FIXED_DEC(15,10),FIXED_DEC(23,10)},
-		3, 3,
-		XA_Blammed, 0,
-		
-		StageId_3_3, 0
-	},
-	
-	{ //StageId_4_1 (Satin Panties)
-		//Characters
-		{Char_BF_New,   FIXED_DEC(120,1),   FIXED_DEC(40,1)},
-		{Char_Mom_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
-		
-		//Stage background
-		Back_Week4_New,
-		
-		//Song info
-		{FIXED_DEC(13,10),FIXED_DEC(16,10),FIXED_DEC(18,10)},
-		4, 1,
-		XA_SatinPanties, 0,
-		
-		StageId_4_2, STAGE_LOAD_FLAG
-	},
-	{ //StageId_4_2 (High)
-		//Characters
-		{Char_BF_New,   FIXED_DEC(120,1),   FIXED_DEC(40,1)},
-		{Char_Mom_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
-		
-		//Stage background
-		Back_Week4_New,
-		
-		//Song info
-		{FIXED_DEC(13,10),FIXED_DEC(18,10),FIXED_DEC(2,1)},
-		4, 2,
-		XA_High, 2,
-		
-		StageId_4_3, STAGE_LOAD_FLAG
-	},
-	{ //StageId_4_3 (MILF)
-		//Characters
-		{Char_BF_New,   FIXED_DEC(120,1),   FIXED_DEC(40,1)},
-		{Char_Mom_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
-		
-		//Stage background
-		Back_Week4_New,
-		
-		//Song info
-		{FIXED_DEC(14,10),FIXED_DEC(17,10),FIXED_DEC(26,10)},
-		4, 3,
-		XA_MILF, 0,
-		
-		StageId_4_3, 0
-	},
-	{ //StageId_4_4 (Test)
-		//Characters
-		{Char_BF_New,     FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Tank_New,  FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,       FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
-		
-		//Stage background
-		Back_Dummy_New,
-		
-		//Song info
-		{FIXED_DEC(16,10),FIXED_DEC(16,10),FIXED_DEC(16,10)},
-		4, 4,
-		XA_Test, 2,
-		
-		StageId_4_4, 0
-	},
-	
-	{ //StageId_5_1 (Cocoa)
-		//Characters
-		{Char_BF_New,   FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
-		
-		//Stage background
-		Back_Dummy_New,
-		
-		//Song info
-		{FIXED_DEC(13,10),FIXED_DEC(13,10),FIXED_DEC(13,10)},
-		5, 1,
-		XA_Cocoa, 0,
-		
-		StageId_5_2, STAGE_LOAD_FLAG
-	},
-	{ //StageId_5_2 (Eggnog)
-		//Characters
-		{Char_BF_New,   FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
-		
-		//Stage background
-		Back_Dummy_New,
-		
-		//Song info
-		{FIXED_DEC(14,10),FIXED_DEC(16,10),FIXED_DEC(19,10)},
-		5, 2,
-		XA_Eggnog, 2,
-		
-		StageId_5_3, STAGE_LOAD_FLAG
-	},
-	{ //StageId_5_3 (Winter Horrorland)
-		//Characters
-		{Char_BF_New,   FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
-		
-		//Stage background
-		Back_Dummy_New,
-		
-		//Song info
-		{FIXED_DEC(1,1),FIXED_DEC(11,10),FIXED_DEC(13,10)},
-		5, 3,
-		XA_WinterHorrorland, 0,
-		
-		StageId_5_3, 0
-	},
-	
-	{ //StageId_6_1 (Senpai)
-		//Characters
-		{Char_BFWeeb_New,  FIXED_DEC(52,1),  FIXED_DEC(50,1)},
-		{Char_Senpai_New, FIXED_DEC(-60,1),  FIXED_DEC(50,1)},
-		{Char_BFWeeb_New,   FIXED_DEC(0,1),  FIXED_DEC(-8,1)},
-		
-		//Stage background
-		Back_Dummy_New,
-		
-		//Song info
-		{FIXED_DEC(1,1),FIXED_DEC(12,10),FIXED_DEC(13,10)},
-		6, 1,
-		XA_Senpai, 0,
-		
-		StageId_6_2, STAGE_LOAD_FLAG | STAGE_LOAD_OPPONENT
-	},
-	{ //StageId_6_2 (Roses)
-		//Characters
-		{Char_BFWeeb_New,  FIXED_DEC(52,1),  FIXED_DEC(50,1)},
-		{Char_Senpai_New, FIXED_DEC(-60,1),  FIXED_DEC(50,1)},
-		{Char_BFWeeb_New,   FIXED_DEC(0,1),  FIXED_DEC(-8,1)},
-		
-		//Stage background
-		Back_Dummy_New,
-		
-		//Song info
-		{FIXED_DEC(12,10),FIXED_DEC(13,10),FIXED_DEC(15,10)},
-		6, 2,
-		XA_Roses, 2,
-		
-		StageId_6_3, 0
-	},
-	{ //StageId_6_3 (Thorns)
-		//Characters
-		{Char_BFWeeb_New,  FIXED_DEC(52,1),  FIXED_DEC(50,1)},
-		{Char_Senpai_New, FIXED_DEC(-60,1),  FIXED_DEC(50,1)},
-		{Char_BFWeeb_New,   FIXED_DEC(0,1),  FIXED_DEC(-8,1)},
-		
-		//Stage background
-		Back_Dummy_New,
-		
-		//Song info
-		{FIXED_DEC(11,10),FIXED_DEC(13,10),FIXED_DEC(15,10)},
-		6, 3,
-		XA_Thorns, 0,
-		
-		StageId_6_3, 0
-	},
-	
-	{ //StageId_7_1 (Ugh)
-		//Characters
-		{Char_BF_New,    FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Tank_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,      FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
-		
-		//Stage background
-		Back_Week7_New,
-		
-		//Song info
-		{FIXED_DEC(125,100),FIXED_DEC(18,10),FIXED_DEC(23,10)},
-		7, 1,
-		XA_Ugh, 0,
-		
-		StageId_7_2, STAGE_LOAD_FLAG
-	},
-	{ //StageId_7_2 (Guns)
-		//Characters
-		{Char_BF_New,    FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Tank_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,      FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
-		
-		//Stage background
-		Back_Week7_New,
-		
-		//Song info
-		{FIXED_DEC(14,10),FIXED_DEC(2,1),FIXED_DEC(25,10)},
-		7, 2,
-		XA_Guns, 2,
-		
-		StageId_7_3, STAGE_LOAD_FLAG | STAGE_LOAD_PLAYER | STAGE_LOAD_OPPONENT | STAGE_LOAD_GIRLFRIEND
-	},
-	{ //StageId_7_3 (Stress)
-		//Characters
-		{Char_BF_New,    FIXED_DEC(105,1),  FIXED_DEC(100,1)}, //TODO: carry gf
-		{Char_Tank_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,      FIXED_DEC(0,1),  FIXED_DEC(-15,1)}, //TODO: pico funny
-		
-		//Stage background
-		Back_Week7_New,
-		
-		//Song info
-		{FIXED_DEC(175,100),FIXED_DEC(22,10),FIXED_DEC(26,10)},
-		7, 3,
-		XA_Stress, 0,
-		
-		StageId_7_3, 0
-	},
-	
-	{ //StageId_Kapi_1 (Wocky)
-		//Characters
-		{Char_BF_New,   FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),    FIXED_DEC(0,1)},
-		
-		//Stage background
-		Back_Dummy_New,
-		
-		//Song info
-		{FIXED_DEC(22,10),FIXED_DEC(22,10),FIXED_DEC(22,10)},
-		0x80, 1,
-		XA_Wocky, 0,
-		
-		StageId_Kapi_2, STAGE_LOAD_FLAG
-	},
-	{ //StageId_Kapi_2 (Beathoven)
-		//Characters
-		{Char_BF_New,   FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
-		
-		//Stage background
-		Back_Dummy_New,
-		
-		//Song info
-		{FIXED_DEC(21,10),FIXED_DEC(21,10),FIXED_DEC(21,10)},
-		0x80, 2,
-		XA_Beathoven, 2,
-		
-		StageId_Kapi_3, STAGE_LOAD_FLAG
-	},
-	{ //StageId_Kapi_3 (Hairball)
-		//Characters
-		{Char_BF_New,   FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
-		
-		//Stage background
-		Back_Dummy_New,
-		
-		//Song info
-		{FIXED_DEC(19,10),FIXED_DEC(19,10),FIXED_DEC(19,10)},
-		0x80, 3,
-		XA_Hairball, 0,
-		
-		StageId_Kapi_4, STAGE_LOAD_FLAG
-	},
-	{ //StageId_Kapi_4 (Nyaw)
-		//Characters
-		{Char_BF_New,   FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
-		
-		//Stage background
-		Back_Dummy_New,
-		
-		//Song info
-		{FIXED_DEC(25,10),FIXED_DEC(25,10),FIXED_DEC(25,10)},
-		0x80, 4,
-		XA_Nyaw, 2,
-		
-		StageId_Kapi_4, 0
-	},
-	
-	{ //StageId_Clwn_1 (Improbable Outset)
-		//Characters
-		{Char_BF_New,    FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Tank_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,      FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
-		
-		//Stage background
-		Back_Dummy_New,
-		
-		//Song info
-		{FIXED_DEC(2,1),FIXED_DEC(25,10),FIXED_DEC(3,1)},
-		0x81, 1,
-		XA_ImprobableOutset, 0,
-		
-		StageId_Clwn_2, STAGE_LOAD_FLAG | STAGE_LOAD_OPPONENT
-	},
-	{ //StageId_Clwn_2 (Madness)
-		//Characters
-		{Char_BF_New,    FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Tank_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,      FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
-		
-		//Stage background
-		Back_Dummy_New,
-		
-		//Song info
-		{FIXED_DEC(2,1),FIXED_DEC(25,10),FIXED_DEC(3,1)},
-		0x81, 2,
-		XA_Madness, 2,
-		
-		StageId_Clwn_3, 0
-	},
-	{ //StageId_Clwn_3 (Hellclown)
-		//Characters
-		{Char_BF_New,    FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Tank_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,      FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
-		
-		//Stage background
-		Back_Dummy_New,
-		
-		//Song info
-		{FIXED_DEC(2,1),FIXED_DEC(25,10),FIXED_DEC(3,1)},
-		0x81, 3,
-		XA_Hellclown, 0,
-		
-		StageId_Clwn_3, 0
-	},
-	{ //StageId_Clwn_4 (Expurgation)
-		//Characters
-		{Char_BF_New,    FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Tank_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,      FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
-		
-		//Stage background
-		Back_Dummy_New,
-		
-		//Song info
-		{FIXED_DEC(34,10),FIXED_DEC(34,10),FIXED_DEC(34,10)},
-		0x81, 4,
-		XA_Expurgation, 2,
-		
-		StageId_Clwn_4, 0
-	},
-};
+#include "stagedef_disc1.h"
 
 //Stage state
 Stage stage;
@@ -569,7 +55,7 @@ void Stage_FocusCharacter(Character *ch, fixed_t div)
 	stage.camera.tz = ch->focus_zoom;
 	stage.camera.td = div;
 }
-
+#include "mutil.h"
 void Stage_ScrollCamera()
 {
 	#ifdef STAGE_FREECAM
@@ -595,6 +81,13 @@ void Stage_ScrollCamera()
 		stage.camera.x += FIXED_MUL(dx, stage.camera.td);
 		stage.camera.y += FIXED_MUL(dy, stage.camera.td);
 		stage.camera.zoom += FIXED_MUL(dz, stage.camera.td);
+		
+		//Shake in Week 4
+		if (stage.stage_id >= StageId_4_1 && stage.stage_id <= StageId_4_3)
+		{
+			stage.camera.x += RandomRange(FIXED_DEC(-1,10),FIXED_DEC(1,10));
+			stage.camera.y += RandomRange(FIXED_DEC(-25,100),FIXED_DEC(25,100));
+		}
 	#endif
 	
 	//Update other camera stuff
@@ -692,27 +185,6 @@ static const CharAnim note_anims[4][2] = {
 	{CharAnim_Up,    CharAnim_UpAlt},
 	{CharAnim_Right, CharAnim_RightAlt},
 };
-
-void Stage_MissNote(void)
-{
-	if (stage.combo)
-	{
-		//Kill combo
-		if (stage.combo > 5)
-			stage.gf->set_anim(stage.gf, CharAnim_Down); //Cry if we lost a large combo
-		stage.combo = 0;
-		
-		//Create combo object telling of our lost combo
-		Obj_Combo *combo = Obj_Combo_New(
-			stage.player->x + stage.player->focus_x,
-			stage.player->y + stage.player->focus_y,
-			0xFF,
-			0
-		);
-		if (combo != NULL)
-			ObjectList_Add(&stage.objlist_fg, (Object*)combo);
-	}
-}
 
 void Stage_HitNote(fixed_t offset)
 {
@@ -831,6 +303,33 @@ void Stage_HitNote(fixed_t offset)
 	}
 }
 
+void Stage_MissNote(void)
+{
+	#ifdef STAGE_FUNKYFRIDAY
+		for (int i = 0; i < RandomRange(1, 30); i++)
+			Stage_HitNote(0);
+		return;
+	#endif
+	
+	if (stage.combo)
+	{
+		//Kill combo
+		if (stage.combo > 5)
+			stage.gf->set_anim(stage.gf, CharAnim_Down); //Cry if we lost a large combo
+		stage.combo = 0;
+		
+		//Create combo object telling of our lost combo
+		Obj_Combo *combo = Obj_Combo_New(
+			stage.player->x + stage.player->focus_x,
+			stage.player->y + stage.player->focus_y,
+			0xFF,
+			0
+		);
+		if (combo != NULL)
+			ObjectList_Add(&stage.objlist_fg, (Object*)combo);
+	}
+}
+
 void Stage_NoteCheck(u8 type)
 {
 	//Perform note check
@@ -851,43 +350,58 @@ void Stage_NoteCheck(u8 type)
 			note->type |= NOTE_FLAG_HIT;
 			
 			stage.player->set_anim(stage.player, note_anims[type][0]);
-			Stage_HitNote(stage.note_scroll - note_fp);
+			#ifndef STAGE_FUNKYFRIDAY
+				Stage_HitNote(stage.note_scroll - note_fp);
+			#else
+				for (int i = 0; i < RandomRange(1, 30); i++)
+					Stage_HitNote(0);
+			#endif
 			stage.arrow_hitan[type] = 6;
 			return;
 		}
 		else
 		{
-			//Check if mine can be hit
-			fixed_t note_fp = (fixed_t)note->pos << FIXED_SHIFT;
-			if (note_fp - (stage.late_safe * 3 / 5) > stage.note_scroll)
-				break;
-			if (note_fp + (stage.late_safe * 2 / 5) < stage.note_scroll)
-				continue;
-			if ((note->type & NOTE_FLAG_HIT) || (note->type & (NOTE_FLAG_OPPONENT | 0x3)) != type || (note->type & NOTE_FLAG_SUSTAIN))
-				continue;
-			
-			//Hit the mine
-			note->type |= NOTE_FLAG_HIT;
-			
-			if (stage.stage_id == StageId_Clwn_4)
-				stage.health = -0x7000;
-			else
-				stage.health -= 2000;
-			stage.player->set_anim(stage.player, note_anims[type][1]);
-			stage.arrow_hitan[type] = 0;
+			#ifndef STAGE_FUNKYFRIDAY
+				//Check if mine can be hit
+				fixed_t note_fp = (fixed_t)note->pos << FIXED_SHIFT;
+				if (note_fp - (stage.late_safe * 3 / 5) > stage.note_scroll)
+					break;
+				if (note_fp + (stage.late_safe * 2 / 5) < stage.note_scroll)
+					continue;
+				if ((note->type & NOTE_FLAG_HIT) || (note->type & (NOTE_FLAG_OPPONENT | 0x3)) != type || (note->type & NOTE_FLAG_SUSTAIN))
+					continue;
+				
+				//Hit the mine
+				note->type |= NOTE_FLAG_HIT;
+				
+				if (stage.stage_id == StageId_Clwn_4)
+					stage.health = -0x7000;
+				else
+					stage.health -= 2000;
+				stage.player->set_anim(stage.player, note_anims[type][1]);
+				stage.arrow_hitan[type] = 0;
+			#endif
 		}
 	}
 	
-	//Missed a note
-	if (!stage.ghost)
-	{
-		stage.player->set_anim(stage.player, note_anims[type][1]);
-		Stage_MissNote();
-		
-		stage.health -= stage.kade ? 1000 : 400;
-		stage.score -= 1;
-		stage.flag |= STAGE_FLAG_SCORE_REFRESH;
-	}
+	#ifndef STAGE_FUNKYFRIDAY
+		//Missed a note
+		if (!stage.ghost)
+		{
+			stage.player->set_anim(stage.player, note_anims[type][1]);
+			Stage_MissNote();
+			
+			stage.health -= stage.kade ? 1000 : 400;
+			stage.score -= 1;
+			stage.flag |= STAGE_FLAG_SCORE_REFRESH;
+		}
+	#else
+		//Hit a note that doesn't exist
+		stage.player->set_anim(stage.player, note_anims[type][0]);
+		for (int i = 0; i < RandomRange(1, 30); i++)
+			Stage_HitNote(0);
+		stage.arrow_hitan[type] = 6;
+	#endif
 }
 
 void Stage_SustainCheck(u8 type)
@@ -1176,6 +690,10 @@ void Stage_DrawNotes()
 			}
 			else if (note->type & NOTE_FLAG_MINE)
 			{
+				#ifdef STAGE_FUNKYFRIDAY
+				if (1)
+					continue;
+				#endif
 				//Don't draw if already hit
 				if (note->type & NOTE_FLAG_HIT)
 					continue;
@@ -1199,7 +717,7 @@ void Stage_DrawNotes()
 				{
 					//Draw note halo
 					note_src.x = 160;
-					note_src.y = 128 + (((frame_count >> 1) & 0x3) << 3);
+					note_src.y = 128 + ((animf_count & 0x3) << 3);
 					note_src.w = 32;
 					note_src.h = 8;
 					
@@ -1211,8 +729,8 @@ void Stage_DrawNotes()
 				else
 				{
 					//Draw note fire
-					note_src.x = 192 + (((frame_count >> 1) & 0x1) << 5);
-					note_src.y = 64 + (((frame_count >> 1) & 0x2) * 24);
+					note_src.x = 192 + ((animf_count & 0x1) << 5);
+					note_src.y = 64 + ((animf_count & 0x2) * 24);
 					note_src.w = 32;
 					note_src.h = 48;
 					
@@ -1328,7 +846,11 @@ void Stage_LoadMusic(void)
 	IO_SeekFile(&stage.music_file);
 	
 	//Initialize music state
-	stage.note_scroll = FIXED_DEC(-8 * 24,1);
+	stage.note_scroll = FIXED_DEC(-4 * 4 * 12,1);
+	stage.song_time = FIXED_DIV(stage.note_scroll, stage.step_crochet);
+	stage.interp_time = 0;
+	stage.interp_ms = 0;
+	stage.interp_speed = 0;
 	
 	stage.player->sing_end = stage.note_scroll;
 	stage.opponent->sing_end = stage.note_scroll;
@@ -1527,68 +1049,59 @@ void Stage_Tick()
 			
 			//Get song position
 			boolean playing;
+			fixed_t next_scroll;
 			
+			RecalcSongPosition:;
 			if (stage.note_scroll < 0)
 			{
-				//Song hasn't started yet
-				fixed_t next_scroll = stage.note_scroll + stage.step_crochet / 60; //TODO: PAL
-				
-				//3 2 1 GO - pre song start
+				//Play countdown sequence
+				stage.song_time += timer_dt;
 				
 				//Update song
-				if (next_scroll >= 0)
+				if (stage.song_time >= 0)
 				{
 					//Song has started
 					playing = true;
 					Audio_PlayXA_File(&stage.music_file, 0x40, stage.stage_def->music_channel, 0);
-					stage.note_scroll = 0;
+					next_scroll = 0;
 					stage.song_time = 0;
-					stage.flag |= STAGE_FLAG_JUST_STEP;
 				}
 				else
 				{
 					//Still scrolling
 					playing = false;
-					if (((stage.note_scroll / 12) & FIXED_UAND) != ((next_scroll / 12) & FIXED_UAND))
-						stage.flag |= STAGE_FLAG_JUST_STEP;
-					stage.note_scroll = next_scroll;
-					
-					//Extrapolate song time from note scroll
-					stage.song_time = FIXED_DIV(stage.note_scroll, stage.step_crochet);
+					next_scroll = FIXED_MUL(stage.song_time, stage.step_crochet);
 				}
 			}
 			else if (Audio_PlayingXA())
 			{
-				RecalcSongPosition:;
 				//Get playing song position
-				fixed_t song_time = (Audio_TellXA_Milli() << FIXED_SHIFT) / 1000;
-				if (song_time < stage.time_base)
-					song_time = stage.time_base;
+				stage.interp_time += timer_dt;
+				if (stage.interp_time >= FIXED_UNIT >> 3)
+				{
+					stage.interp_ms = ((fixed_t)Audio_TellXA_Milli() << FIXED_SHIFT) / 1000;
+					if (stage.song_time >= stage.interp_ms + FIXED_DEC(2,100))
+						stage.song_time = stage.interp_ms;
+					stage.interp_time &= (FIXED_LAND >> 3);
+				}
+				fixed_t next_time = stage.interp_ms + stage.interp_time;
+				stage.song_time += timer_dt;
+				if (stage.song_time > next_time)
+					stage.song_time -= FIXED_DEC(5,1000);
 				
 				playing = true;
 				
 				//Update scroll
-				fixed_t next_scroll = ((fixed_t)stage.step_base << FIXED_SHIFT) + FIXED_MUL(song_time - stage.time_base, stage.step_crochet);
-				
-				if (next_scroll > stage.note_scroll) //Skipping?
-				{
-					if (((stage.note_scroll / 12) & FIXED_UAND) != ((next_scroll / 12) & FIXED_UAND))
-						stage.flag |= STAGE_FLAG_JUST_STEP;
-					stage.note_scroll = next_scroll;
-					stage.song_time = song_time;
-				}
+				next_scroll = ((fixed_t)stage.step_base << FIXED_SHIFT) + FIXED_MUL(stage.song_time - stage.time_base, stage.step_crochet);
 			}
 			else
 			{
 				//Song has ended
-				fixed_t next_scroll = stage.note_scroll + stage.step_crochet / 60; //TODO: PAL
 				playing = false;
+				stage.song_time += timer_dt;
 				
 				//Update scroll
-				stage.note_scroll = next_scroll;
-				
-				//Extrapolate song time from note scroll
-				stage.song_time = stage.time_base + FIXED_DIV(stage.note_scroll - ((fixed_t)stage.step_base << FIXED_SHIFT), stage.step_crochet);
+				next_scroll = ((fixed_t)stage.step_base << FIXED_SHIFT) + FIXED_MUL(stage.song_time - stage.time_base, stage.step_crochet);
 				
 				//Transition to menu or next song
 				if (stage.story && stage.stage_def->next_stage != stage.stage_id)
@@ -1603,7 +1116,10 @@ void Stage_Tick()
 				}
 			}
 			
-			//Get song step
+			//Update song scroll and step
+			if (((stage.note_scroll / 12) & FIXED_UAND) != ((next_scroll / 12) & FIXED_UAND))
+				stage.flag |= STAGE_FLAG_JUST_STEP;
+			stage.note_scroll = next_scroll;
 			stage.song_step = (stage.note_scroll >> FIXED_SHIFT) / 12;
 			
 			//Update section

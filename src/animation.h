@@ -3,6 +3,8 @@
 
 #include "psx.h"
 
+#include "fixed.h"
+
 //Animation structures
 #define ASCR_REPEAT 0xFF
 #define ASCR_CHGANI 0xFE
@@ -20,7 +22,8 @@ typedef struct
 	//Animation state
 	const Animation *anims;
 	const u8 *anim_p;
-	u8 anim, anim_spd, anim_time;
+	u8 anim;
+	fixed_t anim_time, anim_spd;
 	boolean ended;
 } Animatable;
 

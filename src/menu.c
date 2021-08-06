@@ -2,6 +2,7 @@
 
 #include "mem.h"
 #include "main.h"
+#include "timer.h"
 #include "io.h"
 #include "gfx.h"
 #include "audio.h"
@@ -62,7 +63,7 @@ static struct
 	boolean page_swap;
 	u8 select, next_select;
 	
-	s32 scroll;
+	fixed_t scroll;
 	u8 trans_time;
 	
 	//Page specific state
@@ -130,9 +131,9 @@ static const char *Menu_LowerIf(const char *text, boolean lower)
 static void Menu_DrawBack(boolean flash, s32 scroll, u8 r0, u8 g0, u8 b0, u8 r1, u8 g1, u8 b1)
 {
 	RECT back_src = {0, 0, 255, 255};
-	RECT back_dst = {0, scroll, SCREEN_WIDTH, SCREEN_HEIGHT + 16};
+	RECT back_dst = {0, -scroll, SCREEN_WIDTH, SCREEN_HEIGHT + 16};
 	
-	if (flash || (frame_count & 8) == 0)
+	if (flash || (animf_count & 2) == 0)
 		Gfx_DrawTexCol(&menu.tex_back, &back_src, &back_dst, r0, g0, b0);
 	else
 		Gfx_DrawTexCol(&menu.tex_back, &back_src, &back_dst, r1, g1, b1);
@@ -144,11 +145,19 @@ static void Menu_DifficultySelector(s32 x, s32 y)
 	if (menu.next_page == menu.page && Trans_Idle())
 	{
 		if (pad_state.press & PAD_LEFT)
+		{
 			if (menu.page_param.stage.diff > StageDiff_Easy)
 				menu.page_param.stage.diff--;
+			else
+				menu.page_param.stage.diff = StageDiff_Hard;
+		}
 		if (pad_state.press & PAD_RIGHT)
+		{
 			if (menu.page_param.stage.diff < StageDiff_Hard)
 				menu.page_param.stage.diff++;
+			else
+				menu.page_param.stage.diff = StageDiff_Easy;
+		}
 	}
 	
 	//Draw difficulty arrows
@@ -402,7 +411,7 @@ void Menu_Tick(void)
 			if (menu.next_page == menu.page)
 			{
 				//Blinking blue
-				s16 press_lerp = (MUtil_Cos(frame_count << 2) + 0x100) >> 1;
+				s16 press_lerp = (MUtil_Cos(animf_count << 3) + 0x100) >> 1;
 				u8 press_r = 51 >> 1;
 				u8 press_g = (58  + ((press_lerp * (255 - 58))  >> 8)) >> 1;
 				u8 press_b = (206 + ((press_lerp * (255 - 206)) >> 8)) >> 1;
@@ -413,7 +422,7 @@ void Menu_Tick(void)
 			else
 			{
 				//Flash white
-				RECT press_src = {0, (frame_count & 2) ? 144 : 112, 256, 32};
+				RECT press_src = {0, (animf_count & 1) ? 144 : 112, 256, 32};
 				Gfx_BlitTex(&menu.tex_title, &press_src, (SCREEN_WIDTH - 256) / 2, SCREEN_HEIGHT - 48);
 			}
 			
@@ -432,7 +441,7 @@ void Menu_Tick(void)
 			
 			//Initialize page
 			if (menu.page_swap)
-				menu.scroll = 0;
+				menu.scroll = menu.select * FIXED_DEC(4,1);
 			
 			//Draw version identification
 			menu.font_bold.draw(&menu.font_bold,
@@ -495,7 +504,8 @@ void Menu_Tick(void)
 			}
 			
 			//Draw options
-			menu.scroll += (((s32)menu.select * -32 / 3) - menu.scroll) >> 2;
+			s32 next_scroll = menu.select * FIXED_DEC(8,1);
+			menu.scroll += (next_scroll - menu.scroll) >> 2;
 			
 			if (menu.next_page == menu.page || menu.next_page == MenuPage_Title)
 			{
@@ -505,18 +515,18 @@ void Menu_Tick(void)
 					menu.font_bold.draw(&menu.font_bold,
 						Menu_LowerIf(menu_options[i], menu.select != i),
 						SCREEN_WIDTH2,
-						SCREEN_HEIGHT2 + (i << 5) - 48 + menu.scroll,
+						SCREEN_HEIGHT2 + (i << 5) - 48 - (menu.scroll >> FIXED_SHIFT),
 						FontAlign_Center
 					);
 				}
 			}
-			else if (frame_count & 4)
+			else if (animf_count & 2)
 			{
 				//Draw selected option
 				menu.font_bold.draw(&menu.font_bold,
 					menu_options[menu.select],
 					SCREEN_WIDTH2,
-					SCREEN_HEIGHT2 + (menu.select << 5) - 48 + menu.scroll,
+					SCREEN_HEIGHT2 + (menu.select << 5) - 48 - (menu.scroll >> FIXED_SHIFT),
 					FontAlign_Center
 				);
 			}
@@ -524,7 +534,7 @@ void Menu_Tick(void)
 			//Draw background
 			Menu_DrawBack(
 				menu.next_page == menu.page || menu.next_page == MenuPage_Title,
-				menu.scroll >> 1,
+				menu.scroll >> (FIXED_SHIFT + 1),
 				253 >> 1, 231 >> 1, 113 >> 1,
 				253 >> 1, 113 >> 1, 155 >> 1
 			);
@@ -628,29 +638,26 @@ void Menu_Tick(void)
 			}
 			
 			//Draw options
-			s32 next_scroll = menu.select * 48;
-			if (menu.scroll < next_scroll)
-				menu.scroll += 16;
-			if (menu.scroll > next_scroll)
-				menu.scroll -= 16;
+			s32 next_scroll = menu.select * FIXED_DEC(48,1);
+			menu.scroll += (next_scroll - menu.scroll) >> 4;
 			
 			if (menu.next_page == menu.page || menu.next_page == MenuPage_Main)
 			{
 				//Draw all options
 				for (u8 i = 0; i < COUNT_OF(menu_options); i++)
 				{
-					s32 y = 62 + (i * 48) - menu.scroll;
-					if (y <= 32)
+					s32 y = 62 + (i * 48) - (menu.scroll >> FIXED_SHIFT);
+					if (y <= 16)
 						continue;
 					if (y >= SCREEN_HEIGHT)
 						break;
 					Menu_DrawWeek(menu_options[i].week, 48, y);
 				}
 			}
-			else if (frame_count & 4)
+			else if (animf_count & 2)
 			{
 				//Draw selected option
-				Menu_DrawWeek(menu_options[menu.select].week, 48, 62 + (menu.select * 48) - menu.scroll);
+				Menu_DrawWeek(menu_options[menu.select].week, 48, 62 + (menu.select * 48) - (menu.scroll >> FIXED_SHIFT));
 			}
 			break;
 		}
@@ -688,7 +695,7 @@ void Menu_Tick(void)
 			//Initialize page
 			if (menu.page_swap)
 			{
-				menu.scroll = -(COUNT_OF(menu_options) * 24 + SCREEN_HEIGHT2);
+				menu.scroll = COUNT_OF(menu_options) * FIXED_DEC(24 + SCREEN_HEIGHT2,1);
 				menu.page_param.stage.diff = StageDiff_Normal;
 			}
 			
@@ -741,12 +748,13 @@ void Menu_Tick(void)
 			}
 			
 			//Draw options
-			menu.scroll += (((s32)menu.select * -24) - menu.scroll) >> 4;
+			s32 next_scroll = menu.select * FIXED_DEC(24,1);
+			menu.scroll += (next_scroll - menu.scroll) >> 4;
 			
 			for (u8 i = 0; i < COUNT_OF(menu_options); i++)
 			{
 				//Get position on screen
-				s32 y = (i * 24) - 8 + menu.scroll;
+				s32 y = (i * 24) - 8 - (menu.scroll >> FIXED_SHIFT);
 				if (y <= -SCREEN_HEIGHT2 - 8)
 					continue;
 				if (y >= SCREEN_HEIGHT2 + 8)
@@ -764,7 +772,7 @@ void Menu_Tick(void)
 			//Draw background
 			Menu_DrawBack(
 				true,
-				-8,
+				8,
 				146 >> 1, 113 >> 1, 253 >> 1,
 				0, 0, 0
 			);
@@ -786,7 +794,7 @@ void Menu_Tick(void)
 			//Initialize page
 			if (menu.page_swap)
 			{
-				menu.scroll = -(COUNT_OF(menu_options) * 24 + SCREEN_HEIGHT2);
+				menu.scroll = COUNT_OF(menu_options) * FIXED_DEC(24 + SCREEN_HEIGHT2,1);
 				menu.page_param.stage.diff = StageDiff_Normal;
 			}
 			
@@ -842,12 +850,13 @@ void Menu_Tick(void)
 			}
 			
 			//Draw options
-			menu.scroll += (((s32)menu.select * -24) - menu.scroll) >> 4;
+			s32 next_scroll = menu.select * FIXED_DEC(24,1);
+			menu.scroll += (next_scroll - menu.scroll) >> 4;
 			
 			for (u8 i = 0; i < COUNT_OF(menu_options); i++)
 			{
 				//Get position on screen
-				s32 y = (i * 24) - 8 + menu.scroll;
+				s32 y = (i * 24) - 8 - (menu.scroll >> FIXED_SHIFT);
 				if (y <= -SCREEN_HEIGHT2 - 8)
 					continue;
 				if (y >= SCREEN_HEIGHT2 + 8)
@@ -865,7 +874,7 @@ void Menu_Tick(void)
 			//Draw background
 			Menu_DrawBack(
 				true,
-				-8,
+				8,
 				197 >> 1, 240 >> 1, 95 >> 1,
 				0, 0, 0
 			);
@@ -889,7 +898,7 @@ void Menu_Tick(void)
 			
 			//Initialize page
 			if (menu.page_swap)
-				menu.scroll = -(COUNT_OF(menu_options) * 24 + SCREEN_HEIGHT2);
+				menu.scroll = COUNT_OF(menu_options) * FIXED_DEC(24 + SCREEN_HEIGHT2,1);
 			
 			//Draw page label
 			menu.font_bold.draw(&menu.font_bold,
@@ -937,12 +946,13 @@ void Menu_Tick(void)
 			}
 			
 			//Draw options
-			menu.scroll += (((s32)menu.select * -24) - menu.scroll) >> 4;
+			s32 next_scroll = menu.select * FIXED_DEC(24,1);
+			menu.scroll += (next_scroll - menu.scroll) >> 4;
 			
 			for (u8 i = 0; i < COUNT_OF(menu_options); i++)
 			{
 				//Get position on screen
-				s32 y = (i * 24) - 8 + menu.scroll;
+				s32 y = (i * 24) - 8 - (menu.scroll >> FIXED_SHIFT);
 				if (y <= -SCREEN_HEIGHT2 - 8)
 					continue;
 				if (y >= SCREEN_HEIGHT2 + 8)
@@ -967,7 +977,7 @@ void Menu_Tick(void)
 			//Draw background
 			Menu_DrawBack(
 				true,
-				-8,
+				8,
 				253 >> 1, 113 >> 1, 155 >> 1,
 				0, 0, 0
 			);

@@ -1,6 +1,8 @@
 #include "mem.h"
 
 #include "main.h"
+#include "gfx.h"
+#include "random.h"
 
 #define MEM_ALIGN(x) (((size_t)x + 0xF) & ~0xF)
 
@@ -167,6 +169,40 @@ void Mem_Free(void *ptr)
 			for (int i = 0; i < 256; i++)
 				if (signs[i] != NULL)
 					FntPrint("%s\n", signs[i]);
+		#endif
+		
+		#ifdef MEM_BAR
+			#define BAR_WIDTH 256
+			#define BAR_LEFT ((SCREEN_WIDTH - BAR_WIDTH) / 2)
+			#define BAR_ADDRTOP(addr) ((addr) * BAR_WIDTH / mem_size)
+			
+			RECT bar = {BAR_LEFT, 12, 0, 4};
+			
+			Mem_Header *header = mem;
+			size_t header_size = 0;
+			
+			u32 oseed = RandomGetSeed();
+			RandomSeed(1394);
+			
+			while (header != NULL)
+			{
+				size_t addr = (size_t)header - (size_t)mem;
+				int left = BAR_ADDRTOP(addr);
+				int right = BAR_ADDRTOP(addr + sizeof(Mem_Header) + header_size);
+				
+				bar.x = BAR_LEFT + left;
+				bar.w = right - left;
+				Gfx_DrawRect(&bar, Random8(), Random8(), Random8());
+				
+				if ((header = Mem_GetHeader(header->next)) != NULL)
+					header_size = header->size;
+			}
+			
+			bar.x = BAR_LEFT;
+			bar.w = BAR_WIDTH;
+			Gfx_DrawRect(&bar, 32, 32, 32);
+			
+			RandomSeed(oseed);
 		#endif
 	}
 #endif

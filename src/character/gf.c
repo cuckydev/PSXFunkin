@@ -55,13 +55,13 @@ static const CharFrame char_gf_frame[] = {
 
 static const Animation char_gf_anim[CharAnim_Max] = {
 	{0, (const u8[]){ASCR_CHGANI, CharAnim_Left}},                                           //CharAnim_Idle
-	{1, (const u8[]){ 0,  0,  1,  1,  2,  2,  3,  3,  3,  4,  4,  4,  4,  5, ASCR_BACK, 1}}, //CharAnim_Left
+	{1, (const u8[]){ 0,  0,  1,  1,  2,  2,  3,  3,  4,  4,  5, ASCR_BACK, 1}}, //CharAnim_Left
 	{0, (const u8[]){ASCR_CHGANI, CharAnim_Left}},                                           //CharAnim_LeftAlt
 	{2, (const u8[]){12, 13, ASCR_REPEAT}},                                                  //CharAnim_Down
 	{0, (const u8[]){ASCR_CHGANI, CharAnim_Left}},                                           //CharAnim_DownAlt
 	{0, (const u8[]){ASCR_CHGANI, CharAnim_Left}},                                           //CharAnim_Up
 	{0, (const u8[]){ASCR_CHGANI, CharAnim_Left}},                                           //CharAnim_UpAlt
-	{1, (const u8[]){ 6,  6,  7,  7,  8,  8,  9,  9,  9, 10, 10, 10, 10, 11, ASCR_BACK, 1}}, //CharAnim_Left
+	{1, (const u8[]){ 6,  6,  7,  7,  8,  8,  9,  9, 10, 10, 11, ASCR_BACK, 1}}, //CharAnim_Right
 	{0, (const u8[]){ASCR_CHGANI, CharAnim_Left}},                                           //CharAnim_RightAlt
 };
 

@@ -2,6 +2,7 @@
 
 #include "../io.h"
 #include "../stage.h"
+#include "../timer.h"
 
 //Speaker functions
 void Speaker_Init(Speaker *this)
@@ -16,15 +17,16 @@ void Speaker_Init(Speaker *this)
 void Speaker_Bump(Speaker *this)
 {
 	//Set bump
-	this->bump = 8;
+	this->bump = FIXED_DEC(4,1) / 24;
 }
 
 void Speaker_Tick(Speaker *this, fixed_t x, fixed_t y)
 {
 	//Get frame to use according to bump
 	u8 frame;
-	if (this->bump != 0)
-		frame = (this->bump-- + 3) >> 2;
+	this->bump -= timer_dt;
+	if (this->bump > 0)
+		frame = (this->bump * 24) >> FIXED_SHIFT;
 	else
 		frame = 0;
 	
@@ -33,7 +35,7 @@ void Speaker_Tick(Speaker *this, fixed_t x, fixed_t y)
 	{
 		u8 rect[4];
 		u8 ox, oy;
-	} speaker_draw[3][2] = {
+	} speaker_draw[4][2] = {
 		{ //bump 0
 			{{ 96,  88, 160, 88},   0,  0},
 			{{  0, 176,  16, 56}, 160, 32},
@@ -43,6 +45,10 @@ void Speaker_Tick(Speaker *this, fixed_t x, fixed_t y)
 			{{  0,  88,  96, 88},  80,  0},
 		},
 		{ //bump 2
+			{{  0,   0,  88, 88},   0,  0},
+			{{ 88,   0,  88, 88},  88,  0},
+		},
+		{ //bump 3
 			{{  0,   0,  88, 88},   0,  0},
 			{{ 88,   0,  88, 88},  88,  0},
 		}

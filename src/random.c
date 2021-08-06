@@ -8,6 +8,16 @@ void RandomSeed(u32 seed)
 	rand_seed = seed;
 }
 
+u32 RandomGetSeed()
+{
+	return rand_seed;
+}
+
+u8 Random8()
+{
+	return Random16() >> 4;
+}
+
 u16 Random16()
 {
 	rand_seed = rand_seed * 214013L + 2531011L;

@@ -1,6 +1,6 @@
 #include "font.h"
 
-#include "main.h"
+#include "timer.h"
 
 #include <string.h>
 
@@ -27,7 +27,7 @@ void Font_Bold_Draw(struct FontData *this, const char *text, s32 x, s32 y, FontA
 	
 	//Get animation offsets
 	u32 v0 = 0;
-	u8 v1 = (frame_count >> 3) & 1;
+	u8 v1 = (animf_count >> 1) & 1;
 	
 	//Draw string character by character
 	u8 c;

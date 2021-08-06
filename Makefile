@@ -4,6 +4,7 @@ TYPE = ps-exe
 SRCS = src/main.c \
        src/mem.c \
        src/mutil.c \
+	   src/timer.c \
        src/io.c \
        src/gfx.c \
        src/audio.c \
@@ -17,6 +18,7 @@ SRCS = src/main.c \
        src/menu.c \
        src/stage.c \
        src/stage/dummy.c \
+       src/stage/week1.c \
        src/stage/week4.c \
        src/stage/week7.c \
        src/animation.c \

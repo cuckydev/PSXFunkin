@@ -25,6 +25,8 @@ void Pad_Init()
 	pad_buff[0][0] = 0xFFFF;
 	pad_buff[1][0] = 0xFFFF;
 	StartPAD();
+	
+	ChangeClearPAD(0);
 }
 
 void Pad_Update()

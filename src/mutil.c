@@ -39,6 +39,6 @@ void MUtil_RotatePoint(POINT *p, s16 s, s16 c)
 {
 	short px = p->x;
 	short py = p->y;
-	p->x = ((p->x * c) >> 8) - ((p->y * s) >> 8);
-	p->y = ((p->x * s) >> 8) + ((p->y * c) >> 8);
+	p->x = ((px * c) >> 8) - ((py * s) >> 8);
+	p->y = ((px * s) >> 8) + ((py * c) >> 8);
 }

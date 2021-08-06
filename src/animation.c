@@ -1,5 +1,7 @@
 #include "animation.h"
 
+#include "timer.h"
+
 //Animation functions
 void Animatable_Init(Animatable *this, const Animation *anims)
 {
@@ -12,21 +14,17 @@ void Animatable_SetAnim(Animatable *this, u8 anim)
 	//Start animation
 	this->anim = anim;
 	this->anim_p = this->anims[anim].script;
+	this->anim_spd = FIXED_DEC(this->anims[anim].spd,1) / 24;
 	this->anim_time = 0;
-	this->anim_spd = this->anims[anim].spd;
 	this->ended = false;
 }
 
 void Animatable_Animate(Animatable *this, void *user, void (*set_frame)(void*, u8))
 {
 	//Wait for time
-	if (this->anim_time)
-	{
-		this->anim_time--;
-		return;
-	}
+	this->anim_time -= timer_dt;
 	
-	while (1)
+	while (this->anim_time <= 0)
 	{
 		//Read script
 		switch (this->anim_p[0])
@@ -36,18 +34,18 @@ void Animatable_Animate(Animatable *this, void *user, void (*set_frame)(void*, u
 				this->ended = true;
 				break;
 			case ASCR_CHGANI:
-				this->anim_p = this->anims[this->anim = this->anim_p[1]].script;
+				Animatable_SetAnim(this, this->anim_p[1]);
 				break;
 			case ASCR_BACK:
-				this->anim_time = this->anims[this->anim].spd;
+				this->anim_time += this->anim_spd;
 				this->anim_p -= this->anim_p[1];
 				this->ended = true;
 				break;
 			default:
 				set_frame(user, this->anim_p[0]);
-				this->anim_time = this->anims[this->anim].spd;
+				this->anim_time += this->anim_spd;
 				this->anim_p++;
-				return;
+				break;
 		}
 	}
 }

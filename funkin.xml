@@ -41,8 +41,7 @@
 			<!-- Week 1 assets -->
 			<dir name = "week1">
 				<!-- Background art -->
-				<file name = "back0.tim" type = "data" source = "iso/week1/back0.tim"/>
-				<file name = "back1.tim" type = "data" source = "iso/week1/back1.tim"/>
+				<file name = "back.arc" type = "data" source = "iso/week1/back.arc"/>
 				
 				<!-- Bopeebo charts -->
 				<file name = "1.1e.cht" type = "data" source = "iso/chart/1.1e.cht"/>

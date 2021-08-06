@@ -31,7 +31,7 @@ void Gfx_Init(void)
 	SetDefDrawEnv(&draw[1], 0, 0, 320, 240);
 	
 	//Set video mode depending on BIOS region
-	switch(*(char *)0xbfc7ff52)
+	switch(*(char*)0xbfc7ff52)
 	{
 		case 'E':
 			SetVideoMode(MODE_PAL);
@@ -123,7 +123,8 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 	{
 		if (tex != NULL)
 		{
-			memcpy(&tex->tim_prect, &tparam.prect, sizeof(tparam.prect));
+			//memcpy(&tex->tim_prect, &tparam.prect, sizeof(tparam.prect));
+			tex->tim_prect = *tparam.prect;
 			tex->tpage = getTPage(tparam.mode & 0x3, 0, tparam.prect->x, tparam.prect->y);
 		}
 		LoadImage(tparam.prect, (u32*)tparam.paddr);
@@ -135,7 +136,8 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 	{
 		if (tex != NULL)
 		{
-			memcpy(&tex->tim_crect, &tparam.crect, sizeof(tparam.crect));
+			//memcpy(&tex->tim_crect, &tparam.crect, sizeof(tparam.crect));
+			tex->tim_crect = *tparam.crect;
 			tex->clut = getClut(tparam.crect->x, tparam.crect->y);
 		}
 		LoadImage(tparam.crect, (u32*)tparam.caddr);
@@ -191,8 +193,8 @@ void Gfx_DrawTexCol(Gfx_Tex *tex, const RECT *src, const RECT *dst, u8 r, u8 g, 
 {
 	//Manipulate rects to comply with GPU restrictions
 	RECT csrc, cdst;
-	memcpy(&csrc, src, sizeof(RECT));
-	memcpy(&cdst, dst, sizeof(RECT));
+	csrc = *src;
+	cdst = *dst;
 	
 	if (dst->w < 0)
 		csrc.x--;
@@ -256,7 +258,7 @@ void Gfx_DrawTexCol(Gfx_Tex *tex, const RECT *src, const RECT *dst, u8 r, u8 g, 
 	POLY_FT4 *quad = (POLY_FT4*)nextpri;
 	setPolyFT4(quad);
 	setUVWH(quad, csrc.x, csrc.y, csrc.w, csrc.h);
-	setXYWH(quad, dst->x, dst->y, cdst.w, cdst.h);
+	setXYWH(quad, cdst.x, cdst.y, cdst.w, cdst.h);
 	setRGB0(quad, r, g, b);
 	quad->tpage = tex->tpage;
 	quad->clut = tex->clut;

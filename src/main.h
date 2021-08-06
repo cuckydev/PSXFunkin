@@ -1,11 +1,6 @@
 #ifndef _MAIN_H
 #define _MAIN_H
 
-#include "psx.h"
-
-//Global frame counter
-extern u32 frame_count;
-
 //Game loop
 typedef enum
 {
