@@ -48,22 +48,22 @@ void Back_Week1_DrawBG(StageBack *back)
 	Stage_DrawTex(&this->tex_back0, &stage_src, &stage_dst, stage.camera.bzoom);
 	
 	//Draw back
-	fx = stage.camera.x >> 1;
-	fy = stage.camera.y >> 1;
+	fx = stage.camera.x * 2 / 3;
+	fy = stage.camera.y * 2 / 3;
 	
 	RECT backl_src = {0, 59, 121, 105};
 	RECT_FIXED backl_dst = {
-		FIXED_DEC(-210,1) - fx,
-		FIXED_DEC(-130,1) - fy,
-		FIXED_DEC(200,1),
-		FIXED_DEC(185,1)
+		FIXED_DEC(-190,1) - fx,
+		FIXED_DEC(-100,1) - fy,
+		FIXED_DEC(121,1),
+		FIXED_DEC(105,1)
 	};
 	RECT backr_src = {121, 59, 136, 120};
 	RECT_FIXED backr_dst = {
-		FIXED_DEC(10,1) - fx,
-		FIXED_DEC(-140,1) - fy,
-		FIXED_DEC(210,1),
-		FIXED_DEC(200,1)
+		FIXED_DEC(60,1) - fx,
+		FIXED_DEC(-110,1) - fy,
+		FIXED_DEC(136,1),
+		FIXED_DEC(120,1)
 	};
 	
 	Stage_DrawTex(&this->tex_back0, &backl_src, &backl_dst, stage.camera.bzoom);

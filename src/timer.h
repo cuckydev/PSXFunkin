@@ -10,5 +10,6 @@ extern fixed_t timer_sec, timer_dt;
 //Timer interface
 void Timer_Init(void);
 void Timer_Tick(void);
+void Timer_Reset(void);
 
 #endif

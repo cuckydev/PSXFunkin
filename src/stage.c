@@ -982,6 +982,9 @@ void Stage_NextLoad()
 		
 		//Load music
 		Stage_LoadMusic();
+		
+		//Reset timer
+		Timer_Reset();
 	}
 }
 

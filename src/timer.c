@@ -69,3 +69,9 @@ void Timer_Tick(void)
 	
 	timer_lcount = timer_count;
 }
+
+void Timer_Reset(void)
+{
+	Timer_Tick();
+	timer_dt = 0;
+}
