@@ -1150,7 +1150,10 @@ void Stage_Tick()
 				if (((stage.note_scroll / 12) & FIXED_UAND) != ((next_scroll / 12) & FIXED_UAND))
 					stage.flag |= STAGE_FLAG_JUST_STEP;
 				stage.note_scroll = next_scroll;
-				stage.song_step = (stage.note_scroll >> FIXED_SHIFT) / 12;
+				stage.song_step = (stage.note_scroll >> FIXED_SHIFT);
+				if (stage.note_scroll < 0)
+					stage.song_step -= 11;
+				stage.song_step /= 12;
 			}
 			
 			//Update section
