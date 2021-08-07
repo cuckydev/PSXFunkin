@@ -1054,7 +1054,7 @@ void Stage_Tick()
 			boolean playing;
 			fixed_t next_scroll;
 			
-			RecalcSongPosition:;
+			const fixed_t interp_int = FIXED_UNIT * 8 / 75;
 			if (stage.note_scroll < 0)
 			{
 				//Play countdown sequence
@@ -1066,31 +1066,55 @@ void Stage_Tick()
 					//Song has started
 					playing = true;
 					Audio_PlayXA_File(&stage.music_file, 0x40, stage.stage_def->music_channel, 0);
-					next_scroll = 0;
-					stage.song_time = 0;
+					
+					//Wait until first sector has played
+					while (1)
+					{
+						Audio_ProcessXA();
+						if (Audio_TellXA_Milli())
+							break;
+					}
+					Timer_Reset();
+					
+					//Update song time
+					stage.interp_ms = ((fixed_t)Audio_TellXA_Milli() << FIXED_SHIFT) / 1000;
 				}
 				else
 				{
 					//Still scrolling
 					playing = false;
-					next_scroll = FIXED_MUL(stage.song_time, stage.step_crochet);
 				}
+				
+				//Update scroll
+				next_scroll = FIXED_MUL(stage.song_time, stage.step_crochet);
 			}
 			else if (Audio_PlayingXA())
 			{
 				//Get playing song position
-				stage.interp_time += timer_dt;
-				if (stage.interp_time >= FIXED_UNIT >> 3)
-				{
-					stage.interp_ms = ((fixed_t)Audio_TellXA_Milli() << FIXED_SHIFT) / 1000;
-					if (stage.song_time >= stage.interp_ms + FIXED_DEC(2,100))
-						stage.song_time = stage.interp_ms;
-					stage.interp_time &= (FIXED_LAND >> 3);
-				}
-				fixed_t next_time = stage.interp_ms + stage.interp_time;
 				stage.song_time += timer_dt;
-				if (stage.song_time > next_time)
-					stage.song_time -= FIXED_DEC(5,1000);
+				stage.interp_time += timer_dt;
+				
+				if (stage.interp_time >= interp_int)
+				{
+					//Update interp state
+					while (stage.interp_time >= interp_int)
+						stage.interp_time -= interp_int;
+					stage.interp_ms = ((fixed_t)Audio_TellXA_Milli() << FIXED_SHIFT) / 1000;
+				}
+				
+				//Resync
+				fixed_t next_time = stage.interp_ms + stage.interp_time;
+				if (stage.song_time >= next_time + FIXED_DEC(25,1000) || stage.song_time <= next_time - FIXED_DEC(25,1000))
+				{
+					stage.song_time = next_time;
+				}
+				else
+				{
+					if (stage.song_time < next_time - FIXED_DEC(1,1000))
+						stage.song_time += FIXED_DEC(1,1000);
+					if (stage.song_time > next_time + FIXED_DEC(1,1000))
+						stage.song_time -= FIXED_DEC(1,1000);
+				}
 				
 				playing = true;
 				
@@ -1119,11 +1143,15 @@ void Stage_Tick()
 				}
 			}
 			
+			RecalcScroll:;
 			//Update song scroll and step
-			if (((stage.note_scroll / 12) & FIXED_UAND) != ((next_scroll / 12) & FIXED_UAND))
-				stage.flag |= STAGE_FLAG_JUST_STEP;
-			stage.note_scroll = next_scroll;
-			stage.song_step = (stage.note_scroll >> FIXED_SHIFT) / 12;
+			if (next_scroll > stage.note_scroll)
+			{
+				if (((stage.note_scroll / 12) & FIXED_UAND) != ((next_scroll / 12) & FIXED_UAND))
+					stage.flag |= STAGE_FLAG_JUST_STEP;
+				stage.note_scroll = next_scroll;
+				stage.song_step = (stage.note_scroll >> FIXED_SHIFT) / 12;
+			}
 			
 			//Update section
 			if (stage.note_scroll >= 0)
@@ -1140,9 +1168,9 @@ void Stage_Tick()
 					Stage_ChangeBPM(next_bpm, end);
 					stage.section_base = stage.cur_section;
 					
-					//Recalculate song position based off new BPM
-					if (playing)
-						goto RecalcSongPosition;
+					//Recalculate scroll based off new BPM
+					next_scroll = ((fixed_t)stage.step_base << FIXED_SHIFT) + FIXED_MUL(stage.song_time - stage.time_base, stage.step_crochet);
+					goto RecalcScroll;
 				}
 			}
 			
