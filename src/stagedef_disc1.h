@@ -3,12 +3,15 @@
 #include "character/gf.h"
 #include "character/dad.h"
 #include "character/spook.h"
+#include "character/pico.h"
 #include "character/mom.h"
 #include "character/senpai.h"
 #include "character/tank.h"
 
 #include "stage/dummy.h"
 #include "stage/week1.h"
+#include "stage/week2.h"
+#include "stage/week3.h"
 #include "stage/week4.h"
 #include "stage/week7.h"
 
@@ -85,7 +88,7 @@ static const StageDef stage_defs[StageId_Max] = {
 		{Char_GF_New,       FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
 		
 		//Stage background
-		Back_Dummy_New,
+		Back_Week2_New,
 		
 		//Song info
 		{FIXED_DEC(1,1),FIXED_DEC(17,10),FIXED_DEC(24,10)},
@@ -101,7 +104,7 @@ static const StageDef stage_defs[StageId_Max] = {
 		{Char_GF_New,       FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
 		
 		//Stage background
-		Back_Dummy_New,
+		Back_Week2_New,
 		
 		//Song info
 		{FIXED_DEC(11,10),FIXED_DEC(15,10),FIXED_DEC(22,10)},
@@ -117,7 +120,7 @@ static const StageDef stage_defs[StageId_Max] = {
 		{Char_GF_New,       FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
 		
 		//Stage background
-		Back_Dummy_New,
+		Back_Week2_New,
 		
 		//Song info
 		{FIXED_DEC(13,10),FIXED_DEC(13,10),FIXED_DEC(16,10)},
@@ -129,12 +132,12 @@ static const StageDef stage_defs[StageId_Max] = {
 	
 	{ //StageId_3_1 (Pico)
 		//Characters
-		{Char_BF_New,   FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
+		{Char_BF_New,     FIXED_DEC(56,1),   FIXED_DEC(85,1)},
+		{Char_Pico_New, FIXED_DEC(-105,1),   FIXED_DEC(85,1)},
+		{Char_GF_New,      FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
 		
 		//Stage background
-		Back_Dummy_New,
+		Back_Week3_New,
 		
 		//Song info
 		{FIXED_DEC(12,10),FIXED_DEC(14,10),FIXED_DEC(16,10)},
@@ -145,12 +148,12 @@ static const StageDef stage_defs[StageId_Max] = {
 	},
 	{ //StageId_3_2 (Philly)
 		//Characters
-		{Char_BF_New,   FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
+		{Char_BF_New,     FIXED_DEC(56,1),   FIXED_DEC(85,1)},
+		{Char_Pico_New, FIXED_DEC(-105,1),   FIXED_DEC(85,1)},
+		{Char_GF_New,      FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
 		
 		//Stage background
-		Back_Dummy_New,
+		Back_Week3_New,
 		
 		//Song info
 		{FIXED_DEC(1,1),FIXED_DEC(13,10),FIXED_DEC(2,1)},
@@ -161,12 +164,12 @@ static const StageDef stage_defs[StageId_Max] = {
 	},
 	{ //StageId_3_3 (Blammed)
 		//Characters
-		{Char_BF_New,   FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
+		{Char_BF_New,     FIXED_DEC(56,1),   FIXED_DEC(85,1)},
+		{Char_Pico_New, FIXED_DEC(-105,1),   FIXED_DEC(85,1)},
+		{Char_GF_New,      FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
 		
 		//Stage background
-		Back_Dummy_New,
+		Back_Week3_New,
 		
 		//Song info
 		{FIXED_DEC(12,10),FIXED_DEC(15,10),FIXED_DEC(23,10)},
@@ -180,7 +183,7 @@ static const StageDef stage_defs[StageId_Max] = {
 		//Characters
 		{Char_BF_New,   FIXED_DEC(120,1),   FIXED_DEC(40,1)},
 		{Char_Mom_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
+		{Char_GF_New,    FIXED_DEC(-6,1),   FIXED_DEC(-5,1)},
 		
 		//Stage background
 		Back_Week4_New,
@@ -196,7 +199,7 @@ static const StageDef stage_defs[StageId_Max] = {
 		//Characters
 		{Char_BF_New,   FIXED_DEC(120,1),   FIXED_DEC(40,1)},
 		{Char_Mom_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
+		{Char_GF_New,    FIXED_DEC(-6,1),   FIXED_DEC(-5,1)},
 		
 		//Stage background
 		Back_Week4_New,
@@ -212,7 +215,7 @@ static const StageDef stage_defs[StageId_Max] = {
 		//Characters
 		{Char_BF_New,   FIXED_DEC(120,1),   FIXED_DEC(40,1)},
 		{Char_Mom_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
+		{Char_GF_New,    FIXED_DEC(-6,1),   FIXED_DEC(-5,1)},
 		
 		//Stage background
 		Back_Week4_New,
@@ -226,9 +229,9 @@ static const StageDef stage_defs[StageId_Max] = {
 	},
 	{ //StageId_4_4 (Test)
 		//Characters
-		{Char_BF_New,     FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Spook_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,       FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
+		{Char_BF_New,    FIXED_DEC(105,1),  FIXED_DEC(100,1)},
+		{Char_Pico_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_GF_New,      FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
 		
 		//Stage background
 		Back_Dummy_New,

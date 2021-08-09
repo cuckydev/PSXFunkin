@@ -63,6 +63,9 @@
 			
 			<!-- Week 2 assets -->
 			<dir name = "week2">
+				<!-- Background art -->
+				<file name = "back.arc" type = "data" source = "iso/week2/back.arc"/>
+				
 				<!-- Spookeez charts -->
 				<file name = "2.1e.cht" type = "data" source = "iso/chart/2.1e.cht"/>
 				<file name = "2.1n.cht" type = "data" source = "iso/chart/2.1n.cht"/>
@@ -79,6 +82,9 @@
 			
 			<!-- Week 3 assets -->
 			<dir name = "week3">
+				<!-- Background art -->
+				<file name = "back.arc" type = "data" source = "iso/week3/back.arc"/>
+				
 				<!-- Pico charts -->
 				<file name = "3.1e.cht" type = "data" source = "iso/chart/3.1e.cht"/>
 				<file name = "3.1n.cht" type = "data" source = "iso/chart/3.1n.cht"/>
@@ -222,6 +228,9 @@
 				
 				<!-- Spook assets -->
 				<file name = "spook.arc" type = "data" source = "iso/spook/main.arc"/>
+				
+				<!-- Pico assets -->
+				<file name = "pico.arc" type = "data" source = "iso/pico/main.arc"/>
 				
 				<!-- Mom assets -->
 				<file name = "mom.arc" type = "data" source = "iso/mom/main.arc"/>

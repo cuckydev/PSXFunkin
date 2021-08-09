@@ -2,6 +2,13 @@
 
 #include "../mem.h"
 
+//Dummy background structure
+typedef struct
+{
+	//Stage background base structure
+	StageBack back;
+} Back_Dummy;
+
 //Dummy background functions
 void Back_Dummy_Free(StageBack *back)
 {

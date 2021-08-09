@@ -436,7 +436,7 @@ void Stage_SustainCheck(u8 type)
 }
 
 //Stage drawing functions
-void Stage_DrawTex(Gfx_Tex *tex, RECT *src, RECT_FIXED *dst, fixed_t zoom)
+void Stage_DrawTex(Gfx_Tex *tex, const RECT *src, const RECT_FIXED *dst, fixed_t zoom)
 {
 	fixed_t xz = dst->x;
 	fixed_t yz = dst->y;
@@ -478,7 +478,7 @@ void Stage_DrawTex(Gfx_Tex *tex, RECT *src, RECT_FIXED *dst, fixed_t zoom)
 	Gfx_DrawTex(tex, src, &sdst);
 }
 
-void Stage_DrawTexArb(Gfx_Tex *tex, RECT *src, POINT_FIXED *p0, POINT_FIXED *p1, POINT_FIXED *p2, POINT_FIXED *p3, fixed_t zoom)
+void Stage_DrawTexArb(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, const POINT_FIXED *p1, const POINT_FIXED *p2, const POINT_FIXED *p3, fixed_t zoom)
 {
 	//Get screen-space points
 	POINT s0 = {SCREEN_WIDTH2 + (FIXED_MUL(p0->x, zoom) >> FIXED_SHIFT), SCREEN_HEIGHT2 + (FIXED_MUL(p0->y, zoom) >> FIXED_SHIFT)};

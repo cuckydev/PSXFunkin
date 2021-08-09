@@ -19,6 +19,8 @@ SRCS = src/main.c \
        src/stage.c \
        src/stage/dummy.c \
        src/stage/week1.c \
+       src/stage/week2.c \
+       src/stage/week3.c \
        src/stage/week4.c \
        src/stage/week7.c \
        src/animation.c \
@@ -29,6 +31,7 @@ SRCS = src/main.c \
        src/character/speaker.c \
        src/character/dad.c \
        src/character/spook.c \
+       src/character/pico.c \
        src/character/mom.c \
        src/character/senpai.c \
        src/character/tank.c \

@@ -53,7 +53,7 @@ void Back_Week1_DrawBG(StageBack *back)
 		FIXED_DEC(-215,1) - fx,
 		FIXED_DEC(50,1) - fy,
 		FIXED_DEC(432,1),
-		FIXED_DEC(99,1)
+		FIXED_DEC(115,1)
 	};
 	
 	Stage_DrawTex(&this->tex_back0, &stage_src, &stage_dst, stage.camera.bzoom);
