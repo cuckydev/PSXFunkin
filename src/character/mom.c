@@ -4,6 +4,7 @@
 #include "../archive.h"
 #include "../stage.h"
 #include "../main.h"
+#include "../timer.h"
 
 //Mom character structure
 enum
@@ -32,7 +33,6 @@ typedef struct
 	
 	//Hair texture
 	Gfx_Tex tex_hair;
-	u8 hair_i;
 } Char_Mom;
 
 //Mom character definitions
@@ -130,7 +130,7 @@ void Char_Mom_Tick(Character *character)
 	
 	const struct Char_Mom_HairDef *hair_def = &hair_defs[this->frame];
 	RECT hair_src = {
-		((this->hair_i += 1) & 2) << 6,
+		(animf_count & 1) << 7,
 		hair_def->sy << 7,
 		128,
 		128
@@ -188,7 +188,6 @@ Character *Char_Mom_New(fixed_t x, fixed_t y)
 	
 	//Load hair art
 	Gfx_LoadTex(&this->tex_hair, IO_Read("\\CHAR\\MOMHAIR.TIM;1"), GFX_LOADTEX_FREE);
-	this->hair_i = 0;
 	
 	//Load art
 	this->arc_main = IO_Read("\\CHAR\\MOM.ARC;1");

@@ -5,12 +5,32 @@
 #include "../stage.h"
 #include "../random.h"
 #include "../mutil.h"
+#include "../timer.h"
+
+//Week 7 background structure
+typedef struct
+{
+	//Stage background base structure
+	StageBack back;
+	
+	//Car state
+	fixed_t tank_x;
+	fixed_t tank_timer;
+	
+	//Textures
+	IO_Data arc_hench, arc_hench_ptr[2];
+	
+	Gfx_Tex tex_back0; //Foreground
+	Gfx_Tex tex_back1; //Background
+	Gfx_Tex tex_back2; //Sniper and Tank
+	Gfx_Tex tex_back3; //Background mountains
+} Back_Week7;
 
 //Week 7 background functions
 #define TANK_START_X FIXED_DEC(-400,1)
 #define TANK_END_X    FIXED_DEC(400,1)
-#define TANK_TIME_A 1600
-#define TANK_TIME_B 4000
+#define TANK_TIME_A FIXED_DEC(25,1)
+#define TANK_TIME_B FIXED_DEC(45,1)
 
 void Back_Week7_DrawFG(StageBack *back)
 {
@@ -43,16 +63,15 @@ void Back_Week7_DrawBG(StageBack *back)
 	Stage_DrawTex(&this->tex_back0, &fg_src, &fg_dst, stage.camera.bzoom);
 	
 	//Move tank
-	if (this->tank_timer)
+	this->tank_timer -= timer_dt;
+	if (this->tank_timer <= 0)
 	{
-		if (--this->tank_timer == 0)
-		{
-			this->tank_timer = RandomRange(TANK_TIME_A, TANK_TIME_B);
-			this->tank_x = TANK_START_X;
-		}
+		this->tank_timer = RandomRange(TANK_TIME_A, TANK_TIME_B);
+		this->tank_x = TANK_START_X;
 	}
+	
 	if (this->tank_x < TANK_END_X)
-		this->tank_x += FIXED_DEC(1,1);
+		this->tank_x += timer_dt * 60;
 	
 	//Get tank position
 	fx = stage.camera.x * 2 / 3;
@@ -80,7 +99,7 @@ void Back_Week7_DrawBG(StageBack *back)
 	
 	//Draw tank
 	RECT tank_src = {129, 1, 126, 126};
-	if (this->tank_i++ & 4)
+	if (animf_count & 2)
 		tank_src.y += 128;
 	
 	POINT_FIXED tank_d0 = {

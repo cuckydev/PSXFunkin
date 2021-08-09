@@ -220,6 +220,9 @@
 				<!-- Dad assets -->
 				<file name = "dad.arc" type = "data" source = "iso/dad/main.arc"/>
 				
+				<!-- Spook assets -->
+				<file name = "spook.arc" type = "data" source = "iso/spook/main.arc"/>
+				
 				<!-- Mom assets -->
 				<file name = "mom.arc" type = "data" source = "iso/mom/main.arc"/>
 				<file name = "momhair.tim" type = "data" source = "iso/mom/hair.tim"/>

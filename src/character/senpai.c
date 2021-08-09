@@ -133,7 +133,7 @@ Character *Char_Senpai_New(fixed_t x, fixed_t y)
 	Character_Init((Character*)this, x, y);
 	
 	//Set character stage information
-	this->character.health_i = 1;
+	this->character.health_i = 8;
 	
 	this->character.focus_x = FIXED_DEC(32,1);
 	this->character.focus_y = FIXED_DEC(-58,1);

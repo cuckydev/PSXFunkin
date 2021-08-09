@@ -2,6 +2,7 @@
 #include "character/bfweeb.h"
 #include "character/gf.h"
 #include "character/dad.h"
+#include "character/spook.h"
 #include "character/mom.h"
 #include "character/senpai.h"
 #include "character/tank.h"
@@ -79,9 +80,9 @@ static const StageDef stage_defs[StageId_Max] = {
 	
 	{ //StageId_2_1 (Spookeez)
 		//Characters
-		{Char_BF_New,   FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
+		{Char_BF_New,      FIXED_DEC(56,1),   FIXED_DEC(85,1)},
+		{Char_Spook_New,  FIXED_DEC(-90,1),   FIXED_DEC(85,1)},
+		{Char_GF_New,       FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
 		
 		//Stage background
 		Back_Dummy_New,
@@ -95,9 +96,9 @@ static const StageDef stage_defs[StageId_Max] = {
 	},
 	{ //StageId_2_2 (South)
 		//Characters
-		{Char_BF_New,   FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
+		{Char_BF_New,      FIXED_DEC(56,1),   FIXED_DEC(85,1)},
+		{Char_Spook_New,  FIXED_DEC(-90,1),   FIXED_DEC(85,1)},
+		{Char_GF_New,       FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
 		
 		//Stage background
 		Back_Dummy_New,
@@ -111,9 +112,9 @@ static const StageDef stage_defs[StageId_Max] = {
 	},
 	{ //StageId_2_3 (Monster)
 		//Characters
-		{Char_BF_New,   FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
+		{Char_BF_New,      FIXED_DEC(56,1),   FIXED_DEC(85,1)},
+		{Char_Spook_New,  FIXED_DEC(-90,1),   FIXED_DEC(85,1)},
+		{Char_GF_New,       FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
 		
 		//Stage background
 		Back_Dummy_New,
@@ -226,7 +227,7 @@ static const StageDef stage_defs[StageId_Max] = {
 	{ //StageId_4_4 (Test)
 		//Characters
 		{Char_BF_New,     FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Tank_New,  FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_Spook_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
 		{Char_GF_New,       FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
 		
 		//Stage background

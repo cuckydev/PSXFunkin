@@ -4,6 +4,7 @@
 #include "../archive.h"
 #include "../stage.h"
 #include "../main.h"
+#include "../timer.h"
 
 //Tank character structure
 enum
@@ -36,7 +37,7 @@ typedef struct
 	u8 frame, tex_id;
 	
 	//Mouth state
-	u8 mouth_i;
+	fixed_t mouth_i;
 } Char_Tank;
 
 //Tank character definitions
@@ -128,14 +129,16 @@ void Char_Tank_Tick(Character *character)
 	{
 		//Mouth mappings
 		static const u8 mouth_map[] = {
-			0, 1, 1, 2, 2, 2,    //etty
-			4, 4, 5, 5, 6, 6, 7, //good!
+			0, 1, 1, 2, 2, 2,       //etty
+			4, 4, 5, 5, 6, 6, 7, 7, //good!
 		};
 		
 		//Get mouth frame
-		u8 mouth_frame = mouth_map[this->mouth_i >> 1];
-		if (++this->mouth_i >= (COUNT_OF(mouth_map) << 1))
-			this->mouth_i = (COUNT_OF(mouth_map) << 1) - 1;
+		u8 mouth_frame = mouth_map[(this->mouth_i * 24) >> FIXED_SHIFT];
+		
+		this->mouth_i += timer_dt;
+		if ((this->mouth_i * 24) >= (COUNT_OF(mouth_map) << FIXED_SHIFT))
+			this->mouth_i = ((COUNT_OF(mouth_map) - 1) << FIXED_SHIFT) / 24;
 		
 		//Draw mouth
 		RECT mouth_src = {

@@ -4,6 +4,33 @@
 #include "../mem.h"
 #include "../stage.h"
 #include "../random.h"
+#include "../timer.h"
+#include "../animation.h"
+
+//Week 4 background structure
+typedef struct
+{
+	//Stage background base structure
+	StageBack back;
+	
+	//Textures
+	IO_Data arc_hench, arc_hench_ptr[2];
+	
+	Gfx_Tex tex_back0; //Foreground limo
+	Gfx_Tex tex_back1; //Background limo
+	Gfx_Tex tex_back2; //Sunset
+	Gfx_Tex tex_back3; //Car
+	
+	//Car state
+	fixed_t car_x;
+	fixed_t car_timer;
+	
+	//Henchmen state
+	Gfx_Tex tex_hench;
+	u8 hench_frame, hench_tex_id;
+	
+	Animatable hench_animatable;
+} Back_Week4;
 
 //Henchmen animation and rects
 static const CharFrame henchmen_frame[10] = {
@@ -56,8 +83,8 @@ void Week4_Henchmen_Draw(Back_Week4 *this, fixed_t x, fixed_t y)
 //Week 4 background functions
 #define CAR_START_X FIXED_DEC(-500,1)
 #define CAR_END_X    FIXED_DEC(500,1)
-#define CAR_TIME_A 300
-#define CAR_TIME_B 800
+#define CAR_TIME_A FIXED_DEC(5,1)
+#define CAR_TIME_B FIXED_DEC(14,1)
 
 void Back_Week4_DrawFG(StageBack *back)
 {
@@ -66,16 +93,15 @@ void Back_Week4_DrawFG(StageBack *back)
 	fixed_t fx, fy;
 	
 	//Move car
-	if (this->car_timer)
+	this->car_timer -= timer_dt;
+	if (this->car_timer <= 0)
 	{
-		if (--this->car_timer == 0)
-		{
-			this->car_timer = RandomRange(CAR_TIME_A, CAR_TIME_B);
-			this->car_x = CAR_START_X;
-		}
+		this->car_timer = RandomRange(CAR_TIME_A, CAR_TIME_B);
+		this->car_x = CAR_START_X;
 	}
+	
 	if (this->car_x < CAR_END_X)
-		this->car_x += FIXED_DEC(45,1);
+		this->car_x += timer_dt * 2700;
 	
 	//Draw car
 	fx = stage.camera.x * 4 / 3;

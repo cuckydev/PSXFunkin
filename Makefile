@@ -28,6 +28,7 @@ SRCS = src/main.c \
        src/character/gf.c \
        src/character/speaker.c \
        src/character/dad.c \
+       src/character/spook.c \
        src/character/mom.c \
        src/character/senpai.c \
        src/character/tank.c \
