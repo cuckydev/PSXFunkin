@@ -22,6 +22,10 @@ typedef struct
 	//Window state
 	u8 win_r, win_g, win_b;
 	fixed_t win_time;
+	
+	//Train state
+	fixed_t train_x;
+	u8 train_timer;
 } Back_Week3;
 
 //Week 3 background functions
@@ -32,6 +36,11 @@ static const u8 win_cols[][3] = {
 	{253,  69,  49},
 	{251, 166,  51},
 };
+
+#define TRAIN_START_X FIXED_DEC(500,1)
+#define TRAIN_END_X    FIXED_DEC(-8000,1)
+#define TRAIN_TIME_A 6
+#define TRAIN_TIME_B 14
 
 void Back_Week3_Window(Back_Week3 *this)
 {
@@ -49,29 +58,29 @@ void Back_Week3_DrawBG(StageBack *back)
 	fixed_t fx, fy;
 	
 	//Update window
-	this->win_time -= timer_dt;
-	if (this->win_time < 0)
-		this->win_time = 0;
-	if ((stage.flag & STAGE_FLAG_JUST_STEP) && (stage.song_step & 0xF) == 0)
+	if (this->win_time > 0)
+	{
+		this->win_time -= timer_dt;
+		if (this->win_time < 0)
+			this->win_time = 0;
+	}
+	if (stage.note_scroll >= 0 && (stage.flag & STAGE_FLAG_JUST_STEP) && (stage.song_step & 0xF) == 0)
 		Back_Week3_Window(this);
 	
 	//Draw rooftop
 	fx = stage.camera.x;
 	fy = stage.camera.y;
 	
-	static const RECT roof_src[] = {
-		{  0, 0,  16, 256},
-		{ 16, 0,  55, 256},
-		{ 71, 0, 128, 256},
-		{199, 0,  55, 256},
-		{255, 0,   0, 256}
-	};
-	static const fixed_t roof_sc[] = {
-		FIXED_DEC(3,1)*7/10,
-		FIXED_DEC(1,1)*9/10,
-		FIXED_DEC(265,100)*7/10,
-		FIXED_DEC(1,1)*9/10,
-		FIXED_DEC(16,1)
+	static const struct Back_Week3_RoofPiece
+	{
+		RECT src;
+		fixed_t scale;
+	} roof_piece[] = {
+		{{  0, 0,  16, 256}, FIXED_DEC(3,1) * 7 / 10},
+		{{ 16, 0,  55, 256}, FIXED_DEC(1,1) * 9 / 10},
+		{{ 71, 0, 128, 256}, FIXED_DEC(265,100) * 7 / 10},
+		{{199, 0,  55, 256}, FIXED_DEC(1,1) * 9 / 10},
+		{{255, 0,   0, 256}, FIXED_DEC(16,1)}
 	};
 	
 	RECT_FIXED roof_dst = {
@@ -81,20 +90,51 @@ void Back_Week3_DrawBG(StageBack *back)
 		FIXED_DEC(220,1)
 	};
 	
-	const RECT *roof_srcp = roof_src;
-	const fixed_t *roof_scp = roof_sc;
-	
-	for (int i = 0; i < COUNT_OF(roof_src); i++, roof_srcp++, roof_scp++)
+	const struct Back_Week3_RoofPiece *roof_p = roof_piece;
+	for (int i = 0; i < COUNT_OF(roof_piece); i++, roof_p++)
 	{
-		roof_dst.w = (roof_srcp->w ? roof_srcp->w : 1) * *roof_scp;
-		Stage_DrawTex(&this->tex_back2, roof_srcp, &roof_dst, stage.camera.bzoom);
+		roof_dst.w = roof_p->src.w ? (roof_p->src.w * roof_p->scale) : roof_p->scale;
+		Stage_DrawTex(&this->tex_back2, &roof_p->src, &roof_dst, stage.camera.bzoom);
 		roof_dst.x += roof_dst.w;
 	}
 	
 	RECT roof_fill = {0, SCREEN_HEIGHT * 2 / 3, SCREEN_WIDTH, SCREEN_HEIGHT * 1 / 3};
 	Gfx_DrawRect(&roof_fill, 49, 58, 115);
 	
-	//Draw train
+	//Move train
+	if (this->train_x <= TRAIN_END_X)
+	{
+		//Reset train
+		if ((stage.flag & STAGE_FLAG_JUST_STEP) && (stage.song_step & 0x3) == 0)
+		{
+			if (--this->train_timer == 0)
+			{
+				this->train_x = TRAIN_START_X;
+				this->train_timer = RandomRange(TRAIN_TIME_A, TRAIN_TIME_B) << 2;
+			}
+		}
+	}
+	else
+	{
+		//Move train to end position
+		this->train_x  -= timer_dt * 2000;
+		
+		//Draw train
+		RECT train_src = {0, 0, 256, 256};
+		RECT_FIXED train_dst = {
+			this->train_x - fx,
+			FIXED_DEC(-65,1) - fy,
+			FIXED_DEC(285,1),
+			FIXED_DEC(120,1)
+		};
+		
+		for (int i = 0; i < 32; i++, train_dst.x += train_dst.w)
+		{
+			if (train_dst.x >= (SCREEN_WIDTH2 << FIXED_SHIFT) || train_dst.x <= -(train_dst.w + (SCREEN_WIDTH2 << FIXED_SHIFT)))
+				continue;
+			Stage_DrawTex(&this->tex_back4, &train_src, &train_dst, stage.camera.bzoom);
+		}
+	}
 	
 	//Draw arc
 	RECT arcl_src = {0, 0, 38, 121};
@@ -120,27 +160,31 @@ void Back_Week3_DrawBG(StageBack *back)
 	fx = stage.camera.x >> 1;
 	fy = stage.camera.y >> 1;
 	
-	RECT lightl_src = {0, 0, 256, 132};
-	RECT_FIXED lightl_dst = {
-		FIXED_DEC(-175,1) - fx,
-		FIXED_DEC(-80,1) - fy,
-		FIXED_DEC(195,1),
-		FIXED_DEC(103,1)
-	};
-	
-	RECT lightr_src = {0, 132, 256, 124};
-	RECT_FIXED lightr_dst = {
-		FIXED_DEC(98,1) - fx,
-		FIXED_DEC(-64,1) - fy,
-		FIXED_DEC(198,1),
-		FIXED_DEC(95,1)
-	};
-	
-	u8 win_r = (((fixed_t)this->win_r * this->win_time) >> FIXED_SHIFT) / 6;
-	u8 win_g = (((fixed_t)this->win_g * this->win_time) >> FIXED_SHIFT) / 6;
-	u8 win_b = (((fixed_t)this->win_b * this->win_time) >> FIXED_SHIFT) / 6;
-	Stage_DrawTexCol(&this->tex_back1, &lightl_src, &lightl_dst, stage.camera.bzoom, win_r, win_g, win_b);
-	Stage_DrawTexCol(&this->tex_back1, &lightr_src, &lightr_dst, stage.camera.bzoom, win_r, win_g, win_b);
+	if (this->win_time >= 0)
+	{
+		RECT lightl_src = {0, 0, 256, 132};
+		RECT_FIXED lightl_dst = {
+			FIXED_DEC(-175,1) - fx,
+			FIXED_DEC(-80,1) - fy,
+			FIXED_DEC(195,1),
+			FIXED_DEC(103,1)
+		};
+		
+		RECT lightr_src = {0, 132, 256, 124};
+		RECT_FIXED lightr_dst = {
+			FIXED_DEC(98,1) - fx,
+			FIXED_DEC(-64,1) - fy,
+			FIXED_DEC(198,1),
+			FIXED_DEC(95,1)
+		};
+		
+		u8 win_r = (((fixed_t)this->win_r * this->win_time) >> FIXED_SHIFT) / 6;
+		u8 win_g = (((fixed_t)this->win_g * this->win_time) >> FIXED_SHIFT) / 6;
+		u8 win_b = (((fixed_t)this->win_b * this->win_time) >> FIXED_SHIFT) / 6;
+		
+		Stage_DrawTexCol(&this->tex_back1, &lightl_src, &lightl_dst, stage.camera.bzoom, win_r, win_g, win_b);
+		Stage_DrawTexCol(&this->tex_back1, &lightr_src, &lightr_dst, stage.camera.bzoom, win_r, win_g, win_b);
+	}
 	
 	//Draw buildings
 	RECT building_src = {0, 0, 255, 128};
@@ -209,7 +253,11 @@ StageBack *Back_Week3_New()
 	Mem_Free(arc_back);
 	
 	//Initialize window state
-	Back_Week3_Window(this);
+	this->win_time = -1;
+	
+	//Initialize train state
+	this->train_x = TRAIN_END_X;
+	this->train_timer = RandomRange(TRAIN_TIME_A, TRAIN_TIME_B) << 2;
 	
 	return (StageBack*)this;
 }
