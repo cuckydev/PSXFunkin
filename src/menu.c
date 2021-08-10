@@ -892,6 +892,7 @@ void Menu_Tick(void)
 				const char *text;
 				void *value;
 			} menu_options[] = {
+				{OptType_Boolean, "INTERPOLATION", &stage.expsync},
 				{OptType_Boolean, "KADE INPUT ", &stage.kade},
 				{OptType_Boolean, "GHOST TAP ", &stage.ghost},
 				{OptType_Boolean, "DOWNSCROLL", &stage.downscroll},

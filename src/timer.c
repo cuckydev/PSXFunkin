@@ -11,6 +11,8 @@ u32 timer_persec;
 
 fixed_t timer_sec, timer_dt, timer_secbase;
 
+u8 timer_brokeconf;
+
 //Timer interface
 extern void InterruptCallback(int index, void *cb);
 extern void ChangeClearRCnt(int t, int m);
@@ -47,14 +49,36 @@ void Timer_Init(void)
 	ChangeClearRCnt(1, 0);
 	
 	ExitCriticalSection();
+	
+	timer_brokeconf = 0;
 }
 
 void Timer_Tick(void)
 {
+	u32 status = *((volatile const u32*)0x1f801814);
+	
 	//Increment frame count
 	frame_count++;
 	
 	//Update counter time
+	if (timer_count == timer_lcount)
+	{
+		if (timer_brokeconf != 0xFF)
+			timer_brokeconf++;
+		if (timer_brokeconf >= 10)
+		{
+			if ((status & 0x00100000) != 0)
+				timer_count += timer_persec / 50;
+			else
+				timer_count += timer_persec / 60;
+		}
+	}
+	else
+	{
+		if (timer_brokeconf != 0)
+			timer_brokeconf--;
+	}
+	
 	if (timer_count < timer_lcount)
 	{
 		timer_secbase = timer_sec;

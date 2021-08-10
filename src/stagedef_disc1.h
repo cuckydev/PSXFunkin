@@ -1,21 +1,3 @@
-#include "character/bf.h"
-#include "character/bfweeb.h"
-#include "character/gf.h"
-#include "character/dad.h"
-#include "character/spook.h"
-#include "character/pico.h"
-#include "character/mom.h"
-#include "character/senpai.h"
-#include "character/tank.h"
-
-#include "stage/dummy.h"
-#include "stage/week1.h"
-#include "stage/week2.h"
-#include "stage/week3.h"
-#include "stage/week4.h"
-#include "stage/week7.h"
-
-static const StageDef stage_defs[StageId_Max] = {
 	{ //StageId_1_1 (Bopeebo)
 		//Characters
 		{Char_BF_New,   FIXED_DEC(105,1),  FIXED_DEC(100,1)},
@@ -519,5 +501,4 @@ static const StageDef stage_defs[StageId_Max] = {
 		XA_Expurgation, 2,
 		
 		StageId_Clwn_4, 0
-	},
-};
+	}

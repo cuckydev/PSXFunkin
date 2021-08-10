@@ -2,6 +2,8 @@
 
 #include "../mem.h"
 #include "../archive.h"
+#include "../random.h"
+#include "../timer.h"
 
 //Week 3 background structure
 typedef struct
@@ -16,42 +18,42 @@ typedef struct
 	Gfx_Tex tex_back3; //Background train arc
 	Gfx_Tex tex_back4; //Train
 	Gfx_Tex tex_back5; //Sky
+	
+	//Window state
+	u8 win_r, win_g, win_b;
+	fixed_t win_time;
 } Back_Week3;
 
-#include "pad.h"
-void RectControl(RECT_FIXED *rect)
+//Week 3 background functions
+static const u8 win_cols[][3] = {
+	{ 49, 162, 253},
+	{ 49, 253, 140},
+	{251,  51, 245},
+	{253,  69,  49},
+	{251, 166,  51},
+};
+
+void Back_Week3_Window(Back_Week3 *this)
 {
-	if (pad_state.held & PAD_TRIANGLE)
-	{
-		if (pad_state.held & PAD_LEFT)
-			rect->w -= FIXED_DEC(1,1);
-		if (pad_state.held & PAD_UP)
-			rect->h -= FIXED_DEC(1,1);
-		if (pad_state.held & PAD_RIGHT)
-			rect->w += FIXED_DEC(1,1);
-		if (pad_state.held & PAD_DOWN)
-			rect->h += FIXED_DEC(1,1);
-	}
-	else
-	{
-		if (pad_state.held & PAD_LEFT)
-			rect->x -= FIXED_DEC(1,1);
-		if (pad_state.held & PAD_UP)
-			rect->y -= FIXED_DEC(1,1);
-		if (pad_state.held & PAD_RIGHT)
-			rect->x += FIXED_DEC(1,1);
-		if (pad_state.held & PAD_DOWN)
-			rect->y += FIXED_DEC(1,1);
-	}
-	FntPrint("%d %d %d %d", rect->x >> FIXED_SHIFT, rect->y >> FIXED_SHIFT, rect->w >> FIXED_SHIFT, rect->h >> FIXED_SHIFT);
+	const u8 *win_col = win_cols[RandomRange(0, COUNT_OF(win_cols) - 1)];
+	this->win_r = win_col[0];
+	this->win_g = win_col[1];
+	this->win_b = win_col[2];
+	this->win_time = FIXED_DEC(3,1);
 }
 
-//Week 3 background functions
 void Back_Week3_DrawBG(StageBack *back)
 {
 	Back_Week3 *this = (Back_Week3*)back;
 	
 	fixed_t fx, fy;
+	
+	//Update window
+	this->win_time -= timer_dt;
+	if (this->win_time < 0)
+		this->win_time = 0;
+	if ((stage.flag & STAGE_FLAG_JUST_STEP) && (stage.song_step & 0xF) == 0)
+		Back_Week3_Window(this);
 	
 	//Draw rooftop
 	fx = stage.camera.x;
@@ -134,8 +136,11 @@ void Back_Week3_DrawBG(StageBack *back)
 		FIXED_DEC(95,1)
 	};
 	
-	Stage_DrawTex(&this->tex_back1, &lightl_src, &lightl_dst, stage.camera.bzoom);
-	Stage_DrawTex(&this->tex_back1, &lightr_src, &lightr_dst, stage.camera.bzoom);
+	u8 win_r = (((fixed_t)this->win_r * this->win_time) >> FIXED_SHIFT) / 6;
+	u8 win_g = (((fixed_t)this->win_g * this->win_time) >> FIXED_SHIFT) / 6;
+	u8 win_b = (((fixed_t)this->win_b * this->win_time) >> FIXED_SHIFT) / 6;
+	Stage_DrawTexCol(&this->tex_back1, &lightl_src, &lightl_dst, stage.camera.bzoom, win_r, win_g, win_b);
+	Stage_DrawTexCol(&this->tex_back1, &lightr_src, &lightr_dst, stage.camera.bzoom, win_r, win_g, win_b);
 	
 	//Draw buildings
 	RECT building_src = {0, 0, 255, 128};
@@ -203,8 +208,8 @@ StageBack *Back_Week3_New()
 	Gfx_LoadTex(&this->tex_back5, Archive_Find(arc_back, "back5.tim"), 0);
 	Mem_Free(arc_back);
 	
-	//Use sky background colour
-	//Gfx_SetClear(148, 25, 99);
+	//Initialize window state
+	Back_Week3_Window(this);
 	
 	return (StageBack*)this;
 }

@@ -22,7 +22,26 @@
 //#define STAGE_FUNKYFRIDAY //Funky Friday
 
 //Stage definitions
-#include "stagedef_disc1.h"
+#include "character/bf.h"
+#include "character/bfweeb.h"
+#include "character/gf.h"
+#include "character/dad.h"
+#include "character/spook.h"
+#include "character/pico.h"
+#include "character/mom.h"
+#include "character/senpai.h"
+#include "character/tank.h"
+
+#include "stage/dummy.h"
+#include "stage/week1.h"
+#include "stage/week2.h"
+#include "stage/week3.h"
+#include "stage/week4.h"
+#include "stage/week7.h"
+
+static const StageDef stage_defs[StageId_Max] = {
+	#include "stagedef_disc1.h"
+};
 
 //Stage state
 Stage stage;
@@ -436,7 +455,7 @@ void Stage_SustainCheck(u8 type)
 }
 
 //Stage drawing functions
-void Stage_DrawTex(Gfx_Tex *tex, const RECT *src, const RECT_FIXED *dst, fixed_t zoom)
+void Stage_DrawTexCol(Gfx_Tex *tex, const RECT *src, const RECT_FIXED *dst, fixed_t zoom, u8 cr, u8 cg, u8 cb)
 {
 	fixed_t xz = dst->x;
 	fixed_t yz = dst->y;
@@ -475,7 +494,12 @@ void Stage_DrawTex(Gfx_Tex *tex, const RECT *src, const RECT_FIXED *dst, fixed_t
 		r - l,
 		b - t,
 	};
-	Gfx_DrawTex(tex, src, &sdst);
+	Gfx_DrawTexCol(tex, src, &sdst, cr, cg, cb);
+}
+
+void Stage_DrawTex(Gfx_Tex *tex, const RECT *src, const RECT_FIXED *dst, fixed_t zoom)
+{
+	Stage_DrawTexCol(tex, src, dst, zoom, 0x80, 0x80, 0x80);
 }
 
 void Stage_DrawTexArb(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, const POINT_FIXED *p1, const POINT_FIXED *p2, const POINT_FIXED *p3, fixed_t zoom)
@@ -1078,6 +1102,8 @@ void Stage_Tick()
 					
 					//Update song time
 					stage.interp_ms = ((fixed_t)Audio_TellXA_Milli() << FIXED_SHIFT) / 1000;
+					stage.interp_time = 0;
+					stage.song_time = stage.interp_ms;
 				}
 				else
 				{
@@ -1090,30 +1116,40 @@ void Stage_Tick()
 			}
 			else if (Audio_PlayingXA())
 			{
-				//Get playing song position
-				stage.song_time += timer_dt;
-				stage.interp_time += timer_dt;
-				
-				if (stage.interp_time >= interp_int)
+				if (stage.expsync)
 				{
-					//Update interp state
-					while (stage.interp_time >= interp_int)
-						stage.interp_time -= interp_int;
-					stage.interp_ms = ((fixed_t)Audio_TellXA_Milli() << FIXED_SHIFT) / 1000;
-				}
-				
-				//Resync
-				fixed_t next_time = stage.interp_ms + stage.interp_time;
-				if (stage.song_time >= next_time + FIXED_DEC(25,1000) || stage.song_time <= next_time - FIXED_DEC(25,1000))
-				{
-					stage.song_time = next_time;
+					//Get playing song position
+					stage.song_time += timer_dt;
+					stage.interp_time += timer_dt;
+					
+					if (stage.interp_time >= interp_int)
+					{
+						//Update interp state
+						while (stage.interp_time >= interp_int)
+							stage.interp_time -= interp_int;
+						stage.interp_ms = ((fixed_t)Audio_TellXA_Milli() << FIXED_SHIFT) / 1000;
+					}
+					
+					//Resync
+					fixed_t next_time = stage.interp_ms + stage.interp_time;
+					if (stage.song_time >= next_time + FIXED_DEC(25,1000) || stage.song_time <= next_time - FIXED_DEC(25,1000))
+					{
+						stage.song_time = next_time;
+					}
+					else
+					{
+						if (stage.song_time < next_time - FIXED_DEC(1,1000))
+							stage.song_time += FIXED_DEC(1,1000);
+						if (stage.song_time > next_time + FIXED_DEC(1,1000))
+							stage.song_time -= FIXED_DEC(1,1000);
+					}
 				}
 				else
 				{
-					if (stage.song_time < next_time - FIXED_DEC(1,1000))
-						stage.song_time += FIXED_DEC(1,1000);
-					if (stage.song_time > next_time + FIXED_DEC(1,1000))
-						stage.song_time -= FIXED_DEC(1,1000);
+					//Old sync
+					stage.interp_ms = ((fixed_t)Audio_TellXA_Milli() << FIXED_SHIFT) / 1000;
+					stage.interp_time = 0;
+					stage.song_time = stage.interp_ms;
 				}
 				
 				playing = true;
