@@ -238,6 +238,9 @@
 				
 				<!-- Senpai assets -->
 				<file name = "senpai.arc" type = "data" source = "iso/senpai/main.arc"/>
+
+				<!-- Senpaimad assets -->
+				<file name = "senpaimad.arc" type = "data" source = "iso/senpaimad/main.arc"/>
 				
 				<!-- Tankman Captain assets -->
 				<file name = "tank.arc" type = "data" source = "iso/tank/main.arc"/>

@@ -30,6 +30,7 @@
 #include "character/pico.h"
 #include "character/mom.h"
 #include "character/senpai.h"
+#include "character/senpaimad.h"
 #include "character/tank.h"
 
 #include "stage/dummy.h"
