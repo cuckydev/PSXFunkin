@@ -91,7 +91,7 @@ void Back_Week3_DrawBG(StageBack *back)
 	};
 	
 	const struct Back_Week3_RoofPiece *roof_p = roof_piece;
-	for (size_t i = COUNT_OF(roof_piece); i > 0; i--, roof_p++)
+	for (size_t i = 0; i < COUNT_OF(roof_piece); i++, roof_p++)
 	{
 		roof_dst.w = roof_p->src.w ? (roof_p->src.w * roof_p->scale) : roof_p->scale;
 		Stage_DrawTex(&this->tex_back2, &roof_p->src, &roof_dst, stage.camera.bzoom);

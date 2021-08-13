@@ -203,7 +203,7 @@ void Char_BF_Tick(Character *character)
 		if (this->skull_scale)
 		{
 			SkullFragment *frag = this->skull;
-			for (size_t i = COUNT_OF_MEMBER(Char_BF, skull); i > 0; i--, frag++)
+			for (size_t i = 0; i < COUNT_OF_MEMBER(Char_BF, skull); i++, frag++)
 			{
 				//Draw fragment
 				RECT frag_src = {
@@ -407,7 +407,7 @@ Character *Char_BF_New(fixed_t x, fixed_t y)
 	this->skull_scale = 64;
 	
 	SkullFragment *frag = this->skull;
-	for (size_t i = COUNT_OF_MEMBER(Char_BF, skull); i > 0; i--, frag++)
+	for (size_t i = 0; i < COUNT_OF_MEMBER(Char_BF, skull); i++, frag++)
 	{
 		//Randomize trajectory
 		frag->xsp += RandomRange(-4, 4);

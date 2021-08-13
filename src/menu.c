@@ -631,10 +631,11 @@ void Menu_Tick(void)
 			RECT name_bar = {0, 16, SCREEN_WIDTH, 8 + 16 + 8};
 			Gfx_DrawRect(&name_bar, 249, 207, 81);
 			
-			for (size_t i = COUNT_OF(menu_options[menu.select].tracks); i > 0; i--)
+			const char * const *trackp = menu_options[menu.select].tracks;
+			for (size_t i = 0; i < COUNT_OF(menu_options[menu.select].tracks); i++, trackp++)
 			{
 				menu.font_bold.draw(&menu.font_bold,
-					menu_options[menu.select].tracks[i],
+					*trackp,
 					SCREEN_WIDTH - 16,
 					SCREEN_HEIGHT - (4 * 24) + (i * 24),
 					FontAlign_Right
