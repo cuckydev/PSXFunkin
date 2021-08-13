@@ -634,12 +634,13 @@ void Menu_Tick(void)
 			const char * const *trackp = menu_options[menu.select].tracks;
 			for (size_t i = 0; i < COUNT_OF(menu_options[menu.select].tracks); i++, trackp++)
 			{
-				menu.font_bold.draw(&menu.font_bold,
-					*trackp,
-					SCREEN_WIDTH - 16,
-					SCREEN_HEIGHT - (4 * 24) + (i * 24),
-					FontAlign_Right
-				);
+				if (*trackp != NULL)
+					menu.font_bold.draw(&menu.font_bold,
+						*trackp,
+						SCREEN_WIDTH - 16,
+						SCREEN_HEIGHT - (4 * 24) + (i * 24),
+						FontAlign_Right
+					);
 			}
 			
 			//Draw options

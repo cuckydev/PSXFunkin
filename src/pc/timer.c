@@ -30,8 +30,7 @@ void Timer_Tick(void)
 void Timer_Reset(void)
 {
 	//Update seconds counter
-	glfwSetTime(0.0);
-	fixed_t nsec = 0;
+	fixed_t nsec = (fixed_t)(glfwGetTime() * FIXED_UNIT);
 	timer_sec = nsec;
 	timer_dt = 0;
 }

@@ -16,7 +16,7 @@
 #define WINDOW_HEIGHT (SCREEN_HEIGHT * WINDOW_SCALE)
 
 //Window
-static GLFWwindow *window;
+GLFWwindow *window;
 
 //Render state
 static mat4 projection;
@@ -492,7 +492,7 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag free)
 			
 			u8 *tex_data_p = &tex_data[0][0];
 			const u8 *tim_tex_data_p = tim_tex_data;
-			for (u16 i = 0; i < (tim_tex_w << 1) * tim_tex_h; i++, tex_data_p += 8, tim_tex_data_p++)
+			for (size_t i = 0; i < (tim_tex_w << 1) * tim_tex_h; i++, tex_data_p += 8, tim_tex_data_p++)
 			{
 				u8 *mapp;
 				mapp = &tex_palette[*tim_tex_data_p & 0xF][0];
@@ -567,7 +567,7 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag free)
 			
 			u8 *tex_data_p = &tex_data[0][0];
 			const u8 *tim_tex_data_p = tim_tex_data;
-			for (u16 i = 0; i < (tim_tex_w << 1) * tim_tex_h; i++, tex_data_p += 8, tim_tex_data_p++)
+			for (size_t i = 0; i < (tim_tex_w << 1) * tim_tex_h; i++, tex_data_p += 4, tim_tex_data_p++)
 			{
 				u8 *mapp = &tex_palette[*tim_tex_data_p][0];
 				tex_data_p[0] = mapp[0];
@@ -577,7 +577,7 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag free)
 			}
 			
 			//Upload to texture
-			Gfx_UploadTexture(tpage_texture[0][tex->tpage], &tex_data[0][0], tim_tex_w << 2, tim_tex_h);
+			Gfx_UploadTexture(tpage_texture[0][tex->tpage], &tex_data[0][0], tim_tex_w << 1, tim_tex_h);
 			break;
 		}
 		case 2: //16bpp
