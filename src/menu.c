@@ -133,7 +133,7 @@ static void Menu_DrawBack(boolean flash, s32 scroll, u8 r0, u8 g0, u8 b0, u8 r1,
 	RECT back_src = {0, 0, 255, 255};
 	RECT back_dst = {0, -scroll, SCREEN_WIDTH, SCREEN_HEIGHT + 16};
 	
-	if (flash || (animf_count & 2) == 0)
+	if (flash || (animf_count & 4) == 0)
 		Gfx_DrawTexCol(&menu.tex_back, &back_src, &back_dst, r0, g0, b0);
 	else
 		Gfx_DrawTexCol(&menu.tex_back, &back_src, &back_dst, r1, g1, b1);
@@ -180,7 +180,7 @@ static void Menu_DifficultySelector(s32 x, s32 y)
 	Gfx_BlitTex(&menu.tex_story, diff_src, x - (diff_src->w >> 1), y - 8 + ((pad_state.press & (PAD_LEFT | PAD_RIGHT)) != 0));
 }
 
-static const void Menu_DrawWeek(const char *week, s32 x, s32 y)
+static void Menu_DrawWeek(const char *week, s32 x, s32 y)
 {
 	//Draw label
 	if (week == NULL)
@@ -235,7 +235,11 @@ void Menu_Load(MenuPage page)
 		case MenuPage_Opening:
 			//Get funny message to use
 			//Do this here so timing is less reliant on VSync
-			menu.page_state.opening.funny_message = ((*((volatile u32*)0xBF801120)) >> 3) % COUNT_OF(funny_messages); //sysclk seeding
+			#ifdef PSXF_PC
+				menu.page_state.opening.funny_message = time(NULL) % COUNT_OF(funny_messages);
+			#else
+				menu.page_state.opening.funny_message = ((*((volatile u32*)0xBF801120)) >> 3) % COUNT_OF(funny_messages); //sysclk seeding
+			#endif
 			break;
 		default:
 			break;
@@ -627,7 +631,7 @@ void Menu_Tick(void)
 			RECT name_bar = {0, 16, SCREEN_WIDTH, 8 + 16 + 8};
 			Gfx_DrawRect(&name_bar, 249, 207, 81);
 			
-			for (int i = 0; i < COUNT_OF(menu_options[menu.select].tracks); i++)
+			for (size_t i = COUNT_OF(menu_options[menu.select].tracks); i > 0; i--)
 			{
 				menu.font_bold.draw(&menu.font_bold,
 					menu_options[menu.select].tracks[i],
@@ -893,9 +897,9 @@ void Menu_Tick(void)
 				void *value;
 			} menu_options[] = {
 				{OptType_Boolean, "INTERPOLATION", &stage.expsync},
-				{OptType_Boolean, "KADE INPUT ", &stage.kade},
-				{OptType_Boolean, "GHOST TAP ", &stage.ghost},
-				{OptType_Boolean, "DOWNSCROLL", &stage.downscroll},
+				{OptType_Boolean, "KADE INPUT   ", &stage.kade},
+				{OptType_Boolean, "GHOST TAP    ", &stage.ghost},
+				{OptType_Boolean, "DOWNSCROLL   ", &stage.downscroll},
 			};
 			
 			//Initialize page

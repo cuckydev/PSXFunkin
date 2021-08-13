@@ -20,17 +20,28 @@ void ErrorLock()
 {
 	while (1)
 	{
-		FntPrint("A fatal error has occured\n~c700%s\n", error_msg);
-		Gfx_Flip();
+		#ifdef PSXF_PC
+			MsgPrint(error_msg);
+			exit(1);
+		#else
+			FntPrint("A fatal error has occured\n~c700%s\n", error_msg);
+			Gfx_Flip();
+		#endif
 	}
 }
 
 //Entry point
-u32 malloc_heap[0x100000 / sizeof(u32)];
+u32 malloc_heap[0x1B0000 / sizeof(u32)];
 
-int main()
+int main(int argc, char **argv)
 {
+	//Remember arguments
+	my_argc = argc;
+	my_argv = argv;
+	
 	//Initialize system
+	PSX_Init();
+	
 	Mem_Init((void*)malloc_heap, sizeof(malloc_heap));
 	
 	IO_Init();

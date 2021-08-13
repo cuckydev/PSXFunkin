@@ -1,6 +1,7 @@
 #ifndef _TIMER_H
 #define _TIMER_H
 
+#include "psx.h"
 #include "fixed.h"
 
 //Timer state

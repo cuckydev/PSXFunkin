@@ -90,7 +90,7 @@ void Char_Spook_Tick(Character *character)
 	
 	if (stage.flag & STAGE_FLAG_JUST_STEP)
 	{
-		if (Animatable_Ended(&character->animatable) &&
+		if ((Animatable_Ended(&character->animatable) || character->animatable.anim == CharAnim_LeftAlt || character->animatable.anim == CharAnim_RightAlt) &&
 		    (character->animatable.anim != CharAnim_Left &&
 		     character->animatable.anim != CharAnim_Down &&
 		     character->animatable.anim != CharAnim_Up &&

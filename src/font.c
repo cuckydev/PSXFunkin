@@ -7,6 +7,7 @@
 //Font_Bold
 s32 Font_Bold_GetWidth(struct FontData *this, const char *text)
 {
+	(void)this;
 	return strlen(text) * 13;
 }
 

@@ -4,12 +4,6 @@ TYPE = ps-exe
 SRCS = src/main.c \
        src/mem.c \
        src/mutil.c \
-	   src/timer.c \
-       src/io.c \
-       src/gfx.c \
-       src/audio.c \
-	   src/movie.c \
-       src/pad.c \
        src/random.c \
        src/archive.c \
        src/font.c \
@@ -17,6 +11,12 @@ SRCS = src/main.c \
        src/loadscr.c \
        src/menu.c \
        src/stage.c \
+       src/psx/psx.c \
+       src/psx/io.c \
+       src/psx/gfx.c \
+       src/psx/audio.c \
+       src/psx/pad.c \
+	   src/psx/timer.c \
        src/stage/dummy.c \
        src/stage/week1.c \
        src/stage/week2.c \

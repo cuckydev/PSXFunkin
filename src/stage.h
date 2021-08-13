@@ -149,6 +149,7 @@ typedef struct
 {
 	//Stage settings
 	boolean kade, ghost, downscroll, expsync;
+	u32 offset;
 	
 	//HUD textures
 	Gfx_Tex tex_hud0, tex_hud1;

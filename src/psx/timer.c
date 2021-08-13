@@ -1,6 +1,4 @@
-#include "timer.h"
-
-#include "psx.h"
+#include "../timer.h"
 
 #define TIMER_BITS (3)
 

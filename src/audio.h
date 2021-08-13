@@ -86,18 +86,18 @@ typedef enum
 } XA_Track;
 
 //Audio functions
-void Audio_Init();
+void Audio_Init(void);
 void Audio_GetXAFile(CdlFILE *file, XA_Track track);
 void Audio_PlayXA_File(CdlFILE *file, u8 volume, u8 channel, boolean loop);
 void Audio_PlayXA_Track(XA_Track track, u8 volume, u8 channel, boolean loop);
 void Audio_PlayXA(const char *path, u8 volume, u8 channel, boolean loop);
-void Audio_PauseXA();
-void Audio_StopXA();
+void Audio_PauseXA(void);
+void Audio_StopXA(void);
 void Audio_ChannelXA(u8 channel);
-s32 Audio_TellXA_Sector();
-s32 Audio_TellXA_Milli();
-boolean Audio_PlayingXA();
-void Audio_WaitPlayXA();
-void Audio_ProcessXA();
+s32 Audio_TellXA_Sector(void);
+s32 Audio_TellXA_Milli(void);
+boolean Audio_PlayingXA(void);
+void Audio_WaitPlayXA(void);
+void Audio_ProcessXA(void);
 
 #endif

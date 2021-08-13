@@ -32,7 +32,7 @@ typedef struct
 extern Pad pad_state;
 
 //Pad functions
-void Pad_Init();
-void Pad_Update();
+void Pad_Init(void);
+void Pad_Update(void);
 
 #endif

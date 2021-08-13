@@ -527,7 +527,7 @@ static const fixed_t note_x[8] = {
 	 FIXED_DEC(-26,1),
 };
 static const u16 note_key[] = {INPUT_LEFT, INPUT_DOWN, INPUT_UP, INPUT_RIGHT};
-static const fixed_t note_y = (32 - SCREEN_HEIGHT2) << FIXED_SHIFT;
+static const fixed_t note_y = FIXED_DEC(32 - SCREEN_HEIGHT2, 1);
 
 void Stage_DrawHealth(u8 i, s8 ox)
 {
@@ -548,7 +548,7 @@ void Stage_DrawHealth(u8 i, s8 ox)
 	};
 	RECT_FIXED dst = {
 		hx + ox * FIXED_DEC(11,1) - FIXED_DEC(12,1),
-		(SCREEN_HEIGHT2 - 32 + 4 - 12) << FIXED_SHIFT,
+		FIXED_DEC(SCREEN_HEIGHT2 - 32 + 4 - 12, 1),
 		src.w << FIXED_SHIFT,
 		src.h << FIXED_SHIFT
 	};
@@ -599,7 +599,7 @@ void Stage_DrawNotes()
 		fixed_t y = note_y + FIXED_MUL(stage.speed, time * 140);
 		
 		//Check if went above screen
-		if (y < ((-16 - SCREEN_HEIGHT2) << FIXED_SHIFT))
+		if (y < FIXED_DEC(-16 - SCREEN_HEIGHT2, 1))
 		{
 			//Wait for note to exit late time
 			if (note->type & NOTE_FLAG_SUSTAIN)
@@ -660,7 +660,7 @@ void Stage_DrawNotes()
 				y -= scroll.size;
 				if ((note->type & (NOTE_FLAG_OPPONENT | NOTE_FLAG_HIT)) || ((stage.pad_held & note_key[note->type & 0x3]) && (note_fp + stage.late_sus_safe >= stage.note_scroll)))
 				{
-					clip = ((32 - SCREEN_HEIGHT2) << FIXED_SHIFT) - y;
+					clip = FIXED_DEC(32 - SCREEN_HEIGHT2, 1) - y;
 					if (clip < 0)
 						clip = 0;
 				}
@@ -946,6 +946,9 @@ void Stage_Load(StageId id, StageDiff difficulty, boolean story)
 	
 	//Load music
 	Stage_LoadMusic();
+	
+	//Test offset
+	stage.offset = 0;
 }
 
 void Stage_Unload()
@@ -1101,7 +1104,10 @@ void Stage_Tick()
 					Timer_Reset();
 					
 					//Update song time
-					stage.interp_ms = ((fixed_t)Audio_TellXA_Milli() << FIXED_SHIFT) / 1000;
+					fixed_t audio_time = (fixed_t)Audio_TellXA_Milli() - stage.offset;
+					if (audio_time < 0)
+						audio_time = 0;
+					stage.interp_ms = (audio_time << FIXED_SHIFT) / 1000;
 					stage.interp_time = 0;
 					stage.song_time = stage.interp_ms;
 				}
@@ -1116,6 +1122,8 @@ void Stage_Tick()
 			}
 			else if (Audio_PlayingXA())
 			{
+				fixed_t audio_time = (fixed_t)Audio_TellXA_Milli() - stage.offset;
+				
 				if (stage.expsync)
 				{
 					//Get playing song position
@@ -1127,7 +1135,7 @@ void Stage_Tick()
 						//Update interp state
 						while (stage.interp_time >= interp_int)
 							stage.interp_time -= interp_int;
-						stage.interp_ms = ((fixed_t)Audio_TellXA_Milli() << FIXED_SHIFT) / 1000;
+						stage.interp_ms = (audio_time << FIXED_SHIFT) / 1000;
 					}
 					
 					//Resync
@@ -1147,7 +1155,7 @@ void Stage_Tick()
 				else
 				{
 					//Old sync
-					stage.interp_ms = ((fixed_t)Audio_TellXA_Milli() << FIXED_SHIFT) / 1000;
+					stage.interp_ms = (audio_time << FIXED_SHIFT) / 1000;
 					stage.interp_time = 0;
 					stage.song_time = stage.interp_ms;
 				}
@@ -1299,9 +1307,9 @@ void Stage_Tick()
 					{
 						//Check if note can be hit
 						fixed_t note_fp = (fixed_t)note->pos << FIXED_SHIFT;
-						if (note_fp - stage.early_safe > stage.note_scroll)
+						if (note_fp - stage.early_safe - FIXED_DEC(12,1) > stage.note_scroll)
 							break;
-						if (note_fp + stage.late_safe < stage.note_scroll)
+						if (note_fp + stage.late_safe < stage.note_scroll)	
 							continue;
 						if (note->type & (NOTE_FLAG_OPPONENT | NOTE_FLAG_MINE))
 							continue;
@@ -1313,11 +1321,15 @@ void Stage_Tick()
 								continue;
 							if (stage.note_scroll >= note_fp)
 								hit[note->type & 0x3] |= 1;
-							else
+							else if (!(hit[note->type & 0x3] & 8))
 								hit[note->type & 0x3] |= 2;
 						}
 						else if (!(hit[note->type & 0x3] & 2))
-							hit[note->type & 0x3] |= 4;
+						{
+							if (stage.note_scroll <= note_fp)
+								hit[note->type & 0x3] |= 4;
+							hit[note->type & 0x3] |= 8;
+						}
 					}
 					
 					//Handle input
@@ -1331,7 +1343,7 @@ void Stage_Tick()
 							stage.pad_press |= note_key[i];
 							Stage_NoteCheck(i);
 						}
-						if (hit[i] & 4)
+						if (hit[i] & 5)
 						{
 							stage.pad_held |= note_key[i];
 							Stage_SustainCheck(i);

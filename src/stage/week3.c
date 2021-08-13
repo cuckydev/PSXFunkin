@@ -91,7 +91,7 @@ void Back_Week3_DrawBG(StageBack *back)
 	};
 	
 	const struct Back_Week3_RoofPiece *roof_p = roof_piece;
-	for (int i = 0; i < COUNT_OF(roof_piece); i++, roof_p++)
+	for (size_t i = COUNT_OF(roof_piece); i > 0; i--, roof_p++)
 	{
 		roof_dst.w = roof_p->src.w ? (roof_p->src.w * roof_p->scale) : roof_p->scale;
 		Stage_DrawTex(&this->tex_back2, &roof_p->src, &roof_dst, stage.camera.bzoom);
@@ -105,12 +105,12 @@ void Back_Week3_DrawBG(StageBack *back)
 	if (this->train_x <= TRAIN_END_X)
 	{
 		//Reset train
-		if ((stage.flag & STAGE_FLAG_JUST_STEP) && (stage.song_step & 0x3) == 0)
+		if ((stage.flag & STAGE_FLAG_JUST_STEP) && (stage.song_step & 0xF) == 0)
 		{
 			if (--this->train_timer == 0)
 			{
 				this->train_x = TRAIN_START_X;
-				this->train_timer = RandomRange(TRAIN_TIME_A, TRAIN_TIME_B) << 2;
+				this->train_timer = RandomRange(TRAIN_TIME_A, TRAIN_TIME_B);
 			}
 		}
 	}
@@ -128,7 +128,7 @@ void Back_Week3_DrawBG(StageBack *back)
 			FIXED_DEC(120,1)
 		};
 		
-		for (int i = 0; i < 32; i++, train_dst.x += train_dst.w)
+		for (int i = 0; i < 24; i++, train_dst.x += train_dst.w)
 		{
 			if (train_dst.x >= (SCREEN_WIDTH2 << FIXED_SHIFT) || train_dst.x <= -(train_dst.w + (SCREEN_WIDTH2 << FIXED_SHIFT)))
 				continue;
@@ -257,7 +257,7 @@ StageBack *Back_Week3_New()
 	
 	//Initialize train state
 	this->train_x = TRAIN_END_X;
-	this->train_timer = RandomRange(TRAIN_TIME_A, TRAIN_TIME_B) << 2;
+	this->train_timer = RandomRange(TRAIN_TIME_A, TRAIN_TIME_B);
 	
 	return (StageBack*)this;
 }

@@ -1,8 +1,7 @@
-#include "psx.h"
+#include "../gfx.h"
 
-#include "mem.h"
-#include "gfx.h"
-#include "main.h"
+#include "../mem.h"
+#include "../main.h"
 
 //Gfx constants
 #define OTLEN 8

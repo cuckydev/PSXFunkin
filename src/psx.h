@@ -1,30 +1,71 @@
 #ifndef _PSX_H
 #define _PSX_H
 
-//Headers
-#include <sys/types.h>
-#include <stdio.h>
+extern int my_argc;
+extern char **my_argv;
 
-#include <libetc.h>
-#include <libgte.h>
-#include <libgpu.h>
-#include <libspu.h>
-#include <libcd.h>
-#include <libsnd.h>
-#include <libapi.h>
+#ifdef PSXF_PC
+	//Headers
+	#include <sys/types.h>
+	#include <stdio.h>
+	#include <stdlib.h>
+	
+	#include <stdint.h>
+	#include <stddef.h>
+	#include <string.h>
+	#include <time.h>
+	
+	//Fixed size types
+	typedef uint8_t  u8;
+	typedef int8_t   s8;
+	typedef uint16_t u16;
+	typedef int16_t  s16;
+	typedef uint32_t u32;
+	typedef int32_t  s32;
+	typedef uint64_t u64;
+	typedef int64_t  s64;
+	
+	//CD types
+	typedef struct {
+		s32 x, y, w, h;
+	} RECT;
+	
+	typedef struct {
+		char path[32];
+	} CdlFILE;
+	
+	//Misc. functions
+	void FntPrint(const char *format, ...);
+	void MsgPrint(const char *format, ...);
+#else
+	//Headers
+	#include <sys/types.h>
+	#include <stdio.h>
 
-#include <stddef.h>
-#include <string.h>
+	#include <libetc.h>
+	#include <libgte.h>
+	#include <libgpu.h>
+	#include <libspu.h>
+	#include <libcd.h>
+	#include <libsnd.h>
+	#include <libapi.h>
 
-//Fixed size types
-typedef u_char             u8;
-typedef signed char        s8;
-typedef u_short            u16;
-typedef signed short       s16;
-typedef u_long             u32;
-typedef signed int         s32;
-typedef unsigned long long u64;
-typedef signed long long   s64;
+	#include <stddef.h>
+	#include <string.h>
+
+	//Fixed size types
+	typedef u_char             u8;
+	typedef signed char        s8;
+	typedef u_short            u16;
+	typedef signed short       s16;
+	typedef u_long             u32;
+	typedef signed int         s32;
+	typedef unsigned long long u64;
+	typedef signed long long   s64;
+	
+	//Misc. functions
+	#define MsgPrint FntPrint
+#endif
 
 //Boolean type
 typedef s8 boolean;
@@ -47,5 +88,7 @@ typedef struct
 #define COUNT_OF(x) (sizeof(x) / sizeof(0[x]))
 #define COUNT_OF_MEMBER(type, member) (sizeof_member(type, member) / sizeof_member(type, member[0]))
 
+//PSX functions
+void PSX_Init(void);
 
 #endif

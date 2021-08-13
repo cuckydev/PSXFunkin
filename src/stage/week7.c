@@ -34,9 +34,7 @@ typedef struct
 
 void Back_Week7_DrawFG(StageBack *back)
 {
-	Back_Week7 *this = (Back_Week7*)back;
-	
-	fixed_t fx, fy;
+	(void)back;
 }
 
 void Back_Week7_DrawBG(StageBack *back)

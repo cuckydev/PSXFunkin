@@ -1,8 +1,7 @@
-#include "psx.h"
+#include "../audio.h"
 
-#include "audio.h"
-#include "io.h"
-#include "main.h"
+#include "../io.h"
+#include "../main.h"
 
 //XA state
 #define XA_STATE_INIT    (1 << 0)
@@ -85,7 +84,7 @@ static u8 XA_BCD(u8 x)
 	return x - 6 * (x >> 4);
 }
 
-static u32 XA_TellSector()
+static u32 XA_TellSector(void)
 {
 	u8 result[8];
 	CdControlB(CdlGetlocP, NULL, result);
@@ -100,7 +99,7 @@ static void XA_SetVolume(u8 x)
 	CdMix(&cd_vol);
 }
 
-static void XA_Init()
+static void XA_Init(void)
 {
 	u8 param[4];
 	
@@ -127,7 +126,7 @@ static void XA_Init()
 	CdControlF(CdlPause, NULL);
 }
 
-static void XA_Quit()
+static void XA_Quit(void)
 {
 	//Set XA state
 	if (!(xa_state & XA_STATE_INIT))
@@ -147,7 +146,7 @@ static void XA_Play(u32 start)
 	CdControlF(CdlReadS, (u8*)&cd_loc);
 }
 
-static void XA_Pause()
+static void XA_Pause(void)
 {
 	//Set XA state
 	if (!(xa_state & XA_STATE_PLAYING))
@@ -168,7 +167,7 @@ static void XA_SetFilter(u8 channel)
 }
 
 //Audio functions
-void Audio_Init()
+void Audio_Init(void)
 {
 	//Initialize sound system
 	SsInit();
@@ -249,13 +248,13 @@ void Audio_PlayXA(const char *path, u8 volume, u8 channel, boolean loop)
 	Audio_PlayXA_File(&file, volume, channel, loop);
 }
 
-void Audio_PauseXA()
+void Audio_PauseXA(void)
 {
 	//Pause playing XA file
 	XA_Pause();
 }
 
-void Audio_StopXA()
+void Audio_StopXA(void)
 {
 	//Deinitialize XA system
 	XA_Quit();
@@ -267,23 +266,23 @@ void Audio_ChannelXA(u8 channel)
 	XA_SetFilter(channel);
 }
 
-s32 Audio_TellXA_Sector()
+s32 Audio_TellXA_Sector(void)
 {
 	//Get CD position
 	return (s32)xa_pos - (s32)xa_start; //Meh casting
 }
 
-s32 Audio_TellXA_Milli()
+s32 Audio_TellXA_Milli(void)
 {
 	return ((s32)xa_pos - (s32)xa_start) * 1000 / 75; //1000 / (75 * speed (1x))
 }
 
-boolean Audio_PlayingXA()
+boolean Audio_PlayingXA(void)
 {
 	return (xa_state & XA_STATE_PLAYING) != 0;
 }
 
-void Audio_WaitPlayXA()
+void Audio_WaitPlayXA(void)
 {
 	while (1)
 	{
@@ -294,7 +293,7 @@ void Audio_WaitPlayXA()
 	}
 }
 
-void Audio_ProcessXA()
+void Audio_ProcessXA(void)
 {
 	//Handle playing state
 	if (xa_state & XA_STATE_PLAYING)

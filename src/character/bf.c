@@ -8,24 +8,24 @@
 
 //Boyfriend skull fragments
 static SkullFragment char_bf_skull[15] = {
-	{ 1 << 3, -87 << 3, -13, -13},
-	{ 9 << 3, -88 << 3,   5, -22},
-	{18 << 3, -87 << 3,   9, -22},
-	{26 << 3, -85 << 3,  13, -13},
+	{ 1 * 8, -87 * 8, -13, -13},
+	{ 9 * 8, -88 * 8,   5, -22},
+	{18 * 8, -87 * 8,   9, -22},
+	{26 * 8, -85 * 8,  13, -13},
 	
-	{-3 << 3, -82 << 3, -13, -11},
-	{ 8 << 3, -85 << 3,  -9, -15},
-	{20 << 3, -82 << 3,   9, -15},
-	{30 << 3, -79 << 3,  13, -11},
+	{-3 * 8, -82 * 8, -13, -11},
+	{ 8 * 8, -85 * 8,  -9, -15},
+	{20 * 8, -82 * 8,   9, -15},
+	{30 * 8, -79 * 8,  13, -11},
 	
-	{-1 << 3, -74 << 3, -13, -5},
-	{ 8 << 3, -77 << 3,  -9, -9},
-	{19 << 3, -75 << 3,   9, -9},
-	{26 << 3, -74 << 3,  13, -5},
+	{-1 * 8, -74 * 8, -13, -5},
+	{ 8 * 8, -77 * 8,  -9, -9},
+	{19 * 8, -75 * 8,   9, -9},
+	{26 * 8, -74 * 8,  13, -5},
 	
-	{ 5 << 3, -73 << 3, -5, -3},
-	{14 << 3, -76 << 3,  9, -6},
-	{26 << 3, -67 << 3, 15, -3},
+	{ 5 * 8, -73 * 8, -5, -3},
+	{14 * 8, -76 * 8,  9, -6},
+	{26 * 8, -67 * 8, 15, -3},
 };
 
 //Boyfriend player types
@@ -163,7 +163,7 @@ void Char_BF_Tick(Character *character)
 	Char_BF *this = (Char_BF*)character;
 	
 	//Handle animation updates
-	if ((pad_state.held & (INPUT_LEFT | INPUT_DOWN | INPUT_UP | INPUT_RIGHT)) == 0)
+	if ((stage.pad_held & (INPUT_LEFT | INPUT_DOWN | INPUT_UP | INPUT_RIGHT)) == 0)
 		Character_CheckEndSing(character);
 	
 	if (stage.flag & STAGE_FLAG_JUST_STEP)
@@ -203,7 +203,7 @@ void Char_BF_Tick(Character *character)
 		if (this->skull_scale)
 		{
 			SkullFragment *frag = this->skull;
-			for (int i = 0; i < COUNT_OF_MEMBER(Char_BF, skull); i++, frag++)
+			for (size_t i = COUNT_OF_MEMBER(Char_BF, skull); i > 0; i--, frag++)
 			{
 				//Draw fragment
 				RECT frag_src = {
@@ -407,7 +407,7 @@ Character *Char_BF_New(fixed_t x, fixed_t y)
 	this->skull_scale = 64;
 	
 	SkullFragment *frag = this->skull;
-	for (int i = 0; i < COUNT_OF_MEMBER(Char_BF, skull); i++, frag++)
+	for (size_t i = COUNT_OF_MEMBER(Char_BF, skull); i > 0; i--, frag++)
 	{
 		//Randomize trajectory
 		frag->xsp += RandomRange(-4, 4);

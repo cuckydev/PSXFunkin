@@ -1,11 +1,11 @@
-#include "io.h"
+#include "../io.h"
 
-#include "mem.h"
-#include "audio.h"
-#include "main.h"
+#include "../mem.h"
+#include "../audio.h"
+#include "../main.h"
 
 //IO functions
-void IO_Init()
+void IO_Init(void)
 {
 	//Initialize CD IO
 	CdInit();
@@ -90,13 +90,13 @@ IO_Data IO_AsyncRead(const char *path)
 	return IO_AsyncReadFile(&file);
 }
 
-boolean IO_IsSeeking()
+boolean IO_IsSeeking(void)
 {
 	CdControl(CdlNop, NULL, NULL);
 	return (CdStatus() & (CdlStatSeek)) != 0;
 }
 
-boolean IO_IsReading()
+boolean IO_IsReading(void)
 {
 	CdControl(CdlNop, NULL, NULL);
 	return (CdStatus() & (CdlStatSeek | CdlStatRead)) != 0;

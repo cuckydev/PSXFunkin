@@ -1,5 +1,7 @@
 #include "mem.h"
 
+#ifndef PSXF_STDMEM
+
 #include "main.h"
 #include "gfx.h"
 #include "random.h"
@@ -10,8 +12,9 @@ typedef struct
 {
 	void *prev, *next;
 	size_t size;
-	u8 i, pad0, pad1, pad2;//u32 pad;
+	u8 i;
 } Mem_Header;
+#define MEM_HEDSIZE (MEM_ALIGN(sizeof(Mem_Header)))
 
 static Mem_Header *mem = NULL;
 static size_t mem_used, mem_size, mem_max;
@@ -23,19 +26,19 @@ static size_t mem_used, mem_size, mem_max;
 u8 Mem_Init(void *ptr, size_t size)
 {
 	//Make sure there's enough space for mem header
-	if (size < sizeof(Mem_Header))
+	if (size < MEM_HEDSIZE)
 		return 1;
 	
 	//Get mem pointer (16 byte alignment)
 	mem = (Mem_Header*)MEM_ALIGN(ptr);
-	mem_used = sizeof(Mem_Header);
+	mem_used = MEM_HEDSIZE;
 	mem_size = size - ((size_t)mem - (size_t)ptr);
 	mem_max = mem_used;
 	
 	//Initial mem header
 	mem->prev = NULL;
 	mem->next = NULL;
-	mem->size = mem_size - sizeof(Mem_Header);
+	mem->size = mem_size - MEM_HEDSIZE;
 	
 	#ifdef MEM_LEAK_CHECK
 		memset(signs, 0, sizeof(signs));
@@ -48,7 +51,7 @@ static Mem_Header *Mem_GetHeader(void *ptr)
 {
 	if (ptr == NULL)
 		return NULL;
-	return (Mem_Header*)((size_t)ptr - sizeof(Mem_Header));
+	return (Mem_Header*)((size_t)ptr - MEM_HEDSIZE);
 }
 
 #ifdef MEM_LEAK_CHECK
@@ -68,7 +71,7 @@ void *Mem_Alloc(size_t size)
 		return NULL;
 	
 	header_size = 0;
-	next_pos = MEM_ALIGN((size_t)header + sizeof(Mem_Header));
+	next_pos = MEM_ALIGN((size_t)header + MEM_HEDSIZE);
 	
 	while (header != NULL)
 	{
@@ -76,31 +79,31 @@ void *Mem_Alloc(size_t size)
 		if (header->next == NULL)
 		{
 			//Check if there's enough space to allocate
-			if ((next_pos + sizeof(Mem_Header) + size) > 
-				((size_t)mem + sizeof(Mem_Header) + mem->size))
+			if ((next_pos + MEM_HEDSIZE + size) > 
+				((size_t)mem + MEM_HEDSIZE + mem->size))
 				return NULL;
 			break;
 		}
 		
 		//Check if there's enough space to allocate
-		if (((size_t)header->next - sizeof(Mem_Header)) >= (next_pos + sizeof(Mem_Header) + size))
+		if (((size_t)header->next - MEM_HEDSIZE) >= (next_pos + MEM_HEDSIZE + size))
 			break;
 		
 		//Check next block
 		if ((header = Mem_GetHeader(header->next)) == NULL)
 			return NULL;
 		header_size = header->size;
-		next_pos = MEM_ALIGN((size_t)header + sizeof(Mem_Header) + header_size);
+		next_pos = MEM_ALIGN((size_t)header + MEM_HEDSIZE + header_size);
 	}
 	
 	//Setup header
 	new_header = (Mem_Header*)next_pos;
 	new_header->size = size;
 	
-	new_block = (void*)(next_pos + sizeof(Mem_Header));
+	new_block = (void*)(next_pos + MEM_HEDSIZE);
 	
 	//Link header to previous and next headers
-	new_header->prev = (void*)((size_t)header + sizeof(Mem_Header));
+	new_header->prev = (void*)((size_t)header + MEM_HEDSIZE);
 	new_header->next = header->next;
 	
 	//Link next header to us
@@ -110,7 +113,7 @@ void *Mem_Alloc(size_t size)
 	//Link previous header to us
 	header->next = new_block;
 	
-	mem_used += new_header->size + sizeof(Mem_Header);
+	mem_used += new_header->size + MEM_HEDSIZE;
 	if (mem_used > mem_max)
 		mem_max = mem_used;
 	
@@ -152,7 +155,7 @@ void Mem_Free(void *ptr)
 	if (header2 != NULL)
 		header2->prev = header->prev;
 	
-	mem_used -= header->size + sizeof(Mem_Header);
+	mem_used -= header->size + MEM_HEDSIZE;
 }
 
 #ifdef MEM_STAT
@@ -188,7 +191,7 @@ void Mem_Free(void *ptr)
 			{
 				size_t addr = (size_t)header - (size_t)mem;
 				int left = BAR_ADDRTOP(addr);
-				int right = BAR_ADDRTOP(addr + sizeof(Mem_Header) + header_size);
+				int right = BAR_ADDRTOP(addr + MEM_HEDSIZE + header_size);
 				
 				bar.x = BAR_LEFT + left;
 				bar.w = right - left;
@@ -205,4 +208,6 @@ void Mem_Free(void *ptr)
 			RandomSeed(oseed);
 		#endif
 	}
+#endif
+
 #endif

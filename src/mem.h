@@ -3,6 +3,16 @@
 
 #include "psx.h"
 
+#ifdef PSXF_STDMEM
+
+#include <stdlib.h>
+
+#define Mem_Init 0
+#define Mem_Alloc(size) malloc(size)
+#define Mem_Free(ptr) free(ptr)
+
+#else
+
 //#define MEM_STAT
 //#define MEM_BAR //MEM_STAT must be defined for display
 //#define MEM_LEAK_CHECK //MEM_STAT must be defined for display
@@ -22,6 +32,8 @@ u8 Mem_Init(void *ptr, size_t size);
 void Mem_Free(void *ptr);
 #ifdef MEM_STAT
 	void Mem_GetStat(size_t *used, size_t *size, size_t *max);
+#endif
+
 #endif
 
 #endif

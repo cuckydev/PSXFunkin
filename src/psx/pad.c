@@ -1,4 +1,4 @@
-#include "pad.h"
+#include "../pad.h"
 
 //Pad state
 typedef struct
@@ -15,7 +15,7 @@ static u16 pad_buff[2][34/2];
 Pad pad_state;
 
 //Pad functions
-void Pad_Init()
+void Pad_Init(void)
 {
 	//Initialize and start pad interface
 	pad_state.held = 0;
@@ -29,7 +29,7 @@ void Pad_Init()
 	ChangeClearPAD(0);
 }
 
-void Pad_Update()
+void Pad_Update(void)
 {
 	//Read port 1 state
 	PADTYPE *pad = (PADTYPE*)pad_buff[0];
