@@ -1,5 +1,8 @@
 #include "../audio.h"
 
+#include "glad/glad.h"
+#include <GLFW/glfw3.h>
+
 //Audio functions
 void Audio_Init(void)
 {
@@ -46,10 +49,9 @@ s32 Audio_TellXA_Sector(void)
 	return 0;
 }
 
-#include "SDL_timer.h"
 s32 Audio_TellXA_Milli(void)
 {
-	return SDL_GetTicks();
+	return (s32)(glfwGetTime() * 1000.0);
 }
 
 boolean Audio_PlayingXA(void)

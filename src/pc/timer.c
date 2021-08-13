@@ -1,6 +1,7 @@
 #include "../timer.h"
 
-#include "SDL_timer.h"
+#include "glad/glad.h"
+#include <GLFW/glfw3.h>
 
 //Timer state
 u32 frame_count, animf_count;
@@ -18,7 +19,7 @@ void Timer_Tick(void)
 	frame_count++;
 	
 	//Update seconds counter
-	fixed_t nsec = ((fixed_t)SDL_GetTicks() << FIXED_SHIFT) / 1000;
+	fixed_t nsec = (fixed_t)(glfwGetTime() * FIXED_UNIT);
 	timer_dt = nsec - timer_sec;
 	timer_sec = nsec;
 	
@@ -29,7 +30,8 @@ void Timer_Tick(void)
 void Timer_Reset(void)
 {
 	//Update seconds counter
-	fixed_t nsec = ((fixed_t)SDL_GetTicks() << FIXED_SHIFT) / 1000;
+	glfwSetTime(0.0);
+	fixed_t nsec = 0;
 	timer_sec = nsec;
 	timer_dt = 0;
 }

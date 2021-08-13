@@ -97,7 +97,7 @@ IO_Data IO_ReadFile(CdlFILE *file)
 	free(join);
 	if (fp == NULL)
 	{
-		sprintf(error_msg, "[IO_ReadFile] Failed to open \"%s\"", join);
+		sprintf(error_msg, "[IO_ReadFile] Failed to open \"%s\"", file->path);
 		ErrorLock();
 		return NULL;
 	}

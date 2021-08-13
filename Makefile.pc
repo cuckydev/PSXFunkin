@@ -17,14 +17,17 @@ else
 	CFLAGS += -Og -ggdb3 -Wall -Wextra -pedantic -DPSXF_DEBUG -DPSXF_PC
 endif
 
-# Link SDL2
-CFLAGS += `$(PKGCONFIG) --cflags sdl2`
+# Link GLFW and CGLM
+CFLAGS += `$(PKGCONFIG) --cflags glfw3`
+CFLAGS += `$(PKGCONFIG) --cflags cglm`
 
 ifeq ($(STATIC), 1)
 	LDFLAGS += -static
-	LIBS += `$(PKGCONFIG) --libs sdl2 --static`
+	LIBS += `$(PKGCONFIG) --libs glfw3 --static`
+	LIBS += `$(PKGCONFIG) --libs cglm --static`
 else
-	LIBS += `$(PKGCONFIG) --libs sdl2`
+	LIBS += `$(PKGCONFIG) --libs glfw3`
+	LIBS += `$(PKGCONFIG) --libs cglm`
 endif
 
 # Other CXX flags
@@ -47,6 +50,7 @@ SOURCES = main \
 		  pc/audio \
 		  pc/pad \
 		  pc/timer \
+		  pc/glad/glad \
 		  stage/dummy \
 		  stage/week1 \
 		  stage/week2 \

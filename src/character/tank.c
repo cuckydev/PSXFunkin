@@ -37,7 +37,7 @@ typedef struct
 	u8 frame, tex_id;
 	
 	//Mouth state
-	fixed_t mouth_i;
+	fixedu_t mouth_i;
 } Char_Tank;
 
 //Tank character definitions
