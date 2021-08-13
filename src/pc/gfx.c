@@ -282,6 +282,7 @@ void Gfx_Init(void)
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+	glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 	
 	//Get monitor video mode
 	GLFWmonitor *monitor = glfwGetPrimaryMonitor();
@@ -368,6 +369,20 @@ void Gfx_Init(void)
 
 void Gfx_Flip(void)
 {
+	//FPS counter
+	static int fps_i = 0;
+	static double fps_t = 0.0;
+	
+	if (glfwGetTime() >= fps_t)
+	{
+		char buf[0x80];
+		sprintf(buf, "PSXFunkin [%d fps]", fps_i);
+		glfwSetWindowTitle(window, buf);
+		fps_t = glfwGetTime() + 1.0;
+		fps_i = 0;
+	}
+	fps_i++;
+	
 	//Clear screen
 	if (clear_e)
 	{

@@ -4,6 +4,14 @@ FILENAME = funkin
 CFLAGS = 
 LDFLAGS = 
 
+# Win32
+ifeq ($(OS),Windows_NT)
+  WINDOWS := 1
+endif
+ifeq ($(WINDOWS),1)
+	CFLAGS += -mwindows
+endif
+
 # Options
 ifeq ($(STDMEM), 1)
 	CFLAGS += -DPSXF_STDMEM
