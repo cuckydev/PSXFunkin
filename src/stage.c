@@ -516,15 +516,15 @@ void Stage_DrawTexArb(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, cons
 //Stage HUD functions and constants
 static const fixed_t note_x[8] = {
 	//BF
-	 FIXED_DEC(26,1),
-	 FIXED_DEC(60,1),//+34
-	 FIXED_DEC(94,1),
-	FIXED_DEC(128,1),
+	 FIXED_DEC(26 + (SCREEN_WIDEADD2 >> 1),1),
+	 FIXED_DEC(60 + (SCREEN_WIDEADD2 >> 1),1),//+34
+	 FIXED_DEC(94 + (SCREEN_WIDEADD2 >> 1),1),
+	FIXED_DEC(128 + (SCREEN_WIDEADD2 >> 1),1),
 	//Opponent
-	FIXED_DEC(-128,1),
-	 FIXED_DEC(-94,1),//+34
-	 FIXED_DEC(-60,1),
-	 FIXED_DEC(-26,1),
+	FIXED_DEC(-128 - (SCREEN_WIDEADD2 >> 1),1),
+	 FIXED_DEC(-94 - (SCREEN_WIDEADD2 >> 1),1),//+34
+	 FIXED_DEC(-60 - (SCREEN_WIDEADD2 >> 1),1),
+	 FIXED_DEC(-26 - (SCREEN_WIDEADD2 >> 1),1),
 };
 static const u16 note_key[] = {INPUT_LEFT, INPUT_DOWN, INPUT_UP, INPUT_RIGHT};
 static const fixed_t note_y = FIXED_DEC(32 - SCREEN_HEIGHT2, 1);

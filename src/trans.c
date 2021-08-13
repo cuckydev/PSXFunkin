@@ -16,7 +16,7 @@ static struct
 {
 	//Transition state
 	TransState state;
-	u8 cover;
+	u16 cover;
 } transition;
 
 //Transition functions

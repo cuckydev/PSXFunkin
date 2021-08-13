@@ -368,6 +368,14 @@ void Gfx_Init(void)
 
 void Gfx_Flip(void)
 {
+	//Clear screen
+	if (clear_e)
+	{
+		glClearColor(clear_r, clear_g, clear_b, 1.0f);
+		glClearDepth(1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
+	
 	//Traverse display list
 	while (dlist_p > dlist)
 	{
@@ -388,15 +396,6 @@ void Gfx_Flip(void)
 	glfwPollEvents();
 	if (glfwWindowShouldClose(window))
 		exit(0);
-	
-	//Clear screen
-	if (clear_e)
-	{
-		glClearColor(clear_r, clear_g, clear_b, 1.0f);
-		glClearDepth(1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	}
-	
 	//Update render state
 	int fb_width, fb_height;
 	glfwGetFramebufferSize(window, &fb_width, &fb_height);
