@@ -152,7 +152,7 @@ static void Gfx_FramebufferSizeCallback(GLFWwindow *window, int fb_width, int fb
 	glViewport((fb_width - viewport_width) / 2, (fb_height - viewport_height) / 2, viewport_width, viewport_height);
 }
 
-GLuint Gfx_CompileShader(const char *src_vert, const char *src_frag)
+static GLuint Gfx_CompileShader(const char *src_vert, const char *src_frag)
 {
 	//Create shader
 	GLint shader_status;
@@ -211,7 +211,7 @@ GLuint Gfx_CompileShader(const char *src_vert, const char *src_frag)
 	return shader_id;
 }
 
-GLuint Gfx_CreateTexture(GLint width, GLint height)
+static GLuint Gfx_CreateTexture(GLint width, GLint height)
 {
 	//Create texture object
 	GLuint texture_id;
@@ -234,7 +234,7 @@ GLuint Gfx_CreateTexture(GLint width, GLint height)
 	return texture_id;
 }
 
-void Gfx_UploadTexture(GLuint texture_id, const u8 *data, GLint width, GLint height)
+static void Gfx_UploadTexture(GLuint texture_id, const u8 *data, GLint width, GLint height)
 {
 	//Upload data to texture
 	glBindTexture(GL_TEXTURE_2D, texture_id);
@@ -246,7 +246,7 @@ void Gfx_UploadTexture(GLuint texture_id, const u8 *data, GLint width, GLint hei
 #endif
 }
 
-void Gfx_PushBatch()
+static void Gfx_PushBatch()
 {
 	//Drop if we haven't batched any data
 	if (batch_buffer_p == &batch_buffer[0][0])
@@ -271,7 +271,7 @@ void Gfx_PushBatch()
 	glDrawArrays(GL_TRIANGLES, 0, batch_buffer_p - &batch_buffer[0][0]);
 }
 
-void Gfx_DisplayCmd(const Gfx_Cmd *cmd)
+static void Gfx_DisplayCmd(const Gfx_Cmd *cmd)
 {
 	//Push batch and bind if new texture
 	if (cmd->texture_id != batch_texture_id)
