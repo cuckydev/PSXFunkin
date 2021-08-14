@@ -37,9 +37,9 @@ void Font_Bold_Draw(struct FontData *this, const char *text, s32 x, s32 y, FontA
 		//Draw character
 		if ((c -= 'A') <= 'z' - 'A') //Lower-case will show inverted colours
 		{
-			RECT src = {((c & 0x7) << 5) + ((((v0 >> c) & 1) ^ v1) << 4), (c & ~0x7) << 1, 16, 16};
+			RECT src = {((c & 0x7) << 5) + ((((v0 >> (c & 0x1F)) & 1) ^ v1) << 4), (c & ~0x7) << 1, 16, 16};
 			Gfx_BlitTex(&this->tex, &src, x, y);
-			v0 ^= 1 << c;
+			v0 ^= 1 << (c & 0x1F);
 		}
 		x += 13;
 	}

@@ -5,11 +5,9 @@
 
 #ifdef PSXF_STDMEM
 
-#include <stdlib.h>
-
-#define Mem_Init 0
-#define Mem_Alloc(size) malloc(size)
-#define Mem_Free(ptr) free(ptr)
+#define Mem_Init(a, b)
+#define Mem_Alloc malloc
+#define Mem_Free free
 
 #else
 

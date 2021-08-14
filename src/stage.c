@@ -126,7 +126,7 @@ void Stage_ChangeBPM(u16 bpm, u16 step)
 	
 	//Get new crochet
 	fixed_t bpm_dec = ((fixed_t)bpm << FIXED_SHIFT) / 24;
-	stage.step_crochet = FIXED_DIV(bpm_dec, FIXED_DEC(125,100)); //15/24
+	stage.step_crochet = FIXED_DIV(bpm_dec, FIXED_DEC(125,100)); //15/12
 	
 	//Get new crochet based values
 	stage.note_speed = FIXED_MUL(FIXED_DIV(FIXED_DEC(140,1), stage.step_crochet), stage.speed);
@@ -184,14 +184,13 @@ void Stage_GetSectionScroll(SectionScroll *scroll, Section *section)
 {
 	//Get BPM
 	u16 bpm = section->flag & SECTION_FLAG_BPM_MASK;
-	fixed_t bpm_dec = ((fixed_t)bpm << FIXED_SHIFT) / 24;
 	
 	//Get section step info
 	scroll->start_step = Stage_GetSectionStart(section);
 	scroll->length_step = section->end - scroll->start_step;
 	
-	//Get section time length            15/24
-	scroll->length = FIXED_DIV(FIXED_DEC(125,100) * scroll->length_step, bpm_dec);
+	//Get section time length
+	scroll->length = (scroll->length_step * FIXED_DEC(15,1) / 12) * 24 / bpm;
 	
 	//Get note height
 	scroll->size = FIXED_MUL(stage.speed, scroll->length * (12 * 140) / scroll->length_step) + FIXED_UNIT;

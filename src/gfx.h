@@ -40,7 +40,7 @@ typedef u8 Gfx_LoadTex_Flag;
 #define GFX_LOADTEX_FREE   (1 << 0)
 #define GFX_LOADTEX_NOTEX  (1 << 1)
 #define GFX_LOADTEX_NOCLUT (1 << 2)
-void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag free);
+void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag);
 
 void Gfx_DrawRect(const RECT *rect, u8 r, u8 g, u8 b);
 void Gfx_BlitTexCol(Gfx_Tex *tex, const RECT *src, s32 x, s32 y, u8 r, u8 g, u8 b);

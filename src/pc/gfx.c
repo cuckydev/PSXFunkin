@@ -8,8 +8,6 @@
 
 #include <cglm/cglm.h>
 
-#include <stdlib.h>
-
 //Gfx constants and shaders
 #define WINDOW_SCALE 3
 #define WINDOW_WIDTH  (SCREEN_WIDTH * WINDOW_SCALE)
@@ -444,7 +442,7 @@ void Gfx_DisableClear(void)
 	clear_e = false;
 }
 
-void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag free)
+void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 {
 	//Read TIM header
 	u8 tim_header = ((u8*)data)[4];
@@ -607,7 +605,7 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag free)
 		}
 	}
 	
-	if (free & GFX_LOADTEX_FREE)
+	if (flag & GFX_LOADTEX_FREE)
 		Mem_Free(data);
 }
 
