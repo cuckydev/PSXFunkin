@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.21)
 
+option(STDMEM "Use standard libc memory allocators instead of the fast custom one" OFF)
+
 project(funkin LANGUAGES C)
 
 add_executable(funkin WIN32 # The `WIN32` here is so we don't get a command prompt window on Windows
@@ -81,6 +83,11 @@ add_executable(funkin WIN32 # The `WIN32` here is so we don't get a command prom
 
 # Make it so the code knows it's targetting PC
 target_compile_definitions(funkin PRIVATE PSXF_PC)
+
+# Use standard memory allocators if requested to
+if(STDMEM)
+	target_compile_definitions(funkin PRIVATE PSXF_STDMEM)
+endif()
 
 # Link GLFW3
 find_package(glfw3 REQUIRED)
