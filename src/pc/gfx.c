@@ -134,6 +134,24 @@ static Gfx_Vertex batch_buffer[COUNT_OF(dlist)][6]; //TODO: index buffer
 static Gfx_Vertex *batch_buffer_p;
 
 //Internal gfx functions
+static void Gfx_FramebufferSizeCallback(GLFWwindow *window, int fb_width, int fb_height)
+{
+	// Center the viewport within the window while maintaining the aspect ratio
+	GLfloat viewport_width, viewport_height;
+	if ((float)fb_width / (float)fb_height > (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT)
+	{
+		viewport_width = fb_height * SCREEN_WIDTH / SCREEN_HEIGHT;
+		viewport_height = fb_height;
+	}
+	else
+	{
+		viewport_width = fb_width;
+		viewport_height = fb_width * SCREEN_HEIGHT / SCREEN_WIDTH;
+	}
+
+	glViewport((fb_width - viewport_width) / 2, (fb_height - viewport_height) / 2, viewport_width, viewport_height);
+}
+
 GLuint Gfx_CompileShader(const char *src_vert, const char *src_frag)
 {
 	//Create shader
@@ -362,6 +380,9 @@ void Gfx_Init(void)
 		glfwSetWindowPos(window, (mode->width - WINDOW_WIDTH) / 2, (mode->height - WINDOW_HEIGHT) / 2);
 	glfwShowWindow(window);
 	
+	//Define callback for window resizing
+	glfwSetFramebufferSizeCallback(window, Gfx_FramebufferSizeCallback);
+	
 	//Enable vsync
 	if (glfwExtensionSupported("GLX_EXT_swap_control_tear") || glfwExtensionSupported("WGL_EXT_swap_control_tear"))
 		glfwSwapInterval(-1);
@@ -474,25 +495,6 @@ void Gfx_Flip(void)
 	glfwPollEvents();
 	if (glfwWindowShouldClose(window))
 		exit(0);
-	
-	//Update the viewport in case the window has been resized
-	int fb_width, fb_height;
-	glfwGetFramebufferSize(window, &fb_width, &fb_height);
-
-	// Center the viewport within the window while maintaining the aspect ratio
-	GLfloat viewport_width, viewport_height;
-	if ((float)fb_width / (float)fb_height > (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT)
-	{
-		viewport_width = fb_height * SCREEN_WIDTH / SCREEN_HEIGHT;
-		viewport_height = fb_height;
-	}
-	else
-	{
-		viewport_width = fb_width;
-		viewport_height = fb_width * SCREEN_HEIGHT / SCREEN_WIDTH;
-	}
-
-	glViewport((fb_width - viewport_width) / 2, (fb_height - viewport_height) / 2, viewport_width, viewport_height);
 	
 	//Initialize frame
 	dlist_p = dlist;
