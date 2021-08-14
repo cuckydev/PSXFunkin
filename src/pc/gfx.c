@@ -466,17 +466,11 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 			const u8 *tim_clut_data_p = tim_clut_data;
 			for (u16 i = 0; i < tim_clut_w; i++, tex_palette_p += 2, tim_clut_data_p += 2)
 			{
-				u16 raw_pal = tim_clut_data_p[0] | (tim_clut_data_p[1] << 8);
-				if (raw_pal == 0)
-				{
-					tex_palette_p[0] = 0;
-					tex_palette_p[1] = 0;
-				}
-				else
-				{
-					tex_palette_p[0] = tim_clut_data_p[0];
-					tex_palette_p[1] = tim_clut_data_p[1] | 0x80; //0x80 is the alpha bit
-				}
+				tex_palette_p[0] = tim_clut_data_p[0];
+				tex_palette_p[1] = tim_clut_data_p[1];
+
+				//Set the alpha bit if not transparent
+				tex_palette_p[1] |= tim_clut_data_p[0] || tim_clut_data_p[1] ? 0x80 : 0;
 			}
 			
 			//Read texture header
@@ -526,17 +520,11 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 			const u8 *tim_clut_data_p = tim_clut_data;
 			for (u16 i = 0; i < tim_clut_w; i++, tex_palette_p += 2, tim_clut_data_p += 2)
 			{
-				u16 raw_pal = tim_clut_data_p[0] | (tim_clut_data_p[1] << 8);
-				if (raw_pal == 0)
-				{
-					tex_palette_p[0] = 0;
-					tex_palette_p[1] = 0;
-				}
-				else
-				{
-					tex_palette_p[0] = tim_clut_data_p[0];
-					tex_palette_p[1] = tim_clut_data_p[1] | 0x80; //0x80 is the alpha bit
-				}
+				tex_palette_p[0] = tim_clut_data_p[0];
+				tex_palette_p[1] = tim_clut_data_p[1];
+
+				//Set the alpha bit if not transparent
+				tex_palette_p[1] |= tim_clut_data_p[0] || tim_clut_data_p[1] ? 0x80 : 0;
 			}
 			
 			//Read texture header
