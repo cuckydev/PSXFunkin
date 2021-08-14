@@ -6,7 +6,7 @@
 #include "glad/glad.h"
 #include <GLFW/glfw3.h>
 
-#include <cglm/cglm.h>
+#include "cglm/cglm.h"
 
 //Gfx constants and shaders
 #define WINDOW_SCALE 3

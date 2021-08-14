@@ -25,17 +25,14 @@ else
 	CFLAGS += -Og -ggdb3 -Wall -Wextra -pedantic -DPSXF_DEBUG -DPSXF_PC
 endif
 
-# Link GLFW and CGLM
+# Link GLFW
 CFLAGS += `$(PKGCONFIG) --cflags glfw3`
-CFLAGS += `$(PKGCONFIG) --cflags cglm`
 
 ifeq ($(STATIC), 1)
 	LDFLAGS += -static
 	LIBS += `$(PKGCONFIG) --libs glfw3 --static`
-	LIBS += `$(PKGCONFIG) --libs cglm --static`
 else
 	LIBS += `$(PKGCONFIG) --libs glfw3`
-	LIBS += `$(PKGCONFIG) --libs cglm`
 endif
 
 # Other CXX flags
