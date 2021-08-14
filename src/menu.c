@@ -131,7 +131,7 @@ static const char *Menu_LowerIf(const char *text, boolean lower)
 static void Menu_DrawBack(boolean flash, s32 scroll, u8 r0, u8 g0, u8 b0, u8 r1, u8 g1, u8 b1)
 {
 	RECT back_src = {0, 0, 255, 255};
-	RECT back_dst = {0, -scroll, SCREEN_WIDTH, SCREEN_HEIGHT + 16};
+	RECT back_dst = {0, -scroll - SCREEN_WIDEADD2, SCREEN_WIDTH, SCREEN_WIDTH * 4 / 5};
 	
 	if (flash || (animf_count & 4) == 0)
 		Gfx_DrawTexCol(&menu.tex_back, &back_src, &back_dst, r0, g0, b0);
@@ -401,7 +401,7 @@ void Menu_Tick(void)
 			
 			RECT logo_src = {0, 0, 176, 112};
 			RECT logo_dst = {
-				100 - x_rad,
+				100 - x_rad + (SCREEN_WIDEADD2 >> 1),
 				68 - y_rad,
 				x_rad << 1,
 				y_rad << 1

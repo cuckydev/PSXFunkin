@@ -188,14 +188,14 @@ void Back_Week4_DrawBG(StageBack *back)
 	Stage_DrawTex(&this->tex_back1, &bglimo_src, &bglimo_dst, stage.camera.bzoom);
 	
 	//Draw sunset
-	fx = stage.camera.x >> 3;
-	fy = stage.camera.y >> 3;
+	fx = stage.camera.x >> 4;
+	fy = stage.camera.y >> 4;
 	
 	RECT sunset_src = {0, 0, 256, 256};
 	RECT_FIXED sunset_dst = {
-		FIXED_DEC(-220,1) - fx,
+		FIXED_DEC(-165 - SCREEN_WIDEOADD2,1) - fx,
 		FIXED_DEC(-140,1) - fy,
-		FIXED_DEC(400,1),
+		FIXED_DEC(340 + SCREEN_WIDEOADD,1),
 		FIXED_DEC(260,1)
 	};
 	
