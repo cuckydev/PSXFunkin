@@ -403,9 +403,8 @@ void Gfx_Init(void)
 	static const u8 plain_texture_data[] = {0xFF, 0xFF, 0xFF, 0xFF};
 	Gfx_UploadTexture(plain_texture = Gfx_CreateTexture(1, 1), plain_texture_data, 1, 1);
 	
-	GLuint *tpage_texture_p = tpage_texture;
-	for (size_t i = 0; i < (TPAGE_X * TPAGE_Y); i++, tpage_texture_p++)
-		*tpage_texture_p = Gfx_CreateTexture(256, 256);
+	for (size_t i = 0; i < (TPAGE_X * TPAGE_Y); i++)
+		tpage_texture[i] = Gfx_CreateTexture(256, 256);
 	
 	//Create batch VAO
 #ifndef PSXF_GLES
