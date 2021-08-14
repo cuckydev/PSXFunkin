@@ -246,7 +246,7 @@ static void Gfx_UploadTexture(GLuint texture_id, const u8 *data, GLint width, GL
 #endif
 }
 
-static void Gfx_PushBatch()
+static void Gfx_PushBatch(void)
 {
 	//Drop if we haven't batched any data
 	if (batch_buffer_p == &batch_buffer[0][0])
