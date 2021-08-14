@@ -337,7 +337,7 @@ void Gfx_Init(void)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 #endif
 	glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+	glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 	
 	//Get monitor video mode
 	GLFWmonitor *monitor = glfwGetPrimaryMonitor();
@@ -475,10 +475,24 @@ void Gfx_Flip(void)
 	if (glfwWindowShouldClose(window))
 		exit(0);
 	
-	//Update render state
+	//Update the viewport in case the window has been resized
 	int fb_width, fb_height;
 	glfwGetFramebufferSize(window, &fb_width, &fb_height);
-	glViewport(0, 0, fb_width, fb_height);
+
+	// Center the viewport within the window while maintaining the aspect ratio
+	GLfloat viewport_width, viewport_height;
+	if ((float)fb_width / (float)fb_height > (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT)
+	{
+		viewport_width = fb_height * SCREEN_WIDTH / SCREEN_HEIGHT;
+		viewport_height = fb_height;
+	}
+	else
+	{
+		viewport_width = fb_width;
+		viewport_height = fb_width * SCREEN_HEIGHT / SCREEN_WIDTH;
+	}
+
+	glViewport((fb_width - viewport_width) / 2, (fb_height - viewport_height) / 2, viewport_width, viewport_height);
 	
 	//Initialize frame
 	dlist_p = dlist;
