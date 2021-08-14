@@ -84,7 +84,7 @@ static GLuint generic_shader_id;
 #define TPAGE_Y 2
 
 GLuint plain_texture;
-GLuint tpage_texture[TPAGE_Y][TPAGE_X];
+GLuint tpage_texture[TPAGE_Y * TPAGE_X];
 
 //Batch
 GLuint batch_vao;
@@ -345,7 +345,7 @@ void Gfx_Init(void)
 	static const u8 plain_texture_data[] = {0xFF, 0xFF, 0xFF, 0xFF};
 	Gfx_UploadTexture(plain_texture = Gfx_CreateTexture(1, 1), plain_texture_data, 1, 1);
 	
-	GLuint *tpage_texture_p = &tpage_texture[0][0];
+	GLuint *tpage_texture_p = tpage_texture;
 	for (size_t i = 0; i < (TPAGE_X * TPAGE_Y); i++, tpage_texture_p++)
 		*tpage_texture_p = Gfx_CreateTexture(256, 256);
 	
@@ -501,7 +501,7 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 			}
 			
 			//Upload to texture
-			Gfx_UploadTexture(tpage_texture[0][tex->tpage], &tex_data[0][0], tim_tex_w << 2, tim_tex_h);
+			Gfx_UploadTexture(tpage_texture[tex->tpage], &tex_data[0][0], tim_tex_w << 2, tim_tex_h);
 			break;
 		}
 		case 1: //8bpp
@@ -551,7 +551,7 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 			}
 			
 			//Upload to texture
-			Gfx_UploadTexture(tpage_texture[0][tex->tpage], &tex_data[0][0], tim_tex_w << 1, tim_tex_h);
+			Gfx_UploadTexture(tpage_texture[tex->tpage], &tex_data[0][0], tim_tex_w << 1, tim_tex_h);
 			break;
 		}
 		case 2: //16bpp
@@ -604,7 +604,7 @@ void Gfx_BlitTexCol(Gfx_Tex *tex, const RECT *src, s32 x, s32 y, u8 r, u8 g, u8 
 	cmd.g = (float)g / 128.0f;
 	cmd.b = (float)b / 128.0f;
 	cmd.a = 1.0f;
-	cmd.texture_id = tpage_texture[0][tex->tpage];
+	cmd.texture_id = tpage_texture[tex->tpage];
 	
 	//Push command
 	*dlist_p++ = cmd;
@@ -631,7 +631,7 @@ void Gfx_DrawTexCol(Gfx_Tex *tex, const RECT *src, const RECT *dst, u8 r, u8 g, 
 	cmd.g = (float)g / 128.0f;
 	cmd.b = (float)b / 128.0f;
 	cmd.a = 1.0f;
-	cmd.texture_id = tpage_texture[0][tex->tpage];
+	cmd.texture_id = tpage_texture[tex->tpage];
 	
 	//Push command
 	*dlist_p++ = cmd;
