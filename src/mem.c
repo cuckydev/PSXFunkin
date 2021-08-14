@@ -4,6 +4,7 @@
 
 #include "main.h"
 #include "gfx.h"
+#include "psx.h"
 #include "random.h"
 
 typedef struct
@@ -116,7 +117,7 @@ void *Mem_Alloc(size_t size)
 		mem_max = mem_used;
 	
 	#ifdef MEM_LEAK_CHECK
-		for (int i = 0; i < 256; i++)
+		for (int i = 0; i < COUNT_OF(signs); i++)
 		{
 			if (signs[i] == NULL)
 			{
@@ -167,7 +168,7 @@ void Mem_Free(void *ptr)
 			*max = mem_max;
 		
 		#ifdef MEM_LEAK_CHECK
-			for (int i = 0; i < 256; i++)
+			for (int i = 0; i < COUNT_OF(signs); i++)
 				if (signs[i] != NULL)
 					FntPrint("%s\n", signs[i]);
 		#endif
