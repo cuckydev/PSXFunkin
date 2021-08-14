@@ -3,6 +3,8 @@
 
 #include "psx.h"
 
+#define MEM_ALIGN(x) (((size_t)x + 0xF) & ~0xF)
+
 #ifdef PSXF_STDMEM
 
 #define Mem_Init(a, b)

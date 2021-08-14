@@ -142,7 +142,7 @@ typedef struct
 typedef struct
 {
 	u16 pos; //1/12 steps
-	u8 type, pad;
+	u16 type;
 } Note;
 
 typedef struct

@@ -6,8 +6,6 @@
 #include "gfx.h"
 #include "random.h"
 
-#define MEM_ALIGN(x) (((size_t)x + 0xF) & ~0xF)
-
 typedef struct
 {
 	void *prev, *next;

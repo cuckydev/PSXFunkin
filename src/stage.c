@@ -847,8 +847,60 @@ void Stage_LoadChart(void)
 	if (stage.chart_data != NULL)
 		Mem_Free(stage.chart_data);
 	stage.chart_data = IO_Read(chart_path);
-	stage.sections = (Section*)((u8*)stage.chart_data + 2);
-	stage.notes = (Note*)((u8*)stage.chart_data + *((u16*)stage.chart_data));
+	u8 *chart_byte = (u8*)stage.chart_data;
+	
+	#ifdef PSXF_PC
+		//Get lengths
+		u16 note_off = chart_byte[0] | (chart_byte[1] << 8);
+		
+		u8 *section_p = chart_byte + 2;
+		u8 *note_p = chart_byte + note_off;
+		
+		u8 *section_pp;
+		u8 *note_pp;
+		
+		size_t sections = (note_off - 2) >> 2;
+		size_t notes = 0;
+		
+		for (note_pp = note_p;; note_pp += 4)
+		{
+			notes++;
+			u16 pos = note_pp[0] | (note_pp[1] << 8);
+			if (pos == 0xFFFF)
+				break;
+		}
+		
+		//Realloc for separate structs
+		size_t sections_size = sections * sizeof(Section);
+		size_t notes_size = notes * sizeof(Note);
+		size_t notes_off = MEM_ALIGN(sections_size);
+		
+		u8 *nchart = Mem_Alloc(notes_off + notes_size);
+		
+		Section *nsection_p = stage.sections = (Section*)nchart;
+		section_pp = section_p;
+		for (size_t i = 0; i < sections; i++, section_pp += 4, nsection_p++)
+		{
+			nsection_p->end = section_pp[0] | (section_pp[1] << 8);
+			nsection_p->flag = section_pp[2] | (section_pp[3] << 8);
+		}
+		
+		Note *nnote_p = stage.notes = (Note*)(nchart + notes_off);
+		note_pp = note_p;
+		for (size_t i = 0; i < notes; i++, note_pp += 4, nnote_p++)
+		{
+			nnote_p->pos = note_pp[0] | (note_pp[1] << 8);
+			nnote_p->type = note_pp[2] | (note_pp[3] << 8);
+		}
+		
+		//Use reformatted chart
+		Mem_Free(stage.chart_data);
+		stage.chart_data = (IO_Data)nchart;
+	#else
+		//Directly use section and notes pointers
+		stage.sections = (Section*)(chart_byte + 2);
+		stage.notes = (Note*)(chart_byte + *((u16*)stage.chart_data));
+	#endif
 	
 	stage.cur_section = stage.sections;
 	stage.cur_note = stage.notes;
@@ -864,6 +916,10 @@ void Stage_LoadChart(void)
 
 void Stage_LoadMusic(void)
 {
+	//Offset sing ends
+	stage.player->sing_end -= stage.note_scroll;
+	stage.opponent->sing_end -= stage.note_scroll;
+	
 	//Find music file and begin seeking to it
 	Audio_GetXAFile(&stage.music_file, stage.stage_def->music_track);
 	IO_SeekFile(&stage.music_file);
@@ -875,8 +931,9 @@ void Stage_LoadMusic(void)
 	stage.interp_ms = 0;
 	stage.interp_speed = 0;
 	
-	stage.player->sing_end = stage.note_scroll;
-	stage.opponent->sing_end = stage.note_scroll;
+	//Offset sing ends again
+	stage.player->sing_end += stage.note_scroll;
+	stage.opponent->sing_end += stage.note_scroll;
 }
 
 void Stage_LoadState(void)
