@@ -421,7 +421,7 @@ void Gfx_Init(void)
 	glUniformMatrix4fv(glGetUniformLocation(generic_shader_id, "u_projection"), 1, GL_FALSE, &projection[0][0]);
 	
 	//Create textures
-	static const u8 plain_texture_data[] = {0xFF, 0xFF, 0xFF, 0xFF};
+	static const u8 plain_texture_data[] = {0xFF, 0xFF};
 	Gfx_UploadTexture(plain_texture = Gfx_CreateTexture(1, 1), plain_texture_data, 1, 1);
 	
 	for (size_t i = 0; i < (TPAGE_X * TPAGE_Y); i++)
