@@ -84,7 +84,7 @@ static GLuint generic_shader_id;
 #define TPAGE_Y 2
 
 GLuint plain_texture;
-GLuint tpage_texture[TPAGE_Y][TPAGE_X];
+GLuint tpage_texture[TPAGE_Y * TPAGE_X];
 
 //Batch
 GLuint batch_vao;
@@ -164,7 +164,7 @@ GLuint Gfx_CreateTexture(GLint width, GLint height)
 	//Set texture parameters
 	glBindTexture(GL_TEXTURE_2D, texture_id);
 	
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_INT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB5_A1, width, height, 0, GL_RGBA, GL_UNSIGNED_SHORT_1_5_5_5_REV, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -178,7 +178,7 @@ void Gfx_UploadTexture(GLuint texture_id, const u8 *data, GLint width, GLint hei
 {
 	//Upload data to texture
 	glBindTexture(GL_TEXTURE_2D, texture_id);
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, (const void*)data);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT_1_5_5_5_REV, (const void*)data);
 }
 
 void Gfx_PushBatch()
@@ -345,7 +345,7 @@ void Gfx_Init(void)
 	static const u8 plain_texture_data[] = {0xFF, 0xFF, 0xFF, 0xFF};
 	Gfx_UploadTexture(plain_texture = Gfx_CreateTexture(1, 1), plain_texture_data, 1, 1);
 	
-	GLuint *tpage_texture_p = &tpage_texture[0][0];
+	GLuint *tpage_texture_p = tpage_texture;
 	for (size_t i = 0; i < (TPAGE_X * TPAGE_Y); i++, tpage_texture_p++)
 		*tpage_texture_p = Gfx_CreateTexture(256, 256);
 	
@@ -460,34 +460,17 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 			u8 *tim_clut_data = &tim_clut[12];
 			
 			//Convert palette
-			u8 tex_palette[16][4];
+			u8 tex_palette[16][2];
 			
 			u8 *tex_palette_p = &tex_palette[0][0];
 			const u8 *tim_clut_data_p = tim_clut_data;
-			for (u16 i = 0; i < tim_clut_w; i++, tex_palette_p += 4, tim_clut_data_p += 2)
+			for (u16 i = 0; i < tim_clut_w; i++, tex_palette_p += 2, tim_clut_data_p += 2)
 			{
-				u16 raw_pal = tim_clut_data_p[0] | (tim_clut_data_p[1] << 8);
-				if (raw_pal == 0)
-				{
-					tex_palette_p[0] = 0;
-					tex_palette_p[1] = 0;
-					tex_palette_p[2] = 0;
-					tex_palette_p[3] = 0;
-				}
-				else
-				{
-					u8 r = (u8)(raw_pal & 31);
-					u8 g = (u8)((raw_pal >> 5) & 31);
-					u8 b = (u8)((raw_pal >> 10) & 31);
-					b = (b << 3) | (b & 7);
-					g = (g << 3) | (g & 7);
-					r = (r << 3) | (r & 7);
-					
-					tex_palette_p[0] = r;
-					tex_palette_p[1] = g;
-					tex_palette_p[2] = b;
-					tex_palette_p[3] = 0xFF;
-				}
+				tex_palette_p[0] = tim_clut_data_p[0];
+				tex_palette_p[1] = tim_clut_data_p[1];
+
+				//Set the alpha bit if not transparent
+				tex_palette_p[1] |= tim_clut_data_p[0] || tim_clut_data_p[1] ? 0x80 : 0;
 			}
 			
 			//Read texture header
@@ -502,27 +485,23 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 			tex->tpage = ((tim_tex_y >> 8) % TPAGE_Y) * TPAGE_X + ((tim_tex_x >> 6) % TPAGE_X);
 			
 			//Convert art
-			u8 tex_data[256*256][4];
+			u8 tex_data[256*256][2];
 			
 			u8 *tex_data_p = &tex_data[0][0];
 			const u8 *tim_tex_data_p = tim_tex_data;
-			for (size_t i = (tim_tex_w << 1) * tim_tex_h; i > 0; i--, tex_data_p += 8, tim_tex_data_p++)
+			for (size_t i = (tim_tex_w << 1) * tim_tex_h; i > 0; i--, tex_data_p += 4, tim_tex_data_p++)
 			{
 				u8 *mapp;
 				mapp = &tex_palette[*tim_tex_data_p & 0xF][0];
 				tex_data_p[0] = mapp[0];
 				tex_data_p[1] = mapp[1];
-				tex_data_p[2] = mapp[2];
-				tex_data_p[3] = mapp[3];
 				mapp = &tex_palette[*tim_tex_data_p >> 4][0];
-				tex_data_p[4] = mapp[0];
-				tex_data_p[5] = mapp[1];
-				tex_data_p[6] = mapp[2];
-				tex_data_p[7] = mapp[3];
+				tex_data_p[2] = mapp[0];
+				tex_data_p[3] = mapp[1];
 			}
 			
 			//Upload to texture
-			Gfx_UploadTexture(tpage_texture[0][tex->tpage], &tex_data[0][0], tim_tex_w << 2, tim_tex_h);
+			Gfx_UploadTexture(tpage_texture[tex->tpage], &tex_data[0][0], tim_tex_w << 2, tim_tex_h);
 			break;
 		}
 		case 1: //8bpp
@@ -535,34 +514,17 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 			u8 *tim_clut_data = &tim_clut[12];
 			
 			//Convert palette
-			u8 tex_palette[256][4];
+			u8 tex_palette[256][2];
 			
 			u8 *tex_palette_p = &tex_palette[0][0];
 			const u8 *tim_clut_data_p = tim_clut_data;
-			for (u16 i = 0; i < tim_clut_w; i++, tex_palette_p += 4, tim_clut_data_p += 2)
+			for (u16 i = 0; i < tim_clut_w; i++, tex_palette_p += 2, tim_clut_data_p += 2)
 			{
-				u16 raw_pal = tim_clut_data_p[0] | (tim_clut_data_p[1] << 8);
-				if (raw_pal == 0)
-				{
-					tex_palette_p[0] = 0;
-					tex_palette_p[1] = 0;
-					tex_palette_p[2] = 0;
-					tex_palette_p[3] = 0;
-				}
-				else
-				{
-					u8 r = (u8)(raw_pal & 31);
-					u8 g = (u8)((raw_pal >> 5) & 31);
-					u8 b = (u8)((raw_pal >> 10) & 31);
-					b = (b << 3) | (b & 7);
-					g = (g << 3) | (g & 7);
-					r = (r << 3) | (r & 7);
-					
-					tex_palette_p[0] = r;
-					tex_palette_p[1] = g;
-					tex_palette_p[2] = b;
-					tex_palette_p[3] = 0xFF;
-				}
+				tex_palette_p[0] = tim_clut_data_p[0];
+				tex_palette_p[1] = tim_clut_data_p[1];
+
+				//Set the alpha bit if not transparent
+				tex_palette_p[1] |= tim_clut_data_p[0] || tim_clut_data_p[1] ? 0x80 : 0;
 			}
 			
 			//Read texture header
@@ -577,21 +539,19 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 			tex->tpage = ((tim_tex_y >> 8) % TPAGE_Y) * TPAGE_X + ((tim_tex_x >> 6) % TPAGE_X);
 			
 			//Convert art
-			u8 tex_data[256*256][4];
+			u8 tex_data[256*256][2];
 			
 			u8 *tex_data_p = &tex_data[0][0];
 			const u8 *tim_tex_data_p = tim_tex_data;
-			for (size_t i = (tim_tex_w << 1) * tim_tex_h; i > 0; i--, tex_data_p += 4, tim_tex_data_p++)
+			for (size_t i = (tim_tex_w << 1) * tim_tex_h; i > 0; i--, tex_data_p += 2, tim_tex_data_p++)
 			{
 				u8 *mapp = &tex_palette[*tim_tex_data_p][0];
 				tex_data_p[0] = mapp[0];
 				tex_data_p[1] = mapp[1];
-				tex_data_p[2] = mapp[2];
-				tex_data_p[3] = mapp[3];
 			}
 			
 			//Upload to texture
-			Gfx_UploadTexture(tpage_texture[0][tex->tpage], &tex_data[0][0], tim_tex_w << 1, tim_tex_h);
+			Gfx_UploadTexture(tpage_texture[tex->tpage], &tex_data[0][0], tim_tex_w << 1, tim_tex_h);
 			break;
 		}
 		case 2: //16bpp
@@ -644,7 +604,7 @@ void Gfx_BlitTexCol(Gfx_Tex *tex, const RECT *src, s32 x, s32 y, u8 r, u8 g, u8 
 	cmd.g = (float)g / 128.0f;
 	cmd.b = (float)b / 128.0f;
 	cmd.a = 1.0f;
-	cmd.texture_id = tpage_texture[0][tex->tpage];
+	cmd.texture_id = tpage_texture[tex->tpage];
 	
 	//Push command
 	*dlist_p++ = cmd;
@@ -671,7 +631,7 @@ void Gfx_DrawTexCol(Gfx_Tex *tex, const RECT *src, const RECT *dst, u8 r, u8 g, 
 	cmd.g = (float)g / 128.0f;
 	cmd.b = (float)b / 128.0f;
 	cmd.a = 1.0f;
-	cmd.texture_id = tpage_texture[0][tex->tpage];
+	cmd.texture_id = tpage_texture[tex->tpage];
 	
 	//Push command
 	*dlist_p++ = cmd;
