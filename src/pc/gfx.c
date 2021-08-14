@@ -121,14 +121,14 @@ static GLuint generic_shader_id;
 #define TPAGE_X 16
 #define TPAGE_Y 2
 
-GLuint plain_texture;
-GLuint tpage_texture[TPAGE_Y * TPAGE_X];
+static GLuint plain_texture;
+static GLuint tpage_texture[TPAGE_Y * TPAGE_X];
 
 //Batch
-GLuint batch_vao;
-GLuint batch_vbo;
+static GLuint batch_vao;
+static GLuint batch_vbo;
 
-GLuint batch_texture_id;
+static GLuint batch_texture_id;
 
 static Gfx_Vertex batch_buffer[COUNT_OF(dlist)][6]; //TODO: index buffer
 static Gfx_Vertex *batch_buffer_p;
