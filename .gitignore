@@ -19,6 +19,9 @@ bin/
 *.o
 *.dep
 
+# Exclude CMake build directory
+build/
+
 # Exclude tool data and executables
 tools/funkinchartpak/*.json
 tools/funkinchartpak/*.cht
