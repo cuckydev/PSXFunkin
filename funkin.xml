@@ -125,6 +125,9 @@
 			
 			<!-- Week 5 assets -->
 			<dir name = "week5">
+				<!-- Background art -->
+				<file name = "back.arc" type = "data" source = "iso/week5/back.arc"/>
+				
 				<!-- Cocoa charts -->
 				<file name = "5.1e.cht" type = "data" source = "iso/chart/5.1e.cht"/>
 				<file name = "5.1n.cht" type = "data" source = "iso/chart/5.1n.cht"/>

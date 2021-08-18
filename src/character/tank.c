@@ -107,19 +107,8 @@ void Char_Tank_Tick(Character *character)
 	Char_Tank *this = (Char_Tank*)character;
 	
 	//Perform idle dance
-	Character_CheckEndSing(character);
-	
-	if (stage.flag & STAGE_FLAG_JUST_STEP)
-	{
-		if (Animatable_Ended(&character->animatable) &&
-		    (character->animatable.anim != CharAnim_Left &&
-		     character->animatable.anim != CharAnim_Down &&
-		     character->animatable.anim != CharAnim_DownAlt && //Don't interrupt "Heh, pretty good!" sequence
-		     character->animatable.anim != CharAnim_Up &&
-		     character->animatable.anim != CharAnim_Right) &&
-		    (stage.song_step & 0x7) == 0)
-			character->set_anim(character, CharAnim_Idle);
-	}
+	if (character->animatable.anim != CharAnim_DownAlt) //Don't interrupt "Heh, pretty good!" sequence
+		Character_PerformIdle(character);
 	
 	//Animate
 	Animatable_Animate(&character->animatable, (void*)this, Char_Tank_SetFrame);

@@ -233,7 +233,7 @@
 		{Char_GF_New,       FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
 		
 		//Stage background
-		Back_Dummy_New,
+		Back_Week5_New,
 		
 		//Song info
 		{FIXED_DEC(13,10),FIXED_DEC(13,10),FIXED_DEC(13,10)},
@@ -249,7 +249,7 @@
 		{Char_GF_New,       FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
 		
 		//Stage background
-		Back_Dummy_New,
+		Back_Week5_New,
 		
 		//Song info
 		{FIXED_DEC(14,10),FIXED_DEC(16,10),FIXED_DEC(19,10)},

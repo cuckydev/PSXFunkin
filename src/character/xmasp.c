@@ -105,18 +105,7 @@ void Char_XmasP_Tick(Character *character)
 	Char_XmasP *this = (Char_XmasP*)character;
 	
 	//Perform idle dance
-	Character_CheckEndSing(character);
-	
-	if (stage.flag & STAGE_FLAG_JUST_STEP)
-	{
-		if (Animatable_Ended(&character->animatable) &&
-		    (character->animatable.anim != CharAnim_Left &&
-		     character->animatable.anim != CharAnim_Down &&
-		     character->animatable.anim != CharAnim_Up &&
-		     character->animatable.anim != CharAnim_Right) &&
-		    (stage.song_step & 0x7) == 0)
-			character->set_anim(character, CharAnim_Idle);
-	}
+	Character_PerformIdle(character);
 	
 	//Animate and draw
 	Animatable_Animate(&character->animatable, (void*)this, Char_XmasP_SetFrame);

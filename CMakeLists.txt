@@ -49,6 +49,8 @@ add_executable(funkin WIN32 # The `WIN32` here is so we don't get a command prom
 	"src/stage/week3.h"
 	"src/stage/week4.c"
 	"src/stage/week4.h"
+	"src/stage/week5.c"
+	"src/stage/week5.h"
 	"src/stage/week7.c"
 	"src/stage/week7.h"
 	"src/animation.c"

@@ -38,6 +38,7 @@
 #include "stage/week2.h"
 #include "stage/week3.h"
 #include "stage/week4.h"
+#include "stage/week5.h"
 #include "stage/week7.h"
 
 static const StageDef stage_defs[StageId_Max] = {
@@ -1052,11 +1053,32 @@ void Stage_NextLoad()
 		
 		//Load characters
 		if (load & STAGE_LOAD_PLAYER)
+		{
 			Stage_LoadPlayer();
+		}
+		else
+		{
+			stage.player->x = stage.stage_def->pchar.x;
+			stage.player->y = stage.stage_def->pchar.y;
+		}
 		if (load & STAGE_LOAD_OPPONENT)
+		{
 			Stage_LoadOpponent();
+		}
+		else
+		{
+			stage.opponent->x = stage.stage_def->ochar.x;
+			stage.opponent->y = stage.stage_def->ochar.y;
+		}
 		if (load & STAGE_LOAD_GIRLFRIEND)
+		{
 			Stage_LoadGirlfriend();
+		}
+		else
+		{
+			stage.gf->x = stage.stage_def->gchar.x;
+			stage.gf->y = stage.stage_def->gchar.y;
+		}
 		
 		//Load stage chart
 		Stage_LoadChart();

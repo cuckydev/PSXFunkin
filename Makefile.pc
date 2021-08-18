@@ -61,6 +61,7 @@ SOURCES = main \
 		  stage/week2 \
 		  stage/week3 \
 		  stage/week4 \
+		  stage/week5 \
 		  stage/week7 \
 		  animation \
 		  character \

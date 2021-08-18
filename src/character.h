@@ -53,5 +53,6 @@ void Character_Draw(Character *this, Gfx_Tex *tex, const CharFrame *cframe);
 
 void Character_CheckStartSing(Character *this);
 void Character_CheckEndSing(Character *this);
+void Character_PerformIdle(Character *this);
 
 #endif
