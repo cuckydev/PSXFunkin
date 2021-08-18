@@ -211,9 +211,9 @@
 	},
 	{ //StageId_4_4 (Test)
 		//Characters
-		{Char_BF_New,    FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Pico_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,      FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
+		{Char_BF_New,     FIXED_DEC(105,1),  FIXED_DEC(100,1)},
+		{Char_XmasP_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_GF_New,       FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
 		
 		//Stage background
 		Back_Dummy_New,
@@ -228,9 +228,9 @@
 	
 	{ //StageId_5_1 (Cocoa)
 		//Characters
-		{Char_BF_New,   FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
+		{Char_BF_New,      FIXED_DEC(90,1),   FIXED_DEC(85,1)},
+		{Char_XmasP_New, FIXED_DEC(-190,1),   FIXED_DEC(90,1)},
+		{Char_GF_New,       FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
 		
 		//Stage background
 		Back_Dummy_New,
@@ -244,9 +244,9 @@
 	},
 	{ //StageId_5_2 (Eggnog)
 		//Characters
-		{Char_BF_New,   FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
+		{Char_BF_New,      FIXED_DEC(90,1),   FIXED_DEC(85,1)},
+		{Char_XmasP_New, FIXED_DEC(-190,1),   FIXED_DEC(90,1)},
+		{Char_GF_New,       FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
 		
 		//Stage background
 		Back_Dummy_New,

@@ -674,7 +674,7 @@ void Menu_Tick(void)
 				StageId stage;
 				const char *text;
 			} menu_options[] = {
-				//{StageId_4_4, "TEST"},
+				{StageId_4_4, "TEST"},
 				{StageId_1_4, "TUTORIAL"},
 				{StageId_1_1, "BOPEEBO"},
 				{StageId_1_2, "FRESH"},

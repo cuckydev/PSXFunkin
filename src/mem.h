@@ -13,8 +13,8 @@
 
 #else
 
-//#define MEM_STAT
-//#define MEM_BAR //MEM_STAT must be defined for display
+#define MEM_STAT
+#define MEM_BAR //MEM_STAT must be defined for display
 //#define MEM_LEAK_CHECK //MEM_STAT must be defined for display
 
 u8 Mem_Init(void *ptr, size_t size);

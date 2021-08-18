@@ -18,7 +18,7 @@ static Mem_Header *mem = NULL;
 static size_t mem_used, mem_size, mem_max;
 
 #ifdef MEM_LEAK_CHECK
-	const char *signs[256];
+	static const char *signs[256];
 #endif
 
 u8 Mem_Init(void *ptr, size_t size)

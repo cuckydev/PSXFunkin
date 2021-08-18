@@ -20,26 +20,29 @@ void Write32(FILE *fp, uint32_t x)
 int main(int argc, char *argv[])
 {
 	//Check parameters
-	if (argc < 3 || argc > 18)
+	if (argc < 4)
 	{
-		puts("usage: funkinarcpak out in(x16)");
+		puts("usage: funkinarcpak out ...");
 		return 0;
 	}
 	
 	//Read archive files
-	struct
+	typedef struct
 	{
 		char path[12];
 		size_t pos, size;
 		void *data;
-	} files[16];
+	} File;//files[16];
 	
-	size_t file_pos = 16 * 16;
-	for (int i = 0; i < 16; i++)
+	int filec = argc - 2;
+	File *files = malloc(sizeof(File) * (filec + 1));
+	
+	size_t file_pos = (filec + 1) * 16;
+	for (int i = 0; i < filec + 1; i++)
 	{
 		memset(files[i].path, '\0', 14);
 		
-		if (i > argc - 3)
+		if (i >= filec)
 		{
 			//File not given
 			files[i].data = NULL;
@@ -100,14 +103,14 @@ int main(int argc, char *argv[])
 	}
 	
 	//Write header
-	for (int i = 0; i < 16; i++)
+	for (int i = 0; i < filec + 1; i++)
 	{
 		fwrite(files[i].path, 12, 1, fp);
 		Write32(fp, files[i].pos);
 	}
 	
 	//Write data
-	for (int i = 0; i < 16; i++)
+	for (int i = 0; i < filec + 1; i++)
 	{
 		if (files[i].data == NULL)
 			break;

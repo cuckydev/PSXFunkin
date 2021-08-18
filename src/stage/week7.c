@@ -7,34 +7,25 @@
 #include "../mutil.h"
 #include "../timer.h"
 
-//Week 7 background structure
-typedef struct
-{
-	//Stage background base structure
-	StageBack back;
-	
-	//Car state
-	fixed_t tank_x;
-	fixed_t tank_timer;
-	
-	//Textures
-	IO_Data arc_hench, arc_hench_ptr[2];
-	
-	Gfx_Tex tex_back0; //Foreground
-	Gfx_Tex tex_back1; //Background
-	Gfx_Tex tex_back2; //Sniper and Tank
-	Gfx_Tex tex_back3; //Background mountains
-} Back_Week7;
-
 //Week 7 background functions
 #define TANK_START_X FIXED_DEC(-400,1)
 #define TANK_END_X    FIXED_DEC(400,1)
 #define TANK_TIME_A FIXED_DEC(25,1)
 #define TANK_TIME_B FIXED_DEC(45,1)
 
+static void Back_Week7_LoadPicoChart(Back_Week7 *this)
+{
+	//Load Pico chart
+	this->pico_chart = (u16*)IO_Read("\\WEEK7\\7.3P.CHT;1");
+}
+
 void Back_Week7_DrawFG(StageBack *back)
 {
-	(void)back;
+	Back_Week7 *this = (Back_Week7*)back;
+	
+	//Load Pico chart
+	if (stage.stage_id == StageId_7_3 && this->pico_chart == NULL)
+		Back_Week7_LoadPicoChart(this);
 }
 
 void Back_Week7_DrawBG(StageBack *back)
@@ -243,6 +234,12 @@ StageBack *Back_Week7_New()
 	
 	//Use sky coloured background
 	Gfx_SetClear(245, 202, 81);
+	
+	//Load Pico chart
+	if (stage.stage_id == StageId_7_3)
+		Back_Week7_LoadPicoChart(this);
+	else
+		this->pico_chart = NULL;
 	
 	return (StageBack*)this;
 }

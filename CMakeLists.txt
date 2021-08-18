@@ -71,6 +71,8 @@ add_executable(funkin WIN32 # The `WIN32` here is so we don't get a command prom
 	"src/character/pico.h"
 	"src/character/mom.c"
 	"src/character/mom.h"
+	"src/character/xmasp.c"
+	"src/character/xmasp.h"
 	"src/character/senpai.c"
 	"src/character/senpai.h"
 	"src/character/tank.c"

@@ -72,6 +72,7 @@ SOURCES = main \
 		  character/spook \
 		  character/pico \
 		  character/mom \
+		  character/xmasp \
 		  character/senpai \
 		  character/tank \
 		  object \

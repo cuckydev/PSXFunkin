@@ -172,6 +172,7 @@
 				<file name = "7.3e.cht" type = "data" source = "iso/chart/7.3e.cht"/>
 				<file name = "7.3n.cht" type = "data" source = "iso/chart/7.3n.cht"/>
 				<file name = "7.3h.cht" type = "data" source = "iso/chart/7.3h.cht"/>
+				<file name = "7.3p.cht" type = "data" source = "iso/chart/7.3p.cht"/>
 			</dir>
 			
 			<!-- Kapi assets -->
@@ -235,6 +236,9 @@
 				<!-- Mom assets -->
 				<file name = "mom.arc" type = "data" source = "iso/mom/main.arc"/>
 				<file name = "momhair.tim" type = "data" source = "iso/mom/hair.tim"/>
+				
+				<!-- Christmas assets -->
+				<file name = "xmasp.arc" type = "data" source = "iso/xmasp/main.arc"/>
 				
 				<!-- Senpai assets -->
 				<file name = "senpai.arc" type = "data" source = "iso/senpai/main.arc"/>

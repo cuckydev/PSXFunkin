@@ -7,6 +7,8 @@
 
 #include "speaker.h"
 
+#include "../stage/week7.h"
+
 //GF character structure
 enum
 {
@@ -31,6 +33,9 @@ typedef struct
 	
 	//Speaker
 	Speaker speaker;
+	
+	//Pico test
+	u16 *pico_p;
 } Char_GF;
 
 //GF character definitions
@@ -54,15 +59,15 @@ static const CharFrame char_gf_frame[] = {
 };
 
 static const Animation char_gf_anim[CharAnim_Max] = {
-	{0, (const u8[]){ASCR_CHGANI, CharAnim_Left}},                                           //CharAnim_Idle
+	{0, (const u8[]){ASCR_CHGANI, CharAnim_Left}},                           //CharAnim_Idle
 	{1, (const u8[]){ 0,  0,  1,  1,  2,  2,  3,  4,  4,  5, ASCR_BACK, 1}}, //CharAnim_Left
-	{0, (const u8[]){ASCR_CHGANI, CharAnim_Left}},                                           //CharAnim_LeftAlt
-	{2, (const u8[]){12, 13, ASCR_REPEAT}},                                                  //CharAnim_Down
-	{0, (const u8[]){ASCR_CHGANI, CharAnim_Left}},                                           //CharAnim_DownAlt
-	{0, (const u8[]){ASCR_CHGANI, CharAnim_Left}},                                           //CharAnim_Up
-	{0, (const u8[]){ASCR_CHGANI, CharAnim_Left}},                                           //CharAnim_UpAlt
+	{0, (const u8[]){ASCR_CHGANI, CharAnim_Left}},                           //CharAnim_LeftAlt
+	{2, (const u8[]){12, 13, ASCR_REPEAT}},                                  //CharAnim_Down
+	{0, (const u8[]){ASCR_CHGANI, CharAnim_Left}},                           //CharAnim_DownAlt
+	{0, (const u8[]){ASCR_CHGANI, CharAnim_Left}},                           //CharAnim_Up
+	{0, (const u8[]){ASCR_CHGANI, CharAnim_Left}},                           //CharAnim_UpAlt
 	{1, (const u8[]){ 6,  6,  7,  7,  8,  8,  9, 10, 10, 11, ASCR_BACK, 1}}, //CharAnim_Right
-	{0, (const u8[]){ASCR_CHGANI, CharAnim_Left}},                                           //CharAnim_RightAlt
+	{0, (const u8[]){ASCR_CHGANI, CharAnim_Left}},                           //CharAnim_RightAlt
 };
 
 //GF character functions
@@ -84,19 +89,41 @@ void Char_GF_Tick(Character *character)
 {
 	Char_GF *this = (Char_GF*)character;
 	
-	if (stage.flag & STAGE_FLAG_JUST_STEP)
+	//Initialize Pico test
+	if (stage.stage_id == StageId_7_3 && stage.back != NULL && this->pico_p == NULL)
+		this->pico_p = ((Back_Week7*)stage.back)->pico_chart;
+	
+	if (this->pico_p != NULL)
 	{
-		//Perform dance
-		if ((stage.song_step % stage.gf_speed) == 0)
+		if (stage.note_scroll >= 0)
 		{
-			//Switch animation
-			if (character->animatable.anim == CharAnim_Left)
-				character->set_anim(character, CharAnim_Right);
-			else
-				character->set_anim(character, CharAnim_Left);
-			
-			//Bump speakers
-			Speaker_Bump(&this->speaker);
+			//Scroll through Pico chart
+			u16 substep = stage.note_scroll >> FIXED_SHIFT;
+			while (substep >= ((*this->pico_p) & 0x7FFF))
+			{
+				//Play animation and bump speakers
+				character->set_anim(character, ((*this->pico_p) & 0x8000) ? CharAnim_Right : CharAnim_Left);
+				Speaker_Bump(&this->speaker);
+				this->pico_p++;
+			}
+		}
+	}
+	else
+	{
+		if (stage.flag & STAGE_FLAG_JUST_STEP)
+		{
+			//Perform dance
+			if ((stage.song_step % stage.gf_speed) == 0)
+			{
+				//Switch animation
+				if (character->animatable.anim == CharAnim_Left)
+					character->set_anim(character, CharAnim_Right);
+				else
+					character->set_anim(character, CharAnim_Left);
+				
+				//Bump speakers
+				Speaker_Bump(&this->speaker);
+			}
 		}
 	}
 	
@@ -166,6 +193,12 @@ Character *Char_GF_New(fixed_t x, fixed_t y)
 	
 	//Initialize speaker
 	Speaker_Init(&this->speaker);
+	
+	//Initialize Pico test
+	if (stage.stage_id == StageId_7_3 && stage.back != NULL)
+		this->pico_p = ((Back_Week7*)stage.back)->pico_chart;
+	else
+		this->pico_p = NULL;
 	
 	return (Character*)this;
 }
