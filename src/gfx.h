@@ -4,6 +4,14 @@
 #include "psx.h"
 #include "io.h"
 
+#ifdef PSXF_PC
+ #ifdef PSXF_GLES
+  #include <GLES2/gl2.h>
+ #else
+  #include "glad/glad.h"
+ #endif
+#endif
+
 //Gfx constants
 #define SCREEN_WIDTH   320
 #define SCREEN_HEIGHT  240
@@ -23,10 +31,14 @@
 //Gfx structures
 typedef struct
 {
+#ifdef PSXF_PC
+	u16 tpage;
+#else
 	u32 tim_mode;
 	RECT tim_prect, tim_crect;
 	u16 tpage, clut;
 	u8 pxshift;
+#endif
 } Gfx_Tex;
 
 //Gfx functions
