@@ -87,8 +87,12 @@ add_executable(funkin WIN32 # The `WIN32` here is so we don't get a command prom
 if (GLES)
 	target_compile_definitions(funkin PRIVATE PSXF_GLES)
 
-#	find_package(GLESv2 REQUIRED)
 	target_link_libraries(funkin PRIVATE GLESv2)
+	# Raspberry Pi Broadcom GLESv2 driver.
+	# Would be nice to test someday, but it doesn't work during X sessions,
+	# and this port cannot be ran from the terminal (yet).
+	# For now, we'll just have to settle with the open-source Mesa driver.
+	#target_link_libraries(funkin PRIVATE m "/opt/vc/lib/libbrcmGLESv2.so")
 else()
 	target_sources(funkin PRIVATE
 		"src/pc/glad/glad.c"
