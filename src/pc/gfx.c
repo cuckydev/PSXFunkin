@@ -202,7 +202,7 @@ GLuint Gfx_CreateTexture(GLint width, GLint height)
 	//Set texture parameters
 	glBindTexture(GL_TEXTURE_2D, texture_id);
 #ifdef PSXF_GLES
-	// OpenGL ES 2.0 does not support RGBA5551, so settle for RGBA8888 instead.
+	//OpenGL ES 2.0 does not support RGBA5551, so settle for RGBA8888 instead.
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 #else
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB5_A1, width, height, 0, GL_RGBA, GL_UNSIGNED_SHORT_1_5_5_5_REV, NULL);
@@ -221,7 +221,7 @@ void Gfx_UploadTexture(GLuint texture_id, const u8 *data, GLint width, GLint hei
 	//Upload data to texture
 	glBindTexture(GL_TEXTURE_2D, texture_id);
 #ifdef PSXF_GLES
-	// OpenGL ES 2.0 does not support RGBA5551, so settle for RGBA8888 instead.
+	//OpenGL ES 2.0 does not support RGBA5551, so settle for RGBA8888 instead.
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, (const void*)data);
 #else
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT_1_5_5_5_REV, (const void*)data);
@@ -526,14 +526,15 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 			
 			//Convert palette
 		#ifdef PSXF_GLES
-			u8 tex_palette[16][4];
+			u8 tex_palette[16][4]; //RGBA8888
 		#else
-			u8 tex_palette[16][2];
+			u8 tex_palette[16][2]; //RGBA5551
 		#endif
 			
 			u8 *tex_palette_p = &tex_palette[0][0];
 			const u8 *tim_clut_data_p = tim_clut_data;
 		#ifdef PSXF_GLES
+			//Convert palette to RGBA8888
 			for (u16 i = 0; i < tim_clut_w; i++, tex_palette_p += 4, tim_clut_data_p += 2)
 			{
 				u16 raw_pal = tim_clut_data_p[0] | (tim_clut_data_p[1] << 8);
@@ -560,6 +561,7 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 				}
 			}
 		#else
+			//Copy the RGBA5551 palette as-is, and correct its alpha bit
 			for (u16 i = 0; i < tim_clut_w; i++, tex_palette_p += 2, tim_clut_data_p += 2)
 			{
 				tex_palette_p[0] = tim_clut_data_p[0];
@@ -583,14 +585,15 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 			
 			//Convert art
 		#ifdef PSXF_GLES
-			u8 tex_data[256*256][4];
+			u8 tex_data[256*256][4]; //RGBA8888
 		#else
-			u8 tex_data[256*256][2];
+			u8 tex_data[256*256][2]; //RGBA5551
 		#endif
 			
 			u8 *tex_data_p = &tex_data[0][0];
 			const u8 *tim_tex_data_p = tim_tex_data;
 		#ifdef PSXF_GLES
+			//Output RGBA8888 bitmap
 			for (size_t i = (tim_tex_w << 1) * tim_tex_h; i > 0; i--, tex_data_p += 8, tim_tex_data_p++)
 			{
 				u8 *mapp;
@@ -606,6 +609,7 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 				tex_data_p[7] = mapp[3];
 			}
 		#else
+			//Output RGBA5551 bitmap
 			for (size_t i = (tim_tex_w << 1) * tim_tex_h; i > 0; i--, tex_data_p += 4, tim_tex_data_p++)
 			{
 				u8 *mapp;
@@ -633,14 +637,15 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 			
 			//Convert palette
 		#ifdef PSXF_GLES
-			u8 tex_palette[256][4];
+			u8 tex_palette[256][4]; //RGBA8888
 		#else
-			u8 tex_palette[256][2];
+			u8 tex_palette[256][2]; //RGBA5551
 		#endif
 			
 			u8 *tex_palette_p = &tex_palette[0][0];
 			const u8 *tim_clut_data_p = tim_clut_data;
 		#ifdef PSXF_GLES
+			//Convert palette to RGBA8888
 			for (u16 i = 0; i < tim_clut_w; i++, tex_palette_p += 4, tim_clut_data_p += 2)
 			{
 				u16 raw_pal = tim_clut_data_p[0] | (tim_clut_data_p[1] << 8);
@@ -667,6 +672,7 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 				}
 			}
 		#else
+			//Copy the RGBA5551 palette as-is, and correct its alpha bit
 			for (u16 i = 0; i < tim_clut_w; i++, tex_palette_p += 2, tim_clut_data_p += 2)
 			{
 				tex_palette_p[0] = tim_clut_data_p[0];
@@ -690,14 +696,15 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 			
 			//Convert art
 		#ifdef PSXF_GLES
-			u8 tex_data[256*256][4];
+			u8 tex_data[256*256][4]; //RGBA8888
 		#else
-			u8 tex_data[256*256][2];
+			u8 tex_data[256*256][2]; //RGBA5551
 		#endif
 			
 			u8 *tex_data_p = &tex_data[0][0];
 			const u8 *tim_tex_data_p = tim_tex_data;
 		#ifdef PSXF_GLES
+			//Output RGBA8888 bitmap
 			for (size_t i = (tim_tex_w << 1) * tim_tex_h; i > 0; i--, tex_data_p += 4, tim_tex_data_p++)
 			{
 				u8 *mapp = &tex_palette[*tim_tex_data_p][0];
@@ -707,6 +714,7 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 				tex_data_p[3] = mapp[3];
 			}
 		#else
+			//Output RGBA5551 bitmap
 			for (size_t i = (tim_tex_w << 1) * tim_tex_h; i > 0; i--, tex_data_p += 2, tim_tex_data_p++)
 			{
 				u8 *mapp = &tex_palette[*tim_tex_data_p][0];
