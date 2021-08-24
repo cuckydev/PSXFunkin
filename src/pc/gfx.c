@@ -125,7 +125,9 @@ static GLuint plain_texture;
 static GLuint tpage_texture[TPAGE_Y * TPAGE_X];
 
 //Batch
+#ifndef PSXF_GLES
 static GLuint batch_vao;
+#endif
 static GLuint batch_vbo;
 
 static GLuint batch_texture_id;
@@ -229,7 +231,9 @@ static GLuint Gfx_CreateTexture(GLint width, GLint height)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+#ifndef PSXF_GLES
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+#endif
 	
 	return texture_id;
 }
