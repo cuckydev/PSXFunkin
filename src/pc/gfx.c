@@ -16,6 +16,8 @@
 #define WINDOW_SCALE 3
 #define WINDOW_WIDTH  (SCREEN_WIDTH * WINDOW_SCALE)
 #define WINDOW_HEIGHT (SCREEN_HEIGHT * WINDOW_SCALE)
+#define VRAM_WIDTH (1024*4) //The PSX's VRAM is 1024x512 at 16bpp, but 4bpp allows cramming 4 times the pixels in that space, so provide enough room for that
+#define VRAM_HEIGHT 512
 
 //Window
 GLFWwindow *window;
@@ -118,11 +120,8 @@ discard;\
 static GLuint generic_shader_id;
 
 //Textures
-#define TPAGE_X 16
-#define TPAGE_Y 2
-
 static GLuint plain_texture;
-static GLuint tpage_texture[TPAGE_Y][TPAGE_X];
+static GLuint vram_texture;
 
 //Batch
 #ifndef PSXF_GLES
@@ -238,15 +237,15 @@ static GLuint Gfx_CreateTexture(GLint width, GLint height)
 	return texture_id;
 }
 
-static void Gfx_UploadTexture(GLuint texture_id, const u8 *data, GLint width, GLint height)
+static void Gfx_UploadTexture(GLuint texture_id, GLint x, GLint y, const u8 *data, GLint width, GLint height)
 {
 	//Upload data to texture
 	glBindTexture(GL_TEXTURE_2D, texture_id);
 #ifdef PSXF_GLES
 	//OpenGL ES 2.0 does not support RGBA5551, so settle for RGBA8888 instead.
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, (const void*)data);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, width, height, GL_RGBA, GL_UNSIGNED_BYTE, (const void*)data);
 #else
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT_1_5_5_5_REV, (const void*)data);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, width, height, GL_RGBA, GL_UNSIGNED_SHORT_1_5_5_5_REV, (const void*)data);
 #endif
 }
 
@@ -430,11 +429,9 @@ void Gfx_Init(void)
 #else
 	static const u8 plain_texture_data[] = {0xFF, 0xFF}; //RGBA5551
 #endif
-	Gfx_UploadTexture(plain_texture = Gfx_CreateTexture(1, 1), plain_texture_data, 1, 1);
+	Gfx_UploadTexture(plain_texture = Gfx_CreateTexture(1, 1), 0, 0, plain_texture_data, 1, 1);
 	
-	for (size_t y = 0; y < TPAGE_Y; y++)
-		for (size_t x = 0; x < TPAGE_X; x++)
-			tpage_texture[y][x] = Gfx_CreateTexture(256, 256);
+	vram_texture = Gfx_CreateTexture(VRAM_WIDTH, VRAM_HEIGHT);
 	
 	//Create batch VAO
 #ifndef PSXF_GLES
@@ -605,8 +602,8 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 			u16 tim_tex_h = tim_tex[10] | (tim_tex[11] << 8);
 			u8 *tim_tex_data = &tim_tex[12];
 			
-			tex->tpage_x = (tim_tex_x >> 6) % TPAGE_X;
-			tex->tpage_y = (tim_tex_y >> 8) % TPAGE_Y;
+			tex->tpage_x = tim_tex_x * 4; //Convert from 16bpp index to 4bpp
+			tex->tpage_y = tim_tex_y;
 			
 			//Convert art
 		#ifdef PSXF_GLES
@@ -648,7 +645,7 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 		#endif
 			
 			//Upload to texture
-			Gfx_UploadTexture(tpage_texture[tex->tpage_y][tex->tpage_x], &tex_data[0][0], tim_tex_w << 2, tim_tex_h);
+			Gfx_UploadTexture(vram_texture, tex->tpage_x, tex->tpage_y, &tex_data[0][0], tim_tex_w << 2, tim_tex_h);
 			break;
 		}
 		case 1: //8bpp
@@ -717,8 +714,8 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 			u16 tim_tex_h = tim_tex[10] | (tim_tex[11] << 8);
 			u8 *tim_tex_data = &tim_tex[12];
 			
-			tex->tpage_x = (tim_tex_x >> 6) % TPAGE_X;
-			tex->tpage_y = (tim_tex_y >> 8) % TPAGE_Y;
+			tex->tpage_x = tim_tex_x * 4; //Convert from 16bpp index to 4bpp
+			tex->tpage_y = tim_tex_y;
 			
 			//Convert art
 		#ifdef PSXF_GLES
@@ -750,7 +747,7 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 		#endif
 			
 			//Upload to texture
-			Gfx_UploadTexture(tpage_texture[tex->tpage_y][tex->tpage_x], &tex_data[0][0], tim_tex_w << 1, tim_tex_h);
+			Gfx_UploadTexture(vram_texture, tex->tpage_x, tex->tpage_y, &tex_data[0][0], tim_tex_w << 1, tim_tex_h);
 			break;
 		}
 		case 2: //16bpp
@@ -791,10 +788,10 @@ void Gfx_BlitTexCol(Gfx_Tex *tex, const RECT *src, s32 x, s32 y, u8 r, u8 g, u8 
 {
 	//Create new command
 	Gfx_Cmd cmd;
-	cmd.src.left =   (float)src->x / 256.0f;
-	cmd.src.top =    (float)src->y / 256.0f;
-	cmd.src.right =  ((float)src->x + (float)src->w) / 256.0f;
-	cmd.src.bottom = ((float)src->y + (float)src->h) / 256.0f;
+	cmd.src.left =   (tex->tpage_x + src->x) / (float)VRAM_WIDTH;
+	cmd.src.top =    (tex->tpage_y + src->y) / (float)VRAM_HEIGHT;
+	cmd.src.right =  (tex->tpage_x + src->x + src->w) / (float)VRAM_WIDTH;
+	cmd.src.bottom = (tex->tpage_y + src->y + src->h) / (float)VRAM_HEIGHT;
 	cmd.dst.tl.x = cmd.dst.bl.x = (float)x;
 	cmd.dst.tl.y = cmd.dst.tr.y = (float)y;
 	cmd.dst.tr.x = cmd.dst.br.x = (float)x + (float)src->w;
@@ -803,7 +800,7 @@ void Gfx_BlitTexCol(Gfx_Tex *tex, const RECT *src, s32 x, s32 y, u8 r, u8 g, u8 
 	cmd.g = (float)g / 128.0f;
 	cmd.b = (float)b / 128.0f;
 	cmd.a = 1.0f;
-	cmd.texture_id = tpage_texture[tex->tpage_y][tex->tpage_x];
+	cmd.texture_id = vram_texture;
 	
 	//Push command
 	*dlist_p++ = cmd;
@@ -818,10 +815,10 @@ void Gfx_DrawTexCol(Gfx_Tex *tex, const RECT *src, const RECT *dst, u8 r, u8 g, 
 {
 	//Create new command
 	Gfx_Cmd cmd;
-	cmd.src.left =   (float)src->x / 256.0f;
-	cmd.src.top =    (float)src->y / 256.0f;
-	cmd.src.right =  ((float)src->x + (float)src->w) / 256.0f;
-	cmd.src.bottom = ((float)src->y + (float)src->h) / 256.0f;
+	cmd.src.left =   (tex->tpage_x + src->x) / (float)VRAM_WIDTH;
+	cmd.src.top =    (tex->tpage_y + src->y) / (float)VRAM_HEIGHT;
+	cmd.src.right =  (tex->tpage_x + src->x + src->w) / (float)VRAM_WIDTH;
+	cmd.src.bottom = (tex->tpage_y + src->y + src->h) / (float)VRAM_HEIGHT;
 	cmd.dst.tl.x = cmd.dst.bl.x = (float)dst->x;
 	cmd.dst.tl.y = cmd.dst.tr.y = (float)dst->y;
 	cmd.dst.tr.x = cmd.dst.br.x = (float)dst->x + (float)dst->w;
@@ -830,7 +827,7 @@ void Gfx_DrawTexCol(Gfx_Tex *tex, const RECT *src, const RECT *dst, u8 r, u8 g, 
 	cmd.g = (float)g / 128.0f;
 	cmd.b = (float)b / 128.0f;
 	cmd.a = 1.0f;
-	cmd.texture_id = tpage_texture[tex->tpage_y][tex->tpage_x];
+	cmd.texture_id = vram_texture;
 	
 	//Push command
 	*dlist_p++ = cmd;
