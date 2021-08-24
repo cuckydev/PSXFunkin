@@ -1,0 +1,7 @@
+iso/menu/%.tim: iso/menu/%.png
+	tools/funkintimpak/funkintimpak $@ $<
+
+iso/menu/menu.arc: iso/menu/back.tim iso/menu/ng.tim iso/menu/story.tim iso/menu/title.tim
+	tools/funkinarcpak/funkinarcpak $@ $^
+
+all: iso/menu/menu.arc iso/menu/loading.tim

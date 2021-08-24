@@ -3,11 +3,17 @@
  * Packs files into a single archive for the Friday Night Funkin' PSX port
 */
 
-#include <stdio.h>
-#include <stdint.h>
 #include <stddef.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
+
+void Write16(FILE *fp, uint16_t x)
+{
+	fputc(x, fp);
+	fputc(x >> 8, fp);
+}
 
 void Write32(FILE *fp, uint32_t x)
 {
@@ -19,105 +25,112 @@ void Write32(FILE *fp, uint32_t x)
 
 int main(int argc, char *argv[])
 {
-	//Check parameters
-	if (argc < 4)
-	{
-		puts("usage: funkinarcpak out ...");
-		return 0;
-	}
+	//Make sure the correct parameters have been given
+	if (argc < 3)
+		return 1;
 	
-	//Read archive files
-	typedef struct
-	{
-		char path[12];
-		size_t pos, size;
-		void *data;
-	} File;//files[16];
-	
-	int filec = argc - 2;
-	File *files = malloc(sizeof(File) * (filec + 1));
-	
-	size_t file_pos = (filec + 1) * 16;
-	for (int i = 0; i < filec + 1; i++)
-	{
-		memset(files[i].path, '\0', 14);
-		
-		if (i >= filec)
-		{
-			//File not given
-			files[i].data = NULL;
-			files[i].pos = 0;
-		}
-		else
-		{
-			//Use given path
-			char *path = argv[2 + i];
-			strncpy(files[i].path, path, 12);
-			
-			//Open file
-			FILE *in = fopen(path, "rb");
-			if (in == NULL)
-			{
-				printf("Failed to open %s\n", path);
-				for (int v = 0; v < i; v++)
-					free(files[v].data);
-				return 1;
-			}
-			
-			//Get file size
-			fseek(in, 0, SEEK_END);
-			size_t size = files[i].size = ftell(in);
-			fseek(in, 0, SEEK_SET);
-			
-			//Read file
-			if ((files[i].data = malloc((size + 0xF) & ~0xF)) == NULL)
-			{
-				puts("Failed to allocate file buffer");
-				for (int v = 0; v < i; v++)
-					free(files[v].data);
-				fclose(in);
-				return 1;
-			}
-			memset(files[i].data, 0, size);
-			if (fread(files[i].data, size, 1, in) != 1)
-			{
-				printf("Failed to read %s\n", path);
-				for (int v = 0; v < i; v++)
-					free(files[v].data);
-				fclose(in);
-			}
-			fclose(in);
-			
-			//Set file pos
-			files[i].pos = file_pos;
-			file_pos = (file_pos + size + 0xF) & ~0xF;
-		}
-	}
-	
-	//Open archive file
-	FILE *fp = fopen(argv[1], "wb");
-	if (fp == NULL)
+	//Open output
+	FILE *out = fopen(argv[1], "wb");
+	if (out == NULL)
 	{
 		printf("Failed to open %s\n", argv[1]);
 		return 1;
 	}
 	
-	//Write header
-	for (int i = 0; i < filec + 1; i++)
+	//Allocate directory
+	typedef struct
 	{
-		fwrite(files[i].path, 12, 1, fp);
-		Write32(fp, files[i].pos);
+		char name[12];
+		uint32_t pos;
+		uint32_t size;
+		uint8_t *data;
+	} Pkg_Directory;
+	
+	Pkg_Directory *dir = malloc(sizeof(Pkg_Directory) * (argc - 2));
+	if (dir == NULL)
+	{
+		printf("Failed to allocate directory\n");
+		return 1;
 	}
 	
-	//Write data
-	for (int i = 0; i < filec + 1; i++)
+	//Read files and fill directory
+	Pkg_Directory *dirp = dir;
+	for (int i = 2; i < argc; i++, dirp++)
 	{
-		if (files[i].data == NULL)
-			break;
-		fseek(fp, files[i].pos, SEEK_SET);
-		fwrite(files[i].data, files[i].size, 1, fp);
+		//Open file
+		FILE *in = fopen(argv[i], "rb");
+		if (in == NULL)
+		{
+			printf("Failed to open %s\n", argv[i]);
+			for (int j = 2; j < i; j++)
+				free(dir[j - 2].data);
+			free(dir);
+			return 1;
+		}
+		
+		//Read file
+		fseek(in, 0, SEEK_END);
+		dirp->size = ftell(in);
+		dirp->data = malloc(dirp->size);
+		if (dirp->data == NULL)
+		{
+			printf("Failed to allocate file buffer\n");
+			fclose(in);
+			for (int j = 2; j < i; j++)
+				free(dir[j - 2].data);
+			free(dir);
+			return 1;
+		}
+		fseek(in, 0, SEEK_SET);
+		fread(dirp->data, dirp->size, 1, in);
+		fclose(in);
 	}
 	
-	fclose(fp);
+	//Set directory positions
+	dirp = dir;
+	dirp->pos = 16 * (argc - 2);
+	dirp++;
+	
+	for (int i = 3; i < argc; i++, dirp++)
+		dirp->pos = (dirp[-1].pos + dirp[-1].size + 0xF) & ~0xF;
+	
+	//Write directory
+	dirp = dir;
+	for (int i = 2; i < argc; i++, dirp++)
+	{
+		//Cut path
+		char *path = argv[i];
+		
+		char *cuts = path;
+		cuts += strlen(cuts);
+		while (cuts != (path - 1) && *cuts != '/' && *cuts != '\\') cuts--;
+		cuts++;
+		
+		//Write directory
+		if (strlen(cuts) > 12)
+		{
+			printf("Asset %s name is longer than 12 characters and will be truncated\n", cuts);
+			fwrite(cuts, 12, 1, out);
+		}
+		else
+		{
+			fwrite(cuts, strlen(cuts), 1, out);
+			for (size_t j = strlen(cuts); j < 12; j++)
+				fputc('\0', out);
+		}
+		Write32(out, dirp->pos);
+	}
+	
+	//Write file data
+	dirp = dir;
+	for (int i = 2; i < argc; i++, dirp++)
+	{
+		fseek(out, dirp->pos, SEEK_SET);
+		fwrite(dirp->data, dirp->size, 1, out);
+		free(dirp->data);
+	}
+	free(dir);
+	fclose(out);
+	
 	return 0;
 }

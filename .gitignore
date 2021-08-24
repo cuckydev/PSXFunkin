@@ -7,11 +7,12 @@ license*.dat
 mips/psyq/
 
 # Exclude executable files
-funkin.cue
-funkin.elf
-funkin.bin
-funkin.map
-funkin.ps-exe
+*.cue
+*.elf
+*.bin
+*.map
+*.ps-exe
+*.exe
 
 # Exclude object and link files
 obj/
@@ -22,21 +23,6 @@ bin/
 # Exclude CMake build directory
 build/
 
-# Exclude tool data and executables
-tools/funkinchartpak/*.json
-tools/funkinchartpak/*.cht
-tools/funkinchartpak/funkinchartpak.exe
-tools/funkinchartpak/funkinchartpak.elf
-tools/funkinchartpak/funkinchartpak
-
-tools/funkinpicopak/*.json
-tools/funkinpicopak/*.cht
-tools/funkinpicopak/funkinpicopak.exe
-tools/funkinpicopak/funkinpicopak.elf
-tools/funkinpicopak/funkinpicopak
-
-tools/funkinarcpak/funkinarcpak.exe
-tools/funkinarcpak/funkinarcpak.elf
-tools/funkinarcpak/funkinarcpak
-
-# Big Chungus
+# Exclude converted assets
+iso/*.tim
+iso/*.arc

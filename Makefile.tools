@@ -1,0 +1,5 @@
+all:
+	@ cd tools/funkinarcpak && $(MAKE)
+	@ cd tools/funkinchartpak && $(MAKE)
+	@ cd tools/funkinpicopak && $(MAKE)
+	@ cd tools/funkintimconv && $(MAKE)
