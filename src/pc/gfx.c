@@ -447,7 +447,9 @@ void Gfx_Flip(void)
 	if (clear_e)
 	{
 		glClearColor(clear_r, clear_g, clear_b, 1.0f);
-	#ifndef PSXF_GLES
+	#ifdef PSXF_GLES
+		glClearDepthf(1.0f);
+	#else
 		glClearDepth(1.0f);
 	#endif
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
