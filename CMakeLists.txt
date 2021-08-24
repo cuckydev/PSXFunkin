@@ -98,6 +98,8 @@ else()
 		"src/pc/glad/glad.c"
 		"src/pc/glad/glad.h"
 	)
+
+	target_link_libraries(funkin PRIVATE ${CMAKE_DL_LIBS})
 endif()
 
 # Make it so the code knows it's targetting PC
