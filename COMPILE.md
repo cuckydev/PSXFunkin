@@ -66,4 +66,6 @@ Then, download the converted PsyQ library from http://psx.arthus.net/sdk/Psy-Q/p
 ## Compiling PSXFunkin
 If everything went well, you can `cd` back to the repo directory, run `make`, and it will compile the game and spit out a `funkin.ps-exe` in the same directory.
 
+You'll need to either get a PSX license file and save it as licensea.dat in the same directory as funkin.xml, or remove the referencing line `<license file="licensea.dat"/>` from funkin.xml. Without the license file, the game may fail on a bunch of emulators due to bios checks (unless you use fast boot, I believe?)
+
 Finally, you can run `mkpsxiso -y funkin.xml`, which will create the `.bin` and `.cue` files using the ps-exe and assets in `iso/`.
