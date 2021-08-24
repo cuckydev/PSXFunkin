@@ -1,6 +1,7 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.16.3)
 
 option(STDMEM "Use standard libc memory allocators instead of the fast custom one" OFF)
+option(GLES "Use OpenGL ES 2.0 instead of OpenGL Core 3.2" OFF)
 
 project(funkin LANGUAGES C)
 
@@ -37,8 +38,6 @@ add_executable(funkin WIN32 # The `WIN32` here is so we don't get a command prom
 	"src/pad.h"
 	"src/pc/timer.c"
 	"src/timer.h"
-	"src/pc/glad/glad.c"
-	"src/pc/glad/glad.h"
 	"src/stage/dummy.c"
 	"src/stage/dummy.h"
 	"src/stage/week1.c"
@@ -84,6 +83,18 @@ add_executable(funkin WIN32 # The `WIN32` here is so we don't get a command prom
 	"src/object/combo.c"
 	"src/object/combo.h"
 )
+
+if (GLES)
+	target_compile_definitions(funkin PRIVATE PSXF_GLES)
+
+#	find_package(GLESv2 REQUIRED)
+	target_link_libraries(funkin PRIVATE GLESv2)
+else()
+	target_sources(funkin PRIVATE
+		"src/pc/glad/glad.c"
+		"src/pc/glad/glad.h"
+	)
+endif()
 
 # Make it so the code knows it's targetting PC
 target_compile_definitions(funkin PRIVATE PSXF_PC)

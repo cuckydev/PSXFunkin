@@ -3,7 +3,11 @@
 #include "../main.h"
 #include "../mem.h"
 
-#include "glad/glad.h"
+#ifdef PSXF_GLES
+ #include <GLES2/gl2.h>
+#else
+ #include "glad/glad.h"
+#endif
 #include <GLFW/glfw3.h>
 
 #include "cglm/cglm.h"
@@ -48,6 +52,37 @@ typedef struct
 } Gfx_Vertex;
 
 //Shader
+#ifdef PSXF_GLES
+static const char *generic_shader_vert = "\
+#version 100\n\
+precision highp float;\
+attribute vec2 v_position;\
+attribute vec2 v_uv;\
+attribute vec4 v_colour;\
+varying vec2 f_uv;\
+varying vec4 f_colour;\
+uniform mat4 u_projection;\
+void main()\
+{\
+f_uv = v_uv;\
+f_colour = v_colour;\
+gl_Position = u_projection * vec4(v_position.xy, 0.0, 1.0);\
+}";
+static const char *generic_shader_frag = "\
+#version 100\n\
+precision highp float;\
+uniform sampler2D u_texture;\
+varying vec2 f_uv;\
+varying vec4 f_colour;\
+void main()\
+{\
+gl_FragColor = texture2D(u_texture, f_uv) * f_colour;\
+if (gl_FragColor.a == 0.0)\
+{\
+discard;\
+}\
+}";
+#else
 static const char *generic_shader_vert = "\
 #version 150 core\n\
 in vec2 v_position;\
@@ -76,6 +111,7 @@ if (o_colour.a == 0)\
 discard;\
 }\
 }";
+#endif
 
 static GLuint generic_shader_id;
 
@@ -188,7 +224,9 @@ void Gfx_PushBatch()
 		return;
 	
 	//Bind VAO and VBO
+#ifndef PSXF_GLES
 	glBindVertexArray(batch_vao);
+#endif
 	glBindBuffer(GL_ARRAY_BUFFER, batch_vbo);
 	
 	//Set attribute pointers
@@ -275,11 +313,17 @@ void Gfx_DisplayCmd(const Gfx_Cmd *cmd)
 void Gfx_Init(void)
 {
 	//Set window hints
+#ifdef PSXF_GLES
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+#else
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+#endif
 	glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 	
@@ -311,7 +355,8 @@ void Gfx_Init(void)
 		glfwSwapInterval(-1);
 	else
 		glfwSwapInterval(1);
-	
+
+#ifndef PSXF_GLES	
 	//Initialize GLAD
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
@@ -324,6 +369,7 @@ void Gfx_Init(void)
 		sprintf(error_msg, "[Gfx_Init] OpenGL 3.2 is not supported");
 		ErrorLock();
 	}
+#endif
 	
 	//Initialize render state
 	glm_ortho(0.0f, (float)SCREEN_WIDTH, (float)SCREEN_HEIGHT, 0.0f, -1.0f, 1.0f, projection);
@@ -350,8 +396,10 @@ void Gfx_Init(void)
 		*tpage_texture_p = Gfx_CreateTexture(256, 256);
 	
 	//Create batch VAO
+#ifndef PSXF_GLES
 	glGenVertexArrays(1, &batch_vao);
 	glBindVertexArray(batch_vao);
+#endif
 	
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
@@ -386,7 +434,9 @@ void Gfx_Flip(void)
 	if (clear_e)
 	{
 		glClearColor(clear_r, clear_g, clear_b, 1.0f);
+	#ifndef PSXF_GLES
 		glClearDepth(1.0f);
+	#endif
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 	
