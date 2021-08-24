@@ -113,9 +113,13 @@ void Char_Spook_SetAnim(Character *character, u8 anim)
 			anim = CharAnim_RightAlt;
 		else
 			anim = CharAnim_LeftAlt;
+		character->sing_end = FIXED_DEC(0x7FFF,1);
+	}
+	else
+	{
+		Character_CheckStartSing(character);
 	}
 	Animatable_SetAnim(&character->animatable, anim);
-	Character_CheckStartSing(character);
 }
 
 void Char_Spook_Free(Character *character)

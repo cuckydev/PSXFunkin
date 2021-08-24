@@ -24,6 +24,14 @@ void Back_Week5_DrawBG(StageBack *back)
 	
 	fixed_t fx, fy;
 	
+	fixed_t beat_bop;
+	if ((stage.song_step & 0x3) == 0)
+		beat_bop = FIXED_UNIT - ((stage.note_scroll / 24) & FIXED_LAND);
+	else
+		beat_bop = 0;
+	
+	//Draw Santa
+	
 	//Draw snow
 	fx = stage.camera.x;
 	fy = stage.camera.y;
@@ -41,6 +49,32 @@ void Back_Week5_DrawBG(StageBack *back)
 	snow_dst.y += snow_dst.h - FIXED_UNIT;
 	snow_dst.h *= 3;
 	Stage_DrawTex(&this->tex_back2, &snow_src, &snow_dst, stage.camera.bzoom);
+	
+	//Draw boppers
+	static const struct Back_Week5_LowerBop
+	{
+		RECT src;
+		RECT_FIXED dst;
+	} lbop_piece[] = {
+		{{0, 0, 80, 102}, {FIXED_DEC(-315,1), FIXED_DEC(-30,1), FIXED_DEC(80,1), FIXED_DEC(102,1)}},
+		{{175, 3, 74, 151}, {FIXED_DEC(-120,1), FIXED_DEC(-80,1), FIXED_DEC(74,1), FIXED_DEC(151,1)}},
+		{{81, 0, 70, 128}, {FIXED_DEC(30,1), FIXED_DEC(-70,1), FIXED_DEC(70,1), FIXED_DEC(128,1)}},
+		{{151, 0, 23, 132}, {FIXED_DEC(100,1), FIXED_DEC(-70,1), FIXED_DEC(23,1), FIXED_DEC(132,1)}},
+		{{0, 109, 41, 139}, {FIXED_DEC(123,1), FIXED_DEC(-69,1), FIXED_DEC(41,1), FIXED_DEC(139,1)}},
+		{{41, 126, 69, 130}, {FIXED_DEC(164,1), FIXED_DEC(-52,1), FIXED_DEC(69,1), FIXED_DEC(130,1)}},
+	};
+	
+	const struct Back_Week5_LowerBop *lbop_p = lbop_piece;
+	for (size_t i = 0; i < COUNT_OF(lbop_piece); i++, lbop_p++)
+	{
+		RECT_FIXED lbop_dst = {
+			lbop_p->dst.x - fx - (beat_bop << 1),
+			lbop_p->dst.y - fy + (beat_bop << 3),
+			lbop_p->dst.w + (beat_bop << 2),
+			lbop_p->dst.h - (beat_bop << 3),
+		};
+		Stage_DrawTex(&this->tex_back2, &lbop_p->src, &lbop_dst, stage.camera.bzoom);
+	}
 	
 	//Draw second floor
 	fx = stage.camera.x >> 2;
@@ -69,6 +103,28 @@ void Back_Week5_DrawBG(StageBack *back)
 		floor_dst.w = floor_p->src.w ? (floor_p->src.w * floor_p->scale) : floor_p->scale;
 		Stage_DrawTex(&this->tex_back1, &floor_p->src, &floor_dst, stage.camera.bzoom);
 		floor_dst.x += floor_dst.w;
+	}
+	
+	//Draw boppers
+	static const struct Back_Week5_UpperBop
+	{
+		RECT src;
+		RECT_FIXED dst;
+	} ubop_piece[] = {
+		{{0, 0, 256, 76}, {FIXED_DEC(-200,1), FIXED_DEC(-132,1), FIXED_DEC(256,1)*6/7, FIXED_DEC(76,1)*6/7}},
+		{{0, 76, 256, 76}, {FIXED_DEC(50,1), FIXED_DEC(-132,1), FIXED_DEC(256,1)*6/7, FIXED_DEC(76,1)*6/7}}
+	};
+	
+	const struct Back_Week5_UpperBop *ubop_p = ubop_piece;
+	for (size_t i = 0; i < COUNT_OF(ubop_piece); i++, ubop_p++)
+	{
+		RECT_FIXED ubop_dst = {
+			ubop_p->dst.x - fx,
+			ubop_p->dst.y - fy + (beat_bop << 2),
+			ubop_p->dst.w,
+			ubop_p->dst.h - (beat_bop << 2),
+		};
+		Stage_DrawTex(&this->tex_back4, &ubop_p->src, &ubop_dst, stage.camera.bzoom);
 	}
 	
 	//Draw back wall

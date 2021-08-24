@@ -38,8 +38,8 @@ CPPFLAGS += -I$(ROOTDIR)/psyq/include
 LDFLAGS += -Wl,-Map=$(BINDIR)$(TARGET).map -nostdlib -T$(LDSCRIPT) -static -Wl,--gc-sections
 LDFLAGS += $(ARCHFLAGS) -Wl,--oformat=$(FORMAT) -L$(ROOTDIR)/psyq/lib
 
-CPPFLAGS_Release += -Os
-LDFLAGS_Release += -Os
+CPPFLAGS_Release += -O3
+LDFLAGS_Release += -O3
 
 CPPFLAGS_Debug += -Og
 CPPFLAGS_Coverage += -Og

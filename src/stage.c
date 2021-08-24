@@ -451,7 +451,6 @@ void Stage_SustainCheck(u8 type)
 		if (!stage.kade)
 			stage.health += 230;
 		stage.arrow_hitan[type] = 6;
-		return;
 	}
 }
 

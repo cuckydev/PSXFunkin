@@ -163,7 +163,11 @@ void Char_BF_Tick(Character *character)
 	Char_BF *this = (Char_BF*)character;
 	
 	//Handle animation updates
-	if ((stage.pad_held & (INPUT_LEFT | INPUT_DOWN | INPUT_UP | INPUT_RIGHT)) == 0)
+	if ((stage.pad_held & (INPUT_LEFT | INPUT_DOWN | INPUT_UP | INPUT_RIGHT)) == 0 ||
+	    (character->animatable.anim != CharAnim_Left &&
+	     character->animatable.anim != CharAnim_Down &&
+	     character->animatable.anim != CharAnim_Up &&
+	     character->animatable.anim != CharAnim_Right))
 		Character_CheckEndSing(character);
 	
 	if (stage.flag & STAGE_FLAG_JUST_STEP)

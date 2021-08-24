@@ -19,7 +19,7 @@ endif
 
 # Release and debug
 ifeq ($(RELEASE), 1)
-	CFLAGS += -Wall -Wextra -pedantic -DPSXF_PC -DNDEBUG
+	CFLAGS += -O3 -Wall -Wextra -pedantic -DPSXF_PC -DNDEBUG
 	LDFLAGS += -s -flto
 else
 	CFLAGS += -Og -ggdb3 -Wall -Wextra -pedantic -DPSXF_DEBUG -DPSXF_PC

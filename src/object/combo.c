@@ -9,6 +9,17 @@ boolean Obj_Combo_Tick(Object *obj)
 {
 	Obj_Combo *this = (Obj_Combo*)obj;
 	
+	//Move towards camera if far away
+	fixed_t off = this->x - stage.camera.x;
+	
+	fixed_t dragr = (off - FIXED_DEC(30,1)) >> 3;
+	if (dragr > 0)
+		this->x -= dragr;
+	
+	fixed_t dragl = (FIXED_DEC(-100,1) - off) >> 3;
+	if (dragl > 0)
+		this->x += dragl;
+	
 	//Tick hit type
 	if (this->hit_type != 0xFF && this->ht < (FIXED_DEC(16,1) / 60))
 	{
@@ -124,6 +135,10 @@ Obj_Combo *Obj_Combo_New(fixed_t x, fixed_t y, u8 hit_type, u16 combo)
 	//Set object functions
 	this->obj.tick = Obj_Combo_Tick;
 	this->obj.free = Obj_Combo_Free;
+	
+	//Drag towards camera position
+	x += (stage.camera.x - x) >> 1;
+	y += (stage.camera.y - y) >> 1;
 	
 	//Use set position
 	this->x = x - FIXED_DEC(48,1);
