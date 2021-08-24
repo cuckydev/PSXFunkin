@@ -3,7 +3,11 @@
 #include "../main.h"
 #include "../mem.h"
 
-#include "glad/glad.h"
+#ifdef PSXF_GLES
+ #include <GLES2/gl2.h>
+#else
+ #include "glad/glad.h"
+#endif
 #include <GLFW/glfw3.h>
 
 #include "cglm/cglm.h"
@@ -48,6 +52,39 @@ typedef struct
 } Gfx_Vertex;
 
 //Shader
+#ifdef PSXF_GLES
+//GLSL ES 1.0, for OpenGL ES 2.0
+static const char *generic_shader_vert = "\
+#version 100\n\
+precision highp float;\
+attribute vec2 v_position;\
+attribute vec2 v_uv;\
+attribute vec4 v_colour;\
+varying vec2 f_uv;\
+varying vec4 f_colour;\
+uniform mat4 u_projection;\
+void main()\
+{\
+f_uv = v_uv;\
+f_colour = v_colour;\
+gl_Position = u_projection * vec4(v_position.xy, 0.0, 1.0);\
+}";
+static const char *generic_shader_frag = "\
+#version 100\n\
+precision highp float;\
+uniform sampler2D u_texture;\
+varying vec2 f_uv;\
+varying vec4 f_colour;\
+void main()\
+{\
+gl_FragColor = texture2D(u_texture, f_uv) * f_colour;\
+if (gl_FragColor.a == 0.0)\
+{\
+discard;\
+}\
+}";
+#else
+//GLSL Core 1.50, for OpenGL Core 3.2
 static const char *generic_shader_vert = "\
 #version 150 core\n\
 in vec2 v_position;\
@@ -71,11 +108,12 @@ out vec4 o_colour;\
 void main()\
 {\
 o_colour = texture(u_texture, f_uv) * f_colour;\
-if (o_colour.a == 0)\
+if (o_colour.a == 0.0)\
 {\
 discard;\
 }\
 }";
+#endif
 
 static GLuint generic_shader_id;
 
@@ -163,8 +201,12 @@ GLuint Gfx_CreateTexture(GLint width, GLint height)
 	
 	//Set texture parameters
 	glBindTexture(GL_TEXTURE_2D, texture_id);
-	
+#ifdef PSXF_GLES
+	//OpenGL ES 2.0 does not support RGBA5551, so settle for RGBA8888 instead.
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+#else
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB5_A1, width, height, 0, GL_RGBA, GL_UNSIGNED_SHORT_1_5_5_5_REV, NULL);
+#endif
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -178,7 +220,12 @@ void Gfx_UploadTexture(GLuint texture_id, const u8 *data, GLint width, GLint hei
 {
 	//Upload data to texture
 	glBindTexture(GL_TEXTURE_2D, texture_id);
+#ifdef PSXF_GLES
+	//OpenGL ES 2.0 does not support RGBA5551, so settle for RGBA8888 instead.
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, (const void*)data);
+#else
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT_1_5_5_5_REV, (const void*)data);
+#endif
 }
 
 void Gfx_PushBatch()
@@ -188,7 +235,10 @@ void Gfx_PushBatch()
 		return;
 	
 	//Bind VAO and VBO
+#ifndef PSXF_GLES
+	//OpenGL ES 2.0 doesn't have VAOs
 	glBindVertexArray(batch_vao);
+#endif
 	glBindBuffer(GL_ARRAY_BUFFER, batch_vbo);
 	
 	//Set attribute pointers
@@ -275,11 +325,17 @@ void Gfx_DisplayCmd(const Gfx_Cmd *cmd)
 void Gfx_Init(void)
 {
 	//Set window hints
+#ifdef PSXF_GLES
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+#else
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+#endif
 	glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 	
@@ -311,7 +367,8 @@ void Gfx_Init(void)
 		glfwSwapInterval(-1);
 	else
 		glfwSwapInterval(1);
-	
+
+#ifndef PSXF_GLES	
 	//Initialize GLAD
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
@@ -324,6 +381,7 @@ void Gfx_Init(void)
 		sprintf(error_msg, "[Gfx_Init] OpenGL 3.2 is not supported");
 		ErrorLock();
 	}
+#endif
 	
 	//Initialize render state
 	glm_ortho(0.0f, (float)SCREEN_WIDTH, (float)SCREEN_HEIGHT, 0.0f, -1.0f, 1.0f, projection);
@@ -350,8 +408,11 @@ void Gfx_Init(void)
 		*tpage_texture_p = Gfx_CreateTexture(256, 256);
 	
 	//Create batch VAO
+#ifndef PSXF_GLES
+	//OpenGL ES 2.0 doesn't have VAOs
 	glGenVertexArrays(1, &batch_vao);
 	glBindVertexArray(batch_vao);
+#endif
 	
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
@@ -386,7 +447,11 @@ void Gfx_Flip(void)
 	if (clear_e)
 	{
 		glClearColor(clear_r, clear_g, clear_b, 1.0f);
+	#ifdef PSXF_GLES
+		glClearDepthf(1.0f);
+	#else
 		glClearDepth(1.0f);
+	#endif
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 	
@@ -460,10 +525,43 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 			u8 *tim_clut_data = &tim_clut[12];
 			
 			//Convert palette
-			u8 tex_palette[16][2];
+		#ifdef PSXF_GLES
+			u8 tex_palette[16][4]; //RGBA8888
+		#else
+			u8 tex_palette[16][2]; //RGBA5551
+		#endif
 			
 			u8 *tex_palette_p = &tex_palette[0][0];
 			const u8 *tim_clut_data_p = tim_clut_data;
+		#ifdef PSXF_GLES
+			//Convert palette to RGBA8888
+			for (u16 i = 0; i < tim_clut_w; i++, tex_palette_p += 4, tim_clut_data_p += 2)
+			{
+				u16 raw_pal = tim_clut_data_p[0] | (tim_clut_data_p[1] << 8);
+				if (raw_pal == 0)
+				{
+					tex_palette_p[0] = 0;
+					tex_palette_p[1] = 0;
+					tex_palette_p[2] = 0;
+					tex_palette_p[3] = 0;
+				}
+				else
+				{
+					u8 r = (u8)(raw_pal & 31);
+					u8 g = (u8)((raw_pal >> 5) & 31);
+					u8 b = (u8)((raw_pal >> 10) & 31);
+					b = (b << 3) | (b & 7);
+					g = (g << 3) | (g & 7);
+					r = (r << 3) | (r & 7);
+					
+					tex_palette_p[0] = r;
+					tex_palette_p[1] = g;
+					tex_palette_p[2] = b;
+					tex_palette_p[3] = 0xFF;
+				}
+			}
+		#else
+			//Copy the RGBA5551 palette as-is, and correct its alpha bit
 			for (u16 i = 0; i < tim_clut_w; i++, tex_palette_p += 2, tim_clut_data_p += 2)
 			{
 				tex_palette_p[0] = tim_clut_data_p[0];
@@ -472,6 +570,7 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 				//Set the alpha bit if not transparent
 				tex_palette_p[1] |= tim_clut_data_p[0] || tim_clut_data_p[1] ? 0x80 : 0;
 			}
+		#endif
 			
 			//Read texture header
 			u8 *tim_tex = &((u8*)tim_clut)[tim_clut_l];
@@ -485,10 +584,32 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 			tex->tpage = ((tim_tex_y >> 8) % TPAGE_Y) * TPAGE_X + ((tim_tex_x >> 6) % TPAGE_X);
 			
 			//Convert art
-			u8 tex_data[256*256][2];
+		#ifdef PSXF_GLES
+			u8 tex_data[256*256][4]; //RGBA8888
+		#else
+			u8 tex_data[256*256][2]; //RGBA5551
+		#endif
 			
 			u8 *tex_data_p = &tex_data[0][0];
 			const u8 *tim_tex_data_p = tim_tex_data;
+		#ifdef PSXF_GLES
+			//Output RGBA8888 bitmap
+			for (size_t i = (tim_tex_w << 1) * tim_tex_h; i > 0; i--, tex_data_p += 8, tim_tex_data_p++)
+			{
+				u8 *mapp;
+				mapp = &tex_palette[*tim_tex_data_p & 0xF][0];
+				tex_data_p[0] = mapp[0];
+				tex_data_p[1] = mapp[1];
+				tex_data_p[2] = mapp[2];
+				tex_data_p[3] = mapp[3];
+				mapp = &tex_palette[*tim_tex_data_p >> 4][0];
+				tex_data_p[4] = mapp[0];
+				tex_data_p[5] = mapp[1];
+				tex_data_p[6] = mapp[2];
+				tex_data_p[7] = mapp[3];
+			}
+		#else
+			//Output RGBA5551 bitmap
 			for (size_t i = (tim_tex_w << 1) * tim_tex_h; i > 0; i--, tex_data_p += 4, tim_tex_data_p++)
 			{
 				u8 *mapp;
@@ -499,6 +620,7 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 				tex_data_p[2] = mapp[0];
 				tex_data_p[3] = mapp[1];
 			}
+		#endif
 			
 			//Upload to texture
 			Gfx_UploadTexture(tpage_texture[tex->tpage], &tex_data[0][0], tim_tex_w << 2, tim_tex_h);
@@ -514,10 +636,43 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 			u8 *tim_clut_data = &tim_clut[12];
 			
 			//Convert palette
-			u8 tex_palette[256][2];
+		#ifdef PSXF_GLES
+			u8 tex_palette[256][4]; //RGBA8888
+		#else
+			u8 tex_palette[256][2]; //RGBA5551
+		#endif
 			
 			u8 *tex_palette_p = &tex_palette[0][0];
 			const u8 *tim_clut_data_p = tim_clut_data;
+		#ifdef PSXF_GLES
+			//Convert palette to RGBA8888
+			for (u16 i = 0; i < tim_clut_w; i++, tex_palette_p += 4, tim_clut_data_p += 2)
+			{
+				u16 raw_pal = tim_clut_data_p[0] | (tim_clut_data_p[1] << 8);
+				if (raw_pal == 0)
+				{
+					tex_palette_p[0] = 0;
+					tex_palette_p[1] = 0;
+					tex_palette_p[2] = 0;
+					tex_palette_p[3] = 0;
+				}
+				else
+				{
+					u8 r = (u8)(raw_pal & 31);
+					u8 g = (u8)((raw_pal >> 5) & 31);
+					u8 b = (u8)((raw_pal >> 10) & 31);
+					b = (b << 3) | (b & 7);
+					g = (g << 3) | (g & 7);
+					r = (r << 3) | (r & 7);
+					
+					tex_palette_p[0] = r;
+					tex_palette_p[1] = g;
+					tex_palette_p[2] = b;
+					tex_palette_p[3] = 0xFF;
+				}
+			}
+		#else
+			//Copy the RGBA5551 palette as-is, and correct its alpha bit
 			for (u16 i = 0; i < tim_clut_w; i++, tex_palette_p += 2, tim_clut_data_p += 2)
 			{
 				tex_palette_p[0] = tim_clut_data_p[0];
@@ -526,6 +681,7 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 				//Set the alpha bit if not transparent
 				tex_palette_p[1] |= tim_clut_data_p[0] || tim_clut_data_p[1] ? 0x80 : 0;
 			}
+		#endif
 			
 			//Read texture header
 			u8 *tim_tex = &((u8*)tim_clut)[tim_clut_l];
@@ -539,16 +695,33 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 			tex->tpage = ((tim_tex_y >> 8) % TPAGE_Y) * TPAGE_X + ((tim_tex_x >> 6) % TPAGE_X);
 			
 			//Convert art
-			u8 tex_data[256*256][2];
+		#ifdef PSXF_GLES
+			u8 tex_data[256*256][4]; //RGBA8888
+		#else
+			u8 tex_data[256*256][2]; //RGBA5551
+		#endif
 			
 			u8 *tex_data_p = &tex_data[0][0];
 			const u8 *tim_tex_data_p = tim_tex_data;
+		#ifdef PSXF_GLES
+			//Output RGBA8888 bitmap
+			for (size_t i = (tim_tex_w << 1) * tim_tex_h; i > 0; i--, tex_data_p += 4, tim_tex_data_p++)
+			{
+				u8 *mapp = &tex_palette[*tim_tex_data_p][0];
+				tex_data_p[0] = mapp[0];
+				tex_data_p[1] = mapp[1];
+				tex_data_p[2] = mapp[2];
+				tex_data_p[3] = mapp[3];
+			}
+		#else
+			//Output RGBA5551 bitmap
 			for (size_t i = (tim_tex_w << 1) * tim_tex_h; i > 0; i--, tex_data_p += 2, tim_tex_data_p++)
 			{
 				u8 *mapp = &tex_palette[*tim_tex_data_p][0];
 				tex_data_p[0] = mapp[0];
 				tex_data_p[1] = mapp[1];
 			}
+		#endif
 			
 			//Upload to texture
 			Gfx_UploadTexture(tpage_texture[tex->tpage], &tex_data[0][0], tim_tex_w << 1, tim_tex_h);

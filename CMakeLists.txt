@@ -1,6 +1,7 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.16.3)
 
 option(STDMEM "Use standard libc memory allocators instead of the fast custom one" OFF)
+option(GLES "Use OpenGL ES 2.0 instead of OpenGL Core 3.2" OFF)
 
 project(funkin LANGUAGES C)
 
@@ -37,8 +38,6 @@ add_executable(funkin WIN32 # The `WIN32` here is so we don't get a command prom
 	"src/pad.h"
 	"src/pc/timer.c"
 	"src/timer.h"
-	"src/pc/glad/glad.c"
-	"src/pc/glad/glad.h"
 	"src/stage/dummy.c"
 	"src/stage/dummy.h"
 	"src/stage/week1.c"
@@ -84,6 +83,28 @@ add_executable(funkin WIN32 # The `WIN32` here is so we don't get a command prom
 	"src/object/combo.c"
 	"src/object/combo.h"
 )
+
+if (GLES)
+	# Enable OpenGL ES 2.0 code
+	target_compile_definitions(funkin PRIVATE PSXF_GLES)
+
+	# Link OpenGL ES 2.0 library
+	target_link_libraries(funkin PRIVATE GLESv2)
+	# Raspberry Pi Broadcom GLESv2 driver.
+	# Would be nice to test someday, but it doesn't work during X sessions,
+	# and this port cannot be ran from the terminal (yet).
+	# For now, we'll just have to settle with the open-source Mesa driver.
+	#target_link_libraries(funkin PRIVATE m "/opt/vc/lib/libbrcmGLESv2.so")
+else()
+	# Include the 'glad' OpenGL loader
+	target_sources(funkin PRIVATE
+		"src/pc/glad/glad.c"
+		"src/pc/glad/glad.h"
+	)
+
+	# glad requires libdl on Unix platforms
+	target_link_libraries(funkin PRIVATE ${CMAKE_DL_LIBS})
+endif()
 
 # Make it so the code knows it's targetting PC
 target_compile_definitions(funkin PRIVATE PSXF_PC)
