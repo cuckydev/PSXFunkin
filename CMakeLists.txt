@@ -85,8 +85,10 @@ add_executable(funkin WIN32 # The `WIN32` here is so we don't get a command prom
 )
 
 if (GLES)
+	# Enable OpenGL ES 2.0 code
 	target_compile_definitions(funkin PRIVATE PSXF_GLES)
 
+	# Link OpenGL ES 2.0 library
 	target_link_libraries(funkin PRIVATE GLESv2)
 	# Raspberry Pi Broadcom GLESv2 driver.
 	# Would be nice to test someday, but it doesn't work during X sessions,
@@ -94,11 +96,13 @@ if (GLES)
 	# For now, we'll just have to settle with the open-source Mesa driver.
 	#target_link_libraries(funkin PRIVATE m "/opt/vc/lib/libbrcmGLESv2.so")
 else()
+	# Include the 'glad' OpenGL loader
 	target_sources(funkin PRIVATE
 		"src/pc/glad/glad.c"
 		"src/pc/glad/glad.h"
 	)
 
+	# glad requires libdl on Unix platforms
 	target_link_libraries(funkin PRIVATE ${CMAKE_DL_LIBS})
 endif()
 
