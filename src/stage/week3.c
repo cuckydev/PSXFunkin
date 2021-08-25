@@ -76,15 +76,15 @@ void Back_Week3_DrawBG(StageBack *back)
 		RECT src;
 		fixed_t scale;
 	} roof_piece[] = {
-		{{  0, 0,  16, 256}, FIXED_DEC(3,1) * 7 / 10},
+		{{  0, 0,  16, 256}, FIXED_MUL(FIXED_DEC(3,1) * 7 / 10, FIXED_UNIT + FIXED_DEC(SCREEN_WIDEOADD,2) * 10 / 336)},
 		{{ 16, 0,  55, 256}, FIXED_DEC(1,1) * 9 / 10},
 		{{ 71, 0, 128, 256}, FIXED_DEC(265,100) * 7 / 10},
 		{{199, 0,  55, 256}, FIXED_DEC(1,1) * 9 / 10},
-		{{255, 0,   0, 256}, FIXED_DEC(16,1)}
+		{{255, 0,   0, 256}, FIXED_DEC(16,1) + FIXED_DEC(SCREEN_WIDEOADD2,1)}
 	};
 	
 	RECT_FIXED roof_dst = {
-		FIXED_DEC(-210,1) - fx,
+		FIXED_DEC(-210,1) - FIXED_DEC(SCREEN_WIDEOADD,2) - fx,
 		FIXED_DEC(-106,1) - fy,
 		0,
 		FIXED_DEC(220,1)
@@ -98,8 +98,9 @@ void Back_Week3_DrawBG(StageBack *back)
 		roof_dst.x += roof_dst.w;
 	}
 	
+	RECT roof_fillsrc = {0, 255, 1, 0};
 	RECT roof_fill = {0, SCREEN_HEIGHT * 2 / 3, SCREEN_WIDTH, SCREEN_HEIGHT * 1 / 3};
-	Gfx_DrawRect(&roof_fill, 49, 58, 115);
+	Gfx_DrawTex(&this->tex_back2, &roof_fillsrc, &roof_fill);
 	
 	//Move train
 	if (this->train_x <= TRAIN_END_X)
@@ -200,8 +201,9 @@ void Back_Week3_DrawBG(StageBack *back)
 	building_src.y += building_src.h;
 	Stage_DrawTex(&this->tex_back0, &building_src, &building_dst, stage.camera.bzoom);
 	
+	RECT building_fillsrc = {0, 255, 1, 0};
 	RECT building_fill = {0, SCREEN_HEIGHT * 3 / 7, SCREEN_WIDTH, SCREEN_HEIGHT * 4 / 7};
-	Gfx_DrawRect(&building_fill, 16, 8, 25);
+	Gfx_DrawTex(&this->tex_back0, &building_fillsrc, &building_fill);
 	
 	//Draw sky
 	fx = stage.camera.x >> 3;
@@ -209,10 +211,10 @@ void Back_Week3_DrawBG(StageBack *back)
 	
 	RECT sky_src = {0, 0, 255, 128};
 	RECT_FIXED sky_dst = {
-		FIXED_DEC(-166,1) - fx,
-		FIXED_DEC(-117,1) - fy,
-		FIXED_DEC(172,1),
-		FIXED_DEC(110,1)
+		FIXED_DEC(-166,1) - FIXED_DEC(SCREEN_WIDEOADD,2) - fx,
+		FIXED_DEC(-117,1) - FIXED_DEC(SCREEN_WIDEOADD,4) - fy,
+		FIXED_DEC(172,1) + FIXED_DEC(SCREEN_WIDEOADD,1),
+		FIXED_DEC(110,1) + FIXED_DEC(SCREEN_WIDEOADD,2)
 	};
 	
 	Stage_DrawTex(&this->tex_back5, &sky_src, &sky_dst, stage.camera.bzoom);

@@ -17,18 +17,22 @@ void Speaker_Init(Speaker *this)
 void Speaker_Bump(Speaker *this)
 {
 	//Set bump
-	this->bump = FIXED_DEC(4,1) / 24;
+	this->bump = FIXED_DEC(4,1) / 24 - 1;
 }
 
 void Speaker_Tick(Speaker *this, fixed_t x, fixed_t y)
 {
 	//Get frame to use according to bump
 	u8 frame;
-	this->bump -= timer_dt;
 	if (this->bump > 0)
+	{
 		frame = (this->bump * 24) >> FIXED_SHIFT;
+		this->bump -= timer_dt;
+	}
 	else
+	{
 		frame = 0;
+	}
 	
 	//Draw speakers
 	static const struct SpeakerPiece
@@ -37,12 +41,12 @@ void Speaker_Tick(Speaker *this, fixed_t x, fixed_t y)
 		u8 ox, oy;
 	} speaker_draw[4][2] = {
 		{ //bump 0
-			{{ 96,  88, 160, 88},   0,  0},
-			{{  0, 176,  16, 56}, 160, 32},
+			{{ 97,  88, 158, 88},   0,  0},
+			{{  0, 176,  18, 56}, 158, 32},
 		},
 		{ //bump 1
-			{{176,   0,  80, 88},   0,  0},
-			{{  0,  88,  96, 88},  80,  0},
+			{{176,   0,  79, 88},   0,  0},
+			{{  0,  88,  97, 88},  79,  0},
 		},
 		{ //bump 2
 			{{  0,   0,  88, 88},   0,  0},
@@ -59,8 +63,6 @@ void Speaker_Tick(Speaker *this, fixed_t x, fixed_t y)
 	{
 		//Draw piece
 		RECT piece_src = {piece->rect[0], piece->rect[1], piece->rect[2], piece->rect[3]};
-		if ((piece_src.x + piece_src.w) >= 0x100)
-			piece_src.w = 0xFF - piece_src.x;
 		RECT_FIXED piece_dst = {
 			x - FIXED_DEC(88,1) + ((fixed_t)piece->ox << FIXED_SHIFT) - stage.camera.x,
 			y + ((fixed_t)piece->oy << FIXED_SHIFT) - stage.camera.y,
