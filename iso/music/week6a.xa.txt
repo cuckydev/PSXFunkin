@@ -1,0 +1,4 @@
+1 xa senpaiv.xa 1 0
+1 xa senpaii.xa 1 1
+1 xa rosesv.xa 1 2
+1 xa rosesi.xa 1 3

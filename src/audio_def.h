@@ -75,9 +75,9 @@ static const char *xa_paths[] = {
 	"\\MUSIC\\WEEK4B.XA;1", //XA_Week4B
 	"\\MUSIC\\WEEK5A.XA;1", //XA_Week5A
 	"\\MUSIC\\WEEK5B.XA;1", //XA_Week5B
-	/*
 	"\\MUSIC\\WEEK6A.XA;1", //XA_Week6A
 	"\\MUSIC\\WEEK6B.XA;1", //XA_Week6B
+	/*
 	"\\MUSIC\\WEEK7A.XA;1", //XA_Week7A
 	"\\MUSIC\\WEEK7B.XA;1", //XA_Week7B
 	"\\MUSIC\\KAPIA.XA;1",  //XA_KapiA

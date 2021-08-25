@@ -9,7 +9,9 @@ all: \
 	iso/music/week4a.xa \
 	iso/music/week4b.xa \
 	iso/music/week5a.xa \
-	iso/music/week5b.xa
+	iso/music/week5b.xa \
+	iso/music/week6a.xa \
+	iso/music/week6b.xa
 
 # XA converts
 iso/music/%.xa: iso/music/%.mp3
@@ -29,3 +31,5 @@ iso/music/week4a.xa: iso/music/satinpantiesi.xa iso/music/satinpantiesv.xa iso/m
 iso/music/week4b.xa: iso/music/milfi.xa iso/music/milfv.xa
 iso/music/week5a.xa: iso/music/cocoai.xa iso/music/cocoav.xa iso/music/eggnogi.xa iso/music/eggnogv.xa
 iso/music/week5b.xa: iso/music/winterhorrorlandi.xa iso/music/winterhorrorlandv.xa
+iso/music/week6a.xa: iso/music/senpaii.xa iso/music/senpaiv.xa iso/music/rosesi.xa iso/music/rosesv.xa
+iso/music/week6b.xa: iso/music/thornsi.xa iso/music/thornsv.xa
