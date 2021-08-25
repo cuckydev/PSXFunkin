@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16.3)
 
 option(STDMEM "Use standard libc memory allocators instead of the fast custom one" OFF)
-option(GLES "Use OpenGL ES 2.0 instead of OpenGL Core 3.2" OFF)
+set(GL "MODERN" CACHE STRING "Which version of OpenGL to use: 'MODERN' for OpenGL Core 3.2, 'LEGACY' for OpenGL 2.1, and 'ES' for OpenGL ES 2.0")
 
 project(funkin LANGUAGES C)
 
@@ -84,9 +84,9 @@ add_executable(funkin
 	"src/object/combo.h"
 )
 
-if (GLES)
+if (GL STREQUAL "ES")
 	# Enable OpenGL ES 2.0 code
-	target_compile_definitions(funkin PRIVATE PSXF_GLES)
+	target_compile_definitions(funkin PRIVATE PSXF_GL=PSXF_GL_ES)
 
 	# Link OpenGL ES 2.0 library
 	target_link_libraries(funkin PRIVATE GLESv2)
@@ -96,6 +96,14 @@ if (GLES)
 	# For now, we'll just have to settle with the open-source Mesa driver.
 	#target_link_libraries(funkin PRIVATE m "/opt/vc/lib/libbrcmGLESv2.so")
 else()
+	if(GL STREQUAL "LEGACY")
+		target_compile_definitions(funkin PRIVATE PSXF_GL=PSXF_GL_LEGACY)
+	elseif(GL STREQUAL "MODERN")
+		target_compile_definitions(funkin PRIVATE PSXF_GL=PSXF_GL_MODERN)
+	else()
+		message(FATAL_ERROR "Invalid GL specified")
+	endif()
+
 	# Include the 'glad' OpenGL loader
 	target_sources(funkin PRIVATE
 		"src/pc/glad/glad.c"

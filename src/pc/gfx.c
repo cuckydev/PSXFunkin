@@ -3,7 +3,11 @@
 #include "../main.h"
 #include "../mem.h"
 
-#ifdef PSXF_GLES
+#define PSXF_GL_MODERN 0
+#define PSXF_GL_LEGACY 1
+#define PSXF_GL_ES 2
+
+#if PSXF_GL == PSXF_GL_ES
  #include <GLES2/gl2.h>
 #else
  #include "glad/glad.h"
@@ -59,7 +63,7 @@ typedef struct
 } Gfx_Vertex;
 
 //Shader
-#ifdef PSXF_GLES
+#if PSXF_GL == PSXF_GL_ES
 //GLSL ES 1.0, for OpenGL ES 2.0
 static const char *generic_shader_vert = "\
 #version 100\n\
@@ -90,7 +94,36 @@ if (gl_FragColor.a == 0.0)\
 discard;\
 }\
 }";
-#else
+#elif PSXF_GL == PSXF_GL_LEGACY
+//GLSL 1.20, for OpenGL 2.1
+static const char *generic_shader_vert = "\
+#version 120\n\
+attribute vec2 v_position;\
+attribute vec2 v_uv;\
+attribute vec4 v_colour;\
+varying vec2 f_uv;\
+varying vec4 f_colour;\
+uniform mat4 u_projection;\
+void main()\
+{\
+f_uv = v_uv;\
+f_colour = v_colour;\
+gl_Position = u_projection * vec4(v_position.xy, 0.0, 1.0);\
+}";
+static const char *generic_shader_frag = "\
+#version 120\n\
+uniform sampler2D u_texture;\
+varying vec2 f_uv;\
+varying vec4 f_colour;\
+void main()\
+{\
+gl_FragColor = texture2D(u_texture, f_uv) * f_colour;\
+if (gl_FragColor.a == 0.0)\
+{\
+discard;\
+}\
+}";
+#elif PSXF_GL == PSXF_GL_MODERN
 //GLSL Core 1.50, for OpenGL Core 3.2
 static const char *generic_shader_vert = "\
 #version 150 core\n\
@@ -129,7 +162,7 @@ static GLuint plain_texture;
 static GLuint vram_texture;
 
 //Batch
-#ifndef PSXF_GLES
+#if PSXF_GL == PSXF_GL_MODERN
 static GLuint batch_vao;
 #endif
 static GLuint batch_vbo;
@@ -225,7 +258,7 @@ static GLuint Gfx_CreateTexture(GLint width, GLint height)
 	
 	//Set texture parameters
 	glBindTexture(GL_TEXTURE_2D, texture_id);
-#ifdef PSXF_GLES
+#if PSXF_GL == PSXF_GL_ES
 	//OpenGL ES 2.0 does not support RGBA5551, so settle for RGBA8888 instead.
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 #else
@@ -235,7 +268,7 @@ static GLuint Gfx_CreateTexture(GLint width, GLint height)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-#ifndef PSXF_GLES
+#if PSXF_GL != PSXF_GL_ES
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 #endif
 	
@@ -246,7 +279,7 @@ static void Gfx_UploadTexture(GLuint texture_id, GLint x, GLint y, const u8 *dat
 {
 	//Upload data to texture
 	glBindTexture(GL_TEXTURE_2D, texture_id);
-#ifdef PSXF_GLES
+#if PSXF_GL == PSXF_GL_ES
 	//OpenGL ES 2.0 does not support RGBA5551, so settle for RGBA8888 instead.
 	glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, width, height, GL_RGBA, GL_UNSIGNED_BYTE, (const void*)data);
 #else
@@ -261,8 +294,8 @@ static void Gfx_PushBatch(void)
 		return;
 	
 	//Bind VAO and VBO
-#ifndef PSXF_GLES
-	//OpenGL ES 2.0 doesn't have VAOs
+#if PSXF_GL == PSXF_GL_MODERN
+	//Only modern OpenGL has VAOs
 	glBindVertexArray(batch_vao);
 #endif
 	glBindBuffer(GL_ARRAY_BUFFER, batch_vbo);
@@ -351,11 +384,15 @@ static void Gfx_DisplayCmd(const Gfx_Cmd *cmd)
 void Gfx_Init(void)
 {
 	//Set window hints
-#ifdef PSXF_GLES
+#if PSXF_GL == PSXF_GL_ES
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-#else
+#elif PSXF_GL == PSXF_GL_LEGACY
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+#elif PSXF_GL == PSXF_GL_MODERN
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
@@ -397,7 +434,7 @@ void Gfx_Init(void)
 	else
 		glfwSwapInterval(1);
 
-#ifndef PSXF_GLES	
+#if PSXF_GL != PSXF_GL_ES
 	//Initialize GLAD
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
@@ -405,11 +442,19 @@ void Gfx_Init(void)
 		ErrorLock();
 	}
 	
+#if PSXF_GL == PSXF_GL_MODERN
 	if (!GLAD_GL_VERSION_3_2)
 	{
 		sprintf(error_msg, "[Gfx_Init] OpenGL 3.2 is not supported");
 		ErrorLock();
 	}
+#elif PSXF_GL == PSXF_GL_LEGACY
+	if (!GLAD_GL_VERSION_2_1)
+	{
+		sprintf(error_msg, "[Gfx_Init] OpenGL 2.1 is not supported");
+		ErrorLock();
+	}
+#endif
 #endif
 	
 	//Initialize render state
@@ -429,7 +474,7 @@ void Gfx_Init(void)
 	glUniformMatrix4fv(glGetUniformLocation(generic_shader_id, "u_projection"), 1, GL_FALSE, &projection[0][0]);
 	
 	//Create textures
-#ifdef PSXF_GLES
+#if PSXF_GL == PSXF_GL_ES
 	static const u8 plain_texture_data[] = {0xFF, 0xFF, 0xFF, 0xFF}; //RGBA8888
 #else
 	static const u8 plain_texture_data[] = {0xFF, 0xFF}; //RGBA5551
@@ -439,8 +484,8 @@ void Gfx_Init(void)
 	vram_texture = Gfx_CreateTexture(VRAM_WIDTH, VRAM_HEIGHT);
 	
 	//Create batch VAO
-#ifndef PSXF_GLES
-	//OpenGL ES 2.0 doesn't have VAOs
+#if PSXF_GL == PSXF_GL_MODERN
+	//Only modern OpenGL has VAOs
 	glGenVertexArrays(1, &batch_vao);
 	glBindVertexArray(batch_vao);
 #endif
@@ -478,7 +523,7 @@ void Gfx_Flip(void)
 	if (clear_e)
 	{
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	#ifdef PSXF_GLES
+	#if PSXF_GL == PSXF_GL_ES
 		glClearDepthf(1.0f);
 	#else
 		glClearDepth(1.0f);
@@ -560,7 +605,7 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 			u8 *tim_clut_data = &tim_clut[12];
 			
 			//Convert palette
-		#ifdef PSXF_GLES
+		#if PSXF_GL == PSXF_GL_ES
 			u8 tex_palette[16][4]; //RGBA8888
 		#else
 			u8 tex_palette[16][2]; //RGBA5551
@@ -568,7 +613,7 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 			
 			u8 *tex_palette_p = &tex_palette[0][0];
 			const u8 *tim_clut_data_p = tim_clut_data;
-		#ifdef PSXF_GLES
+		#if PSXF_GL == PSXF_GL_ES
 			//Convert palette to RGBA8888
 			for (u16 i = 0; i < tim_clut_w; i++, tex_palette_p += 4, tim_clut_data_p += 2)
 			{
@@ -621,7 +666,7 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 			tex->tpage_y = tim_tex_y + ((tim_tex_x * 4) / VRAM_WIDTH) * (VRAM_HEIGHT / 2);
 			
 			//Convert art
-		#ifdef PSXF_GLES
+		#if PSXF_GL == PSXF_GL_ES
 			u8 tex_data[256*256][4]; //RGBA8888
 		#else
 			u8 tex_data[256*256][2]; //RGBA5551
@@ -629,7 +674,7 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 			
 			u8 *tex_data_p = &tex_data[0][0];
 			const u8 *tim_tex_data_p = tim_tex_data;
-		#ifdef PSXF_GLES
+		#if PSXF_GL == PSXF_GL_ES
 			//Output RGBA8888 bitmap
 			for (size_t i = (tim_tex_w << 1) * tim_tex_h; i > 0; i--, tex_data_p += 8, tim_tex_data_p++)
 			{
@@ -673,7 +718,7 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 			u8 *tim_clut_data = &tim_clut[12];
 			
 			//Convert palette
-		#ifdef PSXF_GLES
+		#if PSXF_GL == PSXF_GL_ES
 			u8 tex_palette[256][4]; //RGBA8888
 		#else
 			u8 tex_palette[256][2]; //RGBA5551
@@ -681,7 +726,7 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 			
 			u8 *tex_palette_p = &tex_palette[0][0];
 			const u8 *tim_clut_data_p = tim_clut_data;
-		#ifdef PSXF_GLES
+		#if PSXF_GL == PSXF_GL_ES
 			//Convert palette to RGBA8888
 			for (u16 i = 0; i < tim_clut_w; i++, tex_palette_p += 4, tim_clut_data_p += 2)
 			{
@@ -734,7 +779,7 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 			tex->tpage_y = tim_tex_y + ((tim_tex_x * 4) / VRAM_WIDTH) * (VRAM_HEIGHT / 2);
 			
 			//Convert art
-		#ifdef PSXF_GLES
+		#if PSXF_GL == PSXF_GL_ES
 			u8 tex_data[256*256][4]; //RGBA8888
 		#else
 			u8 tex_data[256*256][2]; //RGBA5551
@@ -742,7 +787,7 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 			
 			u8 *tex_data_p = &tex_data[0][0];
 			const u8 *tim_tex_data_p = tim_tex_data;
-		#ifdef PSXF_GLES
+		#if PSXF_GL == PSXF_GL_ES
 			//Output RGBA8888 bitmap
 			for (size_t i = (tim_tex_w << 1) * tim_tex_h; i > 0; i--, tex_data_p += 4, tim_tex_data_p++)
 			{
