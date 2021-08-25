@@ -16,8 +16,13 @@
 #define WINDOW_SCALE 3
 #define WINDOW_WIDTH  (SCREEN_WIDTH * WINDOW_SCALE)
 #define WINDOW_HEIGHT (SCREEN_HEIGHT * WINDOW_SCALE)
-#define VRAM_WIDTH (1024*4) //The PSX's VRAM is 1024x512 at 16bpp, but 4bpp allows cramming 4 times the pixels in that space, so provide enough room for that
-#define VRAM_HEIGHT 512
+//The PSX's VRAM can be thought of as a 1024x512 16bpp texture, but 4bpp
+//allows cramming 4 times the pixels in that space.
+//That said, 4096x512 is a little too large for some low-end platforms
+//(particularly older Raspberry Pis), so let's do some trickery to fit
+//it into 2048x1024 instead.
+#define VRAM_WIDTH 2048
+#define VRAM_HEIGHT 1024
 
 //Window
 GLFWwindow *window;
@@ -611,8 +616,9 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 			u16 tim_tex_h = tim_tex[10] | (tim_tex[11] << 8);
 			u8 *tim_tex_data = &tim_tex[12];
 			
-			tex->tpage_x = tim_tex_x * 4; //Convert from 16bpp index to 4bpp
-			tex->tpage_y = tim_tex_y;
+			//Convert tpage coordinate from 16bpp 1024x512 to 4bpp 2048x1024
+			tex->tpage_x = (tim_tex_x * 4) % VRAM_WIDTH;
+			tex->tpage_y = tim_tex_y + ((tim_tex_x * 4) / VRAM_WIDTH) * (VRAM_HEIGHT / 2);
 			
 			//Convert art
 		#ifdef PSXF_GLES
@@ -723,8 +729,9 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 			u16 tim_tex_h = tim_tex[10] | (tim_tex[11] << 8);
 			u8 *tim_tex_data = &tim_tex[12];
 			
-			tex->tpage_x = tim_tex_x * 4; //Convert from 16bpp index to 4bpp
-			tex->tpage_y = tim_tex_y;
+			//Convert tpage coordinate from 16bpp 1024x512 to 4bpp 2048x1024
+			tex->tpage_x = (tim_tex_x * 4) % VRAM_WIDTH;
+			tex->tpage_y = tim_tex_y + ((tim_tex_x * 4) / VRAM_WIDTH) * (VRAM_HEIGHT / 2);
 			
 			//Convert art
 		#ifdef PSXF_GLES
