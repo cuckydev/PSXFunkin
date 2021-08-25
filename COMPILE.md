@@ -70,6 +70,8 @@ First, make sure to `cd` to the repo directory where all the makefiles are. You'
 
 `make -f Makefile.tim all` This will convert all the pngs in [iso/](/iso/) to TIM files that can be displayed by the PS1.
 
+`make -f Makefile.xa all` This will convert all the mp3s in [iso/music/](/iso/music/) to XA files that can be played by the PS1.
+
 ## Compiling PSXFunkin
 If everything went well, you can `cd` back to the repo directory, run `make`, and it will compile the game and spit out a `funkin.ps-exe` in the same directory.
 
