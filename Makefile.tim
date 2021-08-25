@@ -4,6 +4,14 @@ iso/menu/%.tim: iso/menu/%.png
 iso/menu/menu.arc: iso/menu/back.tim iso/menu/ng.tim iso/menu/story.tim iso/menu/title.tim
 	tools/funkinarcpak/funkinarcpak $@ $^
 
+# Font
+iso/font/%.tim: iso/font/%.png
+	tools/funkintimconv/funkintimconv $@ $<
+
+# Stage
+iso/stage/%.tim: iso/stage/%.png
+	tools/funkintimconv/funkintimconv $@ $<
+
 # BF
 iso/bf/%.tim: iso/bf/%.png
 	tools/funkintimconv/funkintimconv $@ $<
@@ -44,6 +52,12 @@ iso/xmasp/%.tim: iso/xmasp/%.png
 iso/xmasp/main.arc: iso/xmasp/idle0.tim iso/xmasp/idle1.tim iso/xmasp/idle2.tim iso/xmasp/idle3.tim iso/xmasp/lefta0.tim iso/xmasp/lefta1.tim iso/xmasp/leftb0.tim iso/xmasp/leftb1.tim iso/xmasp/downa0.tim iso/xmasp/downa1.tim iso/xmasp/downb0.tim iso/xmasp/downb1.tim iso/xmasp/upa0.tim iso/xmasp/upa1.tim iso/xmasp/upb0.tim iso/xmasp/upb1.tim iso/xmasp/righta0.tim iso/xmasp/righta1.tim iso/xmasp/rightb0.tim iso/xmasp/rightb1.tim
 	tools/funkinarcpak/funkinarcpak $@ $^
 
+# Senpai
+iso/senpai/%.tim: iso/senpai/%.png
+	tools/funkintimconv/funkintimconv $@ $<
+iso/senpai/main.arc: iso/senpai/senpai0.tim iso/senpai/senpai1.tim
+	tools/funkinarcpak/funkinarcpak $@ $^
+
 # Tank
 iso/tank/%.tim: iso/tank/%.png
 	tools/funkintimconv/funkintimconv $@ $<
@@ -54,4 +68,75 @@ iso/tank/ugh.arc: iso/tank/ugh0.tim iso/tank/ugh1.tim
 iso/tank/good.arc: iso/tank/good0.tim iso/tank/good1.tim iso/tank/good2.tim iso/tank/good3.tim
 	tools/funkinarcpak/funkinarcpak $@ $^
 
-all: iso/menu/menu.arc iso/menu/loading.tim iso/bf/main.arc iso/bf/dead.arc iso/bf/weeb.arc iso/dad/main.arc iso/spook/main.arc iso/pico/main.arc iso/mom/main.arc iso/mom/hair.tim iso/xmasp/main.arc iso/tank/main.arc iso/tank/ugh.arc iso/tank/good.arc
+# GF
+iso/gf/%.tim: iso/gf/%.png
+	tools/funkintimconv/funkintimconv $@ $<
+iso/gf/main.arc: iso/gf/bopleft.tim iso/gf/bopright.tim iso/gf/cry.tim
+	tools/funkinarcpak/funkinarcpak $@ $^
+
+# Week 1
+iso/week1/%.tim: iso/week1/%.png
+	tools/funkintimconv/funkintimconv $@ $<
+iso/week1/back.arc: iso/week1/back0.tim iso/week1/back1.tim
+	tools/funkinarcpak/funkinarcpak $@ $^
+
+# Week 2
+iso/week2/%.tim: iso/week2/%.png
+	tools/funkintimconv/funkintimconv $@ $<
+iso/week2/back.arc: iso/week2/back0.tim iso/week2/back1.tim iso/week2/back2.tim
+	tools/funkinarcpak/funkinarcpak $@ $^
+
+# Week 3
+iso/week3/%.tim: iso/week3/%.png
+	tools/funkintimconv/funkintimconv $@ $<
+iso/week3/back.arc: iso/week3/back0.tim iso/week3/back1.tim iso/week3/back2.tim iso/week3/back3.tim iso/week3/back4.tim iso/week3/back5.tim
+	tools/funkinarcpak/funkinarcpak $@ $^
+
+# Week 4
+iso/week4/%.tim: iso/week4/%.png
+	tools/funkintimconv/funkintimconv $@ $<
+iso/week4/back.arc: iso/week4/back0.tim iso/week4/back1.tim iso/week4/back2.tim iso/week4/back3.tim
+	tools/funkinarcpak/funkinarcpak $@ $^
+iso/week4/hench.arc: iso/week4/hench0.tim iso/week4/hench1.tim
+	tools/funkinarcpak/funkinarcpak $@ $^
+
+# Week 5
+iso/week5/%.tim: iso/week5/%.png
+	tools/funkintimconv/funkintimconv $@ $<
+iso/week5/back.arc: iso/week5/back0.tim iso/week5/back1.tim iso/week5/back2.tim iso/week5/back3.tim iso/week5/back4.tim
+	tools/funkinarcpak/funkinarcpak $@ $^
+
+# Week 7
+iso/week7/%.tim: iso/week7/%.png
+	tools/funkintimconv/funkintimconv $@ $<
+iso/week7/back.arc: iso/week7/back0.tim iso/week7/back1.tim iso/week7/back2.tim iso/week7/back3.tim
+	tools/funkinarcpak/funkinarcpak $@ $^
+
+all: \
+	iso/menu/menu.arc \
+	iso/menu/loading.tim \
+	iso/font/boldfont.tim \
+	iso/stage/hud0.tim \
+	iso/stage/hud1.tim \
+	iso/bf/main.arc \
+	iso/bf/dead.arc \
+	iso/bf/weeb.arc \
+	iso/dad/main.arc \
+	iso/spook/main.arc \
+	iso/pico/main.arc \
+	iso/mom/main.arc \
+	iso/mom/hair.tim \
+	iso/xmasp/main.arc \
+	iso/senpai/main.arc \
+	iso/tank/main.arc \
+	iso/tank/ugh.arc \
+	iso/tank/good.arc \
+	iso/gf/main.arc \
+	iso/gf/speaker.tim \
+	iso/week1/back.arc \
+	iso/week2/back.arc \
+	iso/week3/back.arc \
+	iso/week4/back.arc \
+	iso/week4/hench.arc \
+	iso/week5/back.arc \
+	iso/week7/back.arc

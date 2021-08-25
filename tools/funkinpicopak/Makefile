@@ -1,3 +1,3 @@
 funkinpicopak: funkinpicopak.cpp
-	g++ -o $@ $<
+	$(CXX) -o $@ $<
 all: funkinpicopak

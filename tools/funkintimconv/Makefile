@@ -1,3 +1,3 @@
 funkintimconv: funkintimconv.c
-	gcc -o $@ $<
+	$(CC) -o $@ $<
 all: funkintimconv

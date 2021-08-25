@@ -1,3 +1,3 @@
 funkinchartpak: funkinchartpak.cpp
-	g++ -o $@ $<
+	$(CXX) -o $@ $<
 all: funkinchartpak

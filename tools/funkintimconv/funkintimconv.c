@@ -63,6 +63,7 @@ int main(int argc, char *argv[])
 		printf("Failed to read parameters from %s.txt\n", inpath);
 		return 1;
 	}
+	printf("tex_x: %d tex_y: %d pal_x: %d pal_y: %d bpp: %d\n", tex_x, tex_y, pal_x, pal_y, bpp);
 	
 	//Validate parameters
 	int max_colour, width_shift;
@@ -202,6 +203,7 @@ int main(int argc, char *argv[])
 	fputc(0, outfp);
 	
 	//CLUT
+	pals_i = max_colour;
 	uint32_t clut_length = 12 + 2 * pals_i;
 	fputc(clut_length, outfp);
 	fputc(clut_length >> 8, outfp);
@@ -211,14 +213,14 @@ int main(int argc, char *argv[])
 	fputc(pal_x >> 8, outfp);
 	fputc(pal_y, outfp);
 	fputc(pal_y >> 8, outfp);
-	fputc((pals_i * 2), outfp);
-	fputc((pals_i * 2) >> 8, outfp);
+	fputc(pals_i, outfp);
+	fputc(pals_i >> 8, outfp);
 	fputc(1, outfp);
 	fputc(0, outfp);
 	fwrite(pal, pals_i, 2, outfp);
 	
 	//Texture
-	uint32_t tex_length = 12 + 2 * pals_i;
+	uint32_t tex_length = 12 + (((tex_width << 1) >> width_shift) * tex_height);
 	fputc(tex_length, outfp);
 	fputc(tex_length >> 8, outfp);
 	fputc(tex_length >> 16, outfp);
