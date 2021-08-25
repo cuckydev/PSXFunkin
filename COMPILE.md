@@ -41,7 +41,7 @@ On Arch derivatives (Manjaro), the mipsel environment can be installed from AUR 
 
 `trizen -S cross-mipsel-linux-gnu-binutils cross-mipsel-linux-gnu-gcc`
 
-You'll also need to install `tinyxml2`, `ffmpeg`, and `cmake`, which of course, depends on your distro of choice.
+You'll also need to install `tinyxml2`, `ffmpeg` (you may also need to install `avformat` and `swscale` separately), and `cmake`, which of course, depends on your distro of choice.
 
 ## Compiling mkpsxiso
 For some reason, mkpsxiso's latest release on its GitHub is currently broken, thus you'll need to compile it yourself.
