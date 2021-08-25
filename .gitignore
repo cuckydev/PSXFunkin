@@ -13,6 +13,12 @@ mips/psyq/
 *.map
 *.ps-exe
 *.exe
+tools/funkinarcpak/funkinarcpak
+tools/funkinchartpak/funkinchartpak
+tools/funkinpicopak/funkinpicopak
+tools/funkintimconv/funkintimconv
+tools/psxavenc/psxavenc
+tools/xainterleave/xainterleave
 
 # Exclude object and link files
 obj/

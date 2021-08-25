@@ -63,7 +63,6 @@ int main(int argc, char *argv[])
 		printf("Failed to read parameters from %s.txt\n", inpath);
 		return 1;
 	}
-	printf("tex_x: %d tex_y: %d pal_x: %d pal_y: %d bpp: %d\n", tex_x, tex_y, pal_x, pal_y, bpp);
 	
 	//Validate parameters
 	int max_colour, width_shift;
