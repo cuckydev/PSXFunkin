@@ -18,7 +18,7 @@ void Back_Dummy_Free(StageBack *back)
 	Mem_Free(this);
 }
 
-StageBack *Back_Dummy_New()
+StageBack *Back_Dummy_New(void)
 {
 	//Allocate background structure
 	Back_Dummy *this = (Back_Dummy*)Mem_Alloc(sizeof(Back_Dummy));
