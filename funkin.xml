@@ -268,11 +268,11 @@
 				<dummy sectors="128"/>
 				<file name = "week3b.xa" type = "xa" source = "iso/music/week3b.xa"/>
 				<dummy sectors="128"/>
-				<!--
 				<file name = "week4a.xa" type = "xa" source = "iso/music/week4a.xa"/>
 				<dummy sectors="128"/>
 				<file name = "week4b.xa" type = "xa" source = "iso/music/week4b.xa"/>
 				<dummy sectors="128"/>
+				<!--
 				<file name = "week5a.xa" type = "xa" source = "iso/music/week5a.xa"/>
 				<dummy sectors="128"/>
 				<file name = "week5b.xa" type = "xa" source = "iso/music/week5b.xa"/>

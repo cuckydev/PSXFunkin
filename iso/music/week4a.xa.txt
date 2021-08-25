@@ -1,0 +1,4 @@
+1 xa satinpantiesv.xa 1 0
+1 xa satinpantiesi.xa 1 1
+1 xa highv.xa 1 2
+1 xa highi.xa 1 3
