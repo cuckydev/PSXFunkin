@@ -5,7 +5,7 @@ option(GLES "Use OpenGL ES 2.0 instead of OpenGL Core 3.2" OFF)
 
 project(funkin LANGUAGES C)
 
-add_executable(funkin WIN32 # The `WIN32` here is so we don't get a command prompt window on Windows
+add_executable(funkin
 	"src/main.c"
 	"src/main.h"
 	"src/mem.c"
