@@ -67,6 +67,7 @@ Then, download the converted PsyQ library from http://psx.arthus.net/sdk/Psy-Q/p
 First, make sure to `cd` to the repo directory where all the makefiles are. You're gonna want to run a few commands from here.
 
 `make -f Makefile.tools all` This will compile the tools found in [tools/](/tools/).
+
 `make -f Makefile.tim all` This will convert all the pngs in [iso/](/iso/) to TIM files that can be displayed by the PS1.
 
 ## Compiling PSXFunkin
