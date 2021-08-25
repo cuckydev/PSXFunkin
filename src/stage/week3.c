@@ -98,7 +98,7 @@ void Back_Week3_DrawBG(StageBack *back)
 		roof_dst.x += roof_dst.w;
 	}
 	
-	RECT roof_fillsrc = {0, 255, 1, 0};
+	RECT roof_fillsrc = {0, 254, 1, 0};
 	RECT roof_fill = {0, SCREEN_HEIGHT * 2 / 3, SCREEN_WIDTH, SCREEN_HEIGHT * 1 / 3};
 	Gfx_DrawTex(&this->tex_back2, &roof_fillsrc, &roof_fill);
 	
