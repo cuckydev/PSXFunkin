@@ -30,6 +30,6 @@ bin/
 build/
 
 # Exclude converted assets
-*.tim
-*.arc
-*.xa
+iso/*/*.tim
+iso/*/*.arc
+iso/*/*.xa

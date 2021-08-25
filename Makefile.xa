@@ -1,0 +1,17 @@
+all: \
+	iso/music/menu.xa \
+	iso/music/week1a.xa \
+	iso/music/week1b.xa
+
+# XA converts
+iso/music/%.xa: iso/music/%.mp3
+	tools/psxavenc/psxavenc -f 37800 -t xa -b 4 -c 2 -F 1 -C 0 $< $@
+iso/music/%.xa:
+	tools/xainterleave/xainterleave $@
+
+# Menu
+iso/music/menu.xa: iso/music/freaky.xa iso/music/gameover.xa
+
+# Week 1
+iso/music/week1a.xa: iso/music/bopeeboi.xa iso/music/bopeebov.xa iso/music/freshi.xa iso/music/freshv.xa
+iso/music/week1b.xa: iso/music/dadbattlei.xa iso/music/dadbattlev.xa iso/music/tutorial.xa
