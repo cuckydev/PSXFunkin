@@ -18,6 +18,8 @@ freely, subject to the following restrictions:
 2. Altered source versions must be plainly marked as such, and must not be
    misrepresented as being the original software.
 3. This notice may not be removed or altered from any source distribution.
+
+This tool has been modified to only use 'just XA' mode, refer to .txt file automatically by input, and assume files referenced in .txt to be in the same directory as the .txt
 */
 
 #include <stdint.h>
