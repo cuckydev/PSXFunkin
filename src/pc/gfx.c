@@ -63,16 +63,15 @@ typedef struct
 } Gfx_Vertex;
 
 //Shader
-#if PSXF_GL == PSXF_GL_ES
-//GLSL ES 1.0, for OpenGL ES 2.0
+#if PSXF_GL == PSXF_GL_MODERN
+//GLSL Core 1.50, for OpenGL Core 3.2
 static const char *generic_shader_vert = "\
-#version 100\n\
-precision highp float;\
-attribute vec2 v_position;\
-attribute vec2 v_uv;\
-attribute vec4 v_colour;\
-varying vec2 f_uv;\
-varying vec4 f_colour;\
+#version 150 core\n\
+in vec2 v_position;\
+in vec2 v_uv;\
+in vec4 v_colour;\
+out vec2 f_uv;\
+out vec4 f_colour;\
 uniform mat4 u_projection;\
 void main()\
 {\
@@ -81,15 +80,15 @@ f_colour = v_colour;\
 gl_Position = u_projection * vec4(v_position.xy, 0.0, 1.0);\
 }";
 static const char *generic_shader_frag = "\
-#version 100\n\
-precision highp float;\
+#version 150 core\n\
 uniform sampler2D u_texture;\
-varying vec2 f_uv;\
-varying vec4 f_colour;\
+in vec2 f_uv;\
+in vec4 f_colour;\
+out vec4 o_colour;\
 void main()\
 {\
-gl_FragColor = texture2D(u_texture, f_uv) * f_colour;\
-if (gl_FragColor.a == 0.0)\
+o_colour = texture(u_texture, f_uv) * f_colour;\
+if (o_colour.a == 0.0)\
 {\
 discard;\
 }\
@@ -123,15 +122,16 @@ if (gl_FragColor.a == 0.0)\
 discard;\
 }\
 }";
-#elif PSXF_GL == PSXF_GL_MODERN
-//GLSL Core 1.50, for OpenGL Core 3.2
+#elif PSXF_GL == PSXF_GL_ES
+//GLSL ES 1.0, for OpenGL ES 2.0
 static const char *generic_shader_vert = "\
-#version 150 core\n\
-in vec2 v_position;\
-in vec2 v_uv;\
-in vec4 v_colour;\
-out vec2 f_uv;\
-out vec4 f_colour;\
+#version 100\n\
+precision highp float;\
+attribute vec2 v_position;\
+attribute vec2 v_uv;\
+attribute vec4 v_colour;\
+varying vec2 f_uv;\
+varying vec4 f_colour;\
 uniform mat4 u_projection;\
 void main()\
 {\
@@ -140,15 +140,15 @@ f_colour = v_colour;\
 gl_Position = u_projection * vec4(v_position.xy, 0.0, 1.0);\
 }";
 static const char *generic_shader_frag = "\
-#version 150 core\n\
+#version 100\n\
+precision highp float;\
 uniform sampler2D u_texture;\
-in vec2 f_uv;\
-in vec4 f_colour;\
-out vec4 o_colour;\
+varying vec2 f_uv;\
+varying vec4 f_colour;\
 void main()\
 {\
-o_colour = texture(u_texture, f_uv) * f_colour;\
-if (o_colour.a == 0.0)\
+gl_FragColor = texture2D(u_texture, f_uv) * f_colour;\
+if (gl_FragColor.a == 0.0)\
 {\
 discard;\
 }\
@@ -384,20 +384,20 @@ static void Gfx_DisplayCmd(const Gfx_Cmd *cmd)
 void Gfx_Init(void)
 {
 	//Set window hints
-#if PSXF_GL == PSXF_GL_ES
-	glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-#elif PSXF_GL == PSXF_GL_LEGACY
-	glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-#elif PSXF_GL == PSXF_GL_MODERN
+#if PSXF_GL == PSXF_GL_MODERN
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+#elif PSXF_GL == PSXF_GL_LEGACY
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+#elif PSXF_GL == PSXF_GL_ES
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 #endif
 	glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
