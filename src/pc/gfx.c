@@ -762,13 +762,13 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 		case 2: //16bpp
 		{
 			sprintf(error_msg, "[Gfx_LoadTex] 16bpp unsupported");
-			ErrorLock(); //Doesn't actuall return
+			ErrorLock(); //Doesn't actually return
 			break;
 		}
 		case 3: //24bpp
 		{
 			sprintf(error_msg, "[Gfx_LoadTex] 24bpp unsupported");
-			ErrorLock(); //Doesn't actuall return
+			ErrorLock(); //Doesn't actually return
 			break;
 		}
 	}
