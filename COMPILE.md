@@ -74,6 +74,8 @@ TIP: For any make, try appending `-jX` to the end of it, where X is the number o
 
 `make -f Makefile.xa` This will convert all the mp3s in [iso/music/](/iso/music/) to XA files that can be played by the PS1. This step will take a WHILE. Be patient!
 
+`make -f Makefile.cht` This will convert all the jsons in [iso/chart/](/iso/chart/) to cht files that can be played by the game.
+
 ## Compiling PSXFunkin
 If everything went well, you can `cd` back to the repo directory, run `make`, and it will compile the game and spit out a `funkin.ps-exe` in the same directory.
 
