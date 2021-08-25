@@ -25,7 +25,7 @@ GLFWwindow *window;
 //Render state
 static mat4 projection;
 
-static float clear_r, clear_g, clear_b;
+static u8 clear_r, clear_g, clear_b;
 static boolean clear_e;
 
 //Display list
@@ -410,9 +410,9 @@ void Gfx_Init(void)
 	//Initialize render state
 	glm_ortho(0.0f, (float)SCREEN_WIDTH, (float)SCREEN_HEIGHT, 0.0f, -1.0f, 1.0f, projection);
 	
-	clear_r = 0.0f;
-	clear_g = 0.0f;
-	clear_b = 0.0f;
+	clear_r = 0;
+	clear_g = 0;
+	clear_b = 0;
 	clear_e = true;
 	
 	//Initialize OpenGL state
@@ -472,13 +472,22 @@ void Gfx_Flip(void)
 	//Clear screen
 	if (clear_e)
 	{
-		glClearColor(clear_r, clear_g, clear_b, 1.0f);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	#ifdef PSXF_GLES
 		glClearDepthf(1.0f);
 	#else
 		glClearDepth(1.0f);
 	#endif
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		//Draw the background color (we don't do this with glClearColor
+		//or else we'd end up drawing in the black bars around the screen)
+		RECT rect;
+		rect.x = 0;
+		rect.y = 0;
+		rect.w = SCREEN_WIDTH;
+		rect.h = SCREEN_HEIGHT;
+		Gfx_DrawRect(&rect, clear_r, clear_g, clear_b);
 	}
 	
 	//Traverse display list
@@ -511,9 +520,9 @@ void Gfx_Flip(void)
 void Gfx_SetClear(u8 r, u8 g, u8 b)
 {
 	//Update clear colour
-	clear_r = (float)r / 255.0f;
-	clear_g = (float)g / 255.0f;
-	clear_b = (float)b / 255.0f;
+	clear_r = r;
+	clear_g = g;
+	clear_b = b;
 }
 
 void Gfx_EnableClear(void)
