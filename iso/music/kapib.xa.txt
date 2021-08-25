@@ -1,0 +1,4 @@
+1 xa hairballv.xa 1 0
+1 xa hairballi.xa 1 1
+1 xa nyawv.xa 1 2
+1 xa nyawi.xa 1 3
