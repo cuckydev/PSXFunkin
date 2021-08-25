@@ -27,10 +27,10 @@ all: \
 	iso/week5/back.arc \
 	iso/week7/back.arc
 
-%.tim: %.png %.txt
+iso/%.tim: iso/%.png
 	tools/funkintimconv/funkintimconv $@ $<
 
-%.arc:
+iso/%.arc:
 	tools/funkinarcpak/funkinarcpak $@ $^
 
 # Menu
