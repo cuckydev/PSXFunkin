@@ -66,11 +66,13 @@ Then, download the converted PsyQ library from http://psx.arthus.net/sdk/Psy-Q/p
 ## Compiling tools and converting assets
 First, make sure to `cd` to the repo directory where all the makefiles are. You're gonna want to run a few commands from here.
 
+TIP: For any make, try appending `-jX` to the end of it, where X is the number of CPU cores you have times two. This will try to put as much of your CPU as it can to doing whatever it needs to do and makes it go way quicker.
+
 `make -f Makefile.tools all` This will compile the tools found in [tools/](/tools/).
 
 `make -f Makefile.tim all` This will convert all the pngs in [iso/](/iso/) to TIM files that can be displayed by the PS1.
 
-`make -f Makefile.xa all` This will convert all the mp3s in [iso/music/](/iso/music/) to XA files that can be played by the PS1.
+`make -f Makefile.xa all` This will convert all the mp3s in [iso/music/](/iso/music/) to XA files that can be played by the PS1. This step will take a WHILE. Be patient!
 
 ## Compiling PSXFunkin
 If everything went well, you can `cd` back to the repo directory, run `make`, and it will compile the game and spit out a `funkin.ps-exe` in the same directory.

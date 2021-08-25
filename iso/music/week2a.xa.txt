@@ -1,0 +1,4 @@
+1 xa spookeezv.xa 1 0
+1 xa spookeezi.xa 1 1
+1 xa southv.xa 1 2
+1 xa southi.xa 1 3

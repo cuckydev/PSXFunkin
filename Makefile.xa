@@ -1,7 +1,9 @@
 all: \
 	iso/music/menu.xa \
 	iso/music/week1a.xa \
-	iso/music/week1b.xa
+	iso/music/week1b.xa \
+	iso/music/week2a.xa \
+	iso/music/week2b.xa
 
 # XA converts
 iso/music/%.xa: iso/music/%.mp3
@@ -15,3 +17,5 @@ iso/music/menu.xa: iso/music/freaky.xa iso/music/gameover.xa
 # Week 1
 iso/music/week1a.xa: iso/music/bopeeboi.xa iso/music/bopeebov.xa iso/music/freshi.xa iso/music/freshv.xa
 iso/music/week1b.xa: iso/music/dadbattlei.xa iso/music/dadbattlev.xa iso/music/tutorial.xa
+iso/music/week2a.xa: iso/music/spookeezi.xa iso/music/spookeezv.xa iso/music/southi.xa iso/music/southv.xa
+iso/music/week2b.xa: iso/music/monsteri.xa iso/music/monsterv.xa
