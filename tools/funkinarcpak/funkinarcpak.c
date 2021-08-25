@@ -27,7 +27,10 @@ int main(int argc, char *argv[])
 {
 	//Make sure the correct parameters have been given
 	if (argc < 3)
-		return 1;
+	{
+		printf("usage: funkinarcpak out ...\n");
+		return 0;
+	}
 	
 	//Open output
 	FILE *out = fopen(argv[1], "wb");

@@ -1,7 +1,57 @@
+# Menu
 iso/menu/%.tim: iso/menu/%.png
-	tools/funkintimpak/funkintimpak $@ $<
-
+	tools/funkintimconv/funkintimconv $@ $<
 iso/menu/menu.arc: iso/menu/back.tim iso/menu/ng.tim iso/menu/story.tim iso/menu/title.tim
 	tools/funkinarcpak/funkinarcpak $@ $^
 
-all: iso/menu/menu.arc iso/menu/loading.tim
+# BF
+iso/bf/%.tim: iso/bf/%.png
+	tools/funkintimconv/funkintimconv $@ $<
+iso/bf/main.arc: iso/bf/idle.tim iso/bf/hit0.tim iso/bf/miss0.tim iso/bf/hit1.tim iso/bf/miss1.tim iso/bf/peace.tim iso/bf/dead0.tim
+	tools/funkinarcpak/funkinarcpak $@ $^
+iso/bf/dead.arc: iso/bf/dead1.tim iso/bf/dead2.tim
+	tools/funkinarcpak/funkinarcpak $@ $^
+iso/bf/weeb.arc: iso/bf/weeb0.tim iso/bf/weeb1.tim
+	tools/funkinarcpak/funkinarcpak $@ $^
+
+# Dad
+iso/dad/%.tim: iso/dad/%.png
+	tools/funkintimconv/funkintimconv $@ $<
+iso/dad/main.arc: iso/dad/idle0.tim iso/dad/idle1.tim iso/dad/left.tim iso/dad/down.tim iso/dad/up.tim iso/dad/right.tim
+	tools/funkinarcpak/funkinarcpak $@ $^
+
+# Spook
+iso/spook/%.tim: iso/spook/%.png
+	tools/funkintimconv/funkintimconv $@ $<
+iso/spook/main.arc: iso/spook/idle0.tim iso/spook/idle1.tim iso/spook/idle2.tim iso/spook/left.tim iso/spook/down.tim iso/spook/up.tim iso/spook/right.tim
+	tools/funkinarcpak/funkinarcpak $@ $^
+
+# Pico
+iso/pico/%.tim: iso/pico/%.png
+	tools/funkintimconv/funkintimconv $@ $<
+iso/pico/main.arc: iso/pico/idle.tim iso/pico/hit0.tim iso/pico/hit1.tim
+	tools/funkinarcpak/funkinarcpak $@ $^
+
+# Mom
+iso/mom/%.tim: iso/mom/%.png
+	tools/funkintimconv/funkintimconv $@ $<
+iso/mom/main.arc: iso/mom/idle0.tim iso/mom/idle1.tim iso/mom/left.tim iso/mom/down.tim iso/mom/up.tim iso/mom/right.tim
+	tools/funkinarcpak/funkinarcpak $@ $^
+
+# XMas Parents
+iso/xmasp/%.tim: iso/xmasp/%.png
+	tools/funkintimconv/funkintimconv $@ $<
+iso/xmasp/main.arc: iso/xmasp/idle0.tim iso/xmasp/idle1.tim iso/xmasp/idle2.tim iso/xmasp/idle3.tim iso/xmasp/lefta0.tim iso/xmasp/lefta1.tim iso/xmasp/leftb0.tim iso/xmasp/leftb1.tim iso/xmasp/downa0.tim iso/xmasp/downa1.tim iso/xmasp/downb0.tim iso/xmasp/downb1.tim iso/xmasp/upa0.tim iso/xmasp/upa1.tim iso/xmasp/upb0.tim iso/xmasp/upb1.tim iso/xmasp/righta0.tim iso/xmasp/righta1.tim iso/xmasp/rightb0.tim iso/xmasp/rightb1.tim
+	tools/funkinarcpak/funkinarcpak $@ $^
+
+# Tank
+iso/tank/%.tim: iso/tank/%.png
+	tools/funkintimconv/funkintimconv $@ $<
+iso/tank/main.arc: iso/tank/idle0.tim iso/tank/idle1.tim iso/tank/left.tim iso/tank/down.tim iso/tank/up.tim iso/tank/right.tim
+	tools/funkinarcpak/funkinarcpak $@ $^
+iso/tank/ugh.arc: iso/tank/ugh0.tim iso/tank/ugh1.tim
+	tools/funkinarcpak/funkinarcpak $@ $^
+iso/tank/good.arc: iso/tank/good0.tim iso/tank/good1.tim iso/tank/good2.tim iso/tank/good3.tim
+	tools/funkinarcpak/funkinarcpak $@ $^
+
+all: iso/menu/menu.arc iso/menu/loading.tim iso/bf/main.arc iso/bf/dead.arc iso/bf/weeb.arc iso/dad/main.arc iso/spook/main.arc iso/pico/main.arc iso/mom/main.arc iso/mom/hair.tim iso/xmasp/main.arc iso/tank/main.arc iso/tank/ugh.arc iso/tank/good.arc
