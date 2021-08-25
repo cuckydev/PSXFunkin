@@ -4,14 +4,6 @@
 #include "psx.h"
 #include "io.h"
 
-#ifdef PSXF_PC
- #ifdef PSXF_GLES
-  #include <GLES2/gl2.h>
- #else
-  #include "glad/glad.h"
- #endif
-#endif
-
 //Gfx constants
 #define SCREEN_WIDTH   320
 #define SCREEN_HEIGHT  240
