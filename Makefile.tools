@@ -3,3 +3,5 @@ all:
 	@ cd tools/funkinchartpak && $(MAKE)
 	@ cd tools/funkinpicopak && $(MAKE)
 	@ cd tools/funkintimconv && $(MAKE)
+	@ cd tools/psxavenc && $(MAKE)
+	@ cd tools/xainterleave && $(MAKE)

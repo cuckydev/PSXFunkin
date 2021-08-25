@@ -1,3 +1,3 @@
 funkinarcpak: funkinarcpak.c
-	$(CC) -o $@ $<
+	$(CC) -O3 -o $@ $<
 all: funkinarcpak

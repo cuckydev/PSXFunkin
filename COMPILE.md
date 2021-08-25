@@ -28,7 +28,7 @@ Once you have it downloaded, make sure MSYS2 is closed, then open the zip up and
 - rm
 - touch
 
-Next, open up `MSYS2 MinGW 64-bit` from the Start Menu, and you'll need to install some libraries, so run the following command and accept the prompts that follow `pacman -S mingw-w64-x86_64-cmake mingw-w64-x86_64-tinyxml2`
+Next, open up `MSYS2 MinGW 64-bit` from the Start Menu, and you'll need to install some libraries, so run the following command and accept the prompts that follow `pacman -S mingw-w64-x86_64-cmake mingw-w64-x86_64-tinyxml2 mingw-w64-x86_64-ffmpeg `
 
 ### Linux
 First, you'll need to install the GCC toolchain, run one of the following commands depending on your distro.
@@ -41,7 +41,7 @@ On Arch derivatives (Manjaro), the mipsel environment can be installed from AUR 
 
 `trizen -S cross-mipsel-linux-gnu-binutils cross-mipsel-linux-gnu-gcc`
 
-You'll also need to install `tinyxml2` and `cmake`, which of course, depends on your distro of choice.
+You'll also need to install `tinyxml2`, `ffmpeg`, and `cmake`, which of course, depends on your distro of choice.
 
 ## Compiling mkpsxiso
 For some reason, mkpsxiso's latest release on its GitHub is currently broken, thus you'll need to compile it yourself.

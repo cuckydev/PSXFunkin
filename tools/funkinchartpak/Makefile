@@ -1,3 +1,3 @@
 funkinchartpak: funkinchartpak.cpp
-	$(CXX) -o $@ $<
+	$(CXX) -O3 -o $@ $<
 all: funkinchartpak

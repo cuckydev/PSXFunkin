@@ -26,3 +26,4 @@ build/
 # Exclude converted assets
 *.tim
 *.arc
+*.xa
