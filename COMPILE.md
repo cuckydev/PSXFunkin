@@ -59,9 +59,15 @@ Finally, do `sudo cp mkpsxiso /usr/local/bin/mkpsxiso` (MSYS2 doesn't have sudo,
 This will allow you to call mkpsxiso from anywhere (like the PSXFunkin repo).
 
 ## Copying PsyQ files
-First, go to the `mips` folder of the repo, and create a new folder named `psyq`.
+First, go to the [mips](/mips/) folder of the repo, and create a new folder named `psyq`.
 
 Then, download the converted PsyQ library from http://psx.arthus.net/sdk/Psy-Q/psyq-4_7-converted-light.zip. Just extract the contents of this into the new `psyq` folder.
+
+## Compiling tools and converting assets
+First, make sure to `cd` to the repo directory where all the makefiles are. You're gonna want to run a few commands from here.
+
+`make -f Makefile.tools all` This will compile the tools found in [tools/](/tools/).
+`make -f Makefile.tim all` This will convert all the pngs in [iso/](/iso/) to TIM files that can be displayed by the PS1.
 
 ## Compiling PSXFunkin
 If everything went well, you can `cd` back to the repo directory, run `make`, and it will compile the game and spit out a `funkin.ps-exe` in the same directory.
