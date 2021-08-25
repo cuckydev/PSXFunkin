@@ -229,7 +229,7 @@ void Back_Week3_Free(StageBack *back)
 	Mem_Free(this);
 }
 
-StageBack *Back_Week3_New()
+StageBack *Back_Week3_New(void)
 {
 	//Allocate background structure
 	Back_Week3 *this = (Back_Week3*)Mem_Alloc(sizeof(Back_Week3));

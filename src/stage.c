@@ -49,7 +49,7 @@ static const StageDef stage_defs[StageId_Max] = {
 Stage stage;
 
 //Stage music functions
-void Stage_StartVocal()
+void Stage_StartVocal(void)
 {
 	if (!(stage.flag & STAGE_FLAG_VOCAL_ACTIVE))
 	{
@@ -58,7 +58,7 @@ void Stage_StartVocal()
 	}
 }
 
-void Stage_CutVocal()
+void Stage_CutVocal(void)
 {
 	if (stage.flag & STAGE_FLAG_VOCAL_ACTIVE)
 	{
@@ -77,7 +77,7 @@ void Stage_FocusCharacter(Character *ch, fixed_t div)
 	stage.camera.td = div;
 }
 #include "mutil.h"
-void Stage_ScrollCamera()
+void Stage_ScrollCamera(void)
 {
 	#ifdef STAGE_FREECAM
 		if (pad_state.held & PAD_LEFT)
@@ -559,7 +559,7 @@ void Stage_DrawHealth(u8 i, s8 ox)
 	Stage_DrawTex(&stage.tex_hud1, &src, &dst, FIXED_MUL(stage.bump, stage.sbump));
 }
 
-void Stage_DrawNotes()
+void Stage_DrawNotes(void)
 {
 	//Initialize scroll state
 	SectionScroll scroll;
@@ -1008,7 +1008,7 @@ void Stage_Load(StageId id, StageDiff difficulty, boolean story)
 	stage.offset = 0;
 }
 
-void Stage_Unload()
+void Stage_Unload(void)
 {
 	//Unload stage background
 	if (stage.back != NULL)
@@ -1032,7 +1032,7 @@ void Stage_Unload()
 	stage.gf = NULL;
 }
 
-void Stage_NextLoad()
+void Stage_NextLoad(void)
 {
 	u8 load = stage.stage_def->next_load;
 	if (load == 0)
@@ -1093,7 +1093,7 @@ void Stage_NextLoad()
 	}
 }
 
-void Stage_Tick()
+void Stage_Tick(void)
 {
 	SeamLoad:;
 	

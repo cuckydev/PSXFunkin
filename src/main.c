@@ -16,7 +16,7 @@ GameLoop gameloop;
 //Error handler
 char error_msg[0x200];
 
-void ErrorLock()
+void ErrorLock(void)
 {
 	while (1)
 	{
