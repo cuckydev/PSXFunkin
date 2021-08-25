@@ -2,7 +2,7 @@
 
 #include "../main.h"
 
-#include "glad/glad.h"
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 //Arguments
@@ -13,7 +13,7 @@ char **my_argv;
 void PSX_Init(void)
 {
 	//Initialize GLFW
-	if (glfwInit() != GL_TRUE)
+	if (glfwInit() != GLFW_TRUE)
 	{
 		sprintf(error_msg, "[PSX_Init] Failed to initialize GLFW");
 		ErrorLock();
