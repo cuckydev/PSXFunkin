@@ -3,7 +3,9 @@ all: \
 	iso/music/week1a.xa \
 	iso/music/week1b.xa \
 	iso/music/week2a.xa \
-	iso/music/week2b.xa
+	iso/music/week2b.xa \
+	iso/music/week3a.xa \
+	iso/music/week3b.xa
 
 # XA converts
 iso/music/%.xa: iso/music/%.mp3
@@ -19,3 +21,5 @@ iso/music/week1a.xa: iso/music/bopeeboi.xa iso/music/bopeebov.xa iso/music/fresh
 iso/music/week1b.xa: iso/music/dadbattlei.xa iso/music/dadbattlev.xa iso/music/tutorial.xa
 iso/music/week2a.xa: iso/music/spookeezi.xa iso/music/spookeezv.xa iso/music/southi.xa iso/music/southv.xa
 iso/music/week2b.xa: iso/music/monsteri.xa iso/music/monsterv.xa
+iso/music/week3a.xa: iso/music/picoi.xa iso/music/picov.xa iso/music/phillyi.xa iso/music/phillyv.xa
+iso/music/week3b.xa: iso/music/blammedi.xa iso/music/blammedv.xa
