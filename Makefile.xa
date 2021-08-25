@@ -13,7 +13,9 @@ all: \
 	iso/music/week6a.xa \
 	iso/music/week6b.xa \
 	iso/music/week7a.xa \
-	iso/music/week7b.xa
+	iso/music/week7b.xa \
+	iso/music/clwna.xa \
+	iso/music/clwnb.xa
 
 # XA converts
 iso/music/%.xa: iso/music/%.mp3
@@ -37,3 +39,5 @@ iso/music/week6a.xa: iso/music/senpaii.xa iso/music/senpaiv.xa iso/music/rosesi.
 iso/music/week6b.xa: iso/music/thornsi.xa iso/music/thornsv.xa
 iso/music/week7a.xa: iso/music/ughi.xa iso/music/ughv.xa iso/music/gunsi.xa iso/music/gunsv.xa
 iso/music/week7b.xa: iso/music/stressi.xa iso/music/stressv.xa
+iso/music/clwna.xa: iso/music/improbableoutseti.xa iso/music/improbableoutsetv.xa iso/music/madnessi.xa iso/music/madnessv.xa
+iso/music/clwnb.xa: iso/music/hellclowni.xa iso/music/hellclownv.xa iso/music/expurgationi.xa iso/music/expurgationv.xa

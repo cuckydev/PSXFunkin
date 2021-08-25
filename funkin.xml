@@ -284,16 +284,14 @@
 				<dummy sectors="128"/>
 				<file name = "week7b.xa" type = "xa" source = "iso/music/week7b.xa"/>
 				<dummy sectors="128"/>
-				<!--
-				<file name = "kapia.xa" type = "xa" source = "iso/music/kapia.xa"/>
+				<file name = "kapia.xa" type = "xa" source = "iso/music/clwna.xa"/>
 				<dummy sectors="128"/>
-				<file name = "kapib.xa" type = "xa" source = "iso/music/kapib.xa"/>
+				<file name = "kapib.xa" type = "xa" source = "iso/music/clwnb.xa"/>
 				<dummy sectors="128"/>
 				<file name = "clwna.xa" type = "xa" source = "iso/music/clwna.xa"/>
 				<dummy sectors="128"/>
 				<file name = "clwnb.xa" type = "xa" source = "iso/music/clwnb.xa"/>
 				<dummy sectors="128"/>
-				!-->
 			</dir>
 			
 			<!-- Dummy sectors -->
