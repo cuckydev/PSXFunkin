@@ -60,7 +60,7 @@ static const XA_TrackDef xa_tracks[] = {
 	{XA_ClwnA, XA_LENGTH(15169)}, //XA_Madness
 	//CLWNB.XA
 	{XA_ClwnB, XA_LENGTH(21886)}, //XA_Hellclown
-	{XA_ClwnB, XA_LENGTH(19607)}, //XA_Expurgation
+	{XA_ClwnB, XA_LENGTH(19550)}, //XA_Expurgation
 };
 
 static const char *xa_paths[] = {
