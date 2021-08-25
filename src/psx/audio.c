@@ -113,10 +113,9 @@ void Audio_Init(void)
 	xa_state = 0;
 	
 	//Get file positions
-	const char **pathp = xa_paths;
 	CdlFILE *filep = xa_files;
-	for (u8 i = 0; i < XA_Max; i++)
-		IO_FindFile(filep++, *pathp++);
+	for (const char **pathp = xa_paths; *pathp != NULL; pathp++)
+		IO_FindFile(filep++, *pathp);
 }
 
 void Audio_GetXAFile(CdlFILE *file, XA_Track track)
