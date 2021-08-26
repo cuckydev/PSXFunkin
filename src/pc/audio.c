@@ -53,7 +53,7 @@ static boolean MP3Decode_Decode(MP3Decode *this, CdlFILE *file)
 	unsigned char *data = malloc(size);
 	if (data == NULL)
 	{
-		sprintf(error_msg, "[MP3Decode_Decode] Failed to allocate \"%s\" buffer (size 0x%X)", file->path, (unsigned int)size);
+		sprintf(error_msg, "[MP3Decode_Decode] Failed to allocate \"%s\" buffer (size 0x%zX)", file->path, size);
 		ErrorLock();
 		return true;
 	}
