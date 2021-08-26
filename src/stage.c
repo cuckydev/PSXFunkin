@@ -536,6 +536,12 @@ void Stage_DrawTex(Gfx_Tex *tex, const RECT *src, const RECT_FIXED *dst, fixed_t
 
 void Stage_DrawTexArb(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, const POINT_FIXED *p1, const POINT_FIXED *p2, const POINT_FIXED *p3, fixed_t zoom)
 {
+	//Don't draw if HUD and HUD is disabled
+	#ifdef STAGE_NOHUD
+		if (tex == &stage.tex_hud0 || tex == &stage.tex_hud1)
+			return;
+	#endif
+	
 	//Get screen-space points
 	POINT s0 = {SCREEN_WIDTH2 + (FIXED_MUL(p0->x, zoom) >> FIXED_SHIFT), SCREEN_HEIGHT2 + (FIXED_MUL(p0->y, zoom) >> FIXED_SHIFT)};
 	POINT s1 = {SCREEN_WIDTH2 + (FIXED_MUL(p1->x, zoom) >> FIXED_SHIFT), SCREEN_HEIGHT2 + (FIXED_MUL(p1->y, zoom) >> FIXED_SHIFT)};
@@ -939,8 +945,7 @@ void Stage_LoadMusic(void)
 	stage.opponent->sing_end -= stage.note_scroll;
 	
 	//Find music file and begin seeking to it
-	Audio_GetXAFile(&stage.music_file, stage.stage_def->music_track);
-	IO_SeekFile(&stage.music_file);
+	Audio_SeekXA_Track(stage.stage_def->music_track);
 	
 	//Initialize music state
 	stage.note_scroll = FIXED_DEC(-5 * 4 * 12,1);
@@ -1187,7 +1192,7 @@ void Stage_Tick(void)
 				{
 					//Song has started
 					playing = true;
-					Audio_PlayXA_File(&stage.music_file, 0x40, stage.stage_def->music_channel, 0);
+					Audio_PlayXA_Track(stage.stage_def->music_track, 0x40, stage.stage_def->music_channel, 0);
 					
 					//Update song time
 					fixed_t audio_time = (fixed_t)Audio_TellXA_Milli() - stage.offset;

@@ -222,9 +222,6 @@ typedef struct
 	
 	u16 pad_held, pad_press;
 	
-	//Music file
-	CdlFILE music_file;
-	
 	//Object lists
 	ObjectList objlist_splash, objlist_fg, objlist_bg;
 } Stage;

@@ -1,5 +1,3 @@
-static CdlFILE xa_files[XA_Max];
-
 #define XA_LENGTH(x) (((u64)(x) * 75) / 100 * IO_SECT_SIZE) //Centiseconds to sectors in bytes (w)
 
 typedef struct
@@ -86,11 +84,13 @@ static const char *xa_paths[] = {
 	NULL,
 };
 
-static const struct
+typedef struct
 {
 	const char *name;
 	boolean vocal;
-} mp3s[] = {
+} XA_Mp3;
+
+static const XA_Mp3 xa_mp3s[] = {
 	//MENU.XA
 	{"freaky", false},   //XA_GettinFreaky
 	{"gameover", false}, //XA_GameOver
@@ -143,4 +143,6 @@ static const struct
 	//CLWNB.XA
 	{"hellclown", true}, //XA_Hellclown
 	{"expurgation", true}, //XA_Expurgation
+	
+	{NULL, false}
 };

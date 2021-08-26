@@ -55,6 +55,7 @@ SOURCES = main \
 		  pc/audio \
 		  pc/pad \
 		  pc/timer \
+		  pc/miniaudio \
 		  pc/glad/glad \
 		  stage/dummy \
 		  stage/week1 \

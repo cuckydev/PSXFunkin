@@ -12,6 +12,8 @@ static u8 xa_state, xa_resync, xa_volume, xa_channel;
 static u32 xa_pos, xa_start, xa_end;
 
 //XA files and tracks
+static CdlFILE xa_files[XA_Max];
+
 #include "../audio_def.h"
 
 //Internal XA functions
@@ -118,14 +120,14 @@ void Audio_Init(void)
 		IO_FindFile(filep++, *pathp);
 }
 
-void Audio_GetXAFile(CdlFILE *file, XA_Track track)
+static void Audio_GetXAFile(CdlFILE *file, XA_Track track)
 {
 	const XA_TrackDef *track_def = &xa_tracks[track];
 	file->pos = xa_files[track_def->file].pos;
 	file->size = track_def->length;
 }
 
-void Audio_PlayXA_File(CdlFILE *file, u8 volume, u8 channel, boolean loop)
+static void Audio_PlayXA_File(CdlFILE *file, u8 volume, u8 channel, boolean loop)
 {
 	//Initialize XA system and stop previous song
 	XA_Init();
@@ -155,12 +157,12 @@ void Audio_PlayXA_Track(XA_Track track, u8 volume, u8 channel, boolean loop)
 	Audio_PlayXA_File(&file, volume, channel, loop);
 }
 
-void Audio_PlayXA(const char *path, u8 volume, u8 channel, boolean loop)
+void Audio_SeekXA_Track(XA_Track track)
 {
-	//Search for and play file
+	//Get track file and seek
 	CdlFILE file;
-	IO_FindFile(&file, path);
-	Audio_PlayXA_File(&file, volume, channel, loop);
+	Audio_GetXAFile(&file, track);
+	IO_SeekFile(&file);
 }
 
 void Audio_PauseXA(void)

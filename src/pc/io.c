@@ -65,7 +65,7 @@ void IO_SeekFile(CdlFILE *file)
 	(void)file;
 }
 
-IO_Data IO_ReadFile(CdlFILE *file)
+FILE *IO_OpenFile(CdlFILE *file)
 {
 	//Get joined path
 	char *join;
@@ -74,7 +74,7 @@ IO_Data IO_ReadFile(CdlFILE *file)
 		join = malloc(strlen(iso_dir) + strlen(file->path) + 1);
 		if (join == NULL)
 		{
-			sprintf(error_msg, "[IO_ReadFile] Failed to allocate joined path");
+			sprintf(error_msg, "[IO_OpenFile] Failed to allocate joined path");
 			ErrorLock();
 			return NULL;
 		}
@@ -85,7 +85,7 @@ IO_Data IO_ReadFile(CdlFILE *file)
 		join = malloc(strlen(file->path) + 1);
 		if (join == NULL)
 		{
-			sprintf(error_msg, "[IO_ReadFile] Failed to allocate joined path");
+			sprintf(error_msg, "[IO_OpenFile] Failed to allocate joined path");
 			ErrorLock();
 			return NULL;
 		}
@@ -97,10 +97,20 @@ IO_Data IO_ReadFile(CdlFILE *file)
 	free(join);
 	if (fp == NULL)
 	{
-		sprintf(error_msg, "[IO_ReadFile] Failed to open \"%s\"", file->path);
+		sprintf(error_msg, "[IO_OpenFile] Failed to open \"%s\"", file->path);
 		ErrorLock();
 		return NULL;
 	}
+	
+	return fp;
+}
+
+IO_Data IO_ReadFile(CdlFILE *file)
+{
+	//Open file
+	FILE *fp = IO_OpenFile(file);
+	if (fp == NULL)
+		return NULL;
 	
 	//Allocate buffer
 	fseek(fp, 0, SEEK_END);
