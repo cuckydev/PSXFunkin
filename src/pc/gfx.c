@@ -855,24 +855,13 @@ void Gfx_BlendRect(const RECT *rect, u8 r, u8 g, u8 b, u8 mode)
 
 void Gfx_BlitTexCol(Gfx_Tex *tex, const RECT *src, s32 x, s32 y, u8 r, u8 g, u8 b)
 {
-	//Create new command
-	Gfx_Cmd cmd;
-	cmd.src.left =   (tex->tpage_x + src->x) / (float)VRAM_WIDTH;
-	cmd.src.top =    (tex->tpage_y + src->y) / (float)VRAM_HEIGHT;
-	cmd.src.right =  (tex->tpage_x + src->x + src->w) / (float)VRAM_WIDTH;
-	cmd.src.bottom = (tex->tpage_y + src->y + src->h) / (float)VRAM_HEIGHT;
-	cmd.dst.tl.x = cmd.dst.bl.x = (float)x;
-	cmd.dst.tl.y = cmd.dst.tr.y = (float)y;
-	cmd.dst.tr.x = cmd.dst.br.x = (float)x + (float)src->w;
-	cmd.dst.bl.y = cmd.dst.br.y = (float)y + (float)src->h;
-	cmd.r = (float)r / 128.0f;
-	cmd.g = (float)g / 128.0f;
-	cmd.b = (float)b / 128.0f;
-	cmd.a = 1.0f;
-	cmd.texture_id = vram_texture;
-	
-	//Push command
-	*dlist_p++ = cmd;
+	POINT tl, tr, bl, br;
+	tl.x = bl.x = (float)x;
+	tl.y = tr.y = (float)y;
+	tr.x = br.x = (float)x + (float)src->w;
+	bl.y = br.y = (float)y + (float)src->h;
+
+	Gfx_DrawTexArbCol(tex, src, &tl, &tr, &bl, &br, r, g, b);
 }
 
 void Gfx_BlitTex(Gfx_Tex *tex, const RECT *src, s32 x, s32 y)
@@ -882,16 +871,36 @@ void Gfx_BlitTex(Gfx_Tex *tex, const RECT *src, s32 x, s32 y)
 
 void Gfx_DrawTexCol(Gfx_Tex *tex, const RECT *src, const RECT *dst, u8 r, u8 g, u8 b)
 {
+	POINT tl, tr, bl, br;
+	tl.x = bl.x = (float)dst->x;
+	tl.y = tr.y = (float)dst->y;
+	tr.x = br.x = (float)dst->x + (float)dst->w;
+	bl.y = br.y = (float)dst->y + (float)dst->h;
+
+	Gfx_DrawTexArbCol(tex, src, &tl, &tr, &bl, &br, r, g, b);
+}
+
+void Gfx_DrawTex(Gfx_Tex *tex, const RECT *src, const RECT *dst)
+{
+	Gfx_DrawTexCol(tex, src, dst, 0x80, 0x80, 0x80);
+}
+
+void Gfx_DrawTexArbCol(Gfx_Tex *tex, const RECT *src, const POINT *p0, const POINT *p1, const POINT *p2, const POINT *p3, u8 r, u8 g, u8 b)
+{
 	//Create new command
 	Gfx_Cmd cmd;
 	cmd.src.left =   (tex->tpage_x + src->x) / (float)VRAM_WIDTH;
 	cmd.src.top =    (tex->tpage_y + src->y) / (float)VRAM_HEIGHT;
 	cmd.src.right =  (tex->tpage_x + src->x + src->w) / (float)VRAM_WIDTH;
 	cmd.src.bottom = (tex->tpage_y + src->y + src->h) / (float)VRAM_HEIGHT;
-	cmd.dst.tl.x = cmd.dst.bl.x = (float)dst->x;
-	cmd.dst.tl.y = cmd.dst.tr.y = (float)dst->y;
-	cmd.dst.tr.x = cmd.dst.br.x = (float)dst->x + (float)dst->w;
-	cmd.dst.bl.y = cmd.dst.br.y = (float)dst->y + (float)dst->h;
+	cmd.dst.tl.x = p0->x;
+	cmd.dst.tl.y = p0->y;
+	cmd.dst.tr.x = p1->x;
+	cmd.dst.tr.y = p1->y;
+	cmd.dst.bl.x = p2->x;
+	cmd.dst.bl.y = p2->y;
+	cmd.dst.br.x = p3->x;
+	cmd.dst.br.y = p3->y;
 	cmd.r = (float)r / 128.0f;
 	cmd.g = (float)g / 128.0f;
 	cmd.b = (float)b / 128.0f;
@@ -901,13 +910,7 @@ void Gfx_DrawTexCol(Gfx_Tex *tex, const RECT *src, const RECT *dst, u8 r, u8 g, 
 	//Push command
 	*dlist_p++ = cmd;
 }
-
-void Gfx_DrawTex(Gfx_Tex *tex, const RECT *src, const RECT *dst)
-{
-	Gfx_DrawTexCol(tex, src, dst, 0x80, 0x80, 0x80);
-}
-
 void Gfx_DrawTexArb(Gfx_Tex *tex, const RECT *src, const POINT *p0, const POINT *p1, const POINT *p2, const POINT *p3)
 {
-	
+	Gfx_DrawTexArbCol(tex, src, p0, p1, p2, p3, 0x80, 0x80, 0x80);
 }
