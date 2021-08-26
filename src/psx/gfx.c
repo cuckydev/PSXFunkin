@@ -160,6 +160,26 @@ void Gfx_DrawRect(const RECT *rect, u8 r, u8 g, u8 b)
 	nextpri += sizeof(POLY_F4);
 }
 
+void Gfx_BlendRect(const RECT *rect, u8 r, u8 g, u8 b, u8 mode)
+{
+	//Add quad
+	POLY_F4 *quad = (POLY_F4*)nextpri;
+	setPolyF4(quad);
+	setXYWH(quad, rect->x, rect->y, rect->w, rect->h);
+	setRGB0(quad, r, g, b);
+	setSemiTrans(quad, 1);
+	
+	addPrim(ot[db], quad);
+	nextpri += sizeof(POLY_F4);
+	
+	//Add tpage change (this controls transparency mode)
+	DR_TPAGE *tpage = (DR_TPAGE*)nextpri;
+	setDrawTPage(tpage, 0, 1, getTPage(0, mode, 0, 0));
+	
+	addPrim(ot[db], tpage);
+	nextpri += sizeof(DR_TPAGE);
+}
+
 void Gfx_BlitTexCol(Gfx_Tex *tex, const RECT *src, s32 x, s32 y, u8 r, u8 g, u8 b)
 {
 	//Add sprite
@@ -186,7 +206,6 @@ void Gfx_BlitTex(Gfx_Tex *tex, const RECT *src, s32 x, s32 y)
 {
 	Gfx_BlitTexCol(tex, src, x, y, 0x80, 0x80, 0x80);
 }
-
 
 void Gfx_DrawTexCol(Gfx_Tex *tex, const RECT *src, const RECT *dst, u8 r, u8 g, u8 b)
 {

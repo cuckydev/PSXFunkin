@@ -76,7 +76,7 @@ void Stage_FocusCharacter(Character *ch, fixed_t div)
 	stage.camera.tz = ch->focus_zoom;
 	stage.camera.td = div;
 }
-#include "mutil.h"
+
 void Stage_ScrollCamera(void)
 {
 	#ifdef STAGE_FREECAM
@@ -195,7 +195,7 @@ void Stage_GetSectionScroll(SectionScroll *scroll, Section *section)
 	scroll->length = (scroll->length_step * FIXED_DEC(15,1) / 12) * 24 / bpm;
 	
 	//Get note height
-	scroll->size = FIXED_MUL(stage.speed, scroll->length * (12 * 140) / scroll->length_step) + FIXED_UNIT;
+	scroll->size = FIXED_MUL(stage.speed, scroll->length * (12 * 150) / scroll->length_step) + FIXED_UNIT;
 }
 
 //Note hit detection
@@ -596,7 +596,7 @@ void Stage_DrawNotes(void)
 		//Get note position
 		fixed_t note_fp = (fixed_t)note->pos << FIXED_SHIFT;
 		fixed_t time = (scroll.start - stage.song_time) + (scroll.length * (note->pos - scroll.start_step) / scroll.length_step);
-		fixed_t y = note_y + FIXED_MUL(stage.speed, time * 140);
+		fixed_t y = note_y + FIXED_MUL(stage.speed, time * 150);
 		
 		//Check if went above screen
 		if (y < FIXED_DEC(-16 - SCREEN_HEIGHT2, 1))
@@ -926,7 +926,7 @@ void Stage_LoadMusic(void)
 	IO_SeekFile(&stage.music_file);
 	
 	//Initialize music state
-	stage.note_scroll = FIXED_DEC(-4 * 4 * 12,1);
+	stage.note_scroll = FIXED_DEC(-5 * 4 * 12,1);
 	stage.song_time = FIXED_DIV(stage.note_scroll, stage.step_crochet);
 	stage.interp_time = 0;
 	stage.interp_ms = 0;
@@ -1172,15 +1172,6 @@ void Stage_Tick(void)
 					playing = true;
 					Audio_PlayXA_File(&stage.music_file, 0x40, stage.stage_def->music_channel, 0);
 					
-					//Wait until first sector has played
-					while (1)
-					{
-						Audio_ProcessXA();
-						if (Audio_TellXA_Milli())
-							break;
-					}
-					Timer_Reset();
-					
 					//Update song time
 					fixed_t audio_time = (fixed_t)Audio_TellXA_Milli() - stage.offset;
 					if (audio_time < 0)
@@ -1200,13 +1191,17 @@ void Stage_Tick(void)
 			}
 			else if (Audio_PlayingXA())
 			{
-				fixed_t audio_time = (fixed_t)Audio_TellXA_Milli() - stage.offset;
+				fixed_t audio_time_pof = (fixed_t)Audio_TellXA_Milli();
+				fixed_t audio_time = (audio_time_pof > 0) ? (audio_time_pof - stage.offset) : 0;
 				
 				if (stage.expsync)
 				{
 					//Get playing song position
-					stage.song_time += timer_dt;
-					stage.interp_time += timer_dt;
+					if (audio_time_pof > 0)
+					{
+						stage.song_time += timer_dt;
+						stage.interp_time += timer_dt;
+					}
 					
 					if (stage.interp_time >= interp_int)
 					{

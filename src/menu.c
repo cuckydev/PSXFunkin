@@ -48,11 +48,12 @@ static const char *funny_messages[][2] = {
 	{"NEXT IN LINE", "ATARI"},
 	{"HAXEFLIXEL", "COME ON"},
 	{"HAHAHA", "I DONT CARE"},
-	{"WHAT", "NO"},
 	{"GET ME TO STOP", "TRY"},
 	{"FNF MUKBANG GIF", "THATS UNRULY"},
 	{"OPEN SOURCE", "FOREVER"},
 	{"ITS A PORT", "ITS WORSE"},
+	{"WOW GATO", "WOW GATO"},
+	{"BALLS FISH", "BALLS FISH"},
 };
 
 //Menu state
@@ -76,7 +77,12 @@ static struct
 		struct
 		{
 			u8 logo_bump;
+			fixed_t fade, fadespd;
 		} title;
+		struct
+		{
+			fixed_t fade, fadespd;
+		} story;
 	} page_state;
 	
 	union
@@ -171,13 +177,13 @@ static void Menu_DifficultySelector(s32 x, s32 y)
 	
 	//Draw difficulty
 	static const RECT diff_srcs[] = {
-		{  0, 96, 49, 16},
-		{ 64, 96, 77, 16},
-		{144, 96, 53, 16},
+		{  0, 96, 64, 18},
+		{ 64, 96, 80, 18},
+		{144, 96, 64, 18},
 	};
 	
 	const RECT *diff_src = &diff_srcs[menu.page_param.stage.diff];
-	Gfx_BlitTex(&menu.tex_story, diff_src, x - (diff_src->w >> 1), y - 8 + ((pad_state.press & (PAD_LEFT | PAD_RIGHT)) != 0));
+	Gfx_BlitTex(&menu.tex_story, diff_src, x - (diff_src->w >> 1), y - 9 + ((pad_state.press & (PAD_LEFT | PAD_RIGHT)) != 0));
 }
 
 static void Menu_DrawWeek(const char *week, s32 x, s32 y)
@@ -362,13 +368,19 @@ void Menu_Tick(void)
 		{
 			//Initialize page
 			if (menu.page_swap)
-				menu.page_state.title.logo_bump = 6;
-			
-			//Draw white flash shortly after pressing start
-			if (menu.trans_time >= 56)
 			{
-				RECT flash = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
-				Gfx_DrawRect(&flash, 0xFF, 0xFF, 0xFF);
+				menu.page_state.title.logo_bump = 6;
+				menu.page_state.title.fade = FIXED_DEC(255,1);
+				menu.page_state.title.fadespd = FIXED_DEC(90,1);
+			}
+			
+			//Draw white fade
+			if (menu.page_state.title.fade > 0)
+			{
+				static const RECT flash = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+				u8 flash_col = menu.page_state.title.fade >> FIXED_SHIFT;
+				Gfx_BlendRect(&flash, flash_col, flash_col, flash_col, 1);
+				menu.page_state.title.fade -= FIXED_MUL(menu.page_state.title.fadespd, timer_dt);
 			}
 			
 			//Go to main menu when start is pressed
@@ -378,6 +390,8 @@ void Menu_Tick(void)
 			if ((pad_state.press & PAD_START) && menu.next_page == menu.page && Trans_Idle())
 			{
 				menu.trans_time = 60;
+				menu.page_state.title.fade = FIXED_DEC(255,1);
+				menu.page_state.title.fadespd = FIXED_DEC(300,1);
 				menu.next_page = MenuPage_Main;
 				menu.next_select = 0;
 			}
@@ -568,17 +582,21 @@ void Menu_Tick(void)
 			{
 				menu.scroll = 0;
 				menu.page_param.stage.diff = StageDiff_Normal;
+				menu.page_state.title.fade = FIXED_DEC(0,1);
+				menu.page_state.title.fadespd = FIXED_DEC(0,1);
 			}
 			
-			//Draw white flash shortly after selecting week
-			if (menu.trans_time >= 56)
+			//Draw white fade
+			if (menu.page_state.title.fade > 0)
 			{
-				RECT flash = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
-				Gfx_DrawRect(&flash, 0xFF, 0xFF, 0xFF);
+				static const RECT flash = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+				u8 flash_col = menu.page_state.title.fade >> FIXED_SHIFT;
+				Gfx_BlendRect(&flash, flash_col, flash_col, flash_col, 1);
+				menu.page_state.title.fade -= FIXED_MUL(menu.page_state.title.fadespd, timer_dt);
 			}
 			
 			//Draw difficulty selector
-			Menu_DifficultySelector(SCREEN_WIDTH - 75, 68);
+			Menu_DifficultySelector(SCREEN_WIDTH - 75, 80);
 			
 			//Handle option and selection
 			if (menu.trans_time != 0 && --menu.trans_time == 0)
@@ -609,6 +627,8 @@ void Menu_Tick(void)
 					menu.page_param.stage.id = menu_options[menu.select].stage;
 					menu.page_param.stage.story = true;
 					menu.trans_time = 60;
+					menu.page_state.title.fade = FIXED_DEC(255,1);
+					menu.page_state.title.fadespd = FIXED_DEC(510,1);
 				}
 				
 				//Return to main menu if circle is pressed
@@ -620,16 +640,36 @@ void Menu_Tick(void)
 				}
 			}
 			
+			//Draw options
+			s32 next_scroll = menu.select * FIXED_DEC(48,1);
+			menu.scroll += (next_scroll - menu.scroll) >> 4;
+			
+			if (menu.next_page == menu.page || menu.next_page == MenuPage_Main)
+			{
+				//Draw all options
+				for (u8 i = 0; i < COUNT_OF(menu_options); i++)
+				{
+					s32 y = 24 + (i * 48) - (menu.scroll >> FIXED_SHIFT);
+					if (y <= -16)
+						continue;
+					if (y >= SCREEN_HEIGHT)
+						break;
+					Menu_DrawWeek(menu_options[i].week, 48, y);
+				}
+			}
+			else if (animf_count & 2)
+			{
+				//Draw selected option
+				Menu_DrawWeek(menu_options[menu.select].week, 48, 24 + (menu.select * 48) - (menu.scroll >> FIXED_SHIFT));
+			}
+			
 			//Draw week name and tracks
 			menu.font_bold.draw(&menu.font_bold,
 				menu_options[menu.select].name,
 				SCREEN_WIDTH - 16,
-				24,
+				14,
 				FontAlign_Right
 			);
-			
-			RECT name_bar = {0, 16, SCREEN_WIDTH, 8 + 16 + 8};
-			Gfx_DrawRect(&name_bar, 249, 207, 81);
 			
 			const char * const *trackp = menu_options[menu.select].tracks;
 			for (size_t i = 0; i < COUNT_OF(menu_options[menu.select].tracks); i++, trackp++)
@@ -643,28 +683,10 @@ void Menu_Tick(void)
 					);
 			}
 			
-			//Draw options
-			s32 next_scroll = menu.select * FIXED_DEC(48,1);
-			menu.scroll += (next_scroll - menu.scroll) >> 4;
+			//Draw upper strip
+			RECT name_bar = {0, 12, SCREEN_WIDTH, 42};
+			Gfx_DrawRect(&name_bar, 249, 207, 81);
 			
-			if (menu.next_page == menu.page || menu.next_page == MenuPage_Main)
-			{
-				//Draw all options
-				for (u8 i = 0; i < COUNT_OF(menu_options); i++)
-				{
-					s32 y = 62 + (i * 48) - (menu.scroll >> FIXED_SHIFT);
-					if (y <= 16)
-						continue;
-					if (y >= SCREEN_HEIGHT)
-						break;
-					Menu_DrawWeek(menu_options[i].week, 48, y);
-				}
-			}
-			else if (animf_count & 2)
-			{
-				//Draw selected option
-				Menu_DrawWeek(menu_options[menu.select].week, 48, 62 + (menu.select * 48) - (menu.scroll >> FIXED_SHIFT));
-			}
 			break;
 		}
 		case MenuPage_Freeplay:
