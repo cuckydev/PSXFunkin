@@ -640,34 +640,11 @@ void Menu_Tick(void)
 				}
 			}
 			
-			//Draw options
-			s32 next_scroll = menu.select * FIXED_DEC(48,1);
-			menu.scroll += (next_scroll - menu.scroll) >> 4;
-			
-			if (menu.next_page == menu.page || menu.next_page == MenuPage_Main)
-			{
-				//Draw all options
-				for (u8 i = 0; i < COUNT_OF(menu_options); i++)
-				{
-					s32 y = 24 + (i * 48) - (menu.scroll >> FIXED_SHIFT);
-					if (y <= -16)
-						continue;
-					if (y >= SCREEN_HEIGHT)
-						break;
-					Menu_DrawWeek(menu_options[i].week, 48, y);
-				}
-			}
-			else if (animf_count & 2)
-			{
-				//Draw selected option
-				Menu_DrawWeek(menu_options[menu.select].week, 48, 24 + (menu.select * 48) - (menu.scroll >> FIXED_SHIFT));
-			}
-			
 			//Draw week name and tracks
 			menu.font_bold.draw(&menu.font_bold,
 				menu_options[menu.select].name,
 				SCREEN_WIDTH - 16,
-				14,
+				24,
 				FontAlign_Right
 			);
 			
@@ -684,8 +661,31 @@ void Menu_Tick(void)
 			}
 			
 			//Draw upper strip
-			RECT name_bar = {0, 12, SCREEN_WIDTH, 42};
+			RECT name_bar = {0, 16, SCREEN_WIDTH, 32};
 			Gfx_DrawRect(&name_bar, 249, 207, 81);
+			
+			//Draw options
+			s32 next_scroll = menu.select * FIXED_DEC(48,1);
+			menu.scroll += (next_scroll - menu.scroll) >> 3;
+			
+			if (menu.next_page == menu.page || menu.next_page == MenuPage_Main)
+			{
+				//Draw all options
+				for (u8 i = 0; i < COUNT_OF(menu_options); i++)
+				{
+					s32 y = 64 + (i * 48) - (menu.scroll >> FIXED_SHIFT);
+					if (y <= 16)
+						continue;
+					if (y >= SCREEN_HEIGHT)
+						break;
+					Menu_DrawWeek(menu_options[i].week, 48, y);
+				}
+			}
+			else if (animf_count & 2)
+			{
+				//Draw selected option
+				Menu_DrawWeek(menu_options[menu.select].week, 48, 64 + (menu.select * 48) - (menu.scroll >> FIXED_SHIFT));
+			}
 			
 			break;
 		}
