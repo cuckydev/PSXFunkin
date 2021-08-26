@@ -110,7 +110,7 @@ boolean Obj_Combo_Tick(Object *obj)
 	//Increment number timer
 	this->numt += timer_dt;
 	
-	return this->numt >= (FIXED_DEC(16,1) / 60) && this->ht >= (FIXED_DEC(16,1) / 60) && this->ct >= (FIXED_DEC(16,1) / 60);
+	return this->numt >= FIXED_DEC(16,60) && this->ht >= FIXED_DEC(16,60) && this->ct >= FIXED_DEC(16,60);
 }
 
 void Obj_Combo_Free(Object *obj)
@@ -189,9 +189,9 @@ Obj_Combo *Obj_Combo_New(fixed_t x, fixed_t y, u8 hit_type, u16 combo)
 	}
 	
 	//Initialize timers
-	this->ht = FIXED_DEC(-30,1) / 60;
-	this->ct = FIXED_DEC(-53,1) / 60;
-	this->numt = FIXED_DEC(-56,1) / 60;
+	this->ht = FIXED_DEC(-30,60);
+	this->ct = FIXED_DEC(-53,60);
+	this->numt = FIXED_DEC(-56,60);
 	
 	return this;
 }
