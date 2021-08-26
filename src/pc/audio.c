@@ -26,7 +26,7 @@ static ma_context xa_context;
 static ma_device xa_device;
 static ma_mutex xa_mutex;
 
-static unsigned int xa_samplerate;
+static size_t bytes_per_frame;
 
 static double xa_lasttime, xa_interptime, xa_interpstart;
 
@@ -34,7 +34,7 @@ static double xa_lasttime, xa_interptime, xa_interpstart;
 typedef struct
 {
 	boolean playing;
-	short *data, *datap, *datae;
+	unsigned char *data, *datap, *datae;
 } MP3Decode;
 
 MP3Decode xa_mp3[2];
@@ -80,53 +80,50 @@ static boolean MP3Decode_Decode(MP3Decode *this, CdlFILE *file)
 	drmp3_uint32 decoded_samplerate = drmp3_instance.sampleRate;
 	
 	//Decode entire file to buffer
-	short *decoded = malloc(decoded_frames * drmp3_instance.channels * sizeof(short));
+	short *decoded = malloc(decoded_frames * decoded_channels * sizeof(short));
 	
 	drmp3_read_pcm_frames_s16(&drmp3_instance, decoded_frames, decoded);
 	drmp3_uninit(&drmp3_instance);
 	free(data);
-	
+
 	//Convert buffer to output format
-	ma_data_converter_config config = ma_data_converter_config_init(ma_format_s16, ma_format_s16, decoded_channels, 2, decoded_samplerate, xa_samplerate);
-	ma_data_converter data_converter;
-	if (ma_data_converter_init(&config, &data_converter) != MA_SUCCESS)
+	ma_uint64 output_frames = ma_convert_frames(NULL, 0, xa_device.playback.format, xa_device.playback.channels, xa_device.sampleRate, decoded, decoded_frames, ma_format_s16, decoded_channels, decoded_samplerate);
+
+	this->data = malloc(output_frames * bytes_per_frame);
+
+	if (this->data == NULL)
 	{
-		sprintf(error_msg, "[MP3Decode_Decode] Failed to initialize miniaudio data converter");
+		sprintf(error_msg, "[MP3Decode_Decode] Failed to allocate converted audio buffer");
 		ErrorLock();
+		return true;
 	}
-	
-	//Convert to final buffer
-	ma_uint64 output_frames = ma_data_converter_get_expected_output_frame_count(&data_converter, decoded_frames);
-	this->data = malloc((output_frames << 1) * sizeof(short));
-	
-	ma_uint64 input_frames = decoded_frames;
-	ma_data_converter_process_pcm_frames(&data_converter, decoded, &input_frames, this->data, &output_frames);
-	ma_data_converter_uninit(&data_converter);
+
+	output_frames = ma_convert_frames(this->data, output_frames, xa_device.playback.format, xa_device.playback.channels, xa_device.sampleRate, decoded, decoded_frames, ma_format_s16, decoded_channels, decoded_samplerate);
 	free(decoded);
 	
 	this->datap = this->data;
-	this->datae = this->data + (output_frames << 1);
+	this->datae = this->data + (output_frames * bytes_per_frame);
 	
 	return false;
 }
 
-static void MP3Decode_Mix(MP3Decode *this, short *stream, ma_uint32 frames_to_do)
+static void MP3Decode_Copy(MP3Decode *this, void *stream, ma_uint32 frames_to_do)
 {
 	//Make sure data exists
 	if (this->data == NULL || this->datap == NULL || this->datae == NULL)
 		return;
 	
-	//Calculate frames left
-	ma_uint32 frames_left = (this->datae - this->datap) >> 1;
-	if (frames_left > frames_to_do)
-		frames_left = frames_to_do;
+	//Calculate bytes left
+	ma_uint32 bytes_to_do = frames_to_do * bytes_per_frame;
+	ma_uint32 bytes_left = this->datae - this->datap;
+	if (bytes_to_do > bytes_left)
+		bytes_to_do = bytes_left;
 	
-	//Mix
-	while (frames_left-- > 0)
-	{
-		*stream++ += *this->datap++;
-		*stream++ += *this->datap++;
-	}
+	//Copy data
+	memcpy(stream, this->datap, bytes_to_do);
+
+	//Advance pointer
+	this->datap += bytes_to_do;
 }
 
 static void MP3Decode_Skip(MP3Decode *this, ma_uint32 frames_to_skip)
@@ -136,7 +133,7 @@ static void MP3Decode_Skip(MP3Decode *this, ma_uint32 frames_to_skip)
 		return;
 	
 	//Skip
-	this->datap += (frames_to_skip << 1);
+	this->datap += frames_to_skip * bytes_per_frame;
 	if (this->datap >= this->datae)
 		this->datap = this->datae;
 }
@@ -147,7 +144,7 @@ static CdlFILE xa_files[XA_TrackMax];
 #include "../audio_def.h"
 
 //Miniaudio callback
-static void Audio_Callback(ma_device *device, void *output_buffer_void, const void *input_buffer, ma_uint32 frames_to_do)
+static void Audio_Callback(ma_device *device, void *output_buffer, const void *input_buffer, ma_uint32 frames_to_do)
 {
 	(void)input_buffer;
 	
@@ -160,10 +157,10 @@ static void Audio_Callback(ma_device *device, void *output_buffer_void, const vo
 		//Update timing state
 		xa_interptime = xa_lasttime;
 		xa_interpstart = glfwGetTime();
-		xa_lasttime = (double)(xa_mp3[xa_channel].datap - xa_mp3[xa_channel].data) / xa_samplerate / 2.0;
+		xa_lasttime = (double)(xa_mp3[xa_channel].datap - xa_mp3[xa_channel].data) / bytes_per_frame / xa_device.sampleRate;
 		
 		//Mix
-		MP3Decode_Mix(&xa_mp3[xa_channel], (short*)output_buffer_void, frames_to_do);
+		MP3Decode_Copy(&xa_mp3[xa_channel], output_buffer, frames_to_do);
 		MP3Decode_Skip(&xa_mp3[xa_channel ^ 1], frames_to_do);
 		
 		//Check if songs ended
@@ -227,9 +224,9 @@ void Audio_Init(void)
 	//Create miniaudio device
 	ma_device_config config = ma_device_config_init(ma_device_type_playback);
 	config.playback.pDeviceID = NULL;
-	config.playback.format = ma_format_s16;
-	config.playback.channels = 2;
-	config.sampleRate = 0; //Use native sample rate
+	config.playback.format = ma_format_unknown; //Use native format
+	config.playback.channels = 0;               //Use native channel count
+	config.sampleRate = 0;                      //Use native sample rate
 	config.noPreZeroedOutputBuffer = MA_FALSE;
 	config.dataCallback = Audio_Callback;
 	config.pUserData = NULL;
@@ -241,7 +238,8 @@ void Audio_Init(void)
 		return;
 	}
 	
-	xa_samplerate = xa_device.sampleRate;
+	//Cache this for later, so we don't have to calculate it constantly
+	bytes_per_frame = ma_get_bytes_per_frame(xa_device.playback.format, xa_device.playback.channels);
 	
 	if (ma_mutex_init(&xa_mutex) != MA_SUCCESS)
 	{
