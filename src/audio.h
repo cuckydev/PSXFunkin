@@ -83,6 +83,8 @@ typedef enum
 	//CLWNB.XA
 	XA_Hellclown,   //Hellclown
 	XA_Expurgation, //Expurgation
+	
+	XA_TrackMax,
 } XA_Track;
 
 //Audio functions

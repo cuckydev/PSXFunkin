@@ -28,6 +28,8 @@ static ma_mutex xa_mutex;
 
 static unsigned int xa_samplerate;
 
+static double xa_lasttime, xa_interptime, xa_interpstart;
+
 //MP3 decode
 typedef struct
 {
@@ -94,7 +96,15 @@ static boolean MP3Decode_Decode(MP3Decode *this, CdlFILE *file)
 	}
 	
 	//Convert to final buffer
-	//this->data = malloc(
+	ma_uint64 output_frames = ma_data_converter_get_expected_output_frame_count(&data_converter, decoded_frames);
+	this->data = malloc((output_frames << 1) * sizeof(short));
+	
+	ma_uint64 input_frames = decoded_frames;
+	ma_data_converter_process_pcm_frames(&data_converter, decoded, &input_frames, this->data, &output_frames);
+	ma_data_converter_uninit(&data_converter);
+	free(decoded);
+	
+	this->datae = this->data + (output_frames << 1);
 	
 	return false;
 }
@@ -105,10 +115,17 @@ static void MP3Decode_Mix(MP3Decode *this, short *stream, ma_uint32 frames_to_do
 	if (this->data == NULL || this->datap == NULL || this->datae == NULL)
 		return;
 	
-	//Skip
-	this->datap += (frames_to_do << 1);
-	if (this->datap >= this->datae)
-		this->datap = this->datae;
+	//Calculate frames left
+	ma_uint32 frames_left = (this->datae - this->datap) >> 1;
+	if (frames_left > frames_to_do)
+		frames_left = frames_to_do;
+	
+	//Mix
+	while (frames_left-- > 0)
+	{
+		*stream++ += *this->datap++;
+		*stream++ += *this->datap++;
+	}
 }
 
 static void MP3Decode_Skip(MP3Decode *this, ma_uint32 frames_to_skip)
@@ -124,7 +141,7 @@ static void MP3Decode_Skip(MP3Decode *this, ma_uint32 frames_to_skip)
 }
 
 //XA files and tracks
-static CdlFILE xa_files[XA_Max];
+static CdlFILE xa_files[XA_TrackMax];
 
 #include "../audio_def.h"
 
@@ -139,6 +156,12 @@ static void Audio_Callback(ma_device *device, void *output_buffer_void, const vo
 	//Mix XA
 	if (xa_state & XA_STATE_PLAYING)
 	{
+		//Update timing state
+		xa_interptime = xa_lasttime;
+		xa_interpstart = glfwGetTime();
+		xa_lasttime = (double)(xa_mp3[xa_channel].datap - xa_mp3[xa_channel].data) / xa_samplerate / 2.0;
+		
+		//Mix
 		MP3Decode_Mix(&xa_mp3[xa_channel], (short*)output_buffer_void, frames_to_do);
 		MP3Decode_Skip(&xa_mp3[xa_channel ^ 1], frames_to_do);
 	}
@@ -209,6 +232,8 @@ void Audio_Init(void)
 		ErrorLock();
 		return;
 	}
+	
+	ma_device_start(&xa_device);
 }
 
 void Audio_PlayXA_Track(XA_Track track, u8 volume, u8 channel, boolean loop)
@@ -218,7 +243,11 @@ void Audio_PlayXA_Track(XA_Track track, u8 volume, u8 channel, boolean loop)
 	
 	//Lock mutex during state modification
 	ma_mutex_lock(&xa_mutex);
+	
 	xa_state = XA_STATE_PLAYING | (loop ? XA_STATE_LOOPS : 0);
+	xa_lasttime = xa_interptime = 0.0;
+	xa_interpstart = glfwGetTime();
+	
 	ma_mutex_unlock(&xa_mutex);
 }
 
@@ -244,13 +273,16 @@ void Audio_SeekXA_Track(XA_Track track)
 			path[strlen(path) - 5] = 'v';
 			MP3Decode_Decode(&xa_mp3[0], &xa_files[track]);
 			path[strlen(path) - 5] = 'i';
-			MP3Decode_Decode(&xa_mp3[0], &xa_files[track]);
+			MP3Decode_Decode(&xa_mp3[1], &xa_files[track]);
 		}
 		else
 		{
 			MP3Decode_Decode(&xa_mp3[0], &xa_files[track]);
 			xa_mp3[1].data = NULL;
 		}
+		
+		//Remember
+		xa_track = track;
 	}
 	
 	//Reset XA position
@@ -278,8 +310,8 @@ void Audio_StopXA(void)
 	xa_state = 0;
 	
 	//Free previous track
-	free(xa_mp3[0].data);
-	free(xa_mp3[1].data);
+	free(xa_mp3[0].data); xa_mp3[0].data = NULL;
+	free(xa_mp3[1].data); xa_mp3[1].data = NULL;
 	
 	//Unlock mutex
 	ma_mutex_unlock(&xa_mutex);
@@ -292,12 +324,20 @@ void Audio_ChannelXA(u8 channel)
 
 s32 Audio_TellXA_Sector(void)
 {
-	return 0;
+	return (s64)Audio_TellXA_Milli() * 75 / 1000; //trolled
 }
 
 s32 Audio_TellXA_Milli(void)
 {
-	return 0;
+	//Lock mutex during state check
+	ma_mutex_lock(&xa_mutex);
+	
+	double xa_timesec = xa_interptime + (glfwGetTime() - xa_interpstart);
+	s32 pos = (s32)(xa_timesec * 1000);
+	
+	//Unlock mutex
+	ma_mutex_unlock(&xa_mutex);
+	return pos;
 }
 
 boolean Audio_PlayingXA(void)

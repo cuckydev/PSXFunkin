@@ -5,7 +5,7 @@
 #include "io.h"
 
 //Gfx constants
-#define SCREEN_WIDTH   320
+#define SCREEN_WIDTH   426
 #define SCREEN_HEIGHT  240
 #define SCREEN_WIDTH2  (SCREEN_WIDTH >> 1)
 #define SCREEN_HEIGHT2 (SCREEN_HEIGHT >> 1)
