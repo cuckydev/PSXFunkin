@@ -848,6 +848,11 @@ void Gfx_DrawRect(const RECT *rect, u8 r, u8 g, u8 b)
 	*dlist_p++ = cmd;
 }
 
+void Gfx_BlendRect(const RECT *rect, u8 r, u8 g, u8 b, u8 mode)
+{
+	//TODO - This
+}
+
 void Gfx_BlitTexCol(Gfx_Tex *tex, const RECT *src, s32 x, s32 y, u8 r, u8 g, u8 b)
 {
 	//Create new command
