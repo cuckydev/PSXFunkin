@@ -319,9 +319,6 @@ static void Gfx_DisplayCmd(const Gfx_Cmd *cmd)
 {
 	static u8 previous_blend_mode = 0xFE; //A sane invalid value
 
-	if(cmd->blend_mode == 1)
-		printf("%f\n", cmd->r);
-
 	//Push batch if using a new blend mode
 	if (cmd->blend_mode != previous_blend_mode)
 	{
