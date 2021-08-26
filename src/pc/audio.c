@@ -335,7 +335,10 @@ void Audio_StopXA(void)
 
 void Audio_ChannelXA(u8 channel)
 {
-	
+	//Lock mutex during state modification
+	ma_mutex_lock(&xa_mutex);
+	xa_channel = channel & 1;
+	ma_mutex_unlock(&xa_mutex);
 }
 
 s32 Audio_TellXA_Sector(void)
