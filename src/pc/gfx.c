@@ -50,6 +50,7 @@ typedef struct
 	} dst;
 	float r, g, b, a;
 	GLuint texture_id;
+	u8 blend_mode;
 } Gfx_Cmd;
 
 static Gfx_Cmd dlist[0x200];
@@ -310,16 +311,53 @@ static void Gfx_PushBatch(void)
 	
 	//Display data
 	glDrawArrays(GL_TRIANGLES, 0, batch_buffer_p - &batch_buffer[0][0]);
+
+	batch_buffer_p = &batch_buffer[0][0];
 }
 
 static void Gfx_DisplayCmd(const Gfx_Cmd *cmd)
 {
+	static u8 previous_blend_mode = 0xFE; //A sane invalid value
+
+	if(cmd->blend_mode == 1)
+		printf("%f\n", cmd->r);
+
+	//Push batch if using a new blend mode
+	if (cmd->blend_mode != previous_blend_mode)
+	{
+		Gfx_PushBatch();
+		previous_blend_mode = cmd->blend_mode;
+
+		switch (cmd->blend_mode)
+		{
+			//0     - 50% background  +50% polygon
+			//1     - 100% background +100% polygon
+			//2     - 100% background - 100% polygon
+			//3     - 100% background + 25% polygon
+
+			case 0xFF:
+				//No blending
+				glDisable(GL_BLEND);
+				break;
+
+			case 1:
+				//Additive blending
+				glEnable(GL_BLEND);
+				glBlendEquation(GL_FUNC_ADD);
+				glBlendFunc(GL_ONE, GL_ONE);
+				break;
+
+			default:
+				sprintf(error_msg, "[Gfx_BlendRect] Blend mode %d is unimplemented", cmd->blend_mode);
+				break;
+		}
+	}
+
 	//Push batch and bind if new texture
 	if (cmd->texture_id != batch_texture_id)
 	{
 		Gfx_PushBatch();
 		glBindTexture(GL_TEXTURE_2D, batch_texture_id = cmd->texture_id);
-		batch_buffer_p = &batch_buffer[0][0];
 	}
 	
 	//Push data to buffer
@@ -378,6 +416,33 @@ static void Gfx_DisplayCmd(const Gfx_Cmd *cmd)
 	batch_buffer_p[5].a = cmd->a;
 	
 	batch_buffer_p += 6;
+}
+
+static void Gfx_SubmitCommand(GLuint texture_id, const RECT *src, const POINT *p0, const POINT *p1, const POINT *p2, const POINT *p3, float r, float g, float b, u8 blend_mode)
+{
+	//Create new command
+	Gfx_Cmd cmd;
+	cmd.src.left =   src->x / (float)VRAM_WIDTH;
+	cmd.src.top =    src->y / (float)VRAM_HEIGHT;
+	cmd.src.right =  (src->x + src->w) / (float)VRAM_WIDTH;
+	cmd.src.bottom = (src->y + src->h) / (float)VRAM_HEIGHT;
+	cmd.dst.tl.x = (float)p0->x;
+	cmd.dst.tl.y = (float)p0->y;
+	cmd.dst.tr.x = (float)p1->x;
+	cmd.dst.tr.y = (float)p1->y;
+	cmd.dst.bl.x = (float)p2->x;
+	cmd.dst.bl.y = (float)p2->y;
+	cmd.dst.br.x = (float)p3->x;
+	cmd.dst.br.y = (float)p3->y;
+	cmd.r = r;
+	cmd.g = g;
+	cmd.b = b;
+	cmd.a = 1.0f;
+	cmd.texture_id = texture_id;
+	cmd.blend_mode = blend_mode;
+
+	//Push command
+	*dlist_p++ = cmd;
 }
 
 //Gfx functions
@@ -825,26 +890,24 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 
 void Gfx_DrawRect(const RECT *rect, u8 r, u8 g, u8 b)
 {
-	//Create new command
-	Gfx_Cmd cmd;
-	cmd.src.left = cmd.src.top = cmd.src.right = cmd.src.bottom = 0.0f;
-	cmd.dst.tl.x = cmd.dst.bl.x = (float)rect->x;
-	cmd.dst.tl.y = cmd.dst.tr.y = (float)rect->y;
-	cmd.dst.tr.x = cmd.dst.br.x = (float)rect->x + (float)rect->w;
-	cmd.dst.bl.y = cmd.dst.br.y = (float)rect->y + (float)rect->h;
-	cmd.r = (float)r / 255.0f;
-	cmd.g = (float)g / 255.0f;
-	cmd.b = (float)b / 255.0f;
-	cmd.a = 1.0f;
-	cmd.texture_id = plain_texture;
-	
-	//Push command
-	*dlist_p++ = cmd;
+	Gfx_BlendRect(rect, r, g, b, 0xFF);
 }
 
 void Gfx_BlendRect(const RECT *rect, u8 r, u8 g, u8 b, u8 mode)
 {
-	//TODO - This
+	RECT src;
+	src.x = 0.0f;
+	src.y = 0.0f;
+	src.w = 0.0f;
+	src.h = 0.0f;
+
+	POINT tl, tr, bl, br;
+	tl.x = bl.x = (float)rect->x;
+	tl.y = tr.y = (float)rect->y;
+	tr.x = br.x = (float)rect->x + (float)rect->w;
+	bl.y = br.y = (float)rect->y + (float)rect->h;
+
+	Gfx_SubmitCommand(plain_texture, &src, &tl, &tr, &bl, &br, r / 255.0f, g / 255.0f, b / 255.0f, mode);
 }
 
 void Gfx_BlitTexCol(Gfx_Tex *tex, const RECT *src, s32 x, s32 y, u8 r, u8 g, u8 b)
@@ -881,28 +944,13 @@ void Gfx_DrawTex(Gfx_Tex *tex, const RECT *src, const RECT *dst)
 
 void Gfx_DrawTexArbCol(Gfx_Tex *tex, const RECT *src, const POINT *p0, const POINT *p1, const POINT *p2, const POINT *p3, u8 r, u8 g, u8 b)
 {
-	//Create new command
-	Gfx_Cmd cmd;
-	cmd.src.left =   (tex->tpage_x + src->x) / (float)VRAM_WIDTH;
-	cmd.src.top =    (tex->tpage_y + src->y) / (float)VRAM_HEIGHT;
-	cmd.src.right =  (tex->tpage_x + src->x + src->w) / (float)VRAM_WIDTH;
-	cmd.src.bottom = (tex->tpage_y + src->y + src->h) / (float)VRAM_HEIGHT;
-	cmd.dst.tl.x = p0->x;
-	cmd.dst.tl.y = p0->y;
-	cmd.dst.tr.x = p1->x;
-	cmd.dst.tr.y = p1->y;
-	cmd.dst.bl.x = p2->x;
-	cmd.dst.bl.y = p2->y;
-	cmd.dst.br.x = p3->x;
-	cmd.dst.br.y = p3->y;
-	cmd.r = (float)r / 128.0f;
-	cmd.g = (float)g / 128.0f;
-	cmd.b = (float)b / 128.0f;
-	cmd.a = 1.0f;
-	cmd.texture_id = vram_texture;
-	
-	//Push command
-	*dlist_p++ = cmd;
+	RECT vram_src;
+	vram_src.x = tex->tpage_x + src->x;
+	vram_src.y = tex->tpage_y + src->y;
+	vram_src.w = src->w;
+	vram_src.h = src->h;
+
+	Gfx_SubmitCommand(vram_texture, &vram_src, p0, p1, p2, p3, r / 128.0f, g / 128.0f, b / 128.0f, 0xFF);
 }
 void Gfx_DrawTexArb(Gfx_Tex *tex, const RECT *src, const POINT *p0, const POINT *p1, const POINT *p2, const POINT *p3)
 {
