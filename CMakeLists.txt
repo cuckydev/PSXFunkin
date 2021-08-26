@@ -39,7 +39,6 @@ add_executable(funkin
 	"src/pc/timer.c"
 	"src/timer.h"
 	"src/pc/dr_mp3.h"
-	"src/pc/miniaudio.c"
 	"src/pc/miniaudio.h"
 	"src/stage/dummy.c"
 	"src/stage/dummy.h"

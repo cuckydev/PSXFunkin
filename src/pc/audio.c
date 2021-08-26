@@ -6,11 +6,27 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
+//We really really don't care if dr_mp3 and miniaudio have unused functions
+#ifdef __GNUC__
+ #pragma GCC diagnostic push
+ #pragma GCC diagnostic ignored "-Wunused-function"
+#endif
+
 #define DR_MP3_IMPLEMENTATION
+#define DR_MP3_NO_STDIO
+#define DRMP3_API static
 #include "dr_mp3.h"
 
+#define MINIAUDIO_IMPLEMENTATION
 #define MA_NO_DECODING
+#define MA_NO_ENCODING
+#define MA_NO_GENERATION
+#define MA_API static
 #include "miniaudio.h"
+
+#ifdef __GNUC__
+ #pragma GCC diagnostic pop
+#endif
 
 //XA state
 #define XA_STATE_PLAYING (1 << 0)
