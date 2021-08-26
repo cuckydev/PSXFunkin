@@ -272,8 +272,9 @@ void Audio_SeekXA_Track(XA_Track track)
 	//Lock mutex during state modification
 	ma_mutex_lock(&xa_mutex);
 	
-	//Set XA state
+	//Reset XA state
 	xa_state = 0;
+	xa_channel = 0;
 	
 	//Read file if different track
 	if (track != xa_track)
@@ -324,6 +325,7 @@ void Audio_StopXA(void)
 	
 	//Set XA state
 	xa_state = 0;
+	xa_channel = 0;
 	
 	//Free previous track
 	free(xa_mp3[0].data); xa_mp3[0].data = NULL;
