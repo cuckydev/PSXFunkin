@@ -39,6 +39,7 @@ SRCS = src/main.c \
        src/character/tank.c \
        src/object.c \
        src/object/combo.c \
+	   src/object/splash.c \
        mips/common/crt0/crt0.s
 
 CPPFLAGS += -Wall -mno-check-zero-division

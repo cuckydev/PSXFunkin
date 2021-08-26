@@ -226,7 +226,7 @@ typedef struct
 	CdlFILE music_file;
 	
 	//Object lists
-	ObjectList objlist_fg, objlist_bg;
+	ObjectList objlist_splash, objlist_fg, objlist_bg;
 } Stage;
 
 extern Stage stage;

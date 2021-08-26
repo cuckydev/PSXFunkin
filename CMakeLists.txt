@@ -82,6 +82,8 @@ add_executable(funkin
 	"src/object.h"
 	"src/object/combo.c"
 	"src/object/combo.h"
+	"src/object/splash.c"
+	"src/object/splash.h"
 )
 
 if (PSXF_GL STREQUAL "ES")

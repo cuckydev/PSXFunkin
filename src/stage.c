@@ -12,6 +12,7 @@
 #include "loadscr.h"
 
 #include "object/combo.h"
+#include "object/splash.h"
 
 //Stage constants
 //#define STAGE_PERFECT //Play all notes perfectly
@@ -20,6 +21,21 @@
 //#define STAGE_FREECAM //Freecam
 
 //#define STAGE_FUNKYFRIDAY //Funky Friday
+
+static const fixed_t note_x[8] = {
+	//BF
+	 FIXED_DEC(26 + (SCREEN_WIDEADD2 >> 1),1),
+	 FIXED_DEC(60 + (SCREEN_WIDEADD2 >> 1),1),//+34
+	 FIXED_DEC(94 + (SCREEN_WIDEADD2 >> 1),1),
+	FIXED_DEC(128 + (SCREEN_WIDEADD2 >> 1),1),
+	//Opponent
+	FIXED_DEC(-128 - (SCREEN_WIDEADD2 >> 1),1),
+	 FIXED_DEC(-94 - (SCREEN_WIDEADD2 >> 1),1),//+34
+	 FIXED_DEC(-60 - (SCREEN_WIDEADD2 >> 1),1),
+	 FIXED_DEC(-26 - (SCREEN_WIDEADD2 >> 1),1),
+};
+static const u16 note_key[] = {INPUT_LEFT, INPUT_DOWN, INPUT_UP, INPUT_RIGHT};
+static const fixed_t note_y = FIXED_DEC(32 - SCREEN_HEIGHT2, 1);
 
 //Stage definitions
 #include "character/bf.h"
@@ -206,7 +222,7 @@ static const CharAnim note_anims[4][2] = {
 	{CharAnim_Right, CharAnim_RightAlt},
 };
 
-void Stage_HitNote(fixed_t offset)
+void Stage_HitNote(u8 type, fixed_t offset)
 {
 	//Get hit type
 	if (offset < 0)
@@ -321,13 +337,29 @@ void Stage_HitNote(fixed_t offset)
 		if (combo != NULL)
 			ObjectList_Add(&stage.objlist_fg, (Object*)combo);
 	}
+	
+	//Create note splashes if SICK
+	if (hit_type == 0)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			//Create splash object
+			Obj_Splash *splash = Obj_Splash_New(
+				note_x[type],
+				note_y * (stage.downscroll ? -1 : 1),
+				type
+			);
+			if (splash != NULL)
+				ObjectList_Add(&stage.objlist_splash, (Object*)splash);
+		}
+	}
 }
 
 void Stage_MissNote(void)
 {
 	#ifdef STAGE_FUNKYFRIDAY
 		for (int i = 0; i < RandomRange(1, 30); i++)
-			Stage_HitNote(0);
+			Stage_HitNote(Random8() & 3, 0);
 		return;
 	#endif
 	
@@ -371,10 +403,10 @@ void Stage_NoteCheck(u8 type)
 			
 			stage.player->set_anim(stage.player, note_anims[type][0]);
 			#ifndef STAGE_FUNKYFRIDAY
-				Stage_HitNote(stage.note_scroll - note_fp);
+				Stage_HitNote(type, stage.note_scroll - note_fp);
 			#else
 				for (int i = 0; i < RandomRange(1, 30); i++)
-					Stage_HitNote(0);
+					Stage_HitNote(type, 0);
 			#endif
 			stage.arrow_hitan[type] = 6;
 			return;
@@ -419,7 +451,7 @@ void Stage_NoteCheck(u8 type)
 		//Hit a note that doesn't exist
 		stage.player->set_anim(stage.player, note_anims[type][0]);
 		for (int i = 0; i < RandomRange(1, 30); i++)
-			Stage_HitNote(0);
+			Stage_HitNote(type, 0);
 		stage.arrow_hitan[type] = 6;
 	#endif
 }
@@ -513,22 +545,7 @@ void Stage_DrawTexArb(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, cons
 	Gfx_DrawTexArb(tex, src, &s0, &s1, &s2, &s3);
 }
 
-//Stage HUD functions and constants
-static const fixed_t note_x[8] = {
-	//BF
-	 FIXED_DEC(26 + (SCREEN_WIDEADD2 >> 1),1),
-	 FIXED_DEC(60 + (SCREEN_WIDEADD2 >> 1),1),//+34
-	 FIXED_DEC(94 + (SCREEN_WIDEADD2 >> 1),1),
-	FIXED_DEC(128 + (SCREEN_WIDEADD2 >> 1),1),
-	//Opponent
-	FIXED_DEC(-128 - (SCREEN_WIDEADD2 >> 1),1),
-	 FIXED_DEC(-94 - (SCREEN_WIDEADD2 >> 1),1),//+34
-	 FIXED_DEC(-60 - (SCREEN_WIDEADD2 >> 1),1),
-	 FIXED_DEC(-26 - (SCREEN_WIDEADD2 >> 1),1),
-};
-static const u16 note_key[] = {INPUT_LEFT, INPUT_DOWN, INPUT_UP, INPUT_RIGHT};
-static const fixed_t note_y = FIXED_DEC(32 - SCREEN_HEIGHT2, 1);
-
+//Stage HUD functions
 void Stage_DrawHealth(u8 i, s8 ox)
 {
 	//Check if we should use 'dying' frame
@@ -951,10 +968,9 @@ void Stage_LoadState(void)
 	
 	stage.state = StageState_Play;
 	
+	ObjectList_Free(&stage.objlist_splash);
 	ObjectList_Free(&stage.objlist_fg);
-	stage.objlist_fg = NULL;
 	ObjectList_Free(&stage.objlist_bg);
-	stage.objlist_bg = NULL;
 }
 
 //Stage functions
@@ -991,9 +1007,9 @@ void Stage_Load(StageId id, StageDiff difficulty, boolean story)
 	
 	//Initialize camera
 	if (stage.cur_section->flag & SECTION_FLAG_OPPFOCUS)
-		Stage_FocusCharacter(stage.opponent, FIXED_UNIT / 24);
+		Stage_FocusCharacter(stage.opponent, FIXED_UNIT);
 	else
-		Stage_FocusCharacter(stage.player, FIXED_UNIT / 24);
+		Stage_FocusCharacter(stage.player, FIXED_UNIT);
 	stage.camera.x = stage.camera.tx;
 	stage.camera.y = stage.camera.ty;
 	stage.camera.zoom = stage.camera.tz;
@@ -1020,6 +1036,7 @@ void Stage_Unload(void)
 	stage.chart_data = NULL;
 	
 	//Free objects
+	ObjectList_Free(&stage.objlist_splash);
 	ObjectList_Free(&stage.objlist_fg);
 	ObjectList_Free(&stage.objlist_bg);
 	
@@ -1467,31 +1484,8 @@ void Stage_Tick(void)
 				score_dst.x += FIXED_DEC(7,1);
 			}
 			
-			//Perform health checks
-			if (stage.health <= 0)
-			{
-				//Player has died
-				stage.health = 0;
-				stage.state = StageState_Dead;
-			}
-			if (stage.health > 20000)
-				stage.health = 20000;
-			
-			//Draw health heads
-			Stage_DrawHealth(stage.player->health_i,    1);
-			Stage_DrawHealth(stage.opponent->health_i, -1);
-			
-			//Draw health bar
-			RECT health_fill = {0, 0, 256 - (256 * stage.health / 20000), 8};
-			RECT health_back = {0, 8, 256, 8};
-			RECT_FIXED health_dst = {FIXED_DEC(-128,1), (SCREEN_HEIGHT2 - 32) << FIXED_SHIFT, 0, FIXED_DEC(8,1)};
-			if (stage.downscroll)
-				health_dst.y = -health_dst.y - health_dst.h;
-			
-			health_dst.w = health_fill.w << FIXED_SHIFT;
-			Stage_DrawTex(&stage.tex_hud1, &health_fill, &health_dst, stage.bump);
-			health_dst.w = health_back.w << FIXED_SHIFT;
-			Stage_DrawTex(&stage.tex_hud1, &health_back, &health_dst, stage.bump);
+			//Tick note splashes
+			ObjectList_Tick(&stage.objlist_splash);
 			
 			//Draw stage notes
 			Stage_DrawNotes();
@@ -1528,6 +1522,32 @@ void Stage_Tick(void)
 				note_src.y = i << 5;
 				Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, stage.bump);
 			}
+			
+			//Perform health checks
+			if (stage.health <= 0)
+			{
+				//Player has died
+				stage.health = 0;
+				stage.state = StageState_Dead;
+			}
+			if (stage.health > 20000)
+				stage.health = 20000;
+			
+			//Draw health heads
+			Stage_DrawHealth(stage.player->health_i,    1);
+			Stage_DrawHealth(stage.opponent->health_i, -1);
+			
+			//Draw health bar
+			RECT health_fill = {0, 0, 256 - (256 * stage.health / 20000), 8};
+			RECT health_back = {0, 8, 256, 8};
+			RECT_FIXED health_dst = {FIXED_DEC(-128,1), (SCREEN_HEIGHT2 - 32) << FIXED_SHIFT, 0, FIXED_DEC(8,1)};
+			if (stage.downscroll)
+				health_dst.y = -health_dst.y - health_dst.h;
+			
+			health_dst.w = health_fill.w << FIXED_SHIFT;
+			Stage_DrawTex(&stage.tex_hud1, &health_fill, &health_dst, stage.bump);
+			health_dst.w = health_back.w << FIXED_SHIFT;
+			Stage_DrawTex(&stage.tex_hud1, &health_back, &health_dst, stage.bump);
 			
 			//Hardcoded stage stuff
 			switch (stage.stage_id)

@@ -77,7 +77,8 @@ SOURCES = main \
 		  character/senpai \
 		  character/tank \
 		  object \
-		  object/combo
+		  object/combo \
+		  object/splash
 
 # What to compile
 OBJECTS = $(addprefix obj/$(FILENAME)/, $(addsuffix .o, $(SOURCES)))
