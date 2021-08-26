@@ -522,13 +522,7 @@ void Gfx_Flip(void)
 	//Clear screen
 	if (clear_e)
 	{
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	#if PSXF_GL == PSXF_GL_ES
-		glClearDepthf(1.0f);
-	#else
-		glClearDepth(1.0f);
-	#endif
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT);
 
 		//Draw the background color (we don't do this with glClearColor
 		//or else we'd end up drawing in the black bars around the screen)
