@@ -164,6 +164,22 @@ static void Audio_Callback(ma_device *device, void *output_buffer_void, const vo
 		//Mix
 		MP3Decode_Mix(&xa_mp3[xa_channel], (short*)output_buffer_void, frames_to_do);
 		MP3Decode_Skip(&xa_mp3[xa_channel ^ 1], frames_to_do);
+		
+		//Check if songs ended
+		if (xa_mp3[0].datap >= xa_mp3[0].datae && xa_mp3[1].datap >= xa_mp3[1].datae)
+		{
+			if (xa_state & XA_STATE_LOOPS)
+			{
+				//Reset pointers
+				xa_mp3[0].datap = xa_mp3[0].data;
+				xa_mp3[1].datap = xa_mp3[1].data;
+			}
+			else
+			{
+				//Stop playing
+				xa_state &= !XA_STATE_PLAYING;
+			}
+		}
 	}
 	
 	//Unlock mutex
