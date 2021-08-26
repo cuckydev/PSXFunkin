@@ -76,6 +76,8 @@ add_executable(funkin
 	"src/character/xmasp.h"
 	"src/character/senpai.c"
 	"src/character/senpai.h"
+	"src/character/senmad.c"
+	"src/character/senmad.h"
 	"src/character/tank.c"
 	"src/character/tank.h"
 	"src/object.c"

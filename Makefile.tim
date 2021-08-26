@@ -14,6 +14,7 @@ all: \
 	iso/mom/hair.tim \
 	iso/xmasp/main.arc \
 	iso/senpai/main.arc \
+	iso/senmad/main.arc \
 	iso/tank/main.arc \
 	iso/tank/ugh.arc \
 	iso/tank/good.arc \
@@ -58,6 +59,9 @@ iso/xmasp/main.arc: iso/xmasp/idle0.tim iso/xmasp/idle1.tim iso/xmasp/idle2.tim 
 
 # Senpai
 iso/senpai/main.arc: iso/senpai/senpai0.tim iso/senpai/senpai1.tim
+
+# Senmad
+iso/senmad/main.arc: iso/senmad/senmad0.tim iso/senmad/senmad1.tim
 
 # Tank
 iso/tank/main.arc: iso/tank/idle0.tim iso/tank/idle1.tim iso/tank/left.tim iso/tank/down.tim iso/tank/up.tim iso/tank/right.tim

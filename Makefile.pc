@@ -75,6 +75,7 @@ SOURCES = main \
 		  character/mom \
 		  character/xmasp \
 		  character/senpai \
+		  character/senmad \
 		  character/tank \
 		  object \
 		  object/combo \

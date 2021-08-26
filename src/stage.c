@@ -47,6 +47,7 @@ static const fixed_t note_y = FIXED_DEC(32 - SCREEN_HEIGHT2, 1);
 #include "character/mom.h"
 #include "character/xmasp.h"
 #include "character/senpai.h"
+#include "character/senmad.h"
 #include "character/tank.h"
 
 #include "stage/dummy.h"
