@@ -177,7 +177,7 @@ static void Audio_Callback(ma_device *device, void *output_buffer_void, const vo
 			else
 			{
 				//Stop playing
-				xa_state &= !XA_STATE_PLAYING;
+				xa_state &= ~XA_STATE_PLAYING;
 			}
 		}
 	}
