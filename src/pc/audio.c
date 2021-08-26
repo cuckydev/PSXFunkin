@@ -179,6 +179,10 @@ static void Audio_Callback(ma_device *device, void *output_buffer, const void *i
 			}
 		}
 	}
+	else
+	{
+		memset(output_buffer, 0, frames_to_do * bytes_per_frame);
+	}
 	
 	//Unlock mutex
 	ma_mutex_unlock(&xa_mutex);
@@ -227,7 +231,7 @@ void Audio_Init(void)
 	config.playback.format = ma_format_unknown; //Use native format
 	config.playback.channels = 0;               //Use native channel count
 	config.sampleRate = 0;                      //Use native sample rate
-	config.noPreZeroedOutputBuffer = MA_FALSE;
+	config.noPreZeroedOutputBuffer = MA_TRUE; //We will clear this buffer ourselves if needed
 	config.dataCallback = Audio_Callback;
 	config.pUserData = NULL;
 	
