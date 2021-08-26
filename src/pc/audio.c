@@ -104,6 +104,7 @@ static boolean MP3Decode_Decode(MP3Decode *this, CdlFILE *file)
 	ma_data_converter_uninit(&data_converter);
 	free(decoded);
 	
+	this->datap = this->data;
 	this->datae = this->data + (output_frames << 1);
 	
 	return false;
@@ -259,11 +260,7 @@ void Audio_PlayXA_Track(XA_Track track, u8 volume, u8 channel, boolean loop)
 	
 	//Lock mutex during state modification
 	ma_mutex_lock(&xa_mutex);
-	
 	xa_state = XA_STATE_PLAYING | (loop ? XA_STATE_LOOPS : 0);
-	xa_lasttime = xa_interptime = 0.0;
-	xa_interpstart = glfwGetTime();
-	
 	ma_mutex_unlock(&xa_mutex);
 }
 
@@ -275,6 +272,8 @@ void Audio_SeekXA_Track(XA_Track track)
 	//Reset XA state
 	xa_state = 0;
 	xa_channel = 0;
+	xa_lasttime = xa_interptime = 0.0;
+	xa_interpstart = glfwGetTime();
 	
 	//Read file if different track
 	if (track != xa_track)
@@ -302,10 +301,6 @@ void Audio_SeekXA_Track(XA_Track track)
 		xa_track = track;
 	}
 	
-	//Reset XA position
-	xa_mp3[0].datap = xa_mp3[0].data;
-	xa_mp3[1].datap = xa_mp3[1].data;
-	
 	//Unlock mutex
 	ma_mutex_unlock(&xa_mutex);
 }
@@ -324,8 +319,11 @@ void Audio_StopXA(void)
 	ma_mutex_lock(&xa_mutex);
 	
 	//Set XA state
+	xa_track = -1;
 	xa_state = 0;
 	xa_channel = 0;
+	xa_lasttime = xa_interptime = 0.0;
+	xa_interpstart = glfwGetTime();
 	
 	//Free previous track
 	free(xa_mp3[0].data); xa_mp3[0].data = NULL;
@@ -353,8 +351,16 @@ s32 Audio_TellXA_Milli(void)
 	//Lock mutex during state check
 	ma_mutex_lock(&xa_mutex);
 	
-	double xa_timesec = xa_interptime + (glfwGetTime() - xa_interpstart);
-	s32 pos = (s32)(xa_timesec * 1000);
+	s32 pos;
+	if (xa_state & XA_STATE_PLAYING)
+	{
+		double xa_timesec = xa_interptime + (glfwGetTime() - xa_interpstart);
+		pos = (s32)(xa_timesec * 1000);
+	}
+	else
+	{
+		pos = 0;
+	}
 	
 	//Unlock mutex
 	ma_mutex_unlock(&xa_mutex);
