@@ -173,7 +173,7 @@
 				<file name = "7.3e.cht" type = "data" source = "iso/chart/stress-easy.json.cht"/>
 				<file name = "7.3n.cht" type = "data" source = "iso/chart/stress.json.cht"/>
 				<file name = "7.3h.cht" type = "data" source = "iso/chart/stress-hard.json.cht"/>
-				<file name = "7.3p.cht" type = "data" source = "iso/week7/pico.cht"/>
+				<file name = "7.3p.cht" type = "data" source = "iso/week7/picospeaker.json.cht"/>
 			</dir>
 			
 			<!-- Kapi assets -->
