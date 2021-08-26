@@ -166,7 +166,7 @@ static void Audio_Callback(ma_device *device, void *output_buffer_void, const vo
 		MP3Decode_Skip(&xa_mp3[xa_channel ^ 1], frames_to_do);
 		
 		//Check if songs ended
-		if (xa_mp3[0].datap >= xa_mp3[0].datae && xa_mp3[1].datap >= xa_mp3[1].datae)
+		if ((xa_mp3[0].data == NULL || xa_mp3[0].datap >= xa_mp3[0].datae) && (xa_mp3[1].data == NULL || xa_mp3[1].datap >= xa_mp3[1].datae))
 		{
 			if (xa_state & XA_STATE_LOOPS)
 			{
