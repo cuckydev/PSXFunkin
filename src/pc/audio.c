@@ -139,7 +139,7 @@ static size_t MP3Decode_Copy(MP3Decode *this, unsigned char *stream, size_t byte
 {
 	//Make sure data exists
 	if (this->data == NULL || this->datap == NULL || this->datae == NULL)
-		return 0;
+		return bytes_to_do;
 
 	//Calculate bytes left
 	size_t bytes_done = bytes_to_do;
@@ -391,7 +391,8 @@ void Audio_ChannelXA(u8 channel)
 {
 	//Lock mutex during state modification
 	ma_mutex_lock(&xa_mutex);
-	xa_channel = channel & 1;
+	if (xa_mp3s[xa_track].vocal)
+		xa_channel = channel & 1;
 	ma_mutex_unlock(&xa_mutex);
 }
 
