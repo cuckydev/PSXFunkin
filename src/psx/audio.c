@@ -120,6 +120,11 @@ void Audio_Init(void)
 		IO_FindFile(filep++, *pathp);
 }
 
+void Audio_Quit(void)
+{
+	
+}
+
 static void Audio_GetXAFile(CdlFILE *file, XA_Track track)
 {
 	const XA_TrackDef *track_def = &xa_tracks[track];

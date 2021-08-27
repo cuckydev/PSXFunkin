@@ -58,6 +58,11 @@ void Gfx_Init(void)
 	Gfx_Flip();
 }
 
+void Gfx_Quit(void)
+{
+	
+}
+
 void Gfx_Flip(void)
 {
 	//Sync
@@ -84,7 +89,7 @@ void Gfx_Flip(void)
 void Gfx_SetClear(u8 r, u8 g, u8 b)
 {
 	setRGB0(&draw[0], r, g, b);
-    setRGB0(&draw[1], r, g, b);
+	setRGB0(&draw[1], r, g, b);
 }
 
 void Gfx_EnableClear(void)

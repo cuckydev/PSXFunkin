@@ -11,6 +11,11 @@ void IO_Init(void)
 	CdInit();
 }
 
+void IO_Quit(void)
+{
+	
+}
+
 void IO_FindFile(CdlFILE *file, const char *path)
 {
 	printf("[IO_FindFile] Searching for %s\n", path);

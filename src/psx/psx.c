@@ -9,3 +9,8 @@ void PSX_Init(void)
 {
 	//PSX already exists lol
 }
+
+void PSX_Quit(void)
+{
+	
+}

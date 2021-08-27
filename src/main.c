@@ -58,7 +58,7 @@ int main(int argc, char **argv)
 	Menu_Load(MenuPage_Opening);
 	
 	//Game loop
-	while (1)
+	while (PSX_Running())
 	{
 		//Prepare frame
 		Timer_Tick();
@@ -88,5 +88,13 @@ int main(int argc, char **argv)
 		//Flip gfx buffers
 		Gfx_Flip();
 	}
+	
+	//Deinitialize system
+	Gfx_Quit();
+	Pad_Quit();
+	Audio_Quit();
+	IO_Quit();
+	
+	PSX_Quit();
 	return 0;
 }

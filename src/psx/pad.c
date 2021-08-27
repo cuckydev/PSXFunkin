@@ -29,6 +29,11 @@ void Pad_Init(void)
 	ChangeClearPAD(0);
 }
 
+void Pad_Quit(void)
+{
+	
+}
+
 void Pad_Update(void)
 {
 	//Read port 1 state

@@ -36,6 +36,11 @@ void IO_Init(void)
 	}
 }
 
+void IO_Quit(void)
+{
+	free(iso_dir);
+}
+
 void IO_FindFile(CdlFILE *file, const char *path)
 {
 	//Empty path

@@ -16,6 +16,11 @@ void Pad_Init(void)
 	pad_state.left_x = pad_state.left_y = pad_state.right_x = pad_state.right_y = 0;
 }
 
+void Pad_Quit(void)
+{
+	
+}
+
 void Pad_Update(void)
 {
 	//Get next held state

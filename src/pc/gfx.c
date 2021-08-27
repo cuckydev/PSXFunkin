@@ -156,7 +156,12 @@ discard;\
 }";
 #endif
 
-static GLuint generic_shader_id;
+typedef struct
+{
+	GLuint program, vertex, fragment;
+} Gfx_Shader;
+
+static Gfx_Shader generic_shader;
 
 //Textures
 static GLuint plain_texture;
@@ -176,7 +181,9 @@ static Gfx_Vertex *batch_buffer_p;
 //Internal gfx functions
 static void Gfx_FramebufferSizeCallback(GLFWwindow *window, int fb_width, int fb_height)
 {
-	// Center the viewport within the window while maintaining the aspect ratio
+	(void)window;
+	
+	//Center the viewport within the window while maintaining the aspect ratio
 	GLfloat viewport_width, viewport_height;
 	if ((float)fb_width / (float)fb_height > (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT)
 	{
@@ -192,63 +199,68 @@ static void Gfx_FramebufferSizeCallback(GLFWwindow *window, int fb_width, int fb
 	glViewport((fb_width - viewport_width) / 2, (fb_height - viewport_height) / 2, viewport_width, viewport_height);
 }
 
-static GLuint Gfx_CompileShader(const char *src_vert, const char *src_frag)
+static void Gfx_CompileShader(Gfx_Shader *this, const char *src_vert, const char *src_frag)
 {
 	//Create shader
 	GLint shader_status;
-	GLuint shader_id = glCreateProgram();
+	this->program = glCreateProgram();
 	
 	//Compile vertex shader
-	GLuint vertex_id = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertex_id, 1, &src_vert, NULL);
-	glCompileShader(vertex_id);
+	this->vertex = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(this->vertex, 1, &src_vert, NULL);
+	glCompileShader(this->vertex);
 	
-	glGetShaderiv(vertex_id, GL_COMPILE_STATUS, &shader_status);
+	glGetShaderiv(this->vertex, GL_COMPILE_STATUS, &shader_status);
 	if (shader_status != GL_TRUE)
 	{
 		char buffer[0x200];
-		glGetShaderInfoLog(vertex_id, sizeof(buffer), NULL, buffer);
+		glGetShaderInfoLog(this->vertex, sizeof(buffer), NULL, buffer);
 		sprintf(error_msg, "[Gfx_CompileShader] Failed to compile vertex shader: %s", buffer);
 		ErrorLock();
 	}
 	
 	//Compile fragment shader
-	GLuint fragment_id = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragment_id, 1, &src_frag, NULL);
-	glCompileShader(fragment_id);
+	this->fragment = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(this->fragment, 1, &src_frag, NULL);
+	glCompileShader(this->fragment);
 	
-	glGetShaderiv(fragment_id, GL_COMPILE_STATUS, &shader_status);
+	glGetShaderiv(this->fragment, GL_COMPILE_STATUS, &shader_status);
 	if (shader_status != GL_TRUE)
 	{
 		char buffer[0x200];
-		glGetShaderInfoLog(fragment_id, sizeof(buffer), NULL, buffer);
+		glGetShaderInfoLog(this->fragment, sizeof(buffer), NULL, buffer);
 		sprintf(error_msg, "[Gfx_CompileShader] Failed to compile fragment shader: %s", buffer);
 		ErrorLock();
 	}
 	
 	//Attach and link
-	glAttachShader(shader_id, vertex_id);
-	glAttachShader(shader_id, fragment_id);
+	glAttachShader(this->program, this->vertex);
+	glAttachShader(this->program, this->fragment);
 	
-	glBindAttribLocation(shader_id, 0, "v_position");
-	glBindAttribLocation(shader_id, 1, "v_uv");
-	glBindAttribLocation(shader_id, 2, "v_colour");
+	glBindAttribLocation(this->program, 0, "v_position");
+	glBindAttribLocation(this->program, 1, "v_uv");
+	glBindAttribLocation(this->program, 2, "v_colour");
 	
-	glLinkProgram(shader_id);
+	glLinkProgram(this->program);
 	
-	glGetProgramiv(shader_id, GL_LINK_STATUS, &shader_status);
+	glGetProgramiv(this->program, GL_LINK_STATUS, &shader_status);
 	if (shader_status != GL_TRUE)
 	{
 		char buffer[0x200];
-		glGetProgramInfoLog(shader_id, sizeof(buffer), NULL, buffer);
+		glGetProgramInfoLog(this->program, sizeof(buffer), NULL, buffer);
 		sprintf(error_msg, "[Gfx_CompileShader] Failed to link shader: %s", buffer);
 		ErrorLock();
 	}
 	
-	glDetachShader(shader_id, vertex_id);
-	glDetachShader(shader_id, fragment_id);
-	
-	return shader_id;
+	glDetachShader(this->program, this->vertex);
+	glDetachShader(this->program, this->fragment);
+}
+
+static void Gfx_DeleteShader(Gfx_Shader *this)
+{
+	glDeleteProgram(this->program);
+	glDeleteShader(this->vertex);
+	glDeleteShader(this->fragment);
 }
 
 static GLuint Gfx_CreateTexture(GLint width, GLint height)
@@ -531,9 +543,9 @@ void Gfx_Init(void)
 	//glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 	
 	//Create shaders
-	generic_shader_id = Gfx_CompileShader(generic_shader_vert, generic_shader_frag);
-	glUseProgram(generic_shader_id);
-	glUniformMatrix4fv(glGetUniformLocation(generic_shader_id, "u_projection"), 1, GL_FALSE, &projection[0][0]);
+	Gfx_CompileShader(&generic_shader, generic_shader_vert, generic_shader_frag);
+	glUseProgram(generic_shader.program);
+	glUniformMatrix4fv(glGetUniformLocation(generic_shader.program, "u_projection"), 1, GL_FALSE, &projection[0][0]);
 	
 	//Create textures
 #if PSXF_GL == PSXF_GL_ES
@@ -563,6 +575,21 @@ void Gfx_Init(void)
 	dlist_p = dlist;
 	batch_buffer_p = &batch_buffer[0][0];
 	batch_texture_id = 0;
+}
+
+void Gfx_Quit(void)
+{
+	//Delete GL objects
+	glDeleteBuffers(1, &batch_vbo);
+#if PSXF_GL == PSXF_GL_MODERN
+	glDeleteVertexArrays(1, &batch_vao);
+#endif
+	glDeleteTextures(1, &plain_texture);
+	glDeleteTextures(1, &vram_texture);
+	Gfx_DeleteShader(&generic_shader);
+	
+	//Destroy window
+	glfwDestroyWindow(window);
 }
 
 void Gfx_Flip(void)
@@ -614,8 +641,6 @@ void Gfx_Flip(void)
 	
 	//Handle events
 	glfwPollEvents();
-	if (glfwWindowShouldClose(window))
-		exit(0);
 	
 	//Initialize frame
 	dlist_p = dlist;

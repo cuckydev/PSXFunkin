@@ -36,6 +36,7 @@ typedef struct
 
 //Gfx functions
 void Gfx_Init(void);
+void Gfx_Quit(void);
 void Gfx_Flip(void);
 void Gfx_SetClear(u8 r, u8 g, u8 b);
 void Gfx_EnableClear(void);

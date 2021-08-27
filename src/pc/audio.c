@@ -283,6 +283,19 @@ void Audio_Init(void)
 	ma_device_start(&xa_device);
 }
 
+void Audio_Quit(void)
+{
+	//Deinitialize miniaudio
+	ma_device_stop(&xa_device);
+	ma_mutex_uninit(&xa_mutex);
+	ma_device_uninit(&xa_device);
+	ma_context_uninit(&xa_context);
+	
+	//Free mp3s
+	free(xa_mp3[0].data);
+	free(xa_mp3[1].data);
+}
+
 void Audio_PlayXA_Track(XA_Track track, u8 volume, u8 channel, boolean loop)
 {
 	//Ensure track is loaded

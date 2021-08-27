@@ -5,6 +5,9 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
+//Window
+extern GLFWwindow *window;
+
 //Arguments
 int my_argc;
 char **my_argv;
@@ -18,6 +21,17 @@ void PSX_Init(void)
 		sprintf(error_msg, "[PSX_Init] Failed to initialize GLFW");
 		ErrorLock();
 	}
+}
+
+void PSX_Quit(void)
+{
+	//Quit GLEW
+	glfwTerminate();
+}
+
+boolean PSX_Running(void)
+{
+	return !glfwWindowShouldClose(window);
 }
 
 //Misc. functions
