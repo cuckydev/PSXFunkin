@@ -501,4 +501,20 @@
 		XA_Expurgation, 2,
 		
 		StageId_Clwn_4, 0
-	}
+	},
+	{ //StageId_2_4 (Clucked)
+		//Characters
+		{Char_BF_New,    FIXED_DEC(60,1),  FIXED_DEC(100,1)},
+		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_GF_New,     FIXED_DEC(0,1),    FIXED_DEC(0,1)},
+		
+		//Stage background
+		Back_Week1_New,
+		
+		//Song info
+		{FIXED_DEC(25,10),FIXED_DEC(25,10),FIXED_DEC(25,10)},
+		2, 4,
+		XA_Clucked, 2,
+		
+		StageId_2_4, 0
+	},

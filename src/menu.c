@@ -819,6 +819,7 @@ void Menu_Tick(void)
 				{StageId_Kapi_1, "VS KAPI", false},
 				{StageId_Clwn_1, "VS TRICKY", true},
 				{StageId_Clwn_4, "   EXPURGATION", false},
+				{StageId_2_4,    "CLUCKED", false},
 			};
 			
 			//Initialize page

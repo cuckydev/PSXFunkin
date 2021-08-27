@@ -21,6 +21,7 @@ static const XA_TrackDef xa_tracks[] = {
 	{XA_Week2A, XA_LENGTH(8880)}, //XA_South
 	//WEEK2B.XA
 	{XA_Week2B, XA_LENGTH(17778)}, //XA_Monster
+	{XA_Week2B, XA_LENGTH(11000)}, //XA_Clucked
 	//WEEK3A.XA
 	{XA_Week3A, XA_LENGTH(8400)},  //XA_Pico
 	{XA_Week3A, XA_LENGTH(10000)}, //XA_Philly
@@ -105,6 +106,7 @@ static const XA_Mp3 xa_mp3s[] = {
 	{"south", true},    //XA_South
 	//WEEK2B.XA
 	{"monster", true}, //XA_Monster
+	{"clucked", true}, //XA_Clucked
 	//WEEK3A.XA
 	{"pico", true},   //XA_Pico
 	{"philly", true}, //XA_Philly

@@ -70,6 +70,8 @@ typedef enum
 	StageId_Clwn_3, //Hellclown
 	StageId_Clwn_4, //Expurgation
 	
+	StageId_2_4, //Clucked
+	
 	StageId_Max
 } StageId;
 

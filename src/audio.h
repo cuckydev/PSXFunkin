@@ -45,6 +45,7 @@ typedef enum
 	XA_South,    //South
 	//WEEK2B.XA
 	XA_Monster, //Monster
+	XA_Clucked, //Clucked
 	//WEEK3A.XA
 	XA_Pico,   //Pico
 	XA_Philly, //Philly

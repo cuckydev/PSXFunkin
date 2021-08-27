@@ -78,6 +78,8 @@
 				<file name = "2.3e.cht" type = "data" source = "iso/chart/monster-easy.json.cht"/>
 				<file name = "2.3n.cht" type = "data" source = "iso/chart/monster.json.cht"/>
 				<file name = "2.3h.cht" type = "data" source = "iso/chart/monster-hard.json.cht"/>
+				<!-- Clucked charts -->
+				<file name = "2.4h.cht" type = "data" source = "iso/chart/clucked-hard.json.cht"/>
 			</dir>
 			
 			<!-- Week 3 assets -->
