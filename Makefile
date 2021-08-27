@@ -16,7 +16,7 @@ SRCS = src/main.c \
        src/psx/gfx.c \
        src/psx/audio.c \
        src/psx/pad.c \
-	   src/psx/timer.c \
+       src/psx/timer.c \
        src/stage/dummy.c \
        src/stage/week1.c \
        src/stage/week2.c \
@@ -39,7 +39,7 @@ SRCS = src/main.c \
        src/character/tank.c \
        src/object.c \
        src/object/combo.c \
-	   src/object/splash.c \
+       src/object/splash.c \
        mips/common/crt0/crt0.s
 
 CPPFLAGS += -Wall -mno-check-zero-division
