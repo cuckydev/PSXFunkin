@@ -27,7 +27,14 @@
 #define MA_NO_ENCODING
 #define MA_NO_GENERATION
 #define MA_API static
+
+#define RECT RECT_unconflict
+#define POINT POINT_unconflict
+#define boolean boolean_unconflict
 #include "miniaudio.h"
+#undef boolean
+#undef POINT
+#undef RECT
 
 #ifdef __GNUC__
  #pragma GCC diagnostic pop
