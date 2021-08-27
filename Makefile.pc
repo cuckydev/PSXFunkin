@@ -60,7 +60,7 @@ ifeq ($(GL), ES)
 endif
 
 # Link miniaudio dependencies
-LIBS += -lm -ldl -lpthread
+LIBS += -lm -lpthread
 
 # Other CXX flags
 CFLAGS += -MMD -MP -MF $@.d

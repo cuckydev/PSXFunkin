@@ -53,7 +53,7 @@ typedef struct
 	u8 blend_mode;
 } Gfx_Cmd;
 
-static Gfx_Cmd dlist[0x200];
+static Gfx_Cmd dlist[0x400];
 static Gfx_Cmd *dlist_p;
 
 typedef struct
