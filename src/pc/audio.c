@@ -135,33 +135,35 @@ static boolean MP3Decode_Decode(MP3Decode *this, CdlFILE *file)
 	return false;
 }
 
-static void MP3Decode_Copy(MP3Decode *this, void *stream, ma_uint32 frames_to_do)
+static size_t MP3Decode_Copy(MP3Decode *this, unsigned char *stream, size_t bytes_to_do)
 {
 	//Make sure data exists
 	if (this->data == NULL || this->datap == NULL || this->datae == NULL)
-		return;
-	
+		return 0;
+
 	//Calculate bytes left
-	ma_uint32 bytes_to_do = frames_to_do * bytes_per_frame;
-	ma_uint32 bytes_left = this->datae - this->datap;
-	if (bytes_to_do > bytes_left)
-		bytes_to_do = bytes_left;
-	
+	size_t bytes_done = bytes_to_do;
+	size_t bytes_left = this->datae - this->datap;
+	if (bytes_done > bytes_left)
+		bytes_done = bytes_left;
+
 	//Copy data
-	memcpy(stream, this->datap, bytes_to_do);
+	memcpy(stream, this->datap, bytes_done);
 
 	//Advance pointer
-	this->datap += bytes_to_do;
+	this->datap += bytes_done;
+
+	return bytes_done;
 }
 
-static void MP3Decode_Skip(MP3Decode *this, ma_uint32 frames_to_skip)
+static void MP3Decode_Skip(MP3Decode *this, size_t bytes_to_skip)
 {
 	//Make sure data exists
 	if (this->data == NULL || this->datap == NULL || this->datae == NULL)
 		return;
 	
 	//Skip
-	this->datap += frames_to_skip * bytes_per_frame;
+	this->datap += bytes_to_skip;
 	if (this->datap >= this->datae)
 		this->datap = this->datae;
 }
@@ -172,9 +174,12 @@ static CdlFILE xa_files[XA_TrackMax];
 #include "../audio_def.h"
 
 //Miniaudio callback
-static void Audio_Callback(ma_device *device, void *output_buffer, const void *input_buffer, ma_uint32 frames_to_do)
+static void Audio_Callback(ma_device *device, void *output_buffer_void, const void *input_buffer, ma_uint32 frames_to_do)
 {
 	(void)input_buffer;
+	
+	unsigned char *output_buffer = output_buffer_void;
+	size_t bytes_remaining = frames_to_do * bytes_per_frame;
 	
 	//Lock mutex during mixing
 	ma_mutex_lock(&xa_mutex);
@@ -188,32 +193,38 @@ static void Audio_Callback(ma_device *device, void *output_buffer, const void *i
 		xa_lasttime = (double)(xa_mp3[xa_channel].datap - xa_mp3[xa_channel].data) / bytes_per_frame / xa_device.sampleRate;
 		
 		//Mix
-		MP3Decode_Copy(&xa_mp3[xa_channel], output_buffer, frames_to_do);
-		MP3Decode_Skip(&xa_mp3[xa_channel ^ 1], frames_to_do);
-		
-		//Check if songs ended
-		if ((xa_mp3[0].data == NULL || xa_mp3[0].datap >= xa_mp3[0].datae) && (xa_mp3[1].data == NULL || xa_mp3[1].datap >= xa_mp3[1].datae))
+		while (bytes_remaining != 0)
 		{
-			if (xa_state & XA_STATE_LOOPS)
+			size_t bytes_done = MP3Decode_Copy(&xa_mp3[xa_channel], output_buffer, bytes_remaining);
+			MP3Decode_Skip(&xa_mp3[xa_channel ^ 1], bytes_done);
+			
+			output_buffer += bytes_done;
+			bytes_remaining -= bytes_done;
+			
+			//Check if songs ended
+			if ((xa_mp3[0].data == NULL || xa_mp3[0].datap >= xa_mp3[0].datae) && (xa_mp3[1].data == NULL || xa_mp3[1].datap >= xa_mp3[1].datae))
 			{
-				//Reset pointers
-				xa_mp3[0].datap = xa_mp3[0].data;
-				xa_mp3[1].datap = xa_mp3[1].data;
-			}
-			else
-			{
-				//Stop playing
-				xa_state &= ~XA_STATE_PLAYING;
+				if (xa_state & XA_STATE_LOOPS)
+				{
+					//Reset pointers
+					xa_mp3[0].datap = xa_mp3[0].data;
+					xa_mp3[1].datap = xa_mp3[1].data;
+				}
+				else
+				{
+					//Stop playing
+					xa_state &= ~XA_STATE_PLAYING;
+					break;
+				}
 			}
 		}
-	}
-	else
-	{
-		memset(output_buffer, 0, frames_to_do * bytes_per_frame);
 	}
 	
 	//Unlock mutex
 	ma_mutex_unlock(&xa_mutex);
+
+	//Clear any remaining bytes that haven't been written to
+	memset(output_buffer, 0, bytes_remaining);
 }
 
 //Audio functions

@@ -4,81 +4,112 @@ FILENAME = funkin
 CFLAGS = 
 LDFLAGS = 
 
+# Default options
+GL = MODERN
+
 # Win32
 ifeq ($(OS),Windows_NT)
   WINDOWS := 1
 endif
 ifeq ($(WINDOWS),1)
-	CFLAGS += -mwindows
+  CFLAGS += -mwindows
 endif
 
 # Options
 ifeq ($(STDMEM), 1)
-	CFLAGS += -DPSXF_STDMEM
+  CFLAGS += -DPSXF_STDMEM
+endif
+
+ifeq ($(GL), MODERN)
+  CFLAGS += -DPSXF_GL=PSXF_GL_MODERN
+endif
+ifeq ($(GL), LEGACY)
+  CFLAGS += -DPSXF_GL=PSXF_GL_LEGACY
+endif
+ifeq ($(GL), ES)
+  CFLAGS += -DPSXF_GL=PSXF_GL_ES
 endif
 
 # Release and debug
 ifeq ($(RELEASE), 1)
-	CFLAGS += -O3 -Wall -Wextra -pedantic -DPSXF_PC -DNDEBUG
-	LDFLAGS += -s -flto
+  CFLAGS += -O3 -Wall -Wextra -pedantic -DPSXF_PC -DNDEBUG
+  LDFLAGS += -s -flto
 else
-	CFLAGS += -Og -ggdb3 -Wall -Wextra -pedantic -DPSXF_DEBUG -DPSXF_PC
+  CFLAGS += -Og -ggdb3 -Wall -Wextra -pedantic -DPSXF_DEBUG -DPSXF_PC
 endif
 
 # Link GLFW
-CFLAGS += `$(PKGCONFIG) --cflags glfw3`
+CFLAGS += $(shell $(PKGCONFIG) --cflags glfw3)
 
 ifeq ($(STATIC), 1)
-	LDFLAGS += -static
-	LIBS += `$(PKGCONFIG) --libs glfw3 --static`
+  LDFLAGS += -static
+  LIBS += $(shell $(PKGCONFIG) --libs glfw3 --static)
 else
-	LIBS += `$(PKGCONFIG) --libs glfw3`
+  LIBS += $(shell $(PKGCONFIG) --libs glfw3)
 endif
+
+ifeq ($(GL), ES)
+  # Link GLESv2
+  CFLAGS += $(shell $(PKGCONFIG) --cflags glesv2)
+
+  ifeq ($(STATIC), 1)
+    LIBS += $(shell $(PKGCONFIG) --libs glesv2 --static)
+  else
+    LIBS += $(shell $(PKGCONFIG) --libs glesv2)
+  endif
+endif
+
+# Link miniaudio dependencies
+LIBS += -lm -ldl -lpthread
 
 # Other CXX flags
 CFLAGS += -MMD -MP -MF $@.d
 
 # Sources to compile
 SOURCES = main \
-		  mem \
-		  mutil \
-		  random \
-		  archive \
-		  font \
-		  trans \
-		  loadscr \
-		  menu \
-		  stage \
-		  pc/psx \
-		  pc/io \
-		  pc/gfx \
-		  pc/audio \
-		  pc/pad \
-		  pc/timer \
-		  pc/glad/glad \
-		  stage/dummy \
-		  stage/week1 \
-		  stage/week2 \
-		  stage/week3 \
-		  stage/week4 \
-		  stage/week5 \
-		  stage/week7 \
-		  animation \
-		  character \
-		  character/bf \
-		  character/bfweeb \
-		  character/gf \
-		  character/speaker \
-		  character/dad \
-		  character/spook \
-		  character/pico \
-		  character/mom \
-		  character/xmasp \
-		  character/senpai \
-		  character/tank \
-		  object \
-		  object/combo \
-		  object/splash
+          mem \
+          mutil \
+          random \
+          archive \
+          font \
+          trans \
+          loadscr \
+          menu \
+          stage \
+          pc/psx \
+          pc/io \
+          pc/gfx \
+          pc/audio \
+          pc/pad \
+          pc/timer \
+          stage/dummy \
+          stage/week1 \
+          stage/week2 \
+          stage/week3 \
+          stage/week4 \
+          stage/week5 \
+          stage/week7 \
+          animation \
+          character \
+          character/bf \
+          character/bfweeb \
+          character/gf \
+          character/speaker \
+          character/dad \
+          character/spook \
+          character/pico \
+          character/mom \
+          character/xmasp \
+          character/senpai \
+          character/tank \
+          object \
+          object/combo \
+          object/splash
+
+ifneq ($(GL), ES)
+  # Link glad
+  SOURCES += pc/glad/glad
+endif
 
 # What to compile
 OBJECTS = $(addprefix obj/$(FILENAME)/, $(addsuffix .o, $(SOURCES)))

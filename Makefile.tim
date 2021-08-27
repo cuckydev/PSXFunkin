@@ -1,31 +1,31 @@
 all: \
-	iso/menu/menu.arc \
-	iso/menu/loading.tim \
-	iso/font/boldfont.tim \
-	iso/stage/hud0.tim \
-	iso/stage/hud1.tim \
-	iso/bf/main.arc \
-	iso/bf/dead.arc \
-	iso/bf/weeb.arc \
-	iso/dad/main.arc \
-	iso/spook/main.arc \
-	iso/pico/main.arc \
-	iso/mom/main.arc \
-	iso/mom/hair.tim \
-	iso/xmasp/main.arc \
-	iso/senpai/main.arc \
-	iso/tank/main.arc \
-	iso/tank/ugh.arc \
-	iso/tank/good.arc \
-	iso/gf/main.arc \
-	iso/gf/speaker.tim \
-	iso/week1/back.arc \
-	iso/week2/back.arc \
-	iso/week3/back.arc \
-	iso/week4/back.arc \
-	iso/week4/hench.arc \
-	iso/week5/back.arc \
-	iso/week7/back.arc
+  iso/menu/menu.arc \
+  iso/menu/loading.tim \
+  iso/font/boldfont.tim \
+  iso/stage/hud0.tim \
+  iso/stage/hud1.tim \
+  iso/bf/main.arc \
+  iso/bf/dead.arc \
+  iso/bf/weeb.arc \
+  iso/dad/main.arc \
+  iso/spook/main.arc \
+  iso/pico/main.arc \
+  iso/mom/main.arc \
+  iso/mom/hair.tim \
+  iso/xmasp/main.arc \
+  iso/senpai/main.arc \
+  iso/tank/main.arc \
+  iso/tank/ugh.arc \
+  iso/tank/good.arc \
+  iso/gf/main.arc \
+  iso/gf/speaker.tim \
+  iso/week1/back.arc \
+  iso/week2/back.arc \
+  iso/week3/back.arc \
+  iso/week4/back.arc \
+  iso/week4/hench.arc \
+  iso/week5/back.arc \
+  iso/week7/back.arc
 
 iso/%.tim: iso/%.png
 	tools/funkintimconv/funkintimconv $@ $<
