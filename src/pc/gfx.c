@@ -356,8 +356,16 @@ static void Gfx_DisplayCmd(const Gfx_Cmd *cmd)
 				glBlendFunc(GL_ONE, GL_ONE);
 				break;
 
+			case 2:
+				//Subtractive blending
+				glEnable(GL_BLEND);
+				glBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
+				glBlendFunc(GL_ONE, GL_ONE);
+				break;
+
 			default:
 				sprintf(error_msg, "[Gfx_BlendRect] Blend mode %d is unimplemented", cmd->blend_mode);
+				ErrorLock();
 				break;
 		}
 	}

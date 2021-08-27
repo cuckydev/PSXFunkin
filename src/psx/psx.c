@@ -14,3 +14,8 @@ void PSX_Quit(void)
 {
 	
 }
+
+boolean PSX_Running(void)
+{
+	return true;
+}

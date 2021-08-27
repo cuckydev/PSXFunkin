@@ -2,7 +2,8 @@
 
 #include "gfx.h"
 
-#define TRANS_COVER_INC 8
+#define TRANS_COVER_INC 10
+#define TRANS_FADE_LEN 64
 
 //Transition state
 typedef enum
@@ -16,7 +17,7 @@ static struct
 {
 	//Transition state
 	TransState state;
-	u16 cover;
+	s16 cover;
 } transition;
 
 //Transition functions
@@ -24,14 +25,14 @@ void Trans_Set(void)
 {
 	//Initialize transition fading in
 	transition.state = TransState_In;
-	transition.cover = (SCREEN_HEIGHT + TRANS_COVER_INC - 1) / TRANS_COVER_INC * TRANS_COVER_INC;
+	transition.cover = SCREEN_HEIGHT;
 }
 
 void Trans_Clear(void)
 {
 	//Initialize transition idle
 	transition.state = TransState_Idle;
-	transition.cover = 0;
+	transition.cover = -TRANS_FADE_LEN;
 }
 
 void Trans_Start(void)
@@ -50,7 +51,7 @@ boolean Trans_Tick(void)
 		case TransState_In:
 		{
 			//Decrement transition coverage
-			if ((transition.cover -= TRANS_COVER_INC) == 0)
+			if ((transition.cover -= TRANS_COVER_INC) <= -TRANS_FADE_LEN)
 			{
 				transition.state = TransState_Idle;
 				return false;
@@ -65,6 +66,17 @@ boolean Trans_Tick(void)
 			};
 			Gfx_DrawRect(&trans_rect, 0, 0, 0);
 			
+			RECT trans_fade = {
+				0,
+				SCREEN_HEIGHT - transition.cover - TRANS_FADE_LEN,
+				SCREEN_WIDTH,
+				1
+			};
+			for (int i = 0; i < TRANS_FADE_LEN; i++)
+			{
+				Gfx_BlendRect(&trans_fade, 255 * i / TRANS_FADE_LEN, 255 * i / TRANS_FADE_LEN, 255 * i / TRANS_FADE_LEN, 2);
+				trans_fade.y++;
+			}
 			return false;
 		}
 		case TransState_Out:
@@ -90,6 +102,18 @@ boolean Trans_Tick(void)
 				transition.cover
 			};
 			Gfx_DrawRect(&trans_rect, 0, 0, 0);
+			
+			RECT trans_fade = {
+				0,
+				transition.cover + TRANS_FADE_LEN,
+				SCREEN_WIDTH,
+				1
+			};
+			for (int i = 0; i < TRANS_FADE_LEN; i++)
+			{
+				trans_fade.y--;
+				Gfx_BlendRect(&trans_fade, 255 * i / TRANS_FADE_LEN, 255 * i / TRANS_FADE_LEN, 255 * i / TRANS_FADE_LEN, 2);
+			}
 			return result;
 		}
 	}
