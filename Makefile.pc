@@ -62,6 +62,10 @@ endif
 # Link miniaudio dependencies
 LIBS += -lm -lpthread
 
+ifneq ($(WINDOWS),1)
+  LIBS += -ldl
+endif
+
 # Other CXX flags
 CFLAGS += -MMD -MP -MF $@.d
 
