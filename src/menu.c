@@ -76,7 +76,7 @@ static struct
 		} opening;
 		struct
 		{
-			u8 logo_bump;
+			fixed_t logo_bump;
 			fixed_t fade, fadespd;
 		} title;
 		struct
@@ -369,7 +369,7 @@ void Menu_Tick(void)
 			//Initialize page
 			if (menu.page_swap)
 			{
-				menu.page_state.title.logo_bump = 6;
+				menu.page_state.title.logo_bump = (FIXED_DEC(7,1) / 24) - 1;
 				menu.page_state.title.fade = FIXED_DEC(255,1);
 				menu.page_state.title.fadespd = FIXED_DEC(90,1);
 			}
@@ -398,18 +398,18 @@ void Menu_Tick(void)
 			
 			//Draw Friday Night Funkin' logo
 			if ((stage.flag & STAGE_FLAG_JUST_STEP) && (stage.song_step & 0x3) == 0 && menu.page_state.title.logo_bump == 0)
-				menu.page_state.title.logo_bump = 6;
+				menu.page_state.title.logo_bump = (FIXED_DEC(7,1) / 24) - 1;
 			
 			static const fixed_t logo_scales[] = {
 				FIXED_DEC(1,1),
+				FIXED_DEC(101,100),
 				FIXED_DEC(102,100),
-				FIXED_DEC(104,100),
-				FIXED_DEC(106,100),
-				FIXED_DEC(109,100),
-				FIXED_DEC(112,100),
+				FIXED_DEC(103,100),
+				FIXED_DEC(105,100),
+				FIXED_DEC(110,100),
 				FIXED_DEC(97,100),
 			};
-			fixed_t logo_scale = logo_scales[menu.page_state.title.logo_bump];
+			fixed_t logo_scale = logo_scales[(menu.page_state.title.logo_bump * 24) >> FIXED_SHIFT];
 			u32 x_rad = (logo_scale * (176 >> 1)) >> FIXED_SHIFT;
 			u32 y_rad = (logo_scale * (112 >> 1)) >> FIXED_SHIFT;
 			
@@ -422,8 +422,9 @@ void Menu_Tick(void)
 			};
 			Gfx_DrawTex(&menu.tex_title, &logo_src, &logo_dst);
 			
-			if ((frame_count & 1) && menu.page_state.title.logo_bump != 0)
-				menu.page_state.title.logo_bump--;
+			if (menu.page_state.title.logo_bump > 0)
+				if ((menu.page_state.title.logo_bump -= timer_dt) < 0)
+					menu.page_state.title.logo_bump = 0;
 			
 			//Draw "Press Start to Begin"
 			if (menu.next_page == menu.page)

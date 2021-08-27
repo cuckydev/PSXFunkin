@@ -511,10 +511,10 @@ void Gfx_Init(void)
 	glfwSetFramebufferSizeCallback(window, Gfx_FramebufferSizeCallback);
 	
 	//Enable vsync
-	if (glfwExtensionSupported("GLX_EXT_swap_control_tear") || glfwExtensionSupported("WGL_EXT_swap_control_tear"))
-		glfwSwapInterval(-1);
-	else
-		glfwSwapInterval(1);
+	//if (glfwExtensionSupported("GLX_EXT_swap_control_tear") || glfwExtensionSupported("WGL_EXT_swap_control_tear"))
+	//	glfwSwapInterval(-1);
+	//else
+	//	glfwSwapInterval(1);
 
 #if PSXF_GL != PSXF_GL_ES
 	//Initialize GLAD
