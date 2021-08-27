@@ -19,6 +19,7 @@ void LoadScr_Start(void)
 	Gfx_Tex loading_tex;
 	Gfx_SetClear(202, 255, 77);
 	Gfx_LoadTex(&loading_tex, IO_Read("\\MENU\\LOADING.TIM;1"), GFX_LOADTEX_FREE);
+	Timer_Reset();
 	
 	//Draw loading screen and run transition
 	Trans_Set();
@@ -33,8 +34,8 @@ void LoadScr_Start(void)
 	}
 	
 	//Draw an extra frame to avoid double buffering issues
-	//Gfx_DrawTex(&loading_tex, &loading_src, &loading_dst);
-	//Gfx_Flip();
+	Gfx_DrawTex(&loading_tex, &loading_src, &loading_dst);
+	Gfx_Flip();
 }
 
 void LoadScr_End(void)
