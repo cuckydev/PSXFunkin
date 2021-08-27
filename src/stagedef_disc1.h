@@ -504,9 +504,9 @@
 	},
 	{ //StageId_2_4 (Clucked)
 		//Characters
-		{Char_BF_New,    FIXED_DEC(60,1),  FIXED_DEC(100,1)},
-		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),    FIXED_DEC(0,1)},
+		{Char_BF_New,       FIXED_DEC(60,1),  FIXED_DEC(100,1)},
+		{Char_Clucky_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_GF_New,        FIXED_DEC(0,1),    FIXED_DEC(0,1)},
 		
 		//Stage background
 		Back_Week1_New,

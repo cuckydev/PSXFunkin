@@ -93,7 +93,6 @@ SOURCES = main \
           character \
           character/bf \
           character/bfweeb \
-          character/gf \
           character/speaker \
           character/dad \
           character/spook \
@@ -102,6 +101,8 @@ SOURCES = main \
           character/xmasp \
           character/senpai \
           character/tank \
+          character/gf \
+		  character/clucky \
           object \
           object/combo \
           object/splash

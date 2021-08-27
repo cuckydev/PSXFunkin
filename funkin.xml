@@ -215,10 +215,6 @@
 				<file name = "bfdead.arc" type = "data" source = "iso/bf/dead.arc"/>
 				<file name = "bfweeb.arc" type = "data" source = "iso/bf/weeb.arc"/>
 				
-				<!-- Girlfriend assets -->
-				<file name = "gf.arc" type = "data" source = "iso/gf/main.arc"/>
-				<file name = "speaker.tim" type = "data" source = "iso/gf/speaker.tim"/>
-				
 				<!-- Dad assets -->
 				<file name = "dad.arc" type = "data" source = "iso/dad/main.arc"/>
 				
@@ -242,6 +238,13 @@
 				<file name = "tank.arc" type = "data" source = "iso/tank/main.arc"/>
 				<file name = "tankugh.arc" type = "data" source = "iso/tank/ugh.arc"/>
 				<file name = "tankgood.arc" type = "data" source = "iso/tank/good.arc"/>
+				
+				<!-- Girlfriend assets -->
+				<file name = "gf.arc" type = "data" source = "iso/gf/main.arc"/>
+				<file name = "speaker.tim" type = "data" source = "iso/gf/speaker.tim"/>
+				
+				<!-- Clucky assets -->
+				<file name = "clucky.arc" type = "data" source = "iso/clucky/main.arc"/>
 			</dir>
 			
 			<!-- Music -->

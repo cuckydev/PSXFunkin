@@ -40,7 +40,6 @@ static const fixed_t note_y = FIXED_DEC(32 - SCREEN_HEIGHT2, 1);
 //Stage definitions
 #include "character/bf.h"
 #include "character/bfweeb.h"
-#include "character/gf.h"
 #include "character/dad.h"
 #include "character/spook.h"
 #include "character/pico.h"
@@ -48,6 +47,8 @@ static const fixed_t note_y = FIXED_DEC(32 - SCREEN_HEIGHT2, 1);
 #include "character/xmasp.h"
 #include "character/senpai.h"
 #include "character/tank.h"
+#include "character/gf.h"
+#include "character/clucky.h"
 
 #include "stage/dummy.h"
 #include "stage/week1.h"

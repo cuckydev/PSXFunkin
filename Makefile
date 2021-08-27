@@ -28,7 +28,6 @@ SRCS = src/main.c \
        src/character.c \
        src/character/bf.c \
        src/character/bfweeb.c \
-       src/character/gf.c \
        src/character/speaker.c \
        src/character/dad.c \
        src/character/spook.c \
@@ -37,6 +36,8 @@ SRCS = src/main.c \
        src/character/xmasp.c \
        src/character/senpai.c \
        src/character/tank.c \
+       src/character/gf.c \
+       src/character/clucky.c \
        src/object.c \
        src/object/combo.c \
        src/object/splash.c \
