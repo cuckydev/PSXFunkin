@@ -179,8 +179,7 @@ static void Audio_Callback(ma_device *device, void *output_buffer_void, const vo
 	(void)input_buffer;
 	
 	unsigned char *output_buffer = output_buffer_void;
-	size_t bytes_to_do = frames_to_do * bytes_per_frame;
-	size_t bytes_done = 0;
+	size_t bytes_remaining = frames_to_do * bytes_per_frame;
 	
 	//Lock mutex during mixing
 	ma_mutex_lock(&xa_mutex);
@@ -194,22 +193,29 @@ static void Audio_Callback(ma_device *device, void *output_buffer_void, const vo
 		xa_lasttime = (double)(xa_mp3[xa_channel].datap - xa_mp3[xa_channel].data) / bytes_per_frame / xa_device.sampleRate;
 		
 		//Mix
-		bytes_done = MP3Decode_Copy(&xa_mp3[xa_channel], output_buffer, bytes_to_do);
-		MP3Decode_Skip(&xa_mp3[xa_channel ^ 1], bytes_to_do);
-		
-		//Check if songs ended
-		if ((xa_mp3[0].data == NULL || xa_mp3[0].datap >= xa_mp3[0].datae) && (xa_mp3[1].data == NULL || xa_mp3[1].datap >= xa_mp3[1].datae))
+		while (bytes_remaining != 0)
 		{
-			if (xa_state & XA_STATE_LOOPS)
+			size_t bytes_done = MP3Decode_Copy(&xa_mp3[xa_channel], output_buffer, bytes_remaining);
+			MP3Decode_Skip(&xa_mp3[xa_channel ^ 1], bytes_done);
+			
+			output_buffer += bytes_done;
+			bytes_remaining -= bytes_done;
+			
+			//Check if songs ended
+			if ((xa_mp3[0].data == NULL || xa_mp3[0].datap >= xa_mp3[0].datae) && (xa_mp3[1].data == NULL || xa_mp3[1].datap >= xa_mp3[1].datae))
 			{
-				//Reset pointers
-				xa_mp3[0].datap = xa_mp3[0].data;
-				xa_mp3[1].datap = xa_mp3[1].data;
-			}
-			else
-			{
-				//Stop playing
-				xa_state &= ~XA_STATE_PLAYING;
+				if (xa_state & XA_STATE_LOOPS)
+				{
+					//Reset pointers
+					xa_mp3[0].datap = xa_mp3[0].data;
+					xa_mp3[1].datap = xa_mp3[1].data;
+				}
+				else
+				{
+					//Stop playing
+					xa_state &= ~XA_STATE_PLAYING;
+					break;
+				}
 			}
 		}
 	}
@@ -218,7 +224,7 @@ static void Audio_Callback(ma_device *device, void *output_buffer_void, const vo
 	ma_mutex_unlock(&xa_mutex);
 
 	//Clear any remaining bytes that haven't been written to
-	memset(&output_buffer[bytes_done], 0, bytes_to_do - bytes_done);
+	memset(output_buffer, 0, bytes_remaining);
 }
 
 //Audio functions
