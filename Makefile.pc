@@ -39,23 +39,23 @@ else
 endif
 
 # Link GLFW
-CFLAGS += `$(PKGCONFIG) --cflags glfw3`
+CFLAGS += $(shell $(PKGCONFIG) --cflags glfw3)
 
 ifeq ($(STATIC), 1)
   LDFLAGS += -static
-  LIBS += `$(PKGCONFIG) --libs glfw3 --static`
+  LIBS += $(shell $(PKGCONFIG) --libs glfw3 --static)
 else
-  LIBS += `$(PKGCONFIG) --libs glfw3`
+  LIBS += $(shell $(PKGCONFIG) --libs glfw3)
 endif
 
 ifeq ($(GL), ES)
   # Link GLESv2
-  CFLAGS += `$(PKGCONFIG) --cflags glesv2`
+  CFLAGS += $(shell $(PKGCONFIG) --cflags glesv2)
 
   ifeq ($(STATIC), 1)
-    LIBS += `$(PKGCONFIG) --libs glesv2 --static`
+    LIBS += $(shell $(PKGCONFIG) --libs glesv2 --static)
   else
-    LIBS += `$(PKGCONFIG) --libs glesv2`
+    LIBS += $(shell $(PKGCONFIG) --libs glesv2)
   endif
 endif
 
