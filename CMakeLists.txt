@@ -98,7 +98,7 @@ if (PSXF_GL STREQUAL "ES")
 	# Would be nice to test someday, but it doesn't work during X sessions,
 	# and this port cannot be ran from the terminal (yet).
 	# For now, we'll just have to settle with the open-source Mesa driver.
-	#target_link_libraries(funkin PRIVATE m "/opt/vc/lib/libbrcmGLESv2.so")
+	#target_link_libraries(funkin PRIVATE "/opt/vc/lib/libbrcmGLESv2.so")
 else()
 	if(PSXF_GL STREQUAL "LEGACY")
 		target_compile_definitions(funkin PRIVATE PSXF_GL=PSXF_GL_LEGACY)
@@ -113,9 +113,6 @@ else()
 		"src/pc/glad/glad.c"
 		"src/pc/glad/glad.h"
 	)
-
-	# glad requires libdl on Unix platforms
-	target_link_libraries(funkin PRIVATE ${CMAKE_DL_LIBS})
 endif()
 
 # Make it so the code knows it's targetting PC
@@ -129,3 +126,12 @@ endif()
 # Link GLFW3
 find_package(glfw3 REQUIRED)
 target_link_libraries(funkin PRIVATE glfw)
+
+# miniaudio requires libm, libpthread, and libdl
+find_library(LIBM m)
+target_link_libraries(funkin PRIVATE ${LIBM})
+
+find_library(LIBPTHREAD pthread)
+target_link_libraries(funkin PRIVATE ${LIBPTHREAD})
+
+target_link_libraries(funkin PRIVATE ${CMAKE_DL_LIBS})
