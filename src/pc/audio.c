@@ -139,7 +139,10 @@ static size_t MP3Decode_Copy(MP3Decode *this, unsigned char *stream, size_t byte
 {
 	//Make sure data exists
 	if (this->data == NULL || this->datap == NULL || this->datae == NULL)
+	{
+		memset(stream, 0, bytes_to_do);
 		return bytes_to_do;
+	}
 
 	//Calculate bytes left
 	size_t bytes_done = bytes_to_do;
