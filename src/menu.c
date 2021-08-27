@@ -65,7 +65,7 @@ static struct
 	u8 select, next_select;
 	
 	fixed_t scroll;
-	u8 trans_time;
+	fixed_t trans_time;
 	
 	//Page specific state
 	union
@@ -384,12 +384,12 @@ void Menu_Tick(void)
 			}
 			
 			//Go to main menu when start is pressed
-			if (menu.trans_time != 0 && --menu.trans_time == 0)
+			if (menu.trans_time > 0 && (menu.trans_time -= timer_dt) <= 0)
 				Trans_Start();
 			
 			if ((pad_state.press & PAD_START) && menu.next_page == menu.page && Trans_Idle())
 			{
-				menu.trans_time = 60;
+				menu.trans_time = FIXED_UNIT;
 				menu.page_state.title.fade = FIXED_DEC(255,1);
 				menu.page_state.title.fadespd = FIXED_DEC(300,1);
 				menu.next_page = MenuPage_Main;
@@ -460,7 +460,7 @@ void Menu_Tick(void)
 			
 			//Initialize page
 			if (menu.page_swap)
-				menu.scroll = menu.select * FIXED_DEC(4,1);
+				menu.scroll = menu.select * FIXED_DEC(8,1);
 			
 			//Draw version identification
 			menu.font_bold.draw(&menu.font_bold,
@@ -471,7 +471,7 @@ void Menu_Tick(void)
 			);
 			
 			//Handle option and selection
-			if (menu.trans_time != 0 && --menu.trans_time == 0)
+			if (menu.trans_time > 0 && (menu.trans_time -= timer_dt) <= 0)
 				Trans_Start();
 			
 			if (menu.next_page == menu.page && Trans_Idle())
@@ -511,7 +511,7 @@ void Menu_Tick(void)
 							break;
 					}
 					menu.next_select = 0;
-					menu.trans_time = 60;
+					menu.trans_time = FIXED_UNIT;
 				}
 				
 				//Return to title screen if circle is pressed
@@ -600,7 +600,7 @@ void Menu_Tick(void)
 			Menu_DifficultySelector(SCREEN_WIDTH - 75, 80);
 			
 			//Handle option and selection
-			if (menu.trans_time != 0 && --menu.trans_time == 0)
+			if (menu.trans_time > 0 && (menu.trans_time -= timer_dt) <= 0)
 				Trans_Start();
 			
 			if (menu.next_page == menu.page && Trans_Idle())
@@ -627,7 +627,7 @@ void Menu_Tick(void)
 					menu.next_page = MenuPage_Stage;
 					menu.page_param.stage.id = menu_options[menu.select].stage;
 					menu.page_param.stage.story = true;
-					menu.trans_time = 60;
+					menu.trans_time = FIXED_UNIT;
 					menu.page_state.title.fade = FIXED_DEC(255,1);
 					menu.page_state.title.fadespd = FIXED_DEC(510,1);
 				}
