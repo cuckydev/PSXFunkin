@@ -131,9 +131,13 @@ target_link_libraries(funkin PRIVATE glfw)
 
 # miniaudio requires libm, libpthread, and libdl
 find_library(LIBM m)
-target_link_libraries(funkin PRIVATE ${LIBM})
+if(LIBM)
+	target_link_libraries(funkin PRIVATE ${LIBM})
+endif()
 
 find_library(LIBPTHREAD pthread)
-target_link_libraries(funkin PRIVATE ${LIBPTHREAD})
+if(LIBPTHREAD)
+	target_link_libraries(funkin PRIVATE ${LIBPTHREAD})
+endif()
 
 target_link_libraries(funkin PRIVATE ${CMAKE_DL_LIBS})
