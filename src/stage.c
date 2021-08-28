@@ -1055,7 +1055,7 @@ void Stage_Unload(void)
 	stage.gf = NULL;
 }
 
-void Stage_NextLoad(void)
+boolean Stage_NextLoad(void)
 {
 	u8 load = stage.stage_def->next_load;
 	if (load == 0)
@@ -1063,6 +1063,7 @@ void Stage_NextLoad(void)
 		//Do stage transition if full reload
 		stage.trans = StageTrans_NextSong;
 		Trans_Start();
+		return false;
 	}
 	else
 	{
@@ -1113,6 +1114,7 @@ void Stage_NextLoad(void)
 		
 		//Reset timer
 		Timer_Reset();
+		return true;
 	}
 }
 
@@ -1273,8 +1275,8 @@ void Stage_Tick(void)
 				//Transition to menu or next song
 				if (stage.story && stage.stage_def->next_stage != stage.stage_id)
 				{
-					Stage_NextLoad();
-					goto SeamLoad;
+					if (Stage_NextLoad())
+						goto SeamLoad;
 				}
 				else
 				{

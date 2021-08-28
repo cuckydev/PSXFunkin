@@ -181,13 +181,12 @@ static void Audio_Callback(ma_device *device, void *output_buffer_void, const vo
 {
 	(void)input_buffer;
 	
-	unsigned char *output_buffer = output_buffer_void;
-	size_t bytes_remaining = frames_to_do * bytes_per_frame;
+	size_t bytes_to_do = frames_to_do * bytes_per_frame;
 	
 	//Lock mutex during mixing
 	ma_mutex_lock(&xa_mutex);
 	
-	//Mix XA
+	//Copy XA
 	if (xa_state & XA_STATE_PLAYING)
 	{
 		//Update timing state
@@ -195,7 +194,9 @@ static void Audio_Callback(ma_device *device, void *output_buffer_void, const vo
 		xa_interpstart = glfwGetTime();
 		xa_lasttime = (double)(xa_mp3[xa_channel].datap - xa_mp3[xa_channel].data) / bytes_per_frame / xa_device.sampleRate;
 		
-		//Mix
+		//Copy MP3s into stream
+		unsigned char *output_buffer = output_buffer_void;
+		size_t bytes_remaining = bytes_to_do;
 		while (bytes_remaining != 0)
 		{
 			size_t bytes_done = MP3Decode_Copy(&xa_mp3[xa_channel], output_buffer, bytes_remaining);
@@ -217,17 +218,20 @@ static void Audio_Callback(ma_device *device, void *output_buffer_void, const vo
 				{
 					//Stop playing
 					xa_state &= ~XA_STATE_PLAYING;
+					memset(output_buffer, 0, bytes_remaining);
 					break;
 				}
 			}
 		}
 	}
+	else
+	{
+		//Clear stream
+		memset(output_buffer_void, 0, bytes_to_do);
+	}
 	
 	//Unlock mutex
 	ma_mutex_unlock(&xa_mutex);
-
-	//Clear any remaining bytes that haven't been written to
-	memset(output_buffer, 0, bytes_remaining);
 }
 
 //Audio functions
