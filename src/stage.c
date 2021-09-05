@@ -66,7 +66,7 @@ static const StageDef stage_defs[StageId_Max] = {
 Stage stage;
 
 //Stage music functions
-void Stage_StartVocal(void)
+static void Stage_StartVocal(void)
 {
 	if (!(stage.flag & STAGE_FLAG_VOCAL_ACTIVE))
 	{
@@ -75,7 +75,7 @@ void Stage_StartVocal(void)
 	}
 }
 
-void Stage_CutVocal(void)
+static void Stage_CutVocal(void)
 {
 	if (stage.flag & STAGE_FLAG_VOCAL_ACTIVE)
 	{
@@ -85,7 +85,7 @@ void Stage_CutVocal(void)
 }
 
 //Stage camera functions
-void Stage_FocusCharacter(Character *ch, fixed_t div)
+static void Stage_FocusCharacter(Character *ch, fixed_t div)
 {
 	//Use character focus settings to update target position and zoom
 	stage.camera.tx = ch->x + ch->focus_x;
@@ -94,7 +94,7 @@ void Stage_FocusCharacter(Character *ch, fixed_t div)
 	stage.camera.td = div;
 }
 
-void Stage_ScrollCamera(void)
+static void Stage_ScrollCamera(void)
 {
 	#ifdef STAGE_FREECAM
 		if (pad_state.held & PAD_LEFT)
@@ -133,7 +133,7 @@ void Stage_ScrollCamera(void)
 }
 
 //Stage section functions
-void Stage_ChangeBPM(u16 bpm, u16 step)
+static void Stage_ChangeBPM(u16 bpm, u16 step)
 {
 	//Update last BPM
 	stage.last_bpm = bpm;
@@ -144,12 +144,9 @@ void Stage_ChangeBPM(u16 bpm, u16 step)
 	stage.step_base = step;
 	
 	//Get new crochet
-	fixed_t bpm_dec = ((fixed_t)bpm << FIXED_SHIFT) / 24;
-	stage.step_crochet = FIXED_DIV(bpm_dec, FIXED_DEC(125,100)); //15/12
+	stage.step_crochet = ((fixed_t)bpm << FIXED_SHIFT) * 8 / 240; //15/12/24
 	
 	//Get new crochet based values
-	stage.note_speed = FIXED_MUL(FIXED_DIV(FIXED_DEC(140,1), stage.step_crochet), stage.speed);
-	
 	if (stage.kade)
 	{
 		stage.early_safe = stage.late_safe = stage.step_crochet / 6; //166 ms
@@ -165,22 +162,14 @@ void Stage_ChangeBPM(u16 bpm, u16 step)
 	}
 }
 
-Section *Stage_GetPrevSection(Section *section)
+static Section *Stage_GetPrevSection(Section *section)
 {
 	if (section > stage.sections)
 		return section - 1;
 	return NULL;
 }
 
-u16 Stage_GetSectionLength(Section *section)
-{
-	Section *prev = Stage_GetPrevSection(section);
-	if (prev == NULL)
-		return section->end;
-	return section->end - prev->end;
-}
-
-u16 Stage_GetSectionStart(Section *section)
+static u16 Stage_GetSectionStart(Section *section)
 {
 	Section *prev = Stage_GetPrevSection(section);
 	if (prev == NULL)
@@ -199,7 +188,7 @@ typedef struct
 	fixed_t size; //Note height
 } SectionScroll;
 
-void Stage_GetSectionScroll(SectionScroll *scroll, Section *section)
+static void Stage_GetSectionScroll(SectionScroll *scroll, Section *section)
 {
 	//Get BPM
 	u16 bpm = section->flag & SECTION_FLAG_BPM_MASK;
@@ -223,7 +212,7 @@ static const CharAnim note_anims[4][2] = {
 	{CharAnim_Right, CharAnim_RightAlt},
 };
 
-void Stage_HitNote(u8 type, fixed_t offset)
+static void Stage_HitNote(u8 type, fixed_t offset)
 {
 	//Get hit type
 	if (offset < 0)
@@ -356,7 +345,7 @@ void Stage_HitNote(u8 type, fixed_t offset)
 	}
 }
 
-void Stage_MissNote(void)
+static void Stage_MissNote(void)
 {
 	#ifdef STAGE_FUNKYFRIDAY
 		for (int i = 0; i < RandomRange(1, 30); i++)
@@ -383,7 +372,7 @@ void Stage_MissNote(void)
 	}
 }
 
-void Stage_NoteCheck(u8 type)
+static void Stage_NoteCheck(u8 type)
 {
 	//Perform note check
 	for (Note *note = stage.cur_note;; note++)
@@ -433,6 +422,7 @@ void Stage_NoteCheck(u8 type)
 					stage.health -= 2000;
 				stage.player->set_anim(stage.player, note_anims[type][1]);
 				stage.arrow_hitan[type] = 0;
+				return;
 			#endif
 		}
 	}
@@ -457,7 +447,7 @@ void Stage_NoteCheck(u8 type)
 	#endif
 }
 
-void Stage_SustainCheck(u8 type)
+static void Stage_SustainCheck(u8 type)
 {
 	//Hold note animation
 	if (stage.arrow_hitan[type] == 0)
@@ -553,7 +543,7 @@ void Stage_DrawTexArb(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, cons
 }
 
 //Stage HUD functions
-void Stage_DrawHealth(u8 i, s8 ox)
+static void Stage_DrawHealth(u8 i, s8 ox)
 {
 	//Check if we should use 'dying' frame
 	s8 dying;
@@ -583,7 +573,7 @@ void Stage_DrawHealth(u8 i, s8 ox)
 	Stage_DrawTex(&stage.tex_hud1, &src, &dst, FIXED_MUL(stage.bump, stage.sbump));
 }
 
-void Stage_DrawNotes(void)
+static void Stage_DrawNotes(void)
 {
 	//Initialize scroll state
 	SectionScroll scroll;
@@ -820,28 +810,28 @@ void Stage_DrawNotes(void)
 }
 
 //Stage loads
-void Stage_LoadPlayer(void)
+static void Stage_LoadPlayer(void)
 {
 	//Load player character
 	Character_Free(stage.player);
 	stage.player = stage.stage_def->pchar.new(stage.stage_def->pchar.x, stage.stage_def->pchar.y);
 }
 
-void Stage_LoadOpponent(void)
+static void Stage_LoadOpponent(void)
 {
 	//Load opponent character
 	Character_Free(stage.opponent);
 	stage.opponent = stage.stage_def->ochar.new(stage.stage_def->ochar.x, stage.stage_def->ochar.y);
 }
 
-void Stage_LoadGirlfriend(void)
+static void Stage_LoadGirlfriend(void)
 {
 	//Load girlfriend character
 	Character_Free(stage.gf);
 	stage.gf = stage.stage_def->gchar.new(stage.stage_def->gchar.x, stage.stage_def->gchar.y);
 }
 
-void Stage_LoadStage(void)
+static void Stage_LoadStage(void)
 {
 	//Load back
 	if (stage.back != NULL)
@@ -849,7 +839,7 @@ void Stage_LoadStage(void)
 	stage.back = stage.stage_def->back();
 }
 
-void Stage_LoadChart(void)
+static void Stage_LoadChart(void)
 {
 	//Load stage data
 	char chart_path[64];
@@ -939,7 +929,7 @@ void Stage_LoadChart(void)
 	Stage_ChangeBPM(stage.cur_section->flag & SECTION_FLAG_BPM_MASK, 0);
 }
 
-void Stage_LoadMusic(void)
+static void Stage_LoadMusic(void)
 {
 	//Offset sing ends
 	stage.player->sing_end -= stage.note_scroll;
@@ -960,7 +950,7 @@ void Stage_LoadMusic(void)
 	stage.opponent->sing_end += stage.note_scroll;
 }
 
-void Stage_LoadState(void)
+static void Stage_LoadState(void)
 {
 	//Initialize stage state
 	stage.flag = 0;
@@ -1055,7 +1045,7 @@ void Stage_Unload(void)
 	stage.gf = NULL;
 }
 
-boolean Stage_NextLoad(void)
+static boolean Stage_NextLoad(void)
 {
 	u8 load = stage.stage_def->next_load;
 	if (load == 0)
@@ -1450,48 +1440,6 @@ void Stage_Tick(void)
 				}
 			#endif
 			
-			//Display score
-			RECT score_src = {80, 224, 40, 10};
-			RECT_FIXED score_dst = {FIXED_DEC(14,1), (SCREEN_HEIGHT2 - 42) << FIXED_SHIFT, FIXED_DEC(40,1), FIXED_DEC(10,1)};
-			if (stage.downscroll)
-				score_dst.y = -score_dst.y - score_dst.h;
-			
-			Stage_DrawTex(&stage.tex_hud0, &score_src, &score_dst, stage.bump);
-			
-			//Get string representing number
-			if (stage.flag & STAGE_FLAG_SCORE_REFRESH)
-			{
-				if (stage.score != 0)
-					sprintf(stage.score_text, "%d0", stage.score);
-				else
-					strcpy(stage.score_text, "0");
-			}
-			
-			//Draw number
-			score_src.y = 240;
-			score_src.w = 8;
-			score_dst.x += FIXED_DEC(40,1);
-			score_dst.w = FIXED_DEC(8,1);
-			
-			for (const char *p = stage.score_text; ; p++)
-			{
-				//Get character
-				char c = *p;
-				if (c == '\0')
-					break;
-				
-				//Draw character
-				if (c == '-')
-					score_src.x = 160;
-				else //Should be a number
-					score_src.x = 80 + ((c - '0') << 3);
-				
-				Stage_DrawTex(&stage.tex_hud0, &score_src, &score_dst, stage.bump);
-				
-				//Move character right
-				score_dst.x += FIXED_DEC(7,1);
-			}
-			
 			//Tick note splashes
 			ObjectList_Tick(&stage.objlist_splash);
 			
@@ -1529,6 +1477,48 @@ void Stage_Tick(void)
 				note_src.x = 0;
 				note_src.y = i << 5;
 				Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, stage.bump);
+			}
+			
+			//Get string representing number
+			if (stage.flag & STAGE_FLAG_SCORE_REFRESH)
+			{
+				if (stage.score != 0)
+					sprintf(stage.score_text, "%d0", stage.score);
+				else
+					strcpy(stage.score_text, "0");
+			}
+			
+			//Display score
+			RECT score_src = {80, 224, 40, 10};
+			RECT_FIXED score_dst = {FIXED_DEC(14,1), (SCREEN_HEIGHT2 - 42) << FIXED_SHIFT, FIXED_DEC(40,1), FIXED_DEC(10,1)};
+			if (stage.downscroll)
+				score_dst.y = -score_dst.y - score_dst.h;
+			
+			Stage_DrawTex(&stage.tex_hud0, &score_src, &score_dst, stage.bump);
+			
+			//Draw number
+			score_src.y = 240;
+			score_src.w = 8;
+			score_dst.x += FIXED_DEC(40,1);
+			score_dst.w = FIXED_DEC(8,1);
+			
+			for (const char *p = stage.score_text; ; p++)
+			{
+				//Get character
+				char c = *p;
+				if (c == '\0')
+					break;
+				
+				//Draw character
+				if (c == '-')
+					score_src.x = 160;
+				else //Should be a number
+					score_src.x = 80 + ((c - '0') << 3);
+				
+				Stage_DrawTex(&stage.tex_hud0, &score_src, &score_dst, stage.bump);
+				
+				//Move character right
+				score_dst.x += FIXED_DEC(7,1);
 			}
 			
 			//Perform health checks

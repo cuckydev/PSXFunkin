@@ -168,7 +168,6 @@ typedef struct
 	fixed_t speed;
 	fixed_t step_crochet;
 	fixed_t early_safe, late_safe, early_sus_safe, late_sus_safe;
-	fixed_t note_speed;
 	
 	//Stage state
 	boolean story;
