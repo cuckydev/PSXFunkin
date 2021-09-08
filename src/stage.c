@@ -436,6 +436,8 @@ static void Stage_NoteCheck(u8 type)
 	
 	#ifndef STAGE_FUNKYFRIDAY
 		//Missed a note
+		stage.arrow_hitan[type] = -1;
+		
 		if (!stage.ghost)
 		{
 			stage.player->set_anim(stage.player, note_anims[type][1]);
@@ -450,16 +452,12 @@ static void Stage_NoteCheck(u8 type)
 		stage.player->set_anim(stage.player, note_anims[type][0]);
 		for (int i = 0; i < RandomRange(1, 30); i++)
 			Stage_HitNote(type, 0);
-		stage.arrow_hitan[type] = 6;
+		stage.arrow_hitan[type] = 4;
 	#endif
 }
 
 static void Stage_SustainCheck(u8 type)
 {
-	//Hold note animation
-	if (stage.arrow_hitan[type] == 0)
-		stage.arrow_hitan[type] = 1;
-	
 	//Perform note check
 	for (Note *note = stage.cur_note;; note++)
 	{
@@ -480,7 +478,7 @@ static void Stage_SustainCheck(u8 type)
 		Stage_StartVocal();
 		if (!stage.kade)
 			stage.health += 230;
-		stage.arrow_hitan[type] = 6;
+		stage.arrow_hitan[type] = 4;
 	}
 }
 
@@ -985,7 +983,10 @@ void Stage_Load(StageId id, StageDiff difficulty, boolean story)
 	stage.story = story;
 	
 	//Load HUD textures
-	Gfx_LoadTex(&stage.tex_hud0, IO_Read("\\STAGE\\HUD0.TIM;1"), GFX_LOADTEX_FREE);
+	if (id >= StageId_6_1 && id <= StageId_6_3)
+		Gfx_LoadTex(&stage.tex_hud0, IO_Read("\\STAGE\\HUD0WEEB.TIM;1"), GFX_LOADTEX_FREE);
+	else
+		Gfx_LoadTex(&stage.tex_hud0, IO_Read("\\STAGE\\HUD0.TIM;1"), GFX_LOADTEX_FREE);
 	Gfx_LoadTex(&stage.tex_hud1, IO_Read("\\STAGE\\HUD1.TIM;1"), GFX_LOADTEX_FREE);
 	
 	//Load stage background
@@ -1464,12 +1465,21 @@ void Stage_Tick(void)
 				//BF
 				note_dst.x = note_x[i] - FIXED_DEC(16,1);
 				
-				if (stage.arrow_hitan[i] != 0)
+				if (stage.arrow_hitan[i] > 0)
 				{
 					//Play hit animation
 					note_src.x = (i + 1) << 5;
-					note_src.y = 128 - (((stage.arrow_hitan[i] + 1) >> 1) << 5);
-					stage.arrow_hitan[i]--;
+					note_src.y = 96 - (((stage.arrow_hitan[i] + 1) >> 1) << 5);
+					if (--stage.arrow_hitan[i] == 0 && (stage.pad_held & note_key[i]))
+						stage.arrow_hitan[i] = 1;
+				}
+				else if (stage.arrow_hitan[i] < 0)
+				{
+					//Play depress animation
+					note_src.x = (i + 1) << 5;
+					note_src.y = 96;
+					if (++stage.arrow_hitan[i] == 0 && (stage.pad_held & note_key[i]))
+						stage.arrow_hitan[i] = -1;
 				}
 				else
 				{

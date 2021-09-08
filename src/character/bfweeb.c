@@ -325,7 +325,7 @@ Character *Char_BFWeeb_New(fixed_t x, fixed_t y)
 	this->character.health_i = 7;
 	
 	this->character.focus_x = FIXED_DEC(-25,1);
-	this->character.focus_y = FIXED_DEC(-32,1);
+	this->character.focus_y = FIXED_DEC(-40,1);
 	this->character.focus_zoom = FIXED_DEC(2,1);
 	
 	//Load art

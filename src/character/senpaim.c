@@ -55,7 +55,7 @@ static const CharFrame char_senpaim_frame[] = {
 };
 
 static const Animation char_senpaim_anim[CharAnim_Max] = {
-	{2, (const u8[]){ 0,  1,  2,  3,  4,  0,  1,  2,  3,  4, ASCR_BACK, 1}}, //CharAnim_Idle
+	{2, (const u8[]){ 0,  1,  2,  3,  4, ASCR_BACK, 1}}, //CharAnim_Idle
 	{2, (const u8[]){ 5,  6, ASCR_BACK, 1}},             //CharAnim_Left
 	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},       //CharAnim_LeftAlt
 	{2, (const u8[]){ 7,  8, ASCR_BACK, 1}},             //CharAnim_Down
@@ -131,7 +131,7 @@ Character *Char_SenpaiM_New(fixed_t x, fixed_t y)
 	this->character.health_i = 8;
 	
 	this->character.focus_x = FIXED_DEC(32,1);
-	this->character.focus_y = FIXED_DEC(-58,1);
+	this->character.focus_y = FIXED_DEC(-66,1);
 	this->character.focus_zoom = FIXED_DEC(2,1);
 	
 	//Load art

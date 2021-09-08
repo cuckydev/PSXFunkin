@@ -209,7 +209,7 @@ typedef struct
 	
 	u8 gf_speed; //Typically 4 steps, changes in Fresh
 	
-	u8 arrow_hitan[4]; //Arrow hit animation for presses
+	s8 arrow_hitan[4]; //Arrow hit animation for presses
 	
 	s16 health;
 	u16 combo;
