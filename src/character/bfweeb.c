@@ -88,7 +88,7 @@ static const CharFrame char_bfweeb_frame[] = {
 	{BFWeeb_ArcMain_Weeb0, { 55, 116,  57,  64}, { 26,  60}}, //9 up 1
 	{BFWeeb_ArcMain_Weeb0, {113, 117,  58,  63}, { 27,  59}}, //10 up 2
 	
-	{BFWeeb_ArcMain_Weeb0, {173, 113,  57,  56}, { 22,  52}}, //11 right 1
+	{BFWeeb_ArcMain_Weeb0, {172, 113,  57,  56}, { 22,  52}}, //11 right 1
 	{BFWeeb_ArcMain_Weeb0, {  0, 169,  55,  56}, { 22,  52}}, //12 right 2
 };
 

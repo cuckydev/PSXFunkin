@@ -55,7 +55,7 @@ static const CharFrame char_senpai_frame[] = {
 };
 
 static const Animation char_senpai_anim[CharAnim_Max] = {
-	{2, (const u8[]){ 0,  1,  2,  3,  4,  0,  1,  2,  3,  4, ASCR_BACK, 1}}, //CharAnim_Idle
+	{2, (const u8[]){ 0,  1,  2,  3,  4,  4,  4,  0,  1,  2,  3,  4,  4, ASCR_BACK, 1}}, //CharAnim_Idle
 	{2, (const u8[]){ 5,  6, ASCR_BACK, 1}},             //CharAnim_Left
 	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},       //CharAnim_LeftAlt
 	{2, (const u8[]){ 7,  8, ASCR_BACK, 1}},             //CharAnim_Down
@@ -86,19 +86,7 @@ void Char_Senpai_Tick(Character *character)
 	Char_Senpai *this = (Char_Senpai*)character;
 	
 	//Perform idle dance
-	if ((stage.flag & STAGE_FLAG_JUST_STEP) && (stage.song_step & 0x7) == 0)
-	{
-		Character_CheckEndSing(character);
-		if ((character->animatable.anim != CharAnim_Left &&
-		     character->animatable.anim != CharAnim_LeftAlt &&
-		     character->animatable.anim != CharAnim_Down &&
-		     character->animatable.anim != CharAnim_DownAlt &&
-		     character->animatable.anim != CharAnim_Up &&
-		     character->animatable.anim != CharAnim_UpAlt &&
-		     character->animatable.anim != CharAnim_Right &&
-		     character->animatable.anim != CharAnim_RightAlt))
-			character->set_anim(character, CharAnim_Idle);
-	}
+	Character_PerformIdle(character);
 	
 	//Animate and draw
 	Animatable_Animate(&character->animatable, (void*)this, Char_Senpai_SetFrame);
@@ -108,24 +96,8 @@ void Char_Senpai_Tick(Character *character)
 void Char_Senpai_SetAnim(Character *character, u8 anim)
 {
 	//Set animation
-	u8 prev_anim = character->animatable.anim;
 	Animatable_SetAnim(&character->animatable, anim);
-	
-	//Update sing end if singing animation
-	if (character->animatable.anim == CharAnim_Left ||
-	    character->animatable.anim == CharAnim_LeftAlt ||
-	    character->animatable.anim == CharAnim_Down ||
-	    character->animatable.anim == CharAnim_DownAlt ||
-	    character->animatable.anim == CharAnim_Up ||
-	    character->animatable.anim == CharAnim_UpAlt ||
-	    character->animatable.anim == CharAnim_Right ||
-	    character->animatable.anim == CharAnim_RightAlt)
-	{
-		if (prev_anim != anim)
-			character->sing_end = stage.note_scroll + (FIXED_DEC(12,1) << 1); //2 steps
-		else
-			character->sing_end = stage.note_scroll + FIXED_DEC(12,1); //1 step
-	}
+	Character_CheckStartSing(character);
 }
 
 void Char_Senpai_Free(Character *character)

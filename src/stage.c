@@ -163,7 +163,7 @@ static void Stage_ChangeBPM(u16 bpm, u16 step)
 	else
 	{
 		stage.late_safe = stage.step_crochet / 6; //10 frames
-		stage.early_safe = stage.late_safe >> 1;
+		stage.early_safe = stage.late_safe;
 		stage.late_sus_safe = stage.late_safe;
 		stage.early_sus_safe = stage.early_safe;
 	}
@@ -299,9 +299,9 @@ static void Stage_HitNote(u8 type, fixed_t offset)
 	}
 	else
 	{
-		if (offset > stage.late_safe * 9 / 10)
+		if (offset > stage.late_safe * 8 / 10)
 			hit_type = 3; //SHIT
-		else if (offset > stage.late_safe * 3 / 4)
+		else if (offset > stage.late_safe * 11 / 20)
 			hit_type = 2; //BAD
 		else if (offset > stage.late_safe / 5)
 			hit_type = 1; //GOOD
