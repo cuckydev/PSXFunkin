@@ -74,22 +74,22 @@ typedef struct
 //Boyfriend Weeb player definitions
 static const CharFrame char_bfweeb_frame[] = {
 	{BFWeeb_ArcMain_Weeb0, {  0,   0,  60,  55}, { 35,  52}}, //0 idle 1
-	{BFWeeb_ArcMain_Weeb0, { 60,   0,  61,  56}, { 35,  53}}, //1 idle 2
-	{BFWeeb_ArcMain_Weeb0, {121,   0,  59,  58}, { 33,  55}}, //2 idle 3
-	{BFWeeb_ArcMain_Weeb0, {180,   0,  58,  59}, { 31,  56}}, //3 idle 4
-	{BFWeeb_ArcMain_Weeb0, {  0,  55,  58,  58}, { 32,  55}}, //4 idle 5
+	{BFWeeb_ArcMain_Weeb0, { 61,   0,  61,  56}, { 35,  53}}, //1 idle 2
+	{BFWeeb_ArcMain_Weeb0, {123,   0,  59,  58}, { 33,  55}}, //2 idle 3
+	{BFWeeb_ArcMain_Weeb0, {183,   0,  58,  59}, { 31,  56}}, //3 idle 4
+	{BFWeeb_ArcMain_Weeb0, {  0,  56,  58,  58}, { 32,  55}}, //4 idle 5
 	
-	{BFWeeb_ArcMain_Weeb0, { 58,  56,  54,  57}, { 34,  53}}, //5 left 1
-	{BFWeeb_ArcMain_Weeb0, {112,  58,  55,  57}, { 33,  53}}, //6 left 2
+	{BFWeeb_ArcMain_Weeb0, { 59,  57,  54,  57}, { 34,  53}}, //5 left 1
+	{BFWeeb_ArcMain_Weeb0, {114,  59,  55,  57}, { 33,  53}}, //6 left 2
 	
-	{BFWeeb_ArcMain_Weeb0, {167,  59,  55,  52}, { 31,  48}}, //7 down 1
-	{BFWeeb_ArcMain_Weeb0, {  0, 113,  54,  53}, { 31,  49}}, //8 down 2
+	{BFWeeb_ArcMain_Weeb0, {170,  60,  55,  52}, { 31,  48}}, //7 down 1
+	{BFWeeb_ArcMain_Weeb0, {  0, 115,  54,  53}, { 31,  49}}, //8 down 2
 	
-	{BFWeeb_ArcMain_Weeb0, { 54, 114,  57,  64}, { 26,  60}}, //9 up 1
-	{BFWeeb_ArcMain_Weeb0, {111, 115,  58,  63}, { 27,  59}}, //10 up 2
+	{BFWeeb_ArcMain_Weeb0, { 55, 116,  57,  64}, { 26,  60}}, //9 up 1
+	{BFWeeb_ArcMain_Weeb0, {113, 117,  58,  63}, { 27,  59}}, //10 up 2
 	
-	{BFWeeb_ArcMain_Weeb0, {169, 111,  57,  56}, { 22,  52}}, //11 right 1
-	{BFWeeb_ArcMain_Weeb0, {  0, 166,  55,  56}, { 22,  52}}, //12 right 2
+	{BFWeeb_ArcMain_Weeb0, {173, 113,  57,  56}, { 22,  52}}, //11 right 1
+	{BFWeeb_ArcMain_Weeb0, {  0, 169,  55,  56}, { 22,  52}}, //12 right 2
 };
 
 static const Animation char_bfweeb_anim[PlayerAnim_Max] = {

@@ -104,6 +104,7 @@ SOURCES = main \
           character/mom \
           character/xmasp \
           character/senpai \
+          character/senpaim \
           character/tank \
           character/gf \
 		  character/clucky \

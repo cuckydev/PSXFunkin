@@ -36,26 +36,26 @@ typedef struct
 //Dad character definitions
 static const CharFrame char_senpai_frame[] = {
 	{Senpai_ArcMain_Senpai0, {  0,   0,  66, 112}, { 32, 107}}, //0 idle 1
-	{Senpai_ArcMain_Senpai0, { 66,   0,  65, 112}, { 31, 107}}, //1 idle 2
-	{Senpai_ArcMain_Senpai0, {131,   0,  65, 113}, { 31, 108}}, //2 idle 3
-	{Senpai_ArcMain_Senpai0, {  0, 112,  67, 116}, { 31, 111}}, //3 idle 4
-	{Senpai_ArcMain_Senpai0, { 71, 112,  67, 115}, { 31, 110}}, //4 idle 5
+	{Senpai_ArcMain_Senpai0, { 67,   0,  65, 112}, { 31, 107}}, //1 idle 2
+	{Senpai_ArcMain_Senpai0, {133,   0,  65, 113}, { 31, 108}}, //2 idle 3
+	{Senpai_ArcMain_Senpai0, {  0, 113,  67, 116}, { 31, 111}}, //3 idle 4
+	{Senpai_ArcMain_Senpai0, { 71, 113,  67, 115}, { 31, 110}}, //4 idle 5
 	
 	{Senpai_ArcMain_Senpai1, {  0,   0,  59, 115}, { 33, 110}}, //5 left 1
-	{Senpai_ArcMain_Senpai1, { 59,   0,  61, 115}, { 35, 110}}, //6 left 2
+	{Senpai_ArcMain_Senpai1, { 60,   0,  61, 115}, { 35, 110}}, //6 left 2
 	
-	{Senpai_ArcMain_Senpai1, {120,   0,  63, 107}, { 31, 102}}, //7 down 1
-	{Senpai_ArcMain_Senpai1, {183,   1,  62, 108}, { 30, 103}}, //8 down 2
+	{Senpai_ArcMain_Senpai1, {122,   0,  63, 107}, { 31, 102}}, //7 down 1
+	{Senpai_ArcMain_Senpai1, {186,   1,  62, 108}, { 30, 103}}, //8 down 2
 	
-	{Senpai_ArcMain_Senpai1, {  0, 115,  64, 122}, { 31, 115}}, //9 up 1
-	{Senpai_ArcMain_Senpai1, { 64, 115,  66, 122}, { 32, 115}}, //10 up 2
+	{Senpai_ArcMain_Senpai1, {  0, 116,  64, 122}, { 31, 115}}, //9 up 1
+	{Senpai_ArcMain_Senpai1, { 65, 116,  66, 122}, { 32, 115}}, //10 up 2
 	
-	{Senpai_ArcMain_Senpai1, {130, 109,  65, 114}, { 28, 109}}, //11 right 1
-	{Senpai_ArcMain_Senpai0, {192, 140,  64, 114}, { 27, 109}}, //12 right 2
+	{Senpai_ArcMain_Senpai1, {132, 110,  65, 114}, { 27, 109}}, //11 right 1
+	{Senpai_ArcMain_Senpai0, {139, 114,  64, 114}, { 28, 109}}, //12 right 2
 };
 
 static const Animation char_senpai_anim[CharAnim_Max] = {
-	{2, (const u8[]){ 0,  1,  2,  3,  4, ASCR_BACK, 1}}, //CharAnim_Idle
+	{2, (const u8[]){ 0,  1,  2,  3,  4,  0,  1,  2,  3,  4, ASCR_BACK, 1}}, //CharAnim_Idle
 	{2, (const u8[]){ 5,  6, ASCR_BACK, 1}},             //CharAnim_Left
 	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},       //CharAnim_LeftAlt
 	{2, (const u8[]){ 7,  8, ASCR_BACK, 1}},             //CharAnim_Down
@@ -86,7 +86,19 @@ void Char_Senpai_Tick(Character *character)
 	Char_Senpai *this = (Char_Senpai*)character;
 	
 	//Perform idle dance
-	Character_PerformIdle(character);
+	if ((stage.flag & STAGE_FLAG_JUST_STEP) && (stage.song_step & 0x7) == 0)
+	{
+		Character_CheckEndSing(character);
+		if ((character->animatable.anim != CharAnim_Left &&
+		     character->animatable.anim != CharAnim_LeftAlt &&
+		     character->animatable.anim != CharAnim_Down &&
+		     character->animatable.anim != CharAnim_DownAlt &&
+		     character->animatable.anim != CharAnim_Up &&
+		     character->animatable.anim != CharAnim_UpAlt &&
+		     character->animatable.anim != CharAnim_Right &&
+		     character->animatable.anim != CharAnim_RightAlt))
+			character->set_anim(character, CharAnim_Idle);
+	}
 	
 	//Animate and draw
 	Animatable_Animate(&character->animatable, (void*)this, Char_Senpai_SetFrame);
@@ -96,8 +108,24 @@ void Char_Senpai_Tick(Character *character)
 void Char_Senpai_SetAnim(Character *character, u8 anim)
 {
 	//Set animation
+	u8 prev_anim = character->animatable.anim;
 	Animatable_SetAnim(&character->animatable, anim);
-	Character_CheckStartSing(character);
+	
+	//Update sing end if singing animation
+	if (character->animatable.anim == CharAnim_Left ||
+	    character->animatable.anim == CharAnim_LeftAlt ||
+	    character->animatable.anim == CharAnim_Down ||
+	    character->animatable.anim == CharAnim_DownAlt ||
+	    character->animatable.anim == CharAnim_Up ||
+	    character->animatable.anim == CharAnim_UpAlt ||
+	    character->animatable.anim == CharAnim_Right ||
+	    character->animatable.anim == CharAnim_RightAlt)
+	{
+		if (prev_anim != anim)
+			character->sing_end = stage.note_scroll + (FIXED_DEC(12,1) << 1); //2 steps
+		else
+			character->sing_end = stage.note_scroll + FIXED_DEC(12,1); //1 step
+	}
 }
 
 void Char_Senpai_Free(Character *character)
