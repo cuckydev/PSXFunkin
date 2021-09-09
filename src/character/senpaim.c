@@ -85,6 +85,24 @@ void Char_SenpaiM_Tick(Character *character)
 {
 	Char_SenpaiM *this = (Char_SenpaiM*)character;
 	
+	//Camera stuff
+	if (stage.story)
+	{
+		if (stage.flag & STAGE_FLAG_JUST_STEP)
+		{
+			if (stage.song_step < 4)
+			{
+				this->character.focus_x = FIXED_DEC(50,1);
+				this->character.focus_y = FIXED_DEC(-55,1);
+			}
+			else
+			{
+				this->character.focus_x = FIXED_DEC(24,1);
+				this->character.focus_y = FIXED_DEC(-66,1);
+			}
+		}
+	}
+	
 	//Perform idle dance
 	Character_PerformIdle(character);
 	
@@ -130,7 +148,7 @@ Character *Char_SenpaiM_New(fixed_t x, fixed_t y)
 	//Set character stage information
 	this->character.health_i = 8;
 	
-	this->character.focus_x = FIXED_DEC(32,1);
+	this->character.focus_x = FIXED_DEC(24,1);
 	this->character.focus_y = FIXED_DEC(-66,1);
 	this->character.focus_zoom = FIXED_DEC(2,1);
 	

@@ -21,7 +21,7 @@
 #include "object/splash.h"
 
 //Stage constants
-//#define STAGE_PERFECT //Play all notes perfectly
+#define STAGE_PERFECT //Play all notes perfectly
 //#define STAGE_NOHUD //Disable the HUD
 
 //#define STAGE_FREECAM //Freecam
@@ -150,8 +150,9 @@ static void Stage_ChangeBPM(u16 bpm, u16 step)
 		stage.time_base += FIXED_DIV(((fixed_t)step - stage.step_base) << FIXED_SHIFT, stage.step_crochet);
 	stage.step_base = step;
 	
-	//Get new crochet
+	//Get new crochet and times
 	stage.step_crochet = ((fixed_t)bpm << FIXED_SHIFT) * 8 / 240; //15/12/24
+	stage.step_time = FIXED_DIV(FIXED_DEC(12,1), stage.step_crochet);
 	
 	//Get new crochet based values
 	if (stage.kade)
@@ -405,7 +406,7 @@ static void Stage_NoteCheck(u8 type)
 				for (int i = 0; i < RandomRange(1, 30); i++)
 					Stage_HitNote(type, 0);
 			#endif
-			stage.arrow_hitan[type] = 6;
+			stage.arrow_hitan[type] = stage.step_time;
 			return;
 		}
 		else
@@ -428,7 +429,7 @@ static void Stage_NoteCheck(u8 type)
 				else
 					stage.health -= 2000;
 				stage.player->set_anim(stage.player, note_anims[type][1]);
-				stage.arrow_hitan[type] = 0;
+				stage.arrow_hitan[type] = -1;
 				return;
 			#endif
 		}
@@ -452,7 +453,7 @@ static void Stage_NoteCheck(u8 type)
 		stage.player->set_anim(stage.player, note_anims[type][0]);
 		for (int i = 0; i < RandomRange(1, 30); i++)
 			Stage_HitNote(type, 0);
-		stage.arrow_hitan[type] = 4;
+		stage.arrow_hitan[type] = stage.step_time;
 	#endif
 }
 
@@ -478,7 +479,7 @@ static void Stage_SustainCheck(u8 type)
 		Stage_StartVocal();
 		if (!stage.kade)
 			stage.health += 230;
-		stage.arrow_hitan[type] = 4;
+		stage.arrow_hitan[type] = stage.step_time;
 	}
 }
 
@@ -1468,18 +1469,26 @@ void Stage_Tick(void)
 				if (stage.arrow_hitan[i] > 0)
 				{
 					//Play hit animation
+					u8 frame = (stage.arrow_hitan[i] << 1) / stage.step_time;
 					note_src.x = (i + 1) << 5;
-					note_src.y = 96 - (((stage.arrow_hitan[i] + 1) >> 1) << 5);
-					if (--stage.arrow_hitan[i] == 0 && (stage.pad_held & note_key[i]))
-						stage.arrow_hitan[i] = 1;
+					note_src.y = 64 - (frame << 5);
+					
+					stage.arrow_hitan[i] -= timer_dt;
+					if (stage.arrow_hitan[i] <= 0)
+					{
+						if (stage.pad_held & note_key[i])
+							stage.arrow_hitan[i] = 1;
+						else
+							stage.arrow_hitan[i] = 0;
+					}
 				}
 				else if (stage.arrow_hitan[i] < 0)
 				{
 					//Play depress animation
 					note_src.x = (i + 1) << 5;
 					note_src.y = 96;
-					if (++stage.arrow_hitan[i] == 0 && (stage.pad_held & note_key[i]))
-						stage.arrow_hitan[i] = -1;
+					if (!(stage.pad_held & note_key[i]))
+						stage.arrow_hitan[i] = 0;
 				}
 				else
 				{

@@ -172,7 +172,7 @@ typedef struct
 	Note *notes;
 	
 	fixed_t speed;
-	fixed_t step_crochet;
+	fixed_t step_crochet, step_time;
 	fixed_t early_safe, late_safe, early_sus_safe, late_sus_safe;
 	
 	//Stage state
@@ -205,11 +205,11 @@ typedef struct
 	u16 step_base;
 	Section *section_base;
 	
-	u16 song_step;
+	s16 song_step;
 	
 	u8 gf_speed; //Typically 4 steps, changes in Fresh
 	
-	s8 arrow_hitan[4]; //Arrow hit animation for presses
+	fixed_t arrow_hitan[4]; //Arrow hit animation for presses
 	
 	s16 health;
 	u16 combo;
