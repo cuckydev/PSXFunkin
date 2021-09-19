@@ -171,7 +171,7 @@ typedef struct
 	u16 combo;
 	
 	boolean refresh_score;
-	s32 score;
+	s32 score, max_score;
 	char score_text[13];
 	
 	u16 pad_held, pad_press;
@@ -236,6 +236,7 @@ typedef struct
 	u8 gf_speed; //Typically 4 steps, changes in Fresh
 	
 	PlayerState player_state[2];
+	s32 max_score;
 	
 	enum
 	{

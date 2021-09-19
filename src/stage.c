@@ -982,6 +982,23 @@ static void Stage_LoadChart(void)
 		}
 	}
 	
+	//Count max scores
+	stage.player_state[0].max_score = 0;
+	stage.player_state[1].max_score = 0;
+	for (Note *note = stage.notes; note->pos != 0xFFFF; note++)
+	{
+		if (note->type & (NOTE_FLAG_SUSTAIN | NOTE_FLAG_MINE))
+			continue;
+		if (note->type & NOTE_FLAG_OPPONENT)
+			stage.player_state[1].max_score += 35;
+		else
+			stage.player_state[0].max_score += 35;
+	}
+	if (stage.mode == StageMode_2P && stage.player_state[1].max_score > stage.player_state[0].max_score)
+		stage.max_score = stage.player_state[1].max_score;
+	else
+		stage.max_score = stage.player_state[0].max_score;
+	
 	stage.cur_section = stage.sections;
 	stage.cur_note = stage.notes;
 	
@@ -1498,14 +1515,14 @@ void Stage_Tick(void)
 				if (this->refresh_score)
 				{
 					if (this->score != 0)
-						sprintf(this->score_text, "%d0", this->score);
+						sprintf(this->score_text, "%d0", this->score * stage.max_score / this->max_score);
 					else
 						strcpy(this->score_text, "0");
 				}
 				
 				//Display score
 				RECT score_src = {80, 224, 40, 10};
-				RECT_FIXED score_dst = {i ? FIXED_DEC(-100,1) : FIXED_DEC(14,1), (SCREEN_HEIGHT2 - 42) << FIXED_SHIFT, FIXED_DEC(40,1), FIXED_DEC(10,1)};
+				RECT_FIXED score_dst = {(i ^ (stage.mode == StageMode_Swap)) ? FIXED_DEC(-100,1) : FIXED_DEC(14,1), (SCREEN_HEIGHT2 - 42) << FIXED_SHIFT, FIXED_DEC(40,1), FIXED_DEC(10,1)};
 				if (stage.downscroll)
 					score_dst.y = -score_dst.y - score_dst.h;
 				
@@ -1548,23 +1565,23 @@ void Stage_Tick(void)
 				}
 				if (stage.player_state[0].health > 20000)
 					stage.player_state[0].health = 20000;
+				
+				//Draw health heads
+				Stage_DrawHealth(stage.player_state[0].health, stage.player->health_i,    1);
+				Stage_DrawHealth(stage.player_state[0].health, stage.opponent->health_i, -1);
+				
+				//Draw health bar
+				RECT health_fill = {0, 0, 256 - (256 * stage.player_state[0].health / 20000), 8};
+				RECT health_back = {0, 8, 256, 8};
+				RECT_FIXED health_dst = {FIXED_DEC(-128,1), (SCREEN_HEIGHT2 - 32) << FIXED_SHIFT, 0, FIXED_DEC(8,1)};
+				if (stage.downscroll)
+					health_dst.y = -health_dst.y - health_dst.h;
+				
+				health_dst.w = health_fill.w << FIXED_SHIFT;
+				Stage_DrawTex(&stage.tex_hud1, &health_fill, &health_dst, stage.bump);
+				health_dst.w = health_back.w << FIXED_SHIFT;
+				Stage_DrawTex(&stage.tex_hud1, &health_back, &health_dst, stage.bump);
 			}
-			
-			//Draw health heads
-			Stage_DrawHealth(stage.player_state[0].health, stage.player->health_i,    1);
-			Stage_DrawHealth(stage.player_state[0].health, stage.opponent->health_i, -1);
-			
-			//Draw health bar
-			RECT health_fill = {0, 0, 256 - (256 * stage.player_state[0].health / 20000), 8};
-			RECT health_back = {0, 8, 256, 8};
-			RECT_FIXED health_dst = {FIXED_DEC(-128,1), (SCREEN_HEIGHT2 - 32) << FIXED_SHIFT, 0, FIXED_DEC(8,1)};
-			if (stage.downscroll)
-				health_dst.y = -health_dst.y - health_dst.h;
-			
-			health_dst.w = health_fill.w << FIXED_SHIFT;
-			Stage_DrawTex(&stage.tex_hud1, &health_fill, &health_dst, stage.bump);
-			health_dst.w = health_back.w << FIXED_SHIFT;
-			Stage_DrawTex(&stage.tex_hud1, &health_back, &health_dst, stage.bump);
 			
 			//Hardcoded stage stuff
 			switch (stage.stage_id)
