@@ -6,15 +6,8 @@
 
 #include "../movie.h"
 
-#include "strplay.c"
-
 //Movie interface
 void Movie_Play(const char *path, u32 length)
 {
-	STRFILE file;
-	strcpy(file.FileName, path);
-	file.Xres = 320;
-	file.Yres = 240;
-	file.NumFrames = length;
-	PlayStr(320, 240, 0, 0, &file);
+	
 }
