@@ -919,18 +919,33 @@ void Menu_Tick(void)
 		}
 		case MenuPage_Options:
 		{
+			static const char *gamemode_strs[] = {"NORMAL", "SWAP", "TWO PLAYER"};
 			static const struct
 			{
 				enum
 				{
 					OptType_Boolean,
+					OptType_Enum,
 				} type;
 				const char *text;
 				void *value;
+				union
+				{
+					struct
+					{
+						int a;
+					} spec_boolean;
+					struct
+					{
+						s32 max;
+						const char **strs;
+					} spec_enum;
+				} spec;
 			} menu_options[] = {
+				{OptType_Enum,    "GAMEMODE", &stage.mode, {.spec_enum = {StageMode_Max, gamemode_strs}}},
 				//{OptType_Boolean, "INTERPOLATION", &stage.expsync},
-				{OptType_Boolean, "GHOST TAP    ", &stage.ghost},
-				{OptType_Boolean, "DOWNSCROLL   ", &stage.downscroll},
+				{OptType_Boolean, "GHOST TAP ", &stage.ghost, {.spec_boolean = {0}}},
+				{OptType_Boolean, "DOWNSCROLL", &stage.downscroll, {.spec_boolean = {0}}},
 			};
 			
 			//Initialize page
@@ -971,6 +986,14 @@ void Menu_Tick(void)
 						if (pad_state.press & (PAD_CROSS | PAD_LEFT | PAD_RIGHT))
 							*((boolean*)menu_options[menu.select].value) ^= 1;
 						break;
+					case OptType_Enum:
+						if (pad_state.press & PAD_LEFT)
+							if (--*((s32*)menu_options[menu.select].value) < 0)
+								*((s32*)menu_options[menu.select].value) = menu_options[menu.select].spec.spec_enum.max - 1;
+						if (pad_state.press & PAD_RIGHT)
+							if (++*((s32*)menu_options[menu.select].value) >= menu_options[menu.select].spec.spec_enum.max)
+								*((s32*)menu_options[menu.select].value) = 0;
+						break;
 				}
 				
 				//Return to main menu if circle is pressed
@@ -1001,14 +1024,17 @@ void Menu_Tick(void)
 				{
 					case OptType_Boolean:
 						sprintf(text, "%s %s", menu_options[i].text, *((boolean*)menu_options[i].value) ? "ON" : "OFF");
-						menu.font_bold.draw(&menu.font_bold,
-							Menu_LowerIf(text, menu.select != i),
-							48 + (y >> 2),
-							SCREEN_HEIGHT2 + y - 8,
-							FontAlign_Left
-						);
+						break;
+					case OptType_Enum:
+						sprintf(text, "%s %s", menu_options[i].text, menu_options[i].spec.spec_enum.strs[*((s32*)menu_options[i].value)]);
 						break;
 				}
+				menu.font_bold.draw(&menu.font_bold,
+					Menu_LowerIf(text, menu.select != i),
+					48 + (y >> 2),
+					SCREEN_HEIGHT2 + y - 8,
+					FontAlign_Left
+				);
 			}
 			
 			//Draw background

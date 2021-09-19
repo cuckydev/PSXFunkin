@@ -169,7 +169,7 @@ void Char_BF_Tick(Character *character)
 	Char_BF *this = (Char_BF*)character;
 	
 	//Handle animation updates
-	if ((stage.pad_held & (INPUT_LEFT | INPUT_DOWN | INPUT_UP | INPUT_RIGHT)) == 0 ||
+	if ((character->pad_held & (INPUT_LEFT | INPUT_DOWN | INPUT_UP | INPUT_RIGHT)) == 0 ||
 	    (character->animatable.anim != CharAnim_Left &&
 	     character->animatable.anim != CharAnim_Down &&
 	     character->animatable.anim != CharAnim_Up &&
@@ -384,7 +384,9 @@ Character *Char_BF_New(fixed_t x, fixed_t y)
 	Animatable_Init(&this->character.animatable, char_bf_anim);
 	Character_Init((Character*)this, x, y);
 	
-	//Set character stage information
+	//Set character information
+	this->character.spec = CHAR_SPEC_MISSANIM;
+	
 	this->character.health_i = 0;
 	
 	this->character.focus_x = FIXED_DEC(-50,1);

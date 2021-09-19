@@ -174,7 +174,9 @@ Character *Char_GF_New(fixed_t x, fixed_t y)
 	Animatable_Init(&this->character.animatable, char_gf_anim);
 	Character_Init((Character*)this, x, y);
 	
-	//Set character stage information
+	//Set character information
+	this->character.spec = 0;
+	
 	this->character.health_i = 1;
 	
 	this->character.focus_x = FIXED_DEC(16,1);

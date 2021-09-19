@@ -113,7 +113,8 @@ void Char_Tank_Tick(Character *character)
 	Char_Tank *this = (Char_Tank*)character;
 	
 	//Perform idle dance
-	if (character->animatable.anim != CharAnim_DownAlt) //Don't interrupt "Heh, pretty good!" sequence
+	if ((character->pad_held & (INPUT_LEFT | INPUT_DOWN | INPUT_UP | INPUT_RIGHT)) == 0 &&
+	     character->animatable.anim != CharAnim_DownAlt) //Don't interrupt "Heh, pretty good!" sequence
 		Character_PerformIdle(character);
 	
 	//Animate
@@ -203,7 +204,9 @@ Character *Char_Tank_New(fixed_t x, fixed_t y)
 	Animatable_Init(&this->character.animatable, char_tank_anim);
 	Character_Init((Character*)this, x, y);
 	
-	//Set character stage information
+	//Set character information
+	this->character.spec = 0;
+	
 	this->character.health_i = 10;
 	
 	this->character.focus_x = FIXED_DEC(65,1);

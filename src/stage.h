@@ -92,6 +92,14 @@ typedef enum
 
 typedef enum
 {
+	StageMode_Normal,
+	StageMode_Swap,
+	StageMode_2P,
+	StageMode_Max,
+} StageMode;
+
+typedef enum
+{
 	StageTrans_Menu,
 	StageTrans_NextSong,
 	StageTrans_Reload,
@@ -155,8 +163,26 @@ typedef struct
 
 typedef struct
 {
+	Character *character;
+	
+	fixed_t arrow_hitan[4]; //Arrow hit animation for presses
+	
+	s16 health;
+	u16 combo;
+	
+	boolean refresh_score;
+	s32 score;
+	char score_text[13];
+	
+	u16 pad_held, pad_press;
+} PlayerState;
+
+typedef struct
+{
 	//Stage settings
 	boolean ghost, downscroll, expsync;
+	s32 mode;
+	
 	u32 offset;
 	
 	//HUD textures
@@ -209,13 +235,7 @@ typedef struct
 	
 	u8 gf_speed; //Typically 4 steps, changes in Fresh
 	
-	fixed_t arrow_hitan[4]; //Arrow hit animation for presses
-	
-	s16 health;
-	u16 combo;
-	
-	s32 score;
-	char score_text[13];
+	PlayerState player_state[2];
 	
 	enum
 	{
@@ -227,7 +247,7 @@ typedef struct
 		StageState_DeadDecide, //Decided
 	} state;
 	
-	u16 pad_held, pad_press;
+	u8 note_swap;
 	
 	//Object lists
 	ObjectList objlist_splash, objlist_fg, objlist_bg;

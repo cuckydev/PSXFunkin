@@ -13,13 +13,17 @@
 extern GLFWwindow *window;
 
 //Pad state
-Pad pad_state;
+Pad pad_state, pad_state_2;
 
 //Pad functions
 void Pad_Init(void)
 {
+	//Clear pad states
 	pad_state.held = pad_state.press = 0;
 	pad_state.left_x = pad_state.left_y = pad_state.right_x = pad_state.right_y = 0;
+	
+	pad_state_2.held = pad_state_2.press = 0;
+	pad_state_2.left_x = pad_state_2.left_y = pad_state_2.right_x = pad_state_2.right_y = 0;
 }
 
 void Pad_Quit(void)

@@ -92,19 +92,21 @@ void Char_Spook_Tick(Character *character)
 	Char_Spook *this = (Char_Spook*)character;
 	
 	//Perform spooky dance
-	Character_CheckEndSing(character);
-	
-	if (stage.flag & STAGE_FLAG_JUST_STEP)
+	if ((character->pad_held & (INPUT_LEFT | INPUT_DOWN | INPUT_UP | INPUT_RIGHT)) == 0)
 	{
-		if ((Animatable_Ended(&character->animatable) || character->animatable.anim == CharAnim_LeftAlt || character->animatable.anim == CharAnim_RightAlt) &&
-		    (character->animatable.anim != CharAnim_Left &&
-		     character->animatable.anim != CharAnim_Down &&
-		     character->animatable.anim != CharAnim_Up &&
-		     character->animatable.anim != CharAnim_Right) &&
-		    (stage.song_step & 0x3) == 0)
-			character->set_anim(character, CharAnim_Idle);
+		Character_CheckEndSing(character);
+		
+		if (stage.flag & STAGE_FLAG_JUST_STEP)
+		{
+			if ((Animatable_Ended(&character->animatable) || character->animatable.anim == CharAnim_LeftAlt || character->animatable.anim == CharAnim_RightAlt) &&
+				(character->animatable.anim != CharAnim_Left &&
+				 character->animatable.anim != CharAnim_Down &&
+				 character->animatable.anim != CharAnim_Up &&
+				 character->animatable.anim != CharAnim_Right) &&
+				(stage.song_step & 0x3) == 0)
+				character->set_anim(character, CharAnim_Idle);
+		}
 	}
-	
 	//Animate and draw
 	Animatable_Animate(&character->animatable, (void*)this, Char_Spook_SetFrame);
 	Character_Draw(character, &this->tex, &char_spook_frame[this->frame]);
@@ -155,7 +157,9 @@ Character *Char_Spook_New(fixed_t x, fixed_t y)
 	Animatable_Init(&this->character.animatable, char_spook_anim);
 	Character_Init((Character*)this, x, y);
 	
-	//Set character stage information
+	//Set character information
+	this->character.spec = 0;
+	
 	this->character.health_i = 2;
 	
 	this->character.focus_x =  FIXED_DEC(65,1);

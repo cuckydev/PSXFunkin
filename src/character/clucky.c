@@ -89,7 +89,8 @@ void Char_Clucky_Tick(Character *character)
 	Char_Clucky *this = (Char_Clucky*)character;
 	
 	//Perform idle dance
-	Character_PerformIdle(character);
+	if ((character->pad_held & (INPUT_LEFT | INPUT_DOWN | INPUT_UP | INPUT_RIGHT)) == 0)
+		Character_PerformIdle(character);
 	
 	//Animate and draw
 	Animatable_Animate(&character->animatable, (void*)this, Char_Clucky_SetFrame);
@@ -130,7 +131,9 @@ Character *Char_Clucky_New(fixed_t x, fixed_t y)
 	Animatable_Init(&this->character.animatable, char_clucky_anim);
 	Character_Init((Character*)this, x, y);
 	
-	//Set character stage information
+	//Set character information
+	this->character.spec = 0;
+	
 	this->character.health_i = 11;
 	
 	this->character.focus_x = FIXED_DEC(65,1);

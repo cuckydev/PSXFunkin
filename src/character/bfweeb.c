@@ -134,7 +134,11 @@ void Char_BFWeeb_Tick(Character *character)
 	Char_BF *this = (Char_BF*)character;
 	
 	//Handle animation updates
-	if ((pad_state.held & (INPUT_LEFT | INPUT_DOWN | INPUT_UP | INPUT_RIGHT)) == 0)
+	if ((character->pad_held & (INPUT_LEFT | INPUT_DOWN | INPUT_UP | INPUT_RIGHT)) == 0 ||
+	    (character->animatable.anim != CharAnim_Left &&
+	     character->animatable.anim != CharAnim_Down &&
+	     character->animatable.anim != CharAnim_Up &&
+	     character->animatable.anim != CharAnim_Right))
 		Character_CheckEndSing(character);
 	
 	if (stage.flag & STAGE_FLAG_JUST_STEP)
@@ -321,7 +325,9 @@ Character *Char_BFWeeb_New(fixed_t x, fixed_t y)
 	Animatable_Init(&this->character.animatable, char_bfweeb_anim);
 	Character_Init((Character*)this, x, y);
 	
-	//Set character stage information
+	//Set character information
+	this->character.spec = CHAR_SPEC_MISSANIM;
+	
 	this->character.health_i = 7;
 	
 	this->character.focus_x = FIXED_DEC(-34,1);

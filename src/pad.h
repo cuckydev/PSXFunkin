@@ -35,7 +35,7 @@ typedef struct
 	u8 right_x, right_y;
 } Pad;
 
-extern Pad pad_state;
+extern Pad pad_state, pad_state_2;
 
 //Pad functions
 void Pad_Init(void);

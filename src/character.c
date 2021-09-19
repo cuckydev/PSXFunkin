@@ -28,6 +28,7 @@ void Character_Init(Character *this, fixed_t x, fixed_t y)
 	this->y = y;
 	
 	this->set_anim(this, CharAnim_Idle);
+	this->pad_held = 0;
 }
 
 void Character_Draw(Character *this, Gfx_Tex *tex, const CharFrame *cframe)
