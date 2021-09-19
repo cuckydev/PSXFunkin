@@ -262,7 +262,7 @@ static void Stage_HitNote(PlayerState *this, u8 type, fixed_t offset)
 			Obj_Splash *splash = Obj_Splash_New(
 				note_x[type ^ stage.note_swap],
 				note_y * (stage.downscroll ? -1 : 1),
-				type
+				type & 0x3
 			);
 			if (splash != NULL)
 				ObjectList_Add(&stage.objlist_splash, (Object*)splash);
