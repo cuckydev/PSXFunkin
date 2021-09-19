@@ -156,7 +156,7 @@ typedef struct
 typedef struct
 {
 	//Stage settings
-	boolean kade, ghost, downscroll, expsync;
+	boolean ghost, downscroll, expsync;
 	u32 offset;
 	
 	//HUD textures

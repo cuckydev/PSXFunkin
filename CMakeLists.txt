@@ -38,6 +38,8 @@ add_executable(funkin
 	"src/pad.h"
 	"src/pc/timer.c"
 	"src/timer.h"
+	"src/pc/movie.c"
+	"src/movie.h"
 	"src/pc/dr_mp3.h"
 	"src/pc/miniaudio.h"
 	"src/stage/dummy.c"

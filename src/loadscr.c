@@ -48,6 +48,7 @@ void LoadScr_End(void)
 {
 	//Handle transition out
 	Timer_Reset();
+	Trans_Clear();
 	Trans_Start();
 	Gfx_DisableClear();
 	while (!Trans_Tick())

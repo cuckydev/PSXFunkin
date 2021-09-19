@@ -49,10 +49,7 @@
 	
 */
 
-#include "psx.h"
-#include <libpress.h>
-
-#define IS_RGB24	0	// 0:16-bit playback, 1:24-bit playback (recommended for quality)
+#define IS_RGB24	1	// 0:16-bit playback, 1:24-bit playback (recommended for quality)
 #define RING_SIZE	32	// Ring Buffer size (32 sectors seems good enough)
 
 #if IS_RGB24==1
@@ -251,7 +248,7 @@ static void strCallback() {
 	
 	// In 24-bit color, StCdInterrupt must be called in every callback
 	#if IS_RGB24==1
-	extern int StCdIntrFlag;
+	extern u_long StCdIntrFlag;
 	if (StCdIntrFlag) {
 		StCdInterrupt();
 		StCdIntrFlag = 0;

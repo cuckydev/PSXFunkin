@@ -13,9 +13,9 @@
 #define OTLEN 8
 
 //Gfx state
-static DISPENV disp[2];
-static DRAWENV draw[2];
-static u8 db;
+DISPENV disp[2];
+DRAWENV draw[2];
+u8 db;
 
 static u32 ot[2][OTLEN];    //Ordering table length
 static u8 pribuff[2][32768]; //Primitive buffer
@@ -133,7 +133,6 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 	{
 		if (tex != NULL)
 		{
-			//memcpy(&tex->tim_prect, &tparam.prect, sizeof(tparam.prect));
 			tex->tim_prect = *tparam.prect;
 			tex->tpage = getTPage(tparam.mode & 0x3, 0, tparam.prect->x, tparam.prect->y);
 		}
@@ -146,7 +145,6 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 	{
 		if (tex != NULL)
 		{
-			//memcpy(&tex->tim_crect, &tparam.crect, sizeof(tparam.crect));
 			tex->tim_crect = *tparam.crect;
 			tex->clut = getClut(tparam.crect->x, tparam.crect->y);
 		}

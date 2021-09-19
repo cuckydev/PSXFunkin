@@ -6,6 +6,8 @@
 
 #include "mutil.h"
 
+#include "timer.h"
+
 //Sine table
 static const s16 sine_table[0x140] = {
 	0,6,12,18,25,31,37,43,49,56,62,68,74,80,86,92,

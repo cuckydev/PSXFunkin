@@ -15,9 +15,9 @@
 
 //Week 7 background functions
 #define TANK_START_X FIXED_DEC(-400,1)
-#define TANK_END_X    FIXED_DEC(400,1)
-#define TANK_TIME_A FIXED_DEC(25,1)
-#define TANK_TIME_B FIXED_DEC(45,1)
+#define TANK_END_X   FIXED_DEC(400,1)
+#define TANK_TIME_A FIXED_DEC(35,1)
+#define TANK_TIME_B FIXED_DEC(55,1)
 
 static void Back_Week7_LoadPicoChart(Back_Week7 *this)
 {
@@ -66,7 +66,7 @@ void Back_Week7_DrawBG(StageBack *back)
 	}
 	
 	if (this->tank_x < TANK_END_X)
-		this->tank_x += timer_dt * 60;
+		this->tank_x += timer_dt * 30;
 	
 	//Get tank position
 	fx = stage.camera.x * 2 / 3;

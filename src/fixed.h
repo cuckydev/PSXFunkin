@@ -28,7 +28,7 @@ typedef struct
 #define FIXED_LAND  (FIXED_UNIT - 1)
 #define FIXED_UAND  (~FIXED_LAND)
 
-#define FIXED_DEC(d, f) (((fixed_t)(d) * FIXED_UNIT) / (f))
+#define FIXED_DEC(d, f) ((fixed_t)(((s64)(d) * FIXED_UNIT) / (f)))
 
 #define FIXED_MUL(x, y) ((fixed_t)(((s64)(x) * (y)) >> FIXED_SHIFT))
 #define FIXED_DIV(x, y) ((fixed_t)(((s32)(x) * FIXED_UNIT) / (y)))

@@ -4,12 +4,10 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef _MOVIE_H
-#define _MOVIE_H
-
-#include "psx.h"
+#include "../movie.h"
 
 //Movie interface
-void Movie_Play(const char *path, u32 length);
-
-#endif
+void Movie_Play(const char *path, u32 length)
+{
+	//Dummy
+}

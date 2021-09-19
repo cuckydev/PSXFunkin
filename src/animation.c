@@ -28,8 +28,6 @@ void Animatable_SetAnim(Animatable *this, u8 anim)
 void Animatable_Animate(Animatable *this, void *user, void (*set_frame)(void*, u8))
 {
 	//Wait for time
-	this->anim_time -= timer_dt;
-	
 	while (this->anim_time <= 0)
 	{
 		//Read script
@@ -54,6 +52,7 @@ void Animatable_Animate(Animatable *this, void *user, void (*set_frame)(void*, u
 				break;
 		}
 	}
+	this->anim_time -= timer_dt;
 }
 
 boolean Animatable_Ended(Animatable *this)

@@ -86,6 +86,7 @@ SOURCES = main \
           pc/audio \
           pc/pad \
           pc/timer \
+          pc/movie \
           stage/dummy \
           stage/week1 \
           stage/week2 \
@@ -107,7 +108,7 @@ SOURCES = main \
           character/senpaim \
           character/tank \
           character/gf \
-		  character/clucky \
+          character/clucky \
           object \
           object/combo \
           object/splash
