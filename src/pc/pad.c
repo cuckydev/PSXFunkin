@@ -33,8 +33,10 @@ void Pad_Quit(void)
 
 void Pad_Update(void)
 {
+	u16 next_held;
+	
 	//Get next held state
-	u16 next_held = 0;
+	next_held = 0;
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		next_held |= PAD_SQUARE;
 	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
@@ -57,4 +59,19 @@ void Pad_Update(void)
 	//Update pad state
 	pad_state.press = next_held & ~pad_state.held;
 	pad_state.held = next_held;
+	
+	//Get next held state 2
+	next_held = 0;
+	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+		next_held |= PAD_SQUARE;
+	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
+		next_held |= PAD_CROSS;
+	if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS)
+		next_held |= PAD_TRIANGLE;
+	if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
+		next_held |= PAD_CIRCLE;
+	
+	//Update pad state 2
+	pad_state_2.press = next_held & ~pad_state_2.held;
+	pad_state_2.held = next_held;
 }
