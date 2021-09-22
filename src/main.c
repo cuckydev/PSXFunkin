@@ -12,6 +12,7 @@
 #include "gfx.h"
 #include "audio.h"
 #include "pad.h"
+#include "network.h"
 
 #include "menu.h"
 #include "stage.h"
@@ -54,8 +55,9 @@ int main(int argc, char **argv)
 	
 	IO_Init();
 	Audio_Init();
-	Pad_Init();
 	Gfx_Init();
+	Pad_Init();
+	Network_Init();
 	
 	Timer_Init();
 	
@@ -81,6 +83,7 @@ int main(int argc, char **argv)
 		#endif
 		
 		//Tick and draw game
+		Network_Process();
 		switch (gameloop)
 		{
 			case GameLoop_Menu:
@@ -96,8 +99,9 @@ int main(int argc, char **argv)
 	}
 	
 	//Deinitialize system
-	Gfx_Quit();
+	Network_Quit();
 	Pad_Quit();
+	Gfx_Quit();
 	Audio_Quit();
 	IO_Quit();
 	

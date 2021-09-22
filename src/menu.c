@@ -15,6 +15,7 @@
 #include "pad.h"
 #include "archive.h"
 #include "mutil.h"
+#include "network.h"
 
 #include "font.h"
 #include "trans.h"
@@ -62,6 +63,14 @@ static const char *funny_messages[][2] = {
 	{"BALLS FISH", "BALLS FISH"},
 };
 
+#ifdef PSXF_NETWORK
+
+//Menu string type
+#define MENUSTR_CHARS 0x20
+typedef char MenuStr[MENUSTR_CHARS + 1];
+
+#endif
+
 //Menu state
 static struct
 {
@@ -89,6 +98,25 @@ static struct
 		{
 			fixed_t fade, fadespd;
 		} story;
+	#ifdef PSXF_NETWORK
+		struct
+		{
+			boolean type;
+			MenuStr port;
+			MenuStr pass;
+		} net_host;
+		struct
+		{
+			boolean type;
+			MenuStr ip;
+			MenuStr port;
+			MenuStr pass;
+		} net_join;
+		struct
+		{
+			boolean swap;
+		} net_op;
+	#endif
 	} page_state;
 	
 	union
@@ -102,10 +130,42 @@ static struct
 	
 	//Menu assets
 	Gfx_Tex tex_back, tex_ng, tex_story, tex_title;
-	FontData font_bold;
+	FontData font_bold, font_arial;
 	
 	Character *gf; //Title Girlfriend
 } menu;
+
+#ifdef PSXF_NETWORK
+
+//Menu string functions
+static void MenuStr_Process(MenuStr *this, s32 x, s32 y, const char *fmt, boolean select, boolean type)
+{
+	//Append typed input
+	if (select && type)
+	{
+		if (pad_type[0] != '\0')
+			strncat(*this, pad_type, MENUSTR_CHARS - strlen(*this));
+		if (pad_backspace)
+		{
+			size_t i = strlen(*this);
+			if (i != 0)
+				(*this)[i - 1] = '\0';
+		}
+	}
+	
+	//Get text to draw
+	char buf[0x100];
+	sprintf(buf, fmt, *this);
+	if (select && type && (animf_count & 2))
+		strcat(buf, "_");
+	
+	//Draw text
+	menu.font_arial.draw_col(&menu.font_arial, buf, x, y, FontAlign_Left, 0x80, 0x80, select ? 0x00 : 0x80);
+	menu.font_arial.draw_col(&menu.font_arial, buf, x+1, y+1, FontAlign_Left, 0x00, 0x00, 0x00);
+}
+
+#endif
+
 
 //Internal menu functions
 char menu_text_buffer[0x100];
@@ -233,6 +293,7 @@ void Menu_Load(MenuPage page)
 	Mem_Free(menu_arc);
 	
 	FontData_Load(&menu.font_bold, Font_Bold);
+	FontData_Load(&menu.font_arial, Font_Arial);
 	
 	menu.gf = Char_GF_New(FIXED_DEC(62,1), FIXED_DEC(-12,1));
 	stage.camera.x = stage.camera.y = FIXED_DEC(0,1);
@@ -277,6 +338,15 @@ void Menu_Unload(void)
 	Character_Free(menu.gf);
 }
 
+void Menu_ToStage(StageId id, StageDiff diff, boolean story)
+{
+	menu.next_page = MenuPage_Stage;
+	menu.page_param.stage.id = id;
+	menu.page_param.stage.story = story;
+	menu.page_param.stage.diff = diff;
+	Trans_Start();
+}
+
 void Menu_Tick(void)
 {
 	//Clear per-frame flags
@@ -299,6 +369,9 @@ void Menu_Tick(void)
 		menu.page = menu.next_page;
 		menu.select = menu.next_select;
 	}
+	
+	sprintf(error_msg, "%d %d %d %d %d", Network_Inited(), Network_Connected(), Network_Allowed(), Network_IsHost(), Network_HasPeer());
+	menu.font_arial.draw(&menu.font_arial, error_msg, 8, 8, FontAlign_Left);
 	
 	//Tick menu page
 	MenuPage exec_page;
@@ -462,11 +535,20 @@ void Menu_Tick(void)
 				"FREEPLAY",
 				"MODS",
 				"OPTIONS",
+				#ifdef PSXF_NETWORK
+					"JOIN SERVER",
+					"HOST SERVER",
+				#endif
 			};
 			
 			//Initialize page
 			if (menu.page_swap)
-				menu.scroll = menu.select * FIXED_DEC(8,1);
+				menu.scroll = menu.select *
+				#ifndef PSXF_NETWORK
+					FIXED_DEC(8,1);
+				#else
+					FIXED_DEC(12,1);
+				#endif
 			
 			//Draw version identification
 			menu.font_bold.draw(&menu.font_bold,
@@ -515,6 +597,14 @@ void Menu_Tick(void)
 						case 3: //Options
 							menu.next_page = MenuPage_Options;
 							break;
+					#ifdef PSXF_NETWORK
+						case 4: //Join Server
+							menu.next_page = Network_Inited() ? MenuPage_NetJoin : MenuPage_NetInitFail;
+							break;
+						case 5: //Host Server
+							menu.next_page = Network_Inited() ? MenuPage_NetHost : MenuPage_NetInitFail;
+							break;
+					#endif
 					}
 					menu.next_select = 0;
 					menu.trans_time = FIXED_UNIT;
@@ -529,7 +619,12 @@ void Menu_Tick(void)
 			}
 			
 			//Draw options
-			s32 next_scroll = menu.select * FIXED_DEC(8,1);
+			s32 next_scroll = menu.select *
+			#ifndef PSXF_NETWORK
+				FIXED_DEC(8,1);
+			#else
+				FIXED_DEC(12,1);
+			#endif
 			menu.scroll += (next_scroll - menu.scroll) >> 2;
 			
 			if (menu.next_page == menu.page || menu.next_page == MenuPage_Title)
@@ -559,7 +654,11 @@ void Menu_Tick(void)
 			//Draw background
 			Menu_DrawBack(
 				menu.next_page == menu.page || menu.next_page == MenuPage_Title,
+			#ifndef PSXF_NETWORK
 				menu.scroll >> (FIXED_SHIFT + 1),
+			#else
+				menu.scroll >> (FIXED_SHIFT + 3),
+			#endif
 				253 >> 1, 231 >> 1, 113 >> 1,
 				253 >> 1, 113 >> 1, 155 >> 1
 			);
@@ -942,7 +1041,7 @@ void Menu_Tick(void)
 					} spec_enum;
 				} spec;
 			} menu_options[] = {
-				{OptType_Enum,    "GAMEMODE", &stage.mode, {.spec_enum = {StageMode_Max, gamemode_strs}}},
+				{OptType_Enum,    "GAMEMODE", &stage.mode, {.spec_enum = {COUNT_OF(gamemode_strs), gamemode_strs}}},
 				//{OptType_Boolean, "INTERPOLATION", &stage.expsync},
 				{OptType_Boolean, "GHOST TAP ", &stage.ghost, {.spec_boolean = {0}}},
 				{OptType_Boolean, "DOWNSCROLL", &stage.downscroll, {.spec_boolean = {0}}},
@@ -1046,6 +1145,530 @@ void Menu_Tick(void)
 			);
 			break;
 		}
+	#ifdef PSXF_NETWORK
+		case MenuPage_NetHost:
+		{
+			const size_t menu_options = 3;
+			
+			//Initialize page
+			if (menu.page_swap)
+			{
+				menu.page_state.net_host.type = false;
+				menu.page_state.net_host.port[0] = '\0';
+				menu.page_state.net_host.pass[0] = '\0';
+			}
+			
+			//Handle option and selection
+			if (menu.next_page == menu.page && Trans_Idle())
+			{
+				if (!menu.page_state.net_host.type)
+				{
+					//Change option
+					if (pad_state.press & PAD_UP)
+					{
+						if (menu.select > 0)
+							menu.select--;
+						else
+							menu.select = menu_options - 1;
+					}
+					if (pad_state.press & PAD_DOWN)
+					{
+						if (menu.select < menu_options - 1)
+							menu.select++;
+						else
+							menu.select = 0;
+					}
+					
+					//Handle selection when cross is pressed
+					if (pad_state.press & (PAD_START | PAD_CROSS))
+					{
+						switch (menu.select)
+						{
+							case 0: //Port
+							case 1: //Pass
+								menu.page_state.net_host.type = true;
+								break;
+							case 2: //Host
+								if (!Network_HostPort(menu.page_state.net_host.port, menu.page_state.net_host.pass))
+								{
+									menu.next_page = MenuPage_NetOpWait;
+									menu.next_select = 0;
+									Trans_Start();
+								}
+								break;
+						}
+					}
+					
+					//Return to main menu if circle is pressed
+					if (pad_state.press & PAD_CIRCLE)
+					{
+						menu.next_page = MenuPage_Main;
+						menu.next_select = 5; //Host Server
+						Trans_Start();
+					}
+				}
+				else
+				{
+					//Stop typing when start is pressed
+					if (pad_state.press & PAD_START)
+					{
+						switch (menu.select)
+						{
+							case 0: //Port
+							case 1: //Pass
+								menu.page_state.net_host.type = false;
+								break;
+						}
+					}
+				}
+			}
+			
+			//Draw page label
+			menu.font_bold.draw(&menu.font_bold,
+				"HOST SERVER",
+				16,
+				SCREEN_HEIGHT - 32,
+				FontAlign_Left
+			);
+			
+			//Draw options
+			MenuStr_Process(&menu.page_state.net_host.port, 64 + 3 * 0, 64 + 16 * 0, "Port: %s", menu.select == 0, menu.page_state.net_host.type);
+			MenuStr_Process(&menu.page_state.net_host.pass, 64 + 3 * 1, 64 + 16 * 1, "Pass: %s", menu.select == 1, menu.page_state.net_host.type);
+			menu.font_bold.draw(&menu.font_bold, Menu_LowerIf("HOST", menu.select != 2), 64 + 3 * 2, 64 + 16 * 2, FontAlign_Left);
+			
+			//Draw background
+			Menu_DrawBack(
+				true,
+				8,
+				146 >> 1, 113 >> 1, 253 >> 1,
+				0, 0, 0
+			);
+			break;
+		}
+		case MenuPage_NetJoin:
+		{
+			const size_t menu_options = 4;
+			
+			//Initialize page
+			if (menu.page_swap)
+			{
+				menu.page_state.net_join.type = false;
+				menu.page_state.net_join.ip[0] = '\0';
+				menu.page_state.net_join.port[0] = '\0';
+				menu.page_state.net_join.pass[0] = '\0';
+			}
+			
+			//Handle option and selection
+			if (menu.next_page == menu.page && Trans_Idle())
+			{
+				if (!menu.page_state.net_join.type)
+				{
+					//Change option
+					if (pad_state.press & PAD_UP)
+					{
+						if (menu.select > 0)
+							menu.select--;
+						else
+							menu.select = menu_options - 1;
+					}
+					if (pad_state.press & PAD_DOWN)
+					{
+						if (menu.select < menu_options - 1)
+							menu.select++;
+						else
+							menu.select = 0;
+					}
+					
+					//Handle selection when cross is pressed
+					if (pad_state.press & (PAD_START | PAD_CROSS))
+					{
+						switch (menu.select)
+						{
+							case 0: //Ip
+							case 1: //Port
+							case 2: //Pass
+								menu.page_state.net_join.type = true;
+								break;
+							case 3: //Join
+								if (!Network_Join(menu.page_state.net_join.ip, menu.page_state.net_join.port, menu.page_state.net_join.pass))
+								{
+									menu.next_page = MenuPage_NetConnect;
+									menu.next_select = 0;
+									Trans_Start();
+								}
+								break;
+						}
+					}
+					
+					//Return to main menu if circle is pressed
+					if (pad_state.press & PAD_CIRCLE)
+					{
+						menu.next_page = MenuPage_Main;
+						menu.next_select = 4; //Join Server
+						Trans_Start();
+					}
+				}
+				else
+				{
+					//Stop typing when start is pressed
+					if (pad_state.press & PAD_START)
+					{
+						switch (menu.select)
+						{
+							case 0: //Join
+							case 1: //Port
+							case 2: //Pass
+								menu.page_state.net_join.type = false;
+								break;
+						}
+					}
+				}
+			}
+			
+			//Draw page label
+			menu.font_bold.draw(&menu.font_bold,
+				"JOIN SERVER",
+				16,
+				SCREEN_HEIGHT - 32,
+				FontAlign_Left
+			);
+			
+			//Draw options
+			MenuStr_Process(&menu.page_state.net_join.ip, 64 + 3 * 0, 64 + 16 * 0, "Address: %s", menu.select == 0, menu.page_state.net_join.type);
+			MenuStr_Process(&menu.page_state.net_join.port, 64 + 3 * 1, 64 + 16 * 1, "Port: %s", menu.select == 1, menu.page_state.net_join.type);
+			MenuStr_Process(&menu.page_state.net_join.pass, 64 + 3 * 2, 64 + 16 * 2, "Pass: %s", menu.select == 2, menu.page_state.net_join.type);
+			menu.font_bold.draw(&menu.font_bold, Menu_LowerIf("JOIN", menu.select != 3), 64 + 3 * 3, 64 + 16 * 3, FontAlign_Left);
+			
+			//Draw background
+			Menu_DrawBack(
+				true,
+				8,
+				146 >> 1, 113 >> 1, 253 >> 1,
+				0, 0, 0
+			);
+			break;
+		}
+		case MenuPage_NetConnect:
+		{
+			//Change state according to network state
+			if (menu.next_page == menu.page && Trans_Idle())
+			{
+				if (!Network_Connected())
+				{
+					//Disconnected
+					menu.next_page = MenuPage_NetFail;
+					menu.next_select = 0;
+					Trans_Start();
+				}
+				else if (Network_Allowed())
+				{
+					//Allowed to join
+					menu.next_page = MenuPage_NetLobby;
+					menu.next_select = 0;
+					Trans_Start();
+				}
+			}
+			
+			//Draw page label
+			menu.font_bold.draw(&menu.font_bold,
+				"CONNECTING",
+				SCREEN_WIDTH2,
+				SCREEN_HEIGHT2 - 8,
+				FontAlign_Center
+			);
+			
+			//Draw background
+			Menu_DrawBack(
+				true,
+				8,
+				113 >> 1, 146 >> 1, 253 >> 1,
+				0, 0, 0
+			);
+			break;
+		}
+		case MenuPage_NetOpWait:
+		{
+			//Change state according to network state
+			if (menu.next_page == menu.page && Trans_Idle())
+			{
+				if (!Network_Connected())
+				{
+					//Disconnected
+					menu.next_page = MenuPage_NetFail;
+					menu.next_select = 0;
+					Trans_Start();
+				}
+				else if (Network_HasPeer())
+				{
+					//Peer has joined
+					menu.next_page = MenuPage_NetOp;
+					menu.next_select = 0;
+					Trans_Start();
+				}
+			}
+			
+			//Draw page label
+			menu.font_bold.draw(&menu.font_bold,
+				"WAITING FOR PEER",
+				SCREEN_WIDTH2,
+				SCREEN_HEIGHT2 - 8,
+				FontAlign_Center
+			);
+			
+			//Draw background
+			Menu_DrawBack(
+				true,
+				8,
+				113 >> 1, 146 >> 1, 253 >> 1,
+				0, 0, 0
+			);
+			break;
+		}
+		case MenuPage_NetOp:
+		{
+			static const struct
+			{
+				boolean diff;
+				StageId stage;
+				const char *text;
+			} menu_options[] = {
+				//{StageId_4_4, "TEST"},
+				{true,  StageId_1_4, "TUTORIAL"},
+				{true,  StageId_1_1, "BOPEEBO"},
+				{true,  StageId_1_2, "FRESH"},
+				{true,  StageId_1_3, "DADBATTLE"},
+				{true,  StageId_2_1, "SPOOKEEZ"},
+				{true,  StageId_2_2, "SOUTH"},
+				{true,  StageId_2_3, "MONSTER"},
+				{true,  StageId_3_1, "PICO"},
+				{true,  StageId_3_2, "PHILLY NICE"},
+				{true,  StageId_3_3, "BLAMMED"},
+				{true,  StageId_4_1, "SATIN PANTIES"},
+				{true,  StageId_4_2, "HIGH"},
+				{true,  StageId_4_3, "MILF"},
+				{true,  StageId_5_1, "COCOA"},
+				{true,  StageId_5_2, "EGGNOG"},
+				{true,  StageId_5_3, "WINTER HORRORLAND"},
+				{true,  StageId_6_1, "SENPAI"},
+				{true,  StageId_6_2, "ROSES"},
+				{true,  StageId_6_3, "THORNS"},
+				{true,  StageId_7_1, "UGH"},
+				{true,  StageId_7_2, "GUNS"},
+				{true,  StageId_7_3, "STRESS"},
+				{false, StageId_Kapi_1, "WOCKY"},
+				{false, StageId_Kapi_2, "BEATHOVEN"},
+				{false, StageId_Kapi_3, "HAIRBALL"},
+				{false, StageId_Kapi_4, "NYAW"},
+				{true,  StageId_Clwn_1, "IMPROBABLE OUTSET"},
+				{true,  StageId_Clwn_2, "MADNESS"},
+				{true,  StageId_Clwn_3, "HELLCLOWN"},
+				{false, StageId_Clwn_4, "EXPURGATION"},
+				{false, StageId_2_4, "CLUCKED"},
+			};
+			
+			//Initialize page
+			if (menu.page_swap)
+			{
+				menu.scroll = COUNT_OF(menu_options) * FIXED_DEC(24 + SCREEN_HEIGHT2,1);
+				menu.page_param.stage.diff = StageDiff_Normal;
+				menu.page_state.net_op.swap = false;
+			}
+			
+			//Handle option and selection
+			if (menu.next_page == menu.page && Trans_Idle())
+			{
+				//Check network state
+				if (!Network_Connected())
+				{
+					//Disconnected
+					menu.next_page = MenuPage_NetFail;
+					menu.next_select = 0;
+					Trans_Start();
+				}
+				else if (!Network_HasPeer())
+				{
+					//Peer disconnected
+					menu.next_page = MenuPage_NetOpWait;
+					menu.next_select = 0;
+					Trans_Start();
+				}
+				
+				//Change option
+				if (pad_state.press & PAD_UP)
+				{
+					if (menu.select > 0)
+						menu.select--;
+					else
+						menu.select = COUNT_OF(menu_options) - 1;
+				}
+				if (pad_state.press & PAD_DOWN)
+				{
+					if (menu.select < COUNT_OF(menu_options) - 1)
+						menu.select++;
+					else
+						menu.select = 0;
+				}
+				
+				//Select option if cross is pressed
+				if (pad_state.press & (PAD_START | PAD_CROSS))
+				{
+					//Load stage
+					stage.mode = menu.page_state.net_op.swap ? StageMode_Net2 : StageMode_Net1;
+					menu.next_page = MenuPage_Stage;
+					menu.page_param.stage.id = menu_options[menu.select].stage;
+					if (!menu_options[menu.select].diff)
+						menu.page_param.stage.diff = StageDiff_Hard;
+					menu.page_param.stage.story = false;
+					Trans_Start();
+					
+					//Send ready packet to peer
+					Packet ready;
+					ready[0] = PacketType_Ready;
+					ready[1] = menu.page_param.stage.id;
+					ready[2] = menu.page_param.stage.diff;
+					ready[3] = menu.page_state.net_op.swap == 0;
+					Network_Send(&ready);
+				}
+				
+				//Swap characters if triangle is pressed
+				if (pad_state.press & PAD_TRIANGLE)
+					menu.page_state.net_op.swap ^= true;
+			}
+			
+			//Draw op controls
+			const char *control_txt;
+			
+			control_txt = menu.page_state.net_op.swap ? "You will be Player 2. Press Triangle to swap." : "You will be Player 1. Press Triangle to swap.";
+			menu.font_arial.draw_col(&menu.font_arial, control_txt, 24, SCREEN_HEIGHT - 24 - 12, FontAlign_Left, 0x80, 0x80, 0x80);
+			menu.font_arial.draw_col(&menu.font_arial, control_txt, 24 + 1, SCREEN_HEIGHT - 24 - 12 + 1, FontAlign_Left, 0x00, 0x00, 0x00);
+			
+			//Draw difficulty selector
+			if (menu_options[menu.select].diff)
+				Menu_DifficultySelector(SCREEN_WIDTH - 100, SCREEN_HEIGHT2 - 48);
+			
+			//Draw options
+			s32 next_scroll = menu.select * FIXED_DEC(24,1);
+			menu.scroll += (next_scroll - menu.scroll) >> 4;
+			
+			for (u8 i = 0; i < COUNT_OF(menu_options); i++)
+			{
+				//Get position on screen
+				s32 y = (i * 24) - 8 - (menu.scroll >> FIXED_SHIFT);
+				if (y <= -SCREEN_HEIGHT2 - 8)
+					continue;
+				if (y >= SCREEN_HEIGHT2 + 8)
+					break;
+				
+				//Draw text
+				menu.font_bold.draw(&menu.font_bold,
+					Menu_LowerIf(menu_options[i].text, menu.select != i),
+					48 + (y >> 2),
+					SCREEN_HEIGHT2 + y - 8,
+					FontAlign_Left
+				);
+			}
+			
+			//Draw background
+			Menu_DrawBack(
+				true,
+				8,
+				113 >> 1, 253 >> 1, 146 >> 1,
+				0, 0, 0
+			);
+			break;
+		}
+		case MenuPage_NetLobby:
+		{
+			//Check network state
+			if (menu.next_page == menu.page && Trans_Idle())
+			{
+				if (!Network_Connected())
+				{
+					//Disconnected
+					menu.next_page = MenuPage_NetFail;
+					menu.next_select = 0;
+					Trans_Start();
+				}
+			}
+			
+			//Draw page label
+			menu.font_bold.draw(&menu.font_bold,
+				"WAITING FOR HOST",
+				SCREEN_WIDTH2,
+				SCREEN_HEIGHT2 - 8,
+				FontAlign_Center
+			);
+			
+			//Draw background
+			Menu_DrawBack(
+				true,
+				8,
+				253 >> 1, 146 >> 1, 113 >> 1,
+				0, 0, 0
+			);
+			break;
+		}
+		case MenuPage_NetFail:
+		{
+			//Return to main menu if circle or start is pressed
+			if (menu.next_page == menu.page && Trans_Idle())
+			{
+				if (pad_state.press & (PAD_CIRCLE | PAD_START))
+				{
+					menu.next_page = MenuPage_Main;
+					menu.next_select = 0;
+					Trans_Start();
+				}
+			}
+			
+			//Draw page label
+			menu.font_bold.draw(&menu.font_bold,
+				"DISCONNECTED",
+				SCREEN_WIDTH2,
+				SCREEN_HEIGHT2 - 8,
+				FontAlign_Center
+			);
+			
+			//Draw background
+			Menu_DrawBack(
+				true,
+				8,
+				253 >> 1, 30 >> 1, 15 >> 1,
+				0, 0, 0
+			);
+			break;
+		}
+		case MenuPage_NetInitFail:
+		{
+			//Return to main menu if circle or start is pressed
+			if (menu.next_page == menu.page && Trans_Idle())
+			{
+				if (pad_state.press & (PAD_CIRCLE | PAD_START))
+				{
+					menu.next_page = MenuPage_Main;
+					menu.next_select = 0;
+					Trans_Start();
+				}
+			}
+			
+			//Draw page label
+			menu.font_bold.draw(&menu.font_bold,
+				"WSA INIT FAILED",
+				SCREEN_WIDTH2,
+				SCREEN_HEIGHT2 - 8,
+				FontAlign_Center
+			);
+			
+			//Draw background
+			Menu_DrawBack(
+				true,
+				8,
+				253 >> 1, 30 >> 1, 15 >> 1,
+				0, 0, 0
+			);
+			break;
+		}
+	#endif
 		case MenuPage_Stage:
 		{
 			//Unload menu state

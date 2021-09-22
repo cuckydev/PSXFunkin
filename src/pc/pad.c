@@ -15,6 +15,26 @@ extern GLFWwindow *window;
 //Pad state
 Pad pad_state, pad_state_2;
 
+#ifdef PSXF_NETWORK
+
+//Stupid type code
+char pad_type[PAD_TYPE_CHARS + 1];
+boolean pad_backspace, pad_backspace_held;
+
+static char pad_type_internal[PAD_TYPE_CHARS + 1];
+void Pad_TypeCallback(GLFWwindow *proc_window, unsigned int code)
+{
+	if (proc_window != window || (code & ~0x7F) || !(code & 0x60))
+		return;
+	size_t i = strlen(pad_type_internal);
+	if (i == PAD_TYPE_CHARS)
+		return;
+	pad_type_internal[i] = code;
+	pad_type_internal[i+1] = '\0';
+}
+
+#endif
+
 //Pad functions
 void Pad_Init(void)
 {
@@ -24,6 +44,13 @@ void Pad_Init(void)
 	
 	pad_state_2.held = pad_state_2.press = 0;
 	pad_state_2.left_x = pad_state_2.left_y = pad_state_2.right_x = pad_state_2.right_y = 0;
+	
+	#ifdef PSXF_NETWORK
+		//Set up typing
+		pad_type[0] = pad_type_internal[0] = '\0';
+		glfwSetCharCallback(window, Pad_TypeCallback);
+		pad_backspace = pad_backspace_held = 0;
+	#endif
 }
 
 void Pad_Quit(void)
@@ -74,4 +101,14 @@ void Pad_Update(void)
 	//Update pad state 2
 	pad_state_2.press = next_held & ~pad_state_2.held;
 	pad_state_2.held = next_held;
+	
+	#ifdef PSXF_NETWORK
+		//Update type state
+		strcpy(pad_type, pad_type_internal);
+		pad_type_internal[0] = '\0';
+		
+		boolean backspace_held = glfwGetKey(window, GLFW_KEY_BACKSPACE) == GLFW_PRESS;
+		pad_backspace = backspace_held & ~pad_backspace_held;
+		pad_backspace_held = backspace_held;
+	#endif
 }

@@ -16,6 +16,8 @@
 #include "player.h"
 #include "object.h"
 
+#include "network.h"
+
 //Stage constants
 #define INPUT_LEFT  (PAD_LEFT  | PAD_SQUARE)
 #define INPUT_DOWN  (PAD_DOWN  | PAD_CROSS)
@@ -95,7 +97,8 @@ typedef enum
 	StageMode_Normal,
 	StageMode_Swap,
 	StageMode_2P,
-	StageMode_Max,
+	StageMode_Net1,
+	StageMode_Net2,
 } StageMode;
 
 typedef enum
@@ -103,6 +106,7 @@ typedef enum
 	StageTrans_Menu,
 	StageTrans_NextSong,
 	StageTrans_Reload,
+	StageTrans_Disconnect,
 } StageTrans;
 
 //Stage background
@@ -196,6 +200,7 @@ typedef struct
 	IO_Data chart_data;
 	Section *sections;
 	Note *notes;
+	size_t num_notes;
 	
 	fixed_t speed;
 	fixed_t step_crochet, step_time;
@@ -265,5 +270,10 @@ void Stage_DrawTexArb(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, cons
 void Stage_Load(StageId id, StageDiff difficulty, boolean story);
 void Stage_Unload();
 void Stage_Tick();
+
+#ifdef PSXF_NETWORK
+void Stage_NetHit(Packet *packet);
+void Stage_NetMiss(Packet *packet);
+#endif
 
 #endif

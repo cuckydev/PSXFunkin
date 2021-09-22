@@ -37,6 +37,12 @@ typedef struct
 
 extern Pad pad_state, pad_state_2;
 
+#ifdef PSXF_NETWORK
+	#define PAD_TYPE_CHARS 0x20
+	extern char pad_type[PAD_TYPE_CHARS + 1];
+	extern boolean pad_backspace;
+#endif
+
 //Pad functions
 void Pad_Init(void);
 void Pad_Quit(void);

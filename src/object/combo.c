@@ -238,23 +238,23 @@ Obj_Combo *Obj_Combo_New(fixed_t x, fixed_t y, u8 hit_type, u16 combo)
 	{
 		//Pixel combo
 		this->obj.tick = Obj_Combo_Tick_Weeb;
-		if (x >= 0)
+		if ((x >= 0) ^ (stage.mode < StageMode_2P))
 			this->x = FIXED_DEC(-70,1) - FIXED_DEC(SCREEN_WIDEADD,8);
 		else
 			this->x = FIXED_DEC(0,1) + FIXED_DEC(SCREEN_WIDEADD,8);
+		y = FIXED_DEC(44,1);
 	}
 	else
 	{
 		//Regular combo
 		this->obj.tick = Obj_Combo_Tick;
-		if (x >= 0)
+		if ((x >= 0) ^ (stage.mode < StageMode_2P))
 			this->x = FIXED_DEC(-112,1) - FIXED_DEC(SCREEN_WIDEADD,4);
 		else
 			this->x = FIXED_DEC(30,1) + FIXED_DEC(SCREEN_WIDEADD,4);
+		y = FIXED_DEC(73,1);
 	}
 	this->obj.free = Obj_Combo_Free;
-	
-	y = FIXED_DEC(12,1);
 	
 	//Setup hit type
 	if ((this->hit_type = hit_type) != 0xFF)

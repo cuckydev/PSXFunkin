@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.16.3)
 
 option(PSXF_STDMEM "Use standard libc memory allocators instead of the fast custom one" OFF)
 set(PSXF_GL "MODERN" CACHE STRING "Which version of OpenGL to use: 'MODERN' for OpenGL Core 3.2, 'LEGACY' for OpenGL 2.1, and 'ES' for OpenGL ES 2.0")
+option(PSXF_NETWORK "Enable networking" OFF)
 
 project(funkin LANGUAGES C)
 
@@ -127,6 +128,15 @@ target_compile_definitions(funkin PRIVATE PSXF_PC)
 # Use standard memory allocators if requested to
 if(PSXF_STDMEM)
 	target_compile_definitions(funkin PRIVATE PSXF_STDMEM)
+endif()
+
+# Use networking if requested to
+if(PSXF_NETWORK)
+	target_compile_definitions(funkin PRIVATE PSXF_NETWORK)
+	target_sources(funkin PRIVATE
+		"src/pc/network.c"
+		"src/network.h"
+	)
 endif()
 
 # Link GLFW3
