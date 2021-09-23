@@ -370,9 +370,6 @@ void Menu_Tick(void)
 		menu.select = menu.next_select;
 	}
 	
-	sprintf(error_msg, "%d %d %d %d %d", Network_Inited(), Network_Connected(), Network_Allowed(), Network_IsHost(), Network_HasPeer());
-	menu.font_arial.draw(&menu.font_arial, error_msg, 8, 8, FontAlign_Left);
-	
 	//Tick menu page
 	MenuPage exec_page;
 	switch (exec_page = menu.page)
