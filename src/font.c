@@ -83,10 +83,10 @@ void Font_Arial_DrawCol(struct FontData *this, const char *text, s32 x, s32 y, F
 		case FontAlign_Left:
 			break;
 		case FontAlign_Center:
-			x -= Font_Bold_GetWidth(this, text) >> 1;
+			x -= Font_Arial_GetWidth(this, text) >> 1;
 			break;
 		case FontAlign_Right:
-			x -= Font_Bold_GetWidth(this, text);
+			x -= Font_Arial_GetWidth(this, text);
 			break;
 	}
 	

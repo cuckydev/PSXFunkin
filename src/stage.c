@@ -1220,6 +1220,19 @@ void Stage_Load(StageId id, StageDiff difficulty, boolean story)
 	#else
 		stage.offset = 0;
 	#endif
+	
+	#ifdef PSXF_NETWORK
+	if (Network_IsHost() && stage.mode >= StageMode_Net1)
+	{
+		//Send ready packet to peer
+		Packet ready;
+		ready[0] = PacketType_Ready;
+		ready[1] = id;
+		ready[2] = difficulty;
+		ready[3] = (stage.mode == StageMode_Net1) ? 1 : 0;
+		Network_Send(&ready);
+	}
+	#endif
 }
 
 void Stage_Unload(void)
@@ -1432,7 +1445,7 @@ void Stage_Tick(void)
 					Packet ready;
 					ready[0] = PacketType_Ready;
 					Network_Send(&ready);
-					Network_SetReady();
+					Network_SetReady(true);
 				}
 				next_scroll = stage.note_scroll;
 			}

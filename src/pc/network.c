@@ -307,6 +307,7 @@ void Network_Process(void)
 							//Load requested stage
 							if (packet[1] < StageId_Max)
 							{
+								is_ready = false;
 								stage.mode = packet[3] ? StageMode_Net2 : StageMode_Net1;
 								Menu_ToStage(packet[1], packet[2], false);
 							}
@@ -388,7 +389,7 @@ boolean Network_IsReady(void)
 	return is_ready;
 }
 
-void Network_SetReady(void)
+void Network_SetReady(boolean ready)
 {
-	is_ready = true;
+	is_ready = ready;
 }

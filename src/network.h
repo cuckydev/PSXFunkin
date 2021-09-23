@@ -67,7 +67,7 @@ boolean Network_Allowed(void);
 boolean Network_IsHost(void);
 boolean Network_HasPeer(void);
 boolean Network_IsReady(void);
-void Network_SetReady(void);
+void Network_SetReady(boolean ready);
 
 #else
 	#define Network_Init()

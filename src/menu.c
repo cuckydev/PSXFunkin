@@ -1513,6 +1513,7 @@ void Menu_Tick(void)
 				if (pad_state.press & (PAD_START | PAD_CROSS))
 				{
 					//Load stage
+					Network_SetReady(false);
 					stage.mode = menu.page_state.net_op.swap ? StageMode_Net2 : StageMode_Net1;
 					menu.next_page = MenuPage_Stage;
 					menu.page_param.stage.id = menu_options[menu.select].stage;
@@ -1520,14 +1521,6 @@ void Menu_Tick(void)
 						menu.page_param.stage.diff = StageDiff_Hard;
 					menu.page_param.stage.story = false;
 					Trans_Start();
-					
-					//Send ready packet to peer
-					Packet ready;
-					ready[0] = PacketType_Ready;
-					ready[1] = menu.page_param.stage.id;
-					ready[2] = menu.page_param.stage.diff;
-					ready[3] = menu.page_state.net_op.swap == 0;
-					Network_Send(&ready);
 				}
 				
 				//Swap characters if triangle is pressed
