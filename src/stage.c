@@ -203,11 +203,11 @@ static void Stage_GetSectionScroll(SectionScroll *scroll, Section *section)
 }
 
 //Note hit detection
-static const CharAnim note_anims[4][2] = {
-	{CharAnim_Left,  CharAnim_LeftAlt},
-	{CharAnim_Down,  CharAnim_DownAlt},
-	{CharAnim_Up,    CharAnim_UpAlt},
-	{CharAnim_Right, CharAnim_RightAlt},
+static const CharAnim note_anims[4][3] = {
+	{CharAnim_Left,  CharAnim_LeftAlt,  PlayerAnim_LeftMiss},
+	{CharAnim_Down,  CharAnim_DownAlt,  PlayerAnim_DownMiss},
+	{CharAnim_Up,    CharAnim_UpAlt,    PlayerAnim_UpMiss},
+	{CharAnim_Right, CharAnim_RightAlt, PlayerAnim_RightMiss},
 };
 
 static u8 Stage_HitNote(PlayerState *this, u8 type, fixed_t offset)
@@ -338,6 +338,8 @@ static void Stage_NoteCheck(PlayerState *this, u8 type)
 					
 					Network_Send(&note_hit);
 				}
+			#else
+				(void)hit_type;
 			#endif
 			return;
 		}
@@ -360,7 +362,7 @@ static void Stage_NoteCheck(PlayerState *this, u8 type)
 			else
 				this->health -= 2000;
 			if (this->character->spec & CHAR_SPEC_MISSANIM)
-				this->character->set_anim(this->character, note_anims[type & 0x3][1]);
+				this->character->set_anim(this->character, note_anims[type & 0x3][2]);
 			else
 				this->character->set_anim(this->character, note_anims[type & 0x3][0]);
 			this->arrow_hitan[type & 0x3] = -1;
@@ -401,7 +403,7 @@ static void Stage_NoteCheck(PlayerState *this, u8 type)
 	if (!stage.ghost)
 	{
 		if (this->character->spec & CHAR_SPEC_MISSANIM)
-			this->character->set_anim(this->character, note_anims[type & 0x3][1]);
+			this->character->set_anim(this->character, note_anims[type & 0x3][2]);
 		else
 			this->character->set_anim(this->character, note_anims[type & 0x3][0]);
 		Stage_MissNote(this);
@@ -1407,8 +1409,8 @@ void Stage_Tick(void)
 				Stage_Load(stage.stage_id, stage.stage_diff, stage.story);
 				LoadScr_End();
 				break;
-		#ifdef PSXF_NETWORK
 			case StageTrans_Disconnect:
+		#ifdef PSXF_NETWORK
 				//Disconnect screen
 				Stage_Unload();
 				
@@ -1420,8 +1422,8 @@ void Stage_Tick(void)
 				LoadScr_End();
 				
 				gameloop = GameLoop_Menu;
-				return;
 		#endif
+				return;
 		}
 	}
 	
@@ -1713,6 +1715,7 @@ void Stage_Tick(void)
 						sprintf(this->score_text, "%d0", this->score * stage.max_score / this->max_score);
 					else
 						strcpy(this->score_text, "0");
+					this->refresh_score = false;
 				}
 				
 				//Display score
@@ -1999,7 +2002,7 @@ void Stage_NetHit(Packet *packet)
 		//Hit a mine
 		this->arrow_hitan[type & 0x3] = -1;
 		if (this->character->spec & CHAR_SPEC_MISSANIM)
-			this->character->set_anim(this->character, note_anims[type & 0x3][1]);
+			this->character->set_anim(this->character, note_anims[type & 0x3][2]);
 		else
 			this->character->set_anim(this->character, note_anims[type & 0x3][0]);
 	}
@@ -2026,7 +2029,7 @@ void Stage_NetMiss(Packet *packet)
 	{
 		this->arrow_hitan[type] = -1;
 		if (this->character->spec & CHAR_SPEC_MISSANIM)
-			this->character->set_anim(this->character, note_anims[type][1]);
+			this->character->set_anim(this->character, note_anims[type][2]);
 		else
 			this->character->set_anim(this->character, note_anims[type][0]);
 	}

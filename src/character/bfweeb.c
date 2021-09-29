@@ -95,13 +95,19 @@ static const CharFrame char_bfweeb_frame[] = {
 static const Animation char_bfweeb_anim[PlayerAnim_Max] = {
 	{2, (const u8[]){ 0,  1,  2,  3, 4, ASCR_BACK, 1}}, //CharAnim_Idle
 	{2, (const u8[]){ 5,  6, ASCR_BACK, 1}},            //CharAnim_Left
-	{2, (const u8[]){ 5,  6, ASCR_BACK, 1}},            //CharAnim_LeftAlt
+	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},      //CharAnim_LeftAlt
 	{2, (const u8[]){ 7,  8, ASCR_BACK, 1}},            //CharAnim_Down
-	{2, (const u8[]){ 5,  6, ASCR_BACK, 1}},            //CharAnim_DownAlt
+	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},      //CharAnim_DownAlt
 	{2, (const u8[]){ 9, 10, ASCR_BACK, 1}},            //CharAnim_Up
-	{2, (const u8[]){ 5,  6, ASCR_BACK, 1}},            //CharAnim_UpAlt
+	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},      //CharAnim_UpAlt
 	{2, (const u8[]){11, 12, ASCR_BACK, 1}},            //CharAnim_Right
-	{2, (const u8[]){ 5,  6, ASCR_BACK, 1}},            //CharAnim_RightAlt
+	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},      //CharAnim_RightAlt
+	
+	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},      //PlayerAnim_LeftMiss
+	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},      //PlayerAnim_DownMiss
+	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},      //PlayerAnim_UpMiss
+	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},      //PlayerAnim_RightMiss
+	
 	{2, (const u8[]){20, 21, 22, ASCR_BACK, 1}},        //PlayerAnim_Peace
 	{2, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},      //PlayerAnim_Sweat
 	
@@ -326,7 +332,7 @@ Character *Char_BFWeeb_New(fixed_t x, fixed_t y)
 	Character_Init((Character*)this, x, y);
 	
 	//Set character information
-	this->character.spec = CHAR_SPEC_MISSANIM;
+	this->character.spec = 0; //CHAR_SPEC_MISSANIM;
 	
 	this->character.health_i = 7;
 	

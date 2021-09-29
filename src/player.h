@@ -12,7 +12,12 @@
 //Player enums
 typedef enum
 {
-	PlayerAnim_Peace = CharAnim_Max,
+	PlayerAnim_LeftMiss = CharAnim_Max,
+	PlayerAnim_DownMiss,
+	PlayerAnim_UpMiss,
+	PlayerAnim_RightMiss,
+	
+	PlayerAnim_Peace,
 	PlayerAnim_Sweat,
 	
 	PlayerAnim_Dead0, //BREAK

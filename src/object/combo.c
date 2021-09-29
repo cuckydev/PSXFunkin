@@ -112,7 +112,7 @@ boolean Obj_Combo_Tick(Object *obj)
 	//Increment number timer
 	this->numt += timer_dt;
 	
-	return this->numt >= FIXED_DEC(16,60) && this->ht >= FIXED_DEC(16,60) && this->ct >= FIXED_DEC(16,60);
+	return (this->numt >= FIXED_DEC(16,60)) && (this->ht >= FIXED_DEC(16,60)) && (this->ct >= FIXED_DEC(16,60));
 }
 
 boolean Obj_Combo_Tick_Weeb(Object *obj)
@@ -216,7 +216,7 @@ boolean Obj_Combo_Tick_Weeb(Object *obj)
 	//Increment number timer
 	this->numt += timer_dt;
 	
-	return this->numt >= FIXED_DEC(16,60) && this->ht >= FIXED_DEC(16,60) && this->ct >= FIXED_DEC(16,60);
+	return (this->numt >= FIXED_DEC(16,60)) && (this->ht >= FIXED_DEC(16,60)) && (this->ct >= FIXED_DEC(16,60));
 }
 
 void Obj_Combo_Free(Object *obj)
