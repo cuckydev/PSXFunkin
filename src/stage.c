@@ -41,7 +41,14 @@ static const fixed_t note_x[8] = {
 	 FIXED_DEC(-26,1) - FIXED_DEC(SCREEN_WIDEADD,4),
 };
 static const fixed_t note_y = FIXED_DEC(32 - SCREEN_HEIGHT2, 1);
+
 static const u16 note_key[] = {INPUT_LEFT, INPUT_DOWN, INPUT_UP, INPUT_RIGHT};
+static const u8 note_anims[4][3] = {
+	{CharAnim_Left,  CharAnim_LeftAlt,  PlayerAnim_LeftMiss},
+	{CharAnim_Down,  CharAnim_DownAlt,  PlayerAnim_DownMiss},
+	{CharAnim_Up,    CharAnim_UpAlt,    PlayerAnim_UpMiss},
+	{CharAnim_Right, CharAnim_RightAlt, PlayerAnim_RightMiss},
+};
 
 //Stage definitions
 #include "character/bf.h"
@@ -203,13 +210,6 @@ static void Stage_GetSectionScroll(SectionScroll *scroll, Section *section)
 }
 
 //Note hit detection
-static const CharAnim note_anims[4][3] = {
-	{CharAnim_Left,  CharAnim_LeftAlt,  PlayerAnim_LeftMiss},
-	{CharAnim_Down,  CharAnim_DownAlt,  PlayerAnim_DownMiss},
-	{CharAnim_Up,    CharAnim_UpAlt,    PlayerAnim_UpMiss},
-	{CharAnim_Right, CharAnim_RightAlt, PlayerAnim_RightMiss},
-};
-
 static u8 Stage_HitNote(PlayerState *this, u8 type, fixed_t offset)
 {
 	//Get hit type
@@ -591,20 +591,35 @@ void Stage_DrawTexCol(Gfx_Tex *tex, const RECT *src, const RECT_FIXED *dst, fixe
 	fixed_t wz = dst->w;
 	fixed_t hz = dst->h;
 	
-	if (tex == &stage.tex_hud0 || tex == &stage.tex_hud1)
+	if (stage.stage_id >= StageId_6_1 && stage.stage_id <= StageId_6_3)
 	{
-		//Don't draw if HUD and HUD is disabled
-		#ifdef STAGE_NOHUD
-			return;
-		#endif
-	}
-	else if (stage.stage_id >= StageId_6_1 && stage.stage_id <= StageId_6_3)
-	{
+		//Handle HUD drawing
+		if (tex == &stage.tex_hud0 || tex == &stage.tex_hud1)
+		{
+			#ifdef STAGE_NOHUD
+				return;
+			#endif
+			#ifndef PSXF_PC
+				xz += FIXED_UNIT;
+				yz += FIXED_UNIT;
+			#endif
+		}
+		
 		//Pixel perfect scrolling in Week 6
 		xz &= FIXED_UAND;
 		yz &= FIXED_UAND;
 		wz &= FIXED_UAND;
 		hz &= FIXED_UAND;
+	}
+	else
+	{
+		//Don't draw if HUD and is disabled
+		if (tex == &stage.tex_hud0 || tex == &stage.tex_hud1)
+		{
+			#ifdef STAGE_NOHUD
+				return;
+			#endif
+		}
 	}
 	
 	fixed_t l = (SCREEN_WIDTH2  << FIXED_SHIFT) + FIXED_MUL(xz, zoom);// + FIXED_DEC(1,2);
@@ -681,6 +696,8 @@ static void Stage_DrawHealth(s16 health, u8 i, s8 ox)
 
 static void Stage_DrawStrum(u8 i, RECT *note_src, RECT_FIXED *note_dst)
 {
+	(void)note_dst;
+	
 	PlayerState *this = &stage.player_state[(i & NOTE_FLAG_OPPONENT) != 0];
 	i &= 0x3;
 	
@@ -1591,7 +1608,8 @@ void Stage_Tick(void)
 			}
 			
 			//Handle bump
-			stage.bump = FIXED_UNIT + FIXED_MUL(stage.bump - FIXED_UNIT, FIXED_DEC(95,100));
+			if ((stage.bump = FIXED_UNIT + FIXED_MUL(stage.bump - FIXED_UNIT, FIXED_DEC(95,100))) <= FIXED_DEC(1003,1000))
+				stage.bump = FIXED_UNIT;
 			stage.sbump = FIXED_UNIT + FIXED_MUL(stage.sbump - FIXED_UNIT, FIXED_DEC(60,100));
 			
 			if (playing && (stage.flag & STAGE_FLAG_JUST_STEP))

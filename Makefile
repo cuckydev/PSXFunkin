@@ -45,7 +45,7 @@ SRCS = src/main.c \
        src/object/splash.c \
        mips/common/crt0/crt0.s
 
-CPPFLAGS += -Wall -mno-check-zero-division
+CPPFLAGS += -Wall -Wextra -pedantic -mno-check-zero-division
 LDFLAGS += -Wl,--start-group
 # TODO: remove unused libraries
 LDFLAGS += -lapi

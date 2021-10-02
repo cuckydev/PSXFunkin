@@ -21,6 +21,7 @@ typedef struct
 	Gfx_Tex tex_back2; //Lower bop
 	Gfx_Tex tex_back3; //Santa
 	Gfx_Tex tex_back4; //Upper bop
+	Gfx_Tex tex_back5; //Tree
 } Back_Week5;
 
 //Week 5 background functions
@@ -81,6 +82,20 @@ void Back_Week5_DrawBG(StageBack *back)
 		};
 		Stage_DrawTex(&this->tex_back2, &lbop_p->src, &lbop_dst, stage.camera.bzoom);
 	}
+	
+	//Draw tree
+	fx = stage.camera.x * 2 / 5;
+	fy = stage.camera.y * 2 / 5;
+	
+	RECT tree_src = {0, 0, 174, 210};
+	RECT_FIXED tree_dst = {
+		FIXED_DEC(-86,1) - fx,
+		FIXED_DEC(-150,1) - fy,
+		FIXED_DEC(174,1),
+		FIXED_DEC(210,1)
+	};
+	
+	Stage_DrawTex(&this->tex_back5, &tree_src, &tree_dst, stage.camera.bzoom);
 	
 	//Draw second floor
 	fx = stage.camera.x >> 2;
@@ -199,6 +214,7 @@ StageBack *Back_Week5_New()
 	Gfx_LoadTex(&this->tex_back2, Archive_Find(arc_back, "back2.tim"), 0);
 	Gfx_LoadTex(&this->tex_back3, Archive_Find(arc_back, "back3.tim"), 0);
 	Gfx_LoadTex(&this->tex_back4, Archive_Find(arc_back, "back4.tim"), 0);
+	Gfx_LoadTex(&this->tex_back5, Archive_Find(arc_back, "back5.tim"), 0);
 	Mem_Free(arc_back);
 	
 	return (StageBack*)this;

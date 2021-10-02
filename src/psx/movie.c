@@ -9,5 +9,6 @@
 //Movie interface
 void Movie_Play(const char *path, u32 length)
 {
-	
+	(void)path;
+	(void)length;
 }
