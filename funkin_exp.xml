@@ -1,0 +1,290 @@
+<iso_project image_name="funkin.bin" cue_sheet="funkin.cue">
+	<!-- Identifiers -->
+	<identifiers
+		system      = "PLAYSTATION"
+		application = "PLAYSTATION"
+		volume      = "PSXFUNKIN"
+		volume_set  = "PSXFUNKIN"
+		publisher   = "CUCKYDEV"
+		copyright   = "NINJAMUFFIN99"
+	/>
+	<license file = "licensea.dat"/>
+	
+	<!-- System -->
+	<file name = "system.cnf" type = "data" source = "iso/system.cnf"/>
+	<file name = "SCUS_000.00" type = "data" source = "funkin.ps-exe"/>
+
+	<!-- Menu assets -->
+	<dir name = "menu">
+		<file name = "loading.tim" type = "data" source = "iso/menu/loading.tim"/>
+		<file name = "menu.arc" type = "data" source = "iso/menu/menu.arc"/>
+	</dir>
+
+	<!-- Fonts -->
+	<dir name = "font">
+		<file name = "boldfont.tim" type = "data" source = "iso/font/boldfont.tim"/>
+		<file name = "arial.tim" type = "data" source = "iso/font/arial.tim"/>
+	</dir>
+
+	<!-- Stage assets -->
+	<dir name = "stage">
+		<file name = "hud0.tim" type = "data" source = "iso/stage/hud0.tim"/>
+		<file name = "hud1.tim" type = "data" source = "iso/stage/hud1.tim"/>
+		<file name = "hud0weeb.tim" type = "data" source = "iso/stage/hud0weeb.tim"/>
+	</dir>
+
+	<!-- Week 1 assets -->
+	<dir name = "week1">
+		<!-- Background art -->
+		<file name = "back.arc" type = "data" source = "iso/week1/back.arc"/>
+		
+		<!-- Bopeebo charts -->
+		<file name = "1.1e.cht" type = "data" source = "iso/chart/bopeebo-easy.json.cht"/>
+		<file name = "1.1n.cht" type = "data" source = "iso/chart/bopeebo.json.cht"/>
+		<file name = "1.1h.cht" type = "data" source = "iso/chart/bopeebo-hard.json.cht"/>
+		<!-- Fresh charts -->
+		<file name = "1.2e.cht" type = "data" source = "iso/chart/fresh-easy.json.cht"/>
+		<file name = "1.2n.cht" type = "data" source = "iso/chart/fresh.json.cht"/>
+		<file name = "1.2h.cht" type = "data" source = "iso/chart/fresh-hard.json.cht"/>
+		<!-- Dadbattle charts -->
+		<file name = "1.3e.cht" type = "data" source = "iso/chart/dadbattle-easy.json.cht"/>
+		<file name = "1.3n.cht" type = "data" source = "iso/chart/dadbattle.json.cht"/>
+		<file name = "1.3h.cht" type = "data" source = "iso/chart/dadbattle-hard.json.cht"/>
+		<!-- Tutorial charts -->
+		<file name = "1.4e.cht" type = "data" source = "iso/chart/tutorial-easy.json.cht"/>
+		<file name = "1.4n.cht" type = "data" source = "iso/chart/tutorial.json.cht"/>
+		<file name = "1.4h.cht" type = "data" source = "iso/chart/tutorial-hard.json.cht"/>
+	</dir>
+
+	<!-- Week 2 assets -->
+	<dir name = "week2">
+		<!-- Background art -->
+		<file name = "back.arc" type = "data" source = "iso/week2/back.arc"/>
+		
+		<!-- Spookeez charts -->
+		<file name = "2.1e.cht" type = "data" source = "iso/chart/spookeez-easy.json.cht"/>
+		<file name = "2.1n.cht" type = "data" source = "iso/chart/spookeez.json.cht"/>
+		<file name = "2.1h.cht" type = "data" source = "iso/chart/spookeez-hard.json.cht"/>
+		<!-- South charts -->
+		<file name = "2.2e.cht" type = "data" source = "iso/chart/south-easy.json.cht"/>
+		<file name = "2.2n.cht" type = "data" source = "iso/chart/south.json.cht"/>
+		<file name = "2.2h.cht" type = "data" source = "iso/chart/south-hard.json.cht"/>
+		<!-- Monster charts -->
+		<file name = "2.3e.cht" type = "data" source = "iso/chart/monster-easy.json.cht"/>
+		<file name = "2.3n.cht" type = "data" source = "iso/chart/monster.json.cht"/>
+		<file name = "2.3h.cht" type = "data" source = "iso/chart/monster-hard.json.cht"/>
+		<!-- Clucked charts -->
+		<file name = "2.4h.cht" type = "data" source = "iso/chart/clucked-hard.json.cht"/>
+	</dir>
+
+	<!-- Week 3 assets -->
+	<dir name = "week3">
+		<!-- Background art -->
+		<file name = "back.arc" type = "data" source = "iso/week3/back.arc"/>
+		
+		<!-- Pico charts -->
+		<file name = "3.1e.cht" type = "data" source = "iso/chart/pico-easy.json.cht"/>
+		<file name = "3.1n.cht" type = "data" source = "iso/chart/pico.json.cht"/>
+		<file name = "3.1h.cht" type = "data" source = "iso/chart/pico-hard.json.cht"/>
+		<!-- Philly charts -->
+		<file name = "3.2e.cht" type = "data" source = "iso/chart/philly-easy.json.cht"/>
+		<file name = "3.2n.cht" type = "data" source = "iso/chart/philly.json.cht"/>
+		<file name = "3.2h.cht" type = "data" source = "iso/chart/philly-hard.json.cht"/>
+		<!-- Blammed charts -->
+		<file name = "3.3e.cht" type = "data" source = "iso/chart/blammed-easy.json.cht"/>
+		<file name = "3.3n.cht" type = "data" source = "iso/chart/blammed.json.cht"/>
+		<file name = "3.3h.cht" type = "data" source = "iso/chart/blammed-hard.json.cht"/>
+	</dir>
+
+	<!-- Week 4 assets -->
+	<dir name = "week4">
+		<!-- Background art -->
+		<file name = "back.arc" type = "data" source = "iso/week4/back.arc"/>
+		<file name = "hench.arc" type = "data" source = "iso/week4/hench.arc"/>
+		
+		<!-- Satin Panties charts -->
+		<file name = "4.1e.cht" type = "data" source = "iso/chart/satin-panties-easy.json.cht"/>
+		<file name = "4.1n.cht" type = "data" source = "iso/chart/satin-panties.json.cht"/>
+		<file name = "4.1h.cht" type = "data" source = "iso/chart/satin-panties-hard.json.cht"/>
+		<!-- High charts -->
+		<file name = "4.2e.cht" type = "data" source = "iso/chart/high-easy.json.cht"/>
+		<file name = "4.2n.cht" type = "data" source = "iso/chart/high.json.cht"/>
+		<file name = "4.2h.cht" type = "data" source = "iso/chart/high-hard.json.cht"/>
+		<!-- MILF charts -->
+		<file name = "4.3e.cht" type = "data" source = "iso/chart/milf-easy.json.cht"/>
+		<file name = "4.3n.cht" type = "data" source = "iso/chart/milf.json.cht"/>
+		<file name = "4.3h.cht" type = "data" source = "iso/chart/milf-hard.json.cht"/>
+		<!-- Test charts -->
+		<file name = "4.4n.cht" type = "data" source = "iso/chart/test.json.cht"/>
+	</dir>
+
+	<!-- Week 5 assets -->
+	<dir name = "week5">
+		<!-- Background art -->
+		<file name = "back.arc" type = "data" source = "iso/week5/back.arc"/>
+		
+		<!-- Cocoa charts -->
+		<file name = "5.1e.cht" type = "data" source = "iso/chart/cocoa-easy.json.cht"/>
+		<file name = "5.1n.cht" type = "data" source = "iso/chart/cocoa.json.cht"/>
+		<file name = "5.1h.cht" type = "data" source = "iso/chart/cocoa-hard.json.cht"/>
+		<!-- Eggnog charts -->
+		<file name = "5.2e.cht" type = "data" source = "iso/chart/eggnog-easy.json.cht"/>
+		<file name = "5.2n.cht" type = "data" source = "iso/chart/eggnog.json.cht"/>
+		<file name = "5.2h.cht" type = "data" source = "iso/chart/eggnog-hard.json.cht"/>
+		<!-- Winter Horrorland charts -->
+		<file name = "5.3e.cht" type = "data" source = "iso/chart/winter-horrorland-easy.json.cht"/>
+		<file name = "5.3n.cht" type = "data" source = "iso/chart/winter-horrorland.json.cht"/>
+		<file name = "5.3h.cht" type = "data" source = "iso/chart/winter-horrorland-hard.json.cht"/>
+	</dir>
+
+	<!-- Week 6 assets -->
+	<dir name = "week6">
+		<!-- Senpai charts -->
+		<file name = "6.1e.cht" type = "data" source = "iso/chart/senpai-easy.json.cht"/>
+		<file name = "6.1n.cht" type = "data" source = "iso/chart/senpai.json.cht"/>
+		<file name = "6.1h.cht" type = "data" source = "iso/chart/senpai-hard.json.cht"/>
+		<!-- Roses charts -->
+		<file name = "6.2e.cht" type = "data" source = "iso/chart/roses-easy.json.cht"/>
+		<file name = "6.2n.cht" type = "data" source = "iso/chart/roses.json.cht"/>
+		<file name = "6.2h.cht" type = "data" source = "iso/chart/roses-hard.json.cht"/>
+		<!-- Thorns charts -->
+		<file name = "6.3e.cht" type = "data" source = "iso/chart/thorns-easy.json.cht"/>
+		<file name = "6.3n.cht" type = "data" source = "iso/chart/thorns.json.cht"/>
+		<file name = "6.3h.cht" type = "data" source = "iso/chart/thorns-hard.json.cht"/>
+	</dir>
+
+	<!-- Week 7 assets -->
+	<dir name = "week7">
+		<!-- Background art -->
+		<file name = "back.arc" type = "data" source = "iso/week7/back.arc"/>
+		
+		<!-- Ugh charts -->
+		<file name = "7.1e.cht" type = "data" source = "iso/chart/ugh-easy.json.cht"/>
+		<file name = "7.1n.cht" type = "data" source = "iso/chart/ugh.json.cht"/>
+		<file name = "7.1h.cht" type = "data" source = "iso/chart/ugh-hard.json.cht"/>
+		<!-- Guns charts -->
+		<file name = "7.2e.cht" type = "data" source = "iso/chart/guns-easy.json.cht"/>
+		<file name = "7.2n.cht" type = "data" source = "iso/chart/guns.json.cht"/>
+		<file name = "7.2h.cht" type = "data" source = "iso/chart/guns-hard.json.cht"/>
+		<!-- Stress charts -->
+		<file name = "7.3e.cht" type = "data" source = "iso/chart/stress-easy.json.cht"/>
+		<file name = "7.3n.cht" type = "data" source = "iso/chart/stress.json.cht"/>
+		<file name = "7.3h.cht" type = "data" source = "iso/chart/stress-hard.json.cht"/>
+		<file name = "7.3p.cht" type = "data" source = "iso/week7/picospeaker.json.cht"/>
+	</dir>
+
+	<!-- Kapi assets -->
+	<dir name = "kapi">
+		<!-- Wocky charts -->
+		<file name = "kapi.1h.cht" type = "data" source = "iso/chart/wocky-hard.json.cht"/>
+		<!-- Beathoven charts -->
+		<file name = "kapi.2h.cht" type = "data" source = "iso/chart/beathoven-hard.json.cht"/>
+		<!-- Hairball charts -->
+		<file name = "kapi.3h.cht" type = "data" source = "iso/chart/hairball-hard.json.cht"/>
+		<!-- Nyaw charts -->
+		<file name = "kapi.4h.cht" type = "data" source = "iso/chart/nyaw-hard.json.cht"/>
+	</dir>
+
+	<!-- Tricky assets -->
+	<dir name = "clwn">
+		<!-- Improbable Outset charts -->
+		<file name = "clwn.1e.cht" type = "data" source = "iso/chart/improbable-outset-easy.json.cht"/>
+		<file name = "clwn.1n.cht" type = "data" source = "iso/chart/improbable-outset.json.cht"/>
+		<file name = "clwn.1h.cht" type = "data" source = "iso/chart/improbable-outset-hard.json.cht"/>
+		<!-- Madness charts -->
+		<file name = "clwn.2e.cht" type = "data" source = "iso/chart/madness-easy.json.cht"/>
+		<file name = "clwn.2n.cht" type = "data" source = "iso/chart/madness.json.cht"/>
+		<file name = "clwn.2h.cht" type = "data" source = "iso/chart/madness-hard.json.cht"/>
+		<!-- Hellclown charts -->
+		<file name = "clwn.3e.cht" type = "data" source = "iso/chart/hellclown-easy.json.cht"/>
+		<file name = "clwn.3n.cht" type = "data" source = "iso/chart/hellclown.json.cht"/>
+		<file name = "clwn.3h.cht" type = "data" source = "iso/chart/hellclown-hard.json.cht"/>
+		<!-- Expurgation charts -->
+		<file name = "clwn.4h.cht" type = "data" source = "iso/chart/expurgation-hard.json.cht"/>
+	</dir>
+
+	<!-- Character assets -->
+	<dir name = "char">
+		<!-- Boyfriend assets -->
+		<file name = "bf.arc" type = "data" source = "iso/bf/main.arc"/>
+		<file name = "bfdead.arc" type = "data" source = "iso/bf/dead.arc"/>
+		<file name = "bfweeb.arc" type = "data" source = "iso/bf/weeb.arc"/>
+		
+		<!-- Dad assets -->
+		<file name = "dad.arc" type = "data" source = "iso/dad/main.arc"/>
+		
+		<!-- Spook assets -->
+		<file name = "spook.arc" type = "data" source = "iso/spook/main.arc"/>
+		
+		<!-- Pico assets -->
+		<file name = "pico.arc" type = "data" source = "iso/pico/main.arc"/>
+		
+		<!-- Mom assets -->
+		<file name = "mom.arc" type = "data" source = "iso/mom/main.arc"/>
+		<file name = "momhair.tim" type = "data" source = "iso/mom/hair.tim"/>
+		
+		<!-- Christmas assets -->
+		<file name = "xmasp.arc" type = "data" source = "iso/xmasp/main.arc"/>
+		
+		<!-- Senpai assets -->
+		<file name = "senpai.arc" type = "data" source = "iso/senpai/main.arc"/>
+		<file name = "senpaim.arc" type = "data" source = "iso/senpaim/main.arc"/>
+		
+		<!-- Tankman Captain assets -->
+		<file name = "tank.arc" type = "data" source = "iso/tank/main.arc"/>
+		<file name = "tankugh.arc" type = "data" source = "iso/tank/ugh.arc"/>
+		<file name = "tankgood.arc" type = "data" source = "iso/tank/good.arc"/>
+		
+		<!-- Girlfriend assets -->
+		<file name = "gf.arc" type = "data" source = "iso/gf/main.arc"/>
+		<file name = "speaker.tim" type = "data" source = "iso/gf/speaker.tim"/>
+		
+		<!-- Clucky assets -->
+		<file name = "clucky.arc" type = "data" source = "iso/clucky/main.arc"/>
+	</dir>
+
+	<!-- Music -->
+	<dir name = "music">
+		<file name = "menu.xa" type = "xa" source = "iso/music/menu.xa"/>
+		<dummy sectors="128"/>
+		<file name = "week1a.xa" type = "xa" source = "iso/music/week1a.xa"/>
+		<dummy sectors="128"/>
+		<file name = "week1b.xa" type = "xa" source = "iso/music/week1b.xa"/>
+		<dummy sectors="128"/>
+		<file name = "week2a.xa" type = "xa" source = "iso/music/week2a.xa"/>
+		<dummy sectors="128"/>
+		<file name = "week2b.xa" type = "xa" source = "iso/music/week2b.xa"/>
+		<dummy sectors="128"/>
+		<file name = "week3a.xa" type = "xa" source = "iso/music/week3a.xa"/>
+		<dummy sectors="128"/>
+		<file name = "week3b.xa" type = "xa" source = "iso/music/week3b.xa"/>
+		<dummy sectors="128"/>
+		<file name = "week4a.xa" type = "xa" source = "iso/music/week4a.xa"/>
+		<dummy sectors="128"/>
+		<file name = "week4b.xa" type = "xa" source = "iso/music/week4b.xa"/>
+		<dummy sectors="128"/>
+		<file name = "week5a.xa" type = "xa" source = "iso/music/week5a.xa"/>
+		<dummy sectors="128"/>
+		<file name = "week5b.xa" type = "xa" source = "iso/music/week5b.xa"/>
+		<dummy sectors="128"/>
+		<file name = "week6a.xa" type = "xa" source = "iso/music/week6a.xa"/>
+		<dummy sectors="128"/>
+		<file name = "week6b.xa" type = "xa" source = "iso/music/week6b.xa"/>
+		<dummy sectors="128"/>
+		<file name = "week7a.xa" type = "xa" source = "iso/music/week7a.xa"/>
+		<dummy sectors="128"/>
+		<file name = "week7b.xa" type = "xa" source = "iso/music/week7b.xa"/>
+		<dummy sectors="128"/>
+		<file name = "kapia.xa" type = "xa" source = "iso/music/kapia.xa"/>
+		<dummy sectors="128"/>
+		<file name = "kapib.xa" type = "xa" source = "iso/music/kapib.xa"/>
+		<dummy sectors="128"/>
+		<file name = "clwna.xa" type = "xa" source = "iso/music/clwna.xa"/>
+		<dummy sectors="128"/>
+		<file name = "clwnb.xa" type = "xa" source = "iso/music/clwnb.xa"/>
+		<dummy sectors="128"/>
+	</dir>
+
+	<!-- Dummy sectors -->
+	<dummy sectors="1024"/>
+</iso_project>

@@ -51,22 +51,37 @@ void Back_Week1_DrawBG(StageBack *back)
 	Stage_DrawTex(&this->tex_back1, &curtainr_src, &curtainr_dst, stage.camera.bzoom);
 	
 	//Draw stage
-	fx = stage.camera.x;
-	fy = stage.camera.y;
+	fx = stage.camera.x * 3 / 2;
+	fy = stage.camera.y * 3 / 2;
 	
-	RECT stage_src = {0, 0, 256, 59};
-	RECT_FIXED stage_dst = {
-		FIXED_DEC(-230,1) - FIXED_DEC(SCREEN_WIDEOADD,2) - fx,
-		FIXED_DEC(50,1) - fy,
-		FIXED_DEC(410,1) + FIXED_DEC(SCREEN_WIDEOADD,1),
-		FIXED_DEC(106,1)
+	POINT_FIXED stage_d2 = {
+		FIXED_DEC(-230,1) - fx,
+		FIXED_DEC(50,1) + FIXED_DEC(123,1) - fy,
+	};
+	POINT_FIXED stage_d3 = {
+		FIXED_DEC(-230,1) + FIXED_DEC(410,1) - fx,
+		FIXED_DEC(50,1) + FIXED_DEC(123,1) - fy,
 	};
 	
-	Stage_DrawTex(&this->tex_back0, &stage_src, &stage_dst, stage.camera.bzoom);
+	fx = stage.camera.x / 2;
+	fy = stage.camera.y / 2;
+	
+	POINT_FIXED stage_d0 = {
+		FIXED_DEC(-230,1) - fx,
+		FIXED_DEC(50,1) - fy,
+	};
+	POINT_FIXED stage_d1 = {
+		FIXED_DEC(-230,1) + FIXED_DEC(410,1) - fx,
+		FIXED_DEC(50,1) - fy,
+	};
+	
+	RECT stage_src = {0, 0, 255, 59};
+	
+	Stage_DrawTexArb(&this->tex_back0, &stage_src, &stage_d0, &stage_d1, &stage_d2, &stage_d3, stage.camera.bzoom);
 	
 	//Draw back
-	fx = stage.camera.x * 2 / 3;
-	fy = stage.camera.y * 2 / 3;
+	//fx = stage.camera.x * 2 / 3;
+	//fy = stage.camera.y * 2 / 3;
 	
 	RECT backl_src = {0, 59, 121, 105};
 	RECT_FIXED backl_dst = {

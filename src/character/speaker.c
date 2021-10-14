@@ -26,7 +26,7 @@ void Speaker_Bump(Speaker *this)
 	this->bump = FIXED_DEC(4,1) / 24 - 1;
 }
 
-void Speaker_Tick(Speaker *this, fixed_t x, fixed_t y)
+void Speaker_Tick(Speaker *this, fixed_t x, fixed_t y, fixed_t parallax)
 {
 	//Get frame to use according to bump
 	u8 frame;
@@ -70,8 +70,8 @@ void Speaker_Tick(Speaker *this, fixed_t x, fixed_t y)
 		//Draw piece
 		RECT piece_src = {piece->rect[0], piece->rect[1], piece->rect[2], piece->rect[3]};
 		RECT_FIXED piece_dst = {
-			x - FIXED_DEC(88,1) + ((fixed_t)piece->ox << FIXED_SHIFT) - stage.camera.x,
-			y + ((fixed_t)piece->oy << FIXED_SHIFT) - stage.camera.y,
+			x - FIXED_DEC(88,1) + ((fixed_t)piece->ox << FIXED_SHIFT) - FIXED_MUL(stage.camera.x, parallax),
+			y + ((fixed_t)piece->oy << FIXED_SHIFT) - FIXED_MUL(stage.camera.y, parallax),
 			(fixed_t)piece->rect[2] << FIXED_SHIFT,
 			(fixed_t)piece->rect[3] << FIXED_SHIFT,
 		};

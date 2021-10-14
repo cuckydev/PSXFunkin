@@ -1,4 +1,5 @@
 all:
+	@ cd tools/funkinisopak && $(MAKE)
 	@ cd tools/funkinarcpak && $(MAKE)
 	@ cd tools/funkinchartpak && $(MAKE)
 	@ cd tools/funkinpicopak && $(MAKE)

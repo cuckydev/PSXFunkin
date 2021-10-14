@@ -31,15 +31,20 @@ void Character_Init(Character *this, fixed_t x, fixed_t y)
 	this->pad_held = 0;
 }
 
-void Character_Draw(Character *this, Gfx_Tex *tex, const CharFrame *cframe)
+void Character_DrawParallax(Character *this, Gfx_Tex *tex, const CharFrame *cframe, fixed_t parallax)
 {
 	//Draw character
-	fixed_t x = this->x - stage.camera.x - ((fixed_t)cframe->off[0] << FIXED_SHIFT);
-	fixed_t y = this->y - stage.camera.y - ((fixed_t)cframe->off[1] << FIXED_SHIFT);
+	fixed_t x = this->x - FIXED_MUL(stage.camera.x, parallax) - ((fixed_t)cframe->off[0] << FIXED_SHIFT);
+	fixed_t y = this->y - FIXED_MUL(stage.camera.y, parallax) - ((fixed_t)cframe->off[1] << FIXED_SHIFT);
 	
 	RECT src = {cframe->src[0], cframe->src[1], cframe->src[2], cframe->src[3]};
 	RECT_FIXED dst = {x, y, src.w << FIXED_SHIFT, src.h << FIXED_SHIFT};
 	Stage_DrawTex(tex, &src, &dst, stage.camera.bzoom);
+}
+
+void Character_Draw(Character *this, Gfx_Tex *tex, const CharFrame *cframe)
+{
+	Character_DrawParallax(this, tex, cframe, FIXED_UNIT);
 }
 
 void Character_CheckStartSing(Character *this)

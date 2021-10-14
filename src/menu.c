@@ -98,6 +98,10 @@ static struct
 		{
 			fixed_t fade, fadespd;
 		} story;
+		struct
+		{
+			fixed_t back_r, back_g, back_b;
+		} freeplay;
 	#ifdef PSXF_NETWORK
 		struct
 		{
@@ -797,31 +801,32 @@ void Menu_Tick(void)
 			static const struct
 			{
 				StageId stage;
+				u32 col;
 				const char *text;
 			} menu_options[] = {
-				//{StageId_4_4, "TEST"},
-				{StageId_1_4, "TUTORIAL"},
-				{StageId_1_1, "BOPEEBO"},
-				{StageId_1_2, "FRESH"},
-				{StageId_1_3, "DADBATTLE"},
-				{StageId_2_1, "SPOOKEEZ"},
-				{StageId_2_2, "SOUTH"},
-				{StageId_2_3, "MONSTER"},
-				{StageId_3_1, "PICO"},
-				{StageId_3_2, "PHILLY NICE"},
-				{StageId_3_3, "BLAMMED"},
-				{StageId_4_1, "SATIN PANTIES"},
-				{StageId_4_2, "HIGH"},
-				{StageId_4_3, "MILF"},
-				{StageId_5_1, "COCOA"},
-				{StageId_5_2, "EGGNOG"},
-				{StageId_5_3, "WINTER HORRORLAND"},
-				{StageId_6_1, "SENPAI"},
-				{StageId_6_2, "ROSES"},
-				{StageId_6_3, "THORNS"},
-				{StageId_7_1, "UGH"},
-				{StageId_7_2, "GUNS"},
-				{StageId_7_3, "STRESS"},
+				//{StageId_4_4, 0xFFFC96D7, "TEST"},
+				{StageId_1_4, 0xFF9271FD, "TUTORIAL"},
+				{StageId_1_1, 0xFF9271FD, "BOPEEBO"},
+				{StageId_1_2, 0xFF9271FD, "FRESH"},
+				{StageId_1_3, 0xFF9271FD, "DADBATTLE"},
+				{StageId_2_1, 0xFF223344, "SPOOKEEZ"},
+				{StageId_2_2, 0xFF223344, "SOUTH"},
+				{StageId_2_3, 0xFF223344, "MONSTER"},
+				{StageId_3_1, 0xFF941653, "PICO"},
+				{StageId_3_2, 0xFF941653, "PHILLY NICE"},
+				{StageId_3_3, 0xFF941653, "BLAMMED"},
+				{StageId_4_1, 0xFFFC96D7, "SATIN PANTIES"},
+				{StageId_4_2, 0xFFFC96D7, "HIGH"},
+				{StageId_4_3, 0xFFFC96D7, "MILF"},
+				{StageId_5_1, 0xFFA0D1FF, "COCOA"},
+				{StageId_5_2, 0xFFA0D1FF, "EGGNOG"},
+				{StageId_5_3, 0xFFA0D1FF, "WINTER HORRORLAND"},
+				{StageId_6_1, 0xFFFF78BF, "SENPAI"},
+				{StageId_6_2, 0xFFFF78BF, "ROSES"},
+				{StageId_6_3, 0xFFFF78BF, "THORNS"},
+				{StageId_7_1, 0xFFF6B604, "UGH"},
+				{StageId_7_2, 0xFFF6B604, "GUNS"},
+				{StageId_7_3, 0xFFF6B604, "STRESS"},
 			};
 			
 			//Initialize page
@@ -829,6 +834,9 @@ void Menu_Tick(void)
 			{
 				menu.scroll = COUNT_OF(menu_options) * FIXED_DEC(24 + SCREEN_HEIGHT2,1);
 				menu.page_param.stage.diff = StageDiff_Normal;
+				menu.page_state.freeplay.back_r = FIXED_DEC(255,1);
+				menu.page_state.freeplay.back_g = FIXED_DEC(255,1);
+				menu.page_state.freeplay.back_b = FIXED_DEC(255,1);
 			}
 			
 			//Draw page label
@@ -902,10 +910,20 @@ void Menu_Tick(void)
 			}
 			
 			//Draw background
+			fixed_t tgt_r = (fixed_t)((menu_options[menu.select].col >> 16) & 0xFF) << FIXED_SHIFT;
+			fixed_t tgt_g = (fixed_t)((menu_options[menu.select].col >>  8) & 0xFF) << FIXED_SHIFT;
+			fixed_t tgt_b = (fixed_t)((menu_options[menu.select].col >>  0) & 0xFF) << FIXED_SHIFT;
+			
+			menu.page_state.freeplay.back_r += (tgt_r - menu.page_state.freeplay.back_r) >> 4;
+			menu.page_state.freeplay.back_g += (tgt_g - menu.page_state.freeplay.back_g) >> 4;
+			menu.page_state.freeplay.back_b += (tgt_b - menu.page_state.freeplay.back_b) >> 4;
+			
 			Menu_DrawBack(
 				true,
 				8,
-				146 >> 1, 113 >> 1, 253 >> 1,
+				menu.page_state.freeplay.back_r >> (FIXED_SHIFT + 1),
+				menu.page_state.freeplay.back_g >> (FIXED_SHIFT + 1),
+				menu.page_state.freeplay.back_b >> (FIXED_SHIFT + 1),
 				0, 0, 0
 			);
 			break;

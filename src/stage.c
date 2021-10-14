@@ -822,7 +822,7 @@ static void Stage_DrawNotes(void)
 			//Don't draw if below screen
 			RECT note_src;
 			RECT_FIXED note_dst;
-			if (y > (((SCREEN_HEIGHT2 + 16) << FIXED_SHIFT) + scroll.size) || note->pos == 0xFFFF)
+			if (y > (FIXED_DEC(SCREEN_HEIGHT,2) + scroll.size) || note->pos == 0xFFFF)
 				break;
 			
 			//Draw note
@@ -867,7 +867,12 @@ static void Stage_DrawNotes(void)
 				}
 				else
 				{
-					if (clip < scroll.size)
+					//Get note height
+					fixed_t next_time = (scroll.start - stage.song_time) + (scroll.length * (note->pos + 12 - scroll.start_step) / scroll.length_step);
+					fixed_t next_y = note_y + FIXED_MUL(stage.speed, next_time * 150) - scroll.size;
+					fixed_t next_size = next_y - y;
+					
+					if (clip < next_size)
 					{
 						note_src.x = 160;
 						note_src.y = ((note->type & 0x3) << 5);
@@ -877,7 +882,7 @@ static void Stage_DrawNotes(void)
 						note_dst.x = note_x[(note->type & 0x7) ^ stage.note_swap] - FIXED_DEC(16,1);
 						note_dst.y = y + clip;
 						note_dst.w = note_src.w << FIXED_SHIFT;
-						note_dst.h = scroll.size - clip;
+						note_dst.h = (next_y - y) - clip;
 						
 						if (stage.downscroll)
 							note_dst.y = -note_dst.y - note_dst.h;

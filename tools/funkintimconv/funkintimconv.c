@@ -123,9 +123,7 @@ int main(int argc, char *argv[])
 			rep.c.r = tex_datap[0] / 8;
 			rep.c.g = tex_datap[1] / 8;
 			rep.c.b = tex_datap[2] / 8;
-			if (rep.c.b == 0)
-				rep.c.b = 1; //Avoid bad transparency
-			rep.c.i = 0;
+			rep.c.i = 1;
 		}
 		else
 		{
