@@ -24,6 +24,7 @@ SRCS = src/main.c \
        src/stage/week3.c \
        src/stage/week4.c \
        src/stage/week5.c \
+       src/stage/week6.c \
        src/stage/week7.c \
        src/animation.c \
        src/character.c \
@@ -34,6 +35,7 @@ SRCS = src/main.c \
        src/character/spook.c \
        src/character/pico.c \
        src/character/mom.c \
+       src/character/xmasbf.c \
        src/character/xmasp.c \
        src/character/senpai.c \
        src/character/senpaim.c \

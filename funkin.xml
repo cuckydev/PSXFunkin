@@ -146,6 +146,9 @@
 			
 			<!-- Week 6 assets -->
 			<dir name = "week6">
+				<!-- Background art -->
+				<file name = "back.arc" type = "data" source = "iso/week6/back.arc"/>
+				
 				<!-- Senpai charts -->
 				<file name = "6.1e.cht" type = "data" source = "iso/chart/senpai-easy.json.cht"/>
 				<file name = "6.1n.cht" type = "data" source = "iso/chart/senpai.json.cht"/>
@@ -231,6 +234,7 @@
 				<file name = "momhair.tim" type = "data" source = "iso/mom/hair.tim"/>
 				
 				<!-- Christmas assets -->
+				<file name = "xmasbf.arc" type = "data" source = "iso/bf/xmas.arc"/>
 				<file name = "xmasp.arc" type = "data" source = "iso/xmasp/main.arc"/>
 				
 				<!-- Senpai assets -->

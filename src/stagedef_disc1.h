@@ -228,9 +228,9 @@
 	
 	{ //StageId_5_1 (Cocoa)
 		//Characters
-		{Char_BF_New,      FIXED_DEC(90,1),   FIXED_DEC(85,1)},
+		{Char_XmasBF_New,  FIXED_DEC(90,1),   FIXED_DEC(85,1)},
 		{Char_XmasP_New, FIXED_DEC(-190,1),   FIXED_DEC(90,1)},
-		{Char_GF_New,       FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
+		{NULL,              FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
 		
 		//Stage background
 		Back_Week5_New,
@@ -244,9 +244,9 @@
 	},
 	{ //StageId_5_2 (Eggnog)
 		//Characters
-		{Char_BF_New,      FIXED_DEC(90,1),   FIXED_DEC(85,1)},
+		{Char_XmasBF_New,  FIXED_DEC(90,1),   FIXED_DEC(85,1)},
 		{Char_XmasP_New, FIXED_DEC(-190,1),   FIXED_DEC(90,1)},
-		{Char_GF_New,       FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
+		{NULL,              FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
 		
 		//Stage background
 		Back_Week5_New,
@@ -260,9 +260,9 @@
 	},
 	{ //StageId_5_3 (Winter Horrorland)
 		//Characters
-		{Char_BF_New,   FIXED_DEC(105,1),  FIXED_DEC(100,1)},
-		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
+		{Char_XmasBF_New, FIXED_DEC(105,1),  FIXED_DEC(100,1)},
+		{Char_Dad_New,   FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{NULL,              FIXED_DEC(0,1),  FIXED_DEC(-15,1)},
 		
 		//Stage background
 		Back_Dummy_New,
@@ -282,7 +282,7 @@
 		{Char_BFWeeb_New,   FIXED_DEC(0,1),  FIXED_DEC(-8,1)},
 		
 		//Stage background
-		Back_Dummy_New,
+		Back_Week6_New,
 		
 		//Song info
 		{FIXED_DEC(1,1),FIXED_DEC(12,10),FIXED_DEC(13,10)},
@@ -298,7 +298,7 @@
 		{Char_BFWeeb_New,    FIXED_DEC(0,1),  FIXED_DEC(-8,1)},
 		
 		//Stage background
-		Back_Dummy_New,
+		Back_Week6_New,
 		
 		//Song info
 		{FIXED_DEC(12,10),FIXED_DEC(13,10),FIXED_DEC(15,10)},
@@ -314,7 +314,7 @@
 		{Char_BFWeeb_New,   FIXED_DEC(0,1),  FIXED_DEC(-8,1)},
 		
 		//Stage background
-		Back_Dummy_New,
+		Back_Week6_New,
 		
 		//Song info
 		{FIXED_DEC(11,10),FIXED_DEC(13,10),FIXED_DEC(15,10)},

@@ -239,6 +239,7 @@ void Gfx_DrawTexCol(Gfx_Tex *tex, const RECT *src, const RECT *dst, u8 r, u8 g, 
 		cdst.h = cdst.h * csrc.h / src->h;
 	}
 	
+	/*
 	//Subdivide if particularly large
 	if (csrc.w > 0x80)
 	{
@@ -280,6 +281,7 @@ void Gfx_DrawTexCol(Gfx_Tex *tex, const RECT *src, const RECT *dst, u8 r, u8 g, 
 		
 		Gfx_DrawTexCol(tex, &csrc2, &cdst2, r, g, b);
 	}
+	*/
 	
 	//Add quad
 	POLY_FT4 *quad = (POLY_FT4*)nextpri;

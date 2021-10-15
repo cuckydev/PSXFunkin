@@ -41,9 +41,6 @@ enum
 	XmasBF_ArcMain_XmasBF1,
 	XmasBF_ArcMain_XmasBF2,
 	XmasBF_ArcMain_XmasBF3,
-	XmasBF_ArcMain_XmasBF4,
-	XmasBF_ArcMain_XmasBF5,
-	XmasBF_ArcMain_XmasBF6,
 	XmasBF_ArcMain_Dead0, //BREAK
 	
 	XmasBF_ArcMain_Max,
@@ -81,11 +78,11 @@ typedef struct
 
 //Boyfriend player definitions
 static const CharFrame char_xmasbf_frame[] = {
-	{XmasBF_ArcMain_XmasBF0, {  0,   0, 102,  99}, { 53,  92}}, //0 idle 1
-	{XmasBF_ArcMain_XmasBF0, {103,   0, 102,  99}, { 53,  92}}, //1 idle 2
-	{XmasBF_ArcMain_XmasBF0, {  0, 100, 102, 101}, { 53,  94}}, //2 idle 3
-	{XmasBF_ArcMain_XmasBF0, {103, 100, 103, 104}, { 53,  97}}, //3 idle 4
-	{XmasBF_ArcMain_XmasBF1, {  0,   0, 103, 104}, { 53,  97}}, //4 idle 5
+	{XmasBF_ArcMain_XmasBF0, {  0,   0, 102,  99}, { 53,  91}}, //0 idle 1
+	{XmasBF_ArcMain_XmasBF0, {103,   0, 102,  99}, { 53,  91}}, //1 idle 2
+	{XmasBF_ArcMain_XmasBF0, {  0, 100, 102, 102}, { 53,  93}}, //2 idle 3
+	{XmasBF_ArcMain_XmasBF0, {103, 100, 102, 105}, { 53,  97}}, //3 idle 4
+	{XmasBF_ArcMain_XmasBF1, {  0,   0, 103, 105}, { 52,  97}}, //4 idle 5
 	
 	{XmasBF_ArcMain_XmasBF1, {104,   0,  96, 102}, { 56,  95}}, //5 left 1
 	{XmasBF_ArcMain_XmasBF1, {  0, 105,  94, 102}, { 54,  95}}, //6 left 2
@@ -103,22 +100,22 @@ static const CharFrame char_xmasbf_frame[] = {
 	{XmasBF_ArcMain_XmasBF3, {  0, 103, 104, 103}, { 54,  96}}, //14 peace 2
 	{XmasBF_ArcMain_XmasBF3, {105, 106, 104, 104}, { 54,  97}}, //15 peace 3
 	
-	{XmasBF_ArcMain_XmasBF4, {  0,   0, 128, 128}, { 53,  92}}, //16 sweat 1
-	{XmasBF_ArcMain_XmasBF4, {128,   0, 128, 128}, { 53,  93}}, //17 sweat 2
-	{XmasBF_ArcMain_XmasBF4, {  0, 128, 128, 128}, { 53,  98}}, //18 sweat 3
-	{XmasBF_ArcMain_XmasBF4, {128, 128, 128, 128}, { 53,  98}}, //19 sweat 4
+	{XmasBF_ArcMain_XmasBF3, {  0,   0, 128, 128}, { 53,  92}}, //16 sweat 1
+	{XmasBF_ArcMain_XmasBF3, {128,   0, 128, 128}, { 53,  93}}, //17 sweat 2
+	{XmasBF_ArcMain_XmasBF3, {  0, 128, 128, 128}, { 53,  98}}, //18 sweat 3
+	{XmasBF_ArcMain_XmasBF3, {128, 128, 128, 128}, { 53,  98}}, //19 sweat 4
 	
-	{XmasBF_ArcMain_XmasBF5, {  0,   0,  93, 108}, { 52, 101}}, //20 left miss 1
-	{XmasBF_ArcMain_XmasBF5, { 94,   0,  93, 108}, { 52, 101}}, //21 left miss 2
+	{XmasBF_ArcMain_XmasBF3, {  0,   0,  93, 108}, { 52, 101}}, //20 left miss 1
+	{XmasBF_ArcMain_XmasBF3, { 94,   0,  93, 108}, { 52, 101}}, //21 left miss 2
 	
-	{XmasBF_ArcMain_XmasBF5, {  0, 109,  95,  98}, { 50,  90}}, //22 down miss 1
-	{XmasBF_ArcMain_XmasBF5, { 96, 109,  95,  97}, { 50,  89}}, //23 down miss 2
+	{XmasBF_ArcMain_XmasBF3, {  0, 109,  95,  98}, { 50,  90}}, //22 down miss 1
+	{XmasBF_ArcMain_XmasBF3, { 96, 109,  95,  97}, { 50,  89}}, //23 down miss 2
 	
-	{XmasBF_ArcMain_XmasBF6, {  0,   0,  90, 107}, { 44,  99}}, //24 up miss 1
-	{XmasBF_ArcMain_XmasBF6, { 91,   0,  89, 108}, { 44, 100}}, //25 up miss 2
+	{XmasBF_ArcMain_XmasBF3, {  0,   0,  90, 107}, { 44,  99}}, //24 up miss 1
+	{XmasBF_ArcMain_XmasBF3, { 91,   0,  89, 108}, { 44, 100}}, //25 up miss 2
 	
-	{XmasBF_ArcMain_XmasBF6, {  0, 108,  99, 108}, { 42, 101}}, //26 right miss 1
-	{XmasBF_ArcMain_XmasBF6, {100, 109, 101, 108}, { 43, 101}}, //27 right miss 2
+	{XmasBF_ArcMain_XmasBF3, {  0, 108,  99, 108}, { 42, 101}}, //26 right miss 1
+	{XmasBF_ArcMain_XmasBF3, {100, 109, 101, 108}, { 43, 101}}, //27 right miss 2
 };
 
 static const Animation char_xmasbf_anim[PlayerAnim_Max] = {
@@ -406,16 +403,13 @@ Character *Char_XmasBF_New(fixed_t x, fixed_t y)
 	//Load art
 	this->arc_main = IO_Read("\\CHAR\\XMASBF.ARC;1");
 	this->arc_dead = NULL;
-	IO_FindFile(&this->file_dead_arc, "\\CHAR\\XMASBFDEAD.ARC;1");
+	IO_FindFile(&this->file_dead_arc, "\\CHAR\\BFDEAD.ARC;1");
 	
 	const char **pathp = (const char *[]){
 		"xmasbf0.tim",   //XmasBF_ArcMain_XmasBF0
 		"xmasbf1.tim",   //XmasBF_ArcMain_XmasBF1
 		"xmasbf2.tim",   //XmasBF_ArcMain_XmasBF2
 		"xmasbf3.tim",   //XmasBF_ArcMain_XmasBF3
-		"xmasbf4.tim",   //XmasBF_ArcMain_XmasBF4
-		"xmasbf5.tim",   //XmasBF_ArcMain_XmasBF5
-		"xmasbf6.tim",   //XmasBF_ArcMain_XmasBF6
 		"dead0.tim", //XmasBF_ArcMain_Dead0
 		NULL
 	};

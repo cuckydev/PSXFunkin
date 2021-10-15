@@ -57,6 +57,7 @@ static const u8 note_anims[4][3] = {
 #include "character/spook.h"
 #include "character/pico.h"
 #include "character/mom.h"
+#include "character/xmasbf.h"
 #include "character/xmasp.h"
 #include "character/senpai.h"
 #include "character/senpaim.h"
@@ -70,6 +71,7 @@ static const u8 note_anims[4][3] = {
 #include "stage/week3.h"
 #include "stage/week4.h"
 #include "stage/week5.h"
+#include "stage/week6.h"
 #include "stage/week7.h"
 
 static const StageDef stage_defs[StageId_Max] = {
@@ -276,7 +278,7 @@ static void Stage_MissNote(PlayerState *this)
 	if (this->combo)
 	{
 		//Kill combo
-		if (this->combo > 5)
+		if (stage.gf != NULL && this->combo > 5)
 			stage.gf->set_anim(stage.gf, CharAnim_Down); //Cry if we lost a large combo
 		this->combo = 0;
 		
@@ -594,22 +596,34 @@ void Stage_DrawTexCol(Gfx_Tex *tex, const RECT *src, const RECT_FIXED *dst, fixe
 	if (stage.stage_id >= StageId_6_1 && stage.stage_id <= StageId_6_3)
 	{
 		//Handle HUD drawing
-		if (tex == &stage.tex_hud0 || tex == &stage.tex_hud1)
+		if (tex == &stage.tex_hud0)
 		{
 			#ifdef STAGE_NOHUD
 				return;
 			#endif
-			#ifndef PSXF_PC
-				xz += FIXED_UNIT;
-				yz += FIXED_UNIT;
+			if (src->y >= 128 && src->y < 224)
+			{
+				//Pixel perfect scrolling
+				xz &= FIXED_UAND;
+				yz &= FIXED_UAND;
+				wz &= FIXED_UAND;
+				hz &= FIXED_UAND;
+			}
+		}
+		else if (tex == &stage.tex_hud1)
+		{
+			#ifdef STAGE_NOHUD
+				return;
 			#endif
 		}
-		
-		//Pixel perfect scrolling in Week 6
-		xz &= FIXED_UAND;
-		yz &= FIXED_UAND;
-		wz &= FIXED_UAND;
-		hz &= FIXED_UAND;
+		else
+		{
+			//Pixel perfect scrolling
+			xz &= FIXED_UAND;
+			yz &= FIXED_UAND;
+			wz &= FIXED_UAND;
+			hz &= FIXED_UAND;
+		}
 	}
 	else
 	{
@@ -998,7 +1012,10 @@ static void Stage_LoadGirlfriend(void)
 {
 	//Load girlfriend character
 	Character_Free(stage.gf);
-	stage.gf = stage.stage_def->gchar.new(stage.stage_def->gchar.x, stage.stage_def->gchar.y);
+	if (stage.stage_def->gchar.new != NULL)
+		stage.gf = stage.stage_def->gchar.new(stage.stage_def->gchar.x, stage.stage_def->gchar.y);
+	else
+		stage.gf = NULL;
 }
 
 static void Stage_LoadStage(void)
@@ -1332,7 +1349,7 @@ static boolean Stage_NextLoad(void)
 		{
 			Stage_LoadGirlfriend();
 		}
-		else
+		else if (stage.gf != NULL)
 		{
 			stage.gf->x = stage.stage_def->gchar.x;
 			stage.gf->y = stage.stage_def->gchar.y;
@@ -1844,7 +1861,8 @@ void Stage_Tick(void)
 				stage.back->draw_md(stage.back);
 			
 			//Tick girlfriend
-			stage.gf->tick(stage.gf);
+			if (stage.gf != NULL)
+				stage.gf->tick(stage.gf);
 			
 			//Tick background objects
 			ObjectList_Tick(&stage.objlist_bg);
