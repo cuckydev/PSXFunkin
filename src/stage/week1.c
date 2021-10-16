@@ -63,8 +63,8 @@ void Back_Week1_DrawBG(StageBack *back)
 		FIXED_DEC(50,1) + FIXED_DEC(123,1) - fy,
 	};
 	
-	fx = stage.camera.x / 2;
-	fy = stage.camera.y / 2;
+	fx = stage.camera.x >> 1;
+	fy = stage.camera.y >> 1;
 	
 	POINT_FIXED stage_d0 = {
 		FIXED_DEC(-230,1) - fx,

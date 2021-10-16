@@ -41,6 +41,7 @@ void Gfx_Init(void)
 		case 'E':
 			SetVideoMode(MODE_PAL);
 			SsSetTickMode(SS_TICK50);
+			disp[0].screen.y = disp[1].screen.y = 24;
 			break;
 		default:
 			SetVideoMode(MODE_NTSC);
