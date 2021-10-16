@@ -54,7 +54,7 @@ typedef struct
 	{
 		struct { float x, y; } tl, tr, bl, br;
 	} dst;
-	float r, g, b, a;
+	float r, g, b;
 	GLuint texture_id;
 	u8 blend_mode;
 } Gfx_Cmd;
@@ -338,6 +338,8 @@ static void Gfx_DisplayCmd(const Gfx_Cmd *cmd)
 	static u8 previous_blend_mode = 0xFE; //A sane invalid value
 
 	//Push batch if using a new blend mode
+	float alpha = 1.0f;
+	
 	if (cmd->blend_mode != previous_blend_mode)
 	{
 		Gfx_PushBatch();
@@ -355,6 +357,14 @@ static void Gfx_DisplayCmd(const Gfx_Cmd *cmd)
 				glDisable(GL_BLEND);
 				break;
 
+			case 0:
+				//Mix blending
+				glEnable(GL_BLEND);
+				glBlendEquation(GL_FUNC_ADD);
+				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				alpha = 0.5f;
+				break;
+
 			case 1:
 				//Additive blending
 				glEnable(GL_BLEND);
@@ -367,6 +377,14 @@ static void Gfx_DisplayCmd(const Gfx_Cmd *cmd)
 				glEnable(GL_BLEND);
 				glBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
 				glBlendFunc(GL_ONE, GL_ONE);
+				break;
+
+			case 3:
+				//Additive blending
+				glEnable(GL_BLEND);
+				glBlendEquation(GL_FUNC_ADD);
+				glBlendFunc(GL_ONE, GL_ONE);
+				alpha = 0.25f;
 				break;
 
 			default:
@@ -391,7 +409,7 @@ static void Gfx_DisplayCmd(const Gfx_Cmd *cmd)
 	batch_buffer_p[0].r = cmd->r;
 	batch_buffer_p[0].g = cmd->g;
 	batch_buffer_p[0].b = cmd->b;
-	batch_buffer_p[0].a = cmd->a;
+	batch_buffer_p[0].a = alpha;
 	
 	batch_buffer_p[1].x = cmd->dst.bl.x;
 	batch_buffer_p[1].y = cmd->dst.bl.y;
@@ -400,7 +418,7 @@ static void Gfx_DisplayCmd(const Gfx_Cmd *cmd)
 	batch_buffer_p[1].r = cmd->r;
 	batch_buffer_p[1].g = cmd->g;
 	batch_buffer_p[1].b = cmd->b;
-	batch_buffer_p[1].a = cmd->a;
+	batch_buffer_p[1].a = alpha;
 	
 	batch_buffer_p[2].x = cmd->dst.tr.x;
 	batch_buffer_p[2].y = cmd->dst.tr.y;
@@ -409,7 +427,7 @@ static void Gfx_DisplayCmd(const Gfx_Cmd *cmd)
 	batch_buffer_p[2].r = cmd->r;
 	batch_buffer_p[2].g = cmd->g;
 	batch_buffer_p[2].b = cmd->b;
-	batch_buffer_p[2].a = cmd->a;
+	batch_buffer_p[2].a = alpha;
 	
 	batch_buffer_p[3].x = cmd->dst.tr.x;
 	batch_buffer_p[3].y = cmd->dst.tr.y;
@@ -418,7 +436,7 @@ static void Gfx_DisplayCmd(const Gfx_Cmd *cmd)
 	batch_buffer_p[3].r = cmd->r;
 	batch_buffer_p[3].g = cmd->g;
 	batch_buffer_p[3].b = cmd->b;
-	batch_buffer_p[3].a = cmd->a;
+	batch_buffer_p[3].a = alpha;
 	
 	batch_buffer_p[4].x = cmd->dst.bl.x;
 	batch_buffer_p[4].y = cmd->dst.bl.y;
@@ -427,7 +445,7 @@ static void Gfx_DisplayCmd(const Gfx_Cmd *cmd)
 	batch_buffer_p[4].r = cmd->r;
 	batch_buffer_p[4].g = cmd->g;
 	batch_buffer_p[4].b = cmd->b;
-	batch_buffer_p[4].a = cmd->a;
+	batch_buffer_p[4].a = alpha;
 	
 	batch_buffer_p[5].x = cmd->dst.br.x;
 	batch_buffer_p[5].y = cmd->dst.br.y;
@@ -436,7 +454,7 @@ static void Gfx_DisplayCmd(const Gfx_Cmd *cmd)
 	batch_buffer_p[5].r = cmd->r;
 	batch_buffer_p[5].g = cmd->g;
 	batch_buffer_p[5].b = cmd->b;
-	batch_buffer_p[5].a = cmd->a;
+	batch_buffer_p[5].a = alpha;
 	
 	batch_buffer_p += 6;
 }
@@ -460,7 +478,6 @@ static void Gfx_SubmitCommand(GLuint texture_id, const RECT *src, const POINT *p
 	cmd.r = r;
 	cmd.g = g;
 	cmd.b = b;
-	cmd.a = 1.0f;
 	cmd.texture_id = texture_id;
 	cmd.blend_mode = blend_mode;
 
@@ -988,7 +1005,19 @@ void Gfx_DrawTexArbCol(Gfx_Tex *tex, const RECT *src, const POINT *p0, const POI
 
 	Gfx_SubmitCommand(vram_texture, &vram_src, p0, p1, p2, p3, r / 128.0f, g / 128.0f, b / 128.0f, 0xFF);
 }
+
 void Gfx_DrawTexArb(Gfx_Tex *tex, const RECT *src, const POINT *p0, const POINT *p1, const POINT *p2, const POINT *p3)
 {
 	Gfx_DrawTexArbCol(tex, src, p0, p1, p2, p3, 0x80, 0x80, 0x80);
+}
+
+void Gfx_BlendTexArb(Gfx_Tex *tex, const RECT *src, const POINT *p0, const POINT *p1, const POINT *p2, const POINT *p3, u8 mode)
+{
+	RECT vram_src;
+	vram_src.x = tex->tpage_x + src->x;
+	vram_src.y = tex->tpage_y + src->y;
+	vram_src.w = src->w;
+	vram_src.h = src->h;
+
+	Gfx_SubmitCommand(vram_texture, &vram_src, p0, p1, p2, p3, 1.0f, 1.0f, 1.0f, mode);
 }
