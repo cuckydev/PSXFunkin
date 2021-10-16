@@ -61,6 +61,7 @@ static const u8 note_anims[4][3] = {
 #include "character/xmasp.h"
 #include "character/senpai.h"
 #include "character/senpaim.h"
+#include "character/spirit.h"
 #include "character/tank.h"
 #include "character/gf.h"
 #include "character/gfweeb.h"
@@ -676,6 +677,23 @@ void Stage_DrawTexArb(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, cons
 	POINT s3 = {SCREEN_WIDTH2 + (FIXED_MUL(p3->x, zoom) >> FIXED_SHIFT), SCREEN_HEIGHT2 + (FIXED_MUL(p3->y, zoom) >> FIXED_SHIFT)};
 	
 	Gfx_DrawTexArb(tex, src, &s0, &s1, &s2, &s3);
+}
+
+void Stage_BlendTexArb(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, const POINT_FIXED *p1, const POINT_FIXED *p2, const POINT_FIXED *p3, fixed_t zoom, u8 mode)
+{
+	//Don't draw if HUD and HUD is disabled
+	#ifdef STAGE_NOHUD
+		if (tex == &stage.tex_hud0 || tex == &stage.tex_hud1)
+			return;
+	#endif
+	
+	//Get screen-space points
+	POINT s0 = {SCREEN_WIDTH2 + (FIXED_MUL(p0->x, zoom) >> FIXED_SHIFT), SCREEN_HEIGHT2 + (FIXED_MUL(p0->y, zoom) >> FIXED_SHIFT)};
+	POINT s1 = {SCREEN_WIDTH2 + (FIXED_MUL(p1->x, zoom) >> FIXED_SHIFT), SCREEN_HEIGHT2 + (FIXED_MUL(p1->y, zoom) >> FIXED_SHIFT)};
+	POINT s2 = {SCREEN_WIDTH2 + (FIXED_MUL(p2->x, zoom) >> FIXED_SHIFT), SCREEN_HEIGHT2 + (FIXED_MUL(p2->y, zoom) >> FIXED_SHIFT)};
+	POINT s3 = {SCREEN_WIDTH2 + (FIXED_MUL(p3->x, zoom) >> FIXED_SHIFT), SCREEN_HEIGHT2 + (FIXED_MUL(p3->y, zoom) >> FIXED_SHIFT)};
+	
+	Gfx_BlendTexArb(tex, src, &s0, &s1, &s2, &s3, mode);
 }
 
 //Stage HUD functions

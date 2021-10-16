@@ -321,3 +321,19 @@ void Gfx_DrawTexArb(Gfx_Tex *tex, const RECT *src, const POINT *p0, const POINT 
 {
 	Gfx_DrawTexArbCol(tex, src, p0, p1, p2, p3, 0x80, 0x80, 0x80);
 }
+
+void Gfx_BlendTexArb(Gfx_Tex *tex, const RECT *src, const POINT *p0, const POINT *p1, const POINT *p2, const POINT *p3, u8 mode)
+{
+	//Add quad
+	POLY_FT4 *quad = (POLY_FT4*)nextpri;
+	setPolyFT4(quad);
+	setUVWH(quad, src->x, src->y, src->w, src->h);
+	setXY4(quad, p0->x, p0->y, p1->x, p1->y, p2->x, p2->y, p3->x, p3->y);
+	setRGB0(quad, 0x80, 0x80, 0x80);
+	setSemiTrans(quad, 1);
+	quad->tpage = tex->tpage | getTPage(0, mode, 0, 0);
+	quad->clut = tex->clut;
+	
+	addPrim(ot[db], quad);
+	nextpri += sizeof(POLY_FT4);
+}

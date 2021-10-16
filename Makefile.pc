@@ -115,6 +115,7 @@ SOURCES = main \
           character/xmasp \
           character/senpai \
           character/senpaim \
+          character/spirit \
           character/tank \
           character/gf \
           character/gfweeb \

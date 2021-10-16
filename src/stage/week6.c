@@ -219,7 +219,7 @@ static fixed_t week6_back_paraly[] = {
 	FIXED_DEC(2,10),
 	FIXED_DEC(2,10),
 	FIXED_DEC(8,10),
-	FIXED_DEC(12,10),
+	FIXED_DEC(11,10),
 };
 
 static s32 Back_Week6_GetX(int x, int y)
@@ -253,10 +253,8 @@ void Back_Week6_DrawBG3(StageBack *back)
 		RECT back_src = {0, y * 32, 32, 32};
 		for (int x = 0; x < 8; x++)
 		{
-			//Draw quad
+			//Draw quad and increment source rect
 			Stage_DrawTexArb(&this->tex_back0, &back_src, &back_dst[y][x], &back_dst[y][x + 1], &back_dst[y + 1][x], &back_dst[y + 1][x + 1], stage.camera.bzoom);
-			
-			//Increment source rect
 			if ((back_src.x += 32) >= 0xE0)
 				back_src.w--;
 		}

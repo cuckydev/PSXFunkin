@@ -85,6 +85,8 @@ add_executable(funkin
 	"src/character/senpai.h"
 	"src/character/senpaim.c"
 	"src/character/senpaim.h"
+	"src/character/spirit.c"
+	"src/character/spirit.h"
 	"src/character/tank.c"
 	"src/character/tank.h"
 	"src/character/gf.c"

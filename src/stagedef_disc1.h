@@ -310,7 +310,7 @@
 	{ //StageId_6_3 (Thorns)
 		//Characters
 		{Char_BFWeeb_New,  FIXED_DEC(52,1),  FIXED_DEC(50,1)},
-		{Char_Senpai_New, FIXED_DEC(-60,1),  FIXED_DEC(50,1)},
+		{Char_Spirit_New, FIXED_DEC(-60,1),  FIXED_DEC(50,1)},
 		{Char_GFWeeb_New,   FIXED_DEC(0,1),  FIXED_DEC(45,1)},
 		
 		//Stage background

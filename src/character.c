@@ -34,8 +34,8 @@ void Character_Init(Character *this, fixed_t x, fixed_t y)
 void Character_DrawParallax(Character *this, Gfx_Tex *tex, const CharFrame *cframe, fixed_t parallax)
 {
 	//Draw character
-	fixed_t x = this->x - FIXED_MUL(stage.camera.x, parallax) - ((fixed_t)cframe->off[0] << FIXED_SHIFT);
-	fixed_t y = this->y - FIXED_MUL(stage.camera.y, parallax) - ((fixed_t)cframe->off[1] << FIXED_SHIFT);
+	fixed_t x = this->x - FIXED_MUL(stage.camera.x, parallax) - FIXED_DEC(cframe->off[0],1);
+	fixed_t y = this->y - FIXED_MUL(stage.camera.y, parallax) - FIXED_DEC(cframe->off[1],1);
 	
 	RECT src = {cframe->src[0], cframe->src[1], cframe->src[2], cframe->src[3]};
 	RECT_FIXED dst = {x, y, src.w << FIXED_SHIFT, src.h << FIXED_SHIFT};

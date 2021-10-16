@@ -18,6 +18,7 @@ all: \
 	iso/xmasp/main.arc \
 	iso/senpai/main.arc \
 	iso/senpaim/main.arc \
+	iso/spirit/main.arc \
 	iso/tank/main.arc \
 	iso/tank/ugh.arc \
 	iso/tank/good.arc \
@@ -70,6 +71,9 @@ iso/xmasp/main.arc: iso/xmasp/idle0.tim iso/xmasp/idle1.tim iso/xmasp/idle2.tim 
 # Senpai
 iso/senpai/main.arc: iso/senpai/senpai0.tim iso/senpai/senpai1.tim
 iso/senpaim/main.arc: iso/senpaim/senpai0.tim iso/senpaim/senpai1.tim
+
+# Spirit
+iso/spirit/main.arc: iso/spirit/spirit0.tim iso/spirit/spirit1.tim
 
 # Tank
 iso/tank/main.arc: iso/tank/idle0.tim iso/tank/idle1.tim iso/tank/left.tim iso/tank/down.tim iso/tank/up.tim iso/tank/right.tim
