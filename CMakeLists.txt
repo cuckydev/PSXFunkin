@@ -89,6 +89,8 @@ add_executable(funkin
 	"src/character/tank.h"
 	"src/character/gf.c"
 	"src/character/gf.h"
+	"src/character/gfweeb.c"
+	"src/character/gfweeb.h"
 	"src/character/clucky.c"
 	"src/character/clucky.h"
 	"src/object.c"

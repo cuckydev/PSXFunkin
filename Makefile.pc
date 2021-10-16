@@ -117,6 +117,7 @@ SOURCES = main \
           character/senpaim \
           character/tank \
           character/gf \
+          character/gfweeb \
           character/clucky \
           object \
           object/combo \

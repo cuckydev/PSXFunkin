@@ -63,6 +63,7 @@ static const u8 note_anims[4][3] = {
 #include "character/senpaim.h"
 #include "character/tank.h"
 #include "character/gf.h"
+#include "character/gfweeb.h"
 #include "character/clucky.h"
 
 #include "stage/dummy.h"

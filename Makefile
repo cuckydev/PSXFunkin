@@ -41,6 +41,7 @@ SRCS = src/main.c \
        src/character/senpaim.c \
        src/character/tank.c \
        src/character/gf.c \
+       src/character/gfweeb.c \
        src/character/clucky.c \
        src/object.c \
        src/object/combo.c \

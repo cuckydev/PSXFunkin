@@ -39,7 +39,7 @@ typedef struct
 } Back_Week4;
 
 //Henchmen animation and rects
-static const CharFrame henchmen_frame[10] = {
+static const CharFrame henchmen_frame[] = {
 	{0, {  0,   0,  99,  99}, { 71,  98}}, //0 left 1
 	{0, { 99,   0,  99,  98}, { 71,  97}}, //1 left 2
 	{0, {  0,  99,  98,  97}, { 69,  95}}, //2 left 3
@@ -53,7 +53,7 @@ static const CharFrame henchmen_frame[10] = {
 	{1, {163, 101,  64,  90}, { 26,  89}}, //9 right 5
 };
 
-static const Animation henchmen_anim[2] = {
+static const Animation henchmen_anim[] = {
 	{2, (const u8[]){0, 1, 1, 2, 2, 3, 4, ASCR_BACK, 1}}, //Left
 	{2, (const u8[]){5, 6, 6, 7, 7, 8, 9, ASCR_BACK, 1}}, //Right
 };
