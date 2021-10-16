@@ -90,6 +90,18 @@ static const CharFrame char_bfweeb_frame[] = {
 	
 	{BFWeeb_ArcMain_Weeb0, {172, 113,  57,  56}, { 22,  52}}, //11 right 1
 	{BFWeeb_ArcMain_Weeb0, {  0, 169,  55,  56}, { 22,  52}}, //12 right 2
+	
+	{BFWeeb_ArcMain_Weeb0, { 56, 181,  54,  57}, { 33,  53}}, //13 left miss 1
+	{BFWeeb_ArcMain_Weeb0, {113, 181,  55,  57}, { 33,  53}}, //14 left miss 2
+	
+	{BFWeeb_ArcMain_Weeb0, {169, 170,  53,  56}, { 31,  52}}, //15 down miss 1
+	{BFWeeb_ArcMain_Weeb1, {  0,   0,  54,  53}, { 31,  49}}, //16 down miss 2
+	
+	{BFWeeb_ArcMain_Weeb1, { 55,   0,  60,  61}, { 28,  57}}, //17 up miss 1
+	{BFWeeb_ArcMain_Weeb1, {116,   0,  58,  63}, { 27,  59}}, //18 up miss 2
+	
+	{BFWeeb_ArcMain_Weeb1, {175,   0,  54,  56}, { 22,  52}}, //19 right miss 1
+	{BFWeeb_ArcMain_Weeb1, {  0,  54,  55,  56}, { 22,  52}}, //20 right miss 2
 };
 
 static const Animation char_bfweeb_anim[PlayerAnim_Max] = {
@@ -103,10 +115,10 @@ static const Animation char_bfweeb_anim[PlayerAnim_Max] = {
 	{2, (const u8[]){11, 12, ASCR_BACK, 1}},            //CharAnim_Right
 	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},      //CharAnim_RightAlt
 	
-	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},      //PlayerAnim_LeftMiss
-	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},      //PlayerAnim_DownMiss
-	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},      //PlayerAnim_UpMiss
-	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},      //PlayerAnim_RightMiss
+	{2, (const u8[]){13, 14, ASCR_BACK, 1}},            //CharAnim_Left
+	{2, (const u8[]){15, 16, ASCR_BACK, 1}},            //CharAnim_Down
+	{2, (const u8[]){17, 18, ASCR_BACK, 1}},            //CharAnim_Up
+	{2, (const u8[]){19, 20, ASCR_BACK, 1}},            //CharAnim_Right
 	
 	{2, (const u8[]){20, 21, 22, ASCR_BACK, 1}},        //PlayerAnim_Peace
 	{2, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},      //PlayerAnim_Sweat
@@ -344,7 +356,7 @@ Character *Char_BFWeeb_New(fixed_t x, fixed_t y)
 	Character_Init((Character*)this, x, y);
 	
 	//Set character information
-	this->character.spec = 0; //CHAR_SPEC_MISSANIM;
+	this->character.spec = CHAR_SPEC_MISSANIM;
 	
 	this->character.health_i = 7;
 	

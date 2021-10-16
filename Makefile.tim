@@ -32,6 +32,7 @@ all: \
 	iso/week4/hench.arc \
 	iso/week5/back.arc \
 	iso/week6/back.arc \
+	iso/week6/back3.tim \
 	iso/week7/back.arc
 
 iso/%.tim: iso/%.png

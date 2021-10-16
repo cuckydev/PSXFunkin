@@ -148,6 +148,7 @@
 			<dir name = "week6">
 				<!-- Background art -->
 				<file name = "back.arc" type = "data" source = "iso/week6/back.arc"/>
+				<file name = "back3.tim" type = "data" source = "iso/week6/back3.tim"/>
 				
 				<!-- Senpai charts -->
 				<file name = "6.1e.cht" type = "data" source = "iso/chart/senpai-easy.json.cht"/>

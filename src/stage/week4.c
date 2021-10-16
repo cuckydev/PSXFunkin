@@ -54,8 +54,8 @@ static const CharFrame henchmen_frame[] = {
 };
 
 static const Animation henchmen_anim[] = {
-	{2, (const u8[]){0, 1, 1, 2, 2, 3, 4, ASCR_BACK, 1}}, //Left
-	{2, (const u8[]){5, 6, 6, 7, 7, 8, 9, ASCR_BACK, 1}}, //Right
+	{1, (const u8[]){0, 0, 1, 1, 1, 2, 2, 2, 2, 3, 3, 4, ASCR_BACK, 1}}, //Left
+	{1, (const u8[]){5, 5, 6, 6, 6, 7, 7, 7, 7, 8, 8, 9, ASCR_BACK, 1}}, //Right
 };
 
 //Henchmen functions

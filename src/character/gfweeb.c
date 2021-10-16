@@ -95,7 +95,11 @@ void Char_GFWeeb_Tick(Character *character)
 	}
 	
 	//Get parallax
-	fixed_t parallax = FIXED_DEC(85,100);
+	fixed_t parallax;
+	if (stage.stage_id == StageId_6_3)
+		parallax = FIXED_DEC(1,1);
+	else
+		parallax = FIXED_DEC(85,100);
 	
 	//Animate and draw
 	Animatable_Animate(&character->animatable, (void*)this, Char_GFWeeb_SetFrame);

@@ -34,6 +34,11 @@ static const CharFrame freaks_frame[] = {
 	{0, { 84,   0,  83,  76}, { 18,  76}}, //normal 1
 	{0, {168,   0,  84,  82}, { 17,  82}}, //normal 2
 	{0, {  0,  80,  83,  81}, { 17,  81}}, //normal 3
+	
+	{0, { 84,  77,  83,  79}, { 17,  79}}, //disuaded 0
+	{0, {168,  83,  83,  76}, { 18,  76}}, //disuaded 1
+	{0, {  0, 162,  84,  82}, { 17,  82}}, //disuaded 2
+	{0, { 85, 157,  83,  81}, { 17,  81}}, //disuaded 3
 };
 
 static const Animation freaks_anim[] = {
@@ -52,10 +57,10 @@ void Week6_Freaks_Draw(Back_Week6 *this, fixed_t x, fixed_t y, boolean flip)
 {
 	//Draw character
 	static const u8 frame_map[4][2][2] = {
-		{{0, 3}, {0, 3}},
-		{{1, 2}, {1, 2}},
-		{{2, 1}, {2, 1}},
-		{{3, 0}, {3, 0}},
+		{{0, 3}, {4, 7}},
+		{{1, 2}, {5, 6}},
+		{{2, 1}, {6, 5}},
+		{{3, 0}, {7, 4}},
 	};
 	
 	const CharFrame *cframe = &freaks_frame[frame_map[this->freaks_frame][stage.stage_id == StageId_6_2][flip]];
@@ -93,9 +98,9 @@ void Back_Week6_DrawBG(StageBack *back)
 	}
 	Animatable_Animate(&this->freaks_animatable, (void*)this, Week6_Freaks_SetFrame);
 	
-	Week6_Freaks_Draw(this, FIXED_DEC(-90,1) - fx, FIXED_DEC(44,1) - fy, false);
-	Week6_Freaks_Draw(this,   FIXED_DEC(0,1) - fx, FIXED_DEC(44,1) - fy, true);
-	Week6_Freaks_Draw(this,  FIXED_DEC(90,1) - fx, FIXED_DEC(44,1) - fy, false);
+	Week6_Freaks_Draw(this, FIXED_DEC(-110,1) - fx, FIXED_DEC(44,1) - fy, false);
+	Week6_Freaks_Draw(this,  FIXED_DEC(-20,1) - fx, FIXED_DEC(44,1) - fy, true);
+	Week6_Freaks_Draw(this,   FIXED_DEC(70,1) - fx, FIXED_DEC(44,1) - fy, false);
 	
 	//Draw foreground trees
 	fx = stage.camera.x >> 1;
@@ -134,7 +139,7 @@ void Back_Week6_DrawBG(StageBack *back)
 	RECT bg_tree_l_src = {0, 83, 62, 45};
 	RECT_FIXED bg_tree_l_dst = {
 		FIXED_DEC(-106,1) - fx,
-		FIXED_DEC(-24,1) - fy,
+		FIXED_DEC(-26,1) - fy,
 		FIXED_DEC(62,1),
 		FIXED_DEC(45,1)
 	};
@@ -142,7 +147,7 @@ void Back_Week6_DrawBG(StageBack *back)
 	RECT bg_tree_r_src = {63, 83, 61, 50};
 	RECT_FIXED bg_tree_r_dst = {
 		FIXED_DEC(44,1) - fx,
-		FIXED_DEC(-24,1) - fy,
+		FIXED_DEC(-26,1) - fy,
 		FIXED_DEC(61,1),
 		FIXED_DEC(50,1)
 	};
@@ -208,6 +213,56 @@ void Back_Week6_DrawBG(StageBack *back)
 	Stage_DrawTex(&this->tex_back0, &sky_src, &sky_dst, stage.camera.bzoom);
 }
 
+static fixed_t week6_back_paraly[] = {
+	FIXED_DEC(2,10),
+	FIXED_DEC(2,10),
+	FIXED_DEC(2,10),
+	FIXED_DEC(2,10),
+	FIXED_DEC(8,10),
+	FIXED_DEC(12,10),
+};
+
+static s32 Back_Week6_GetX(int x, int y)
+{
+	return ((fixed_t)x << (FIXED_SHIFT + 5)) + FIXED_DEC(-128,1) - FIXED_MUL(stage.camera.x, week6_back_paraly[y]) + ((MUtil_Cos((animf_count << 2) + ((x + y) << 5)) * FIXED_DEC(3,1)) >> 8);
+}
+
+static s32 Back_Week6_GetY(int x, int y)
+{
+	return ((fixed_t)y << (FIXED_SHIFT + 5)) + FIXED_DEC(-86,1) - FIXED_MUL(stage.camera.y, week6_back_paraly[y]) + ((MUtil_Sin((animf_count << 2) + ((x + y) << 5)) * FIXED_DEC(3,1)) >> 8);
+}
+
+void Back_Week6_DrawBG3(StageBack *back)
+{
+	Back_Week6 *this = (Back_Week6*)back;
+	
+	//Get quad points
+	POINT_FIXED back_dst[6][9];
+	for (int y = 0; y < 6; y++)
+	{
+		for (int x = 0; x < 9; x++)
+		{
+			back_dst[y][x].x = Back_Week6_GetX(x, y);
+			back_dst[y][x].y = Back_Week6_GetY(x, y);
+		}
+	}
+	
+	//Draw 32x32 quads of the background
+	for (int y = 0; y < 5; y++)
+	{
+		RECT back_src = {0, y * 32, 32, 32};
+		for (int x = 0; x < 8; x++)
+		{
+			//Draw quad
+			Stage_DrawTexArb(&this->tex_back0, &back_src, &back_dst[y][x], &back_dst[y][x + 1], &back_dst[y + 1][x], &back_dst[y + 1][x + 1], stage.camera.bzoom);
+			
+			//Increment source rect
+			if ((back_src.x += 32) >= 0xE0)
+				back_src.w--;
+		}
+	}
+}
+
 void Back_Week6_Free(StageBack *back)
 {
 	Back_Week6 *this = (Back_Week6*)back;
@@ -223,22 +278,36 @@ StageBack *Back_Week6_New(void)
 	if (this == NULL)
 		return NULL;
 	
-	//Set background functions
-	this->back.draw_fg = NULL;
-	this->back.draw_md = NULL;
-	this->back.draw_bg = Back_Week6_DrawBG;
-	this->back.free = Back_Week6_Free;
-	
-	//Load background textures
-	IO_Data arc_back = IO_Read("\\WEEK6\\BACK.ARC;1");
-	Gfx_LoadTex(&this->tex_back0, Archive_Find(arc_back, "back0.tim"), 0);
-	Gfx_LoadTex(&this->tex_back1, Archive_Find(arc_back, "back1.tim"), 0);
-	Gfx_LoadTex(&this->tex_back2, Archive_Find(arc_back, "back2.tim"), 0);
-	Mem_Free(arc_back);
-	
-	//Initialize henchmen state
-	Animatable_Init(&this->freaks_animatable, freaks_anim);
-	Animatable_SetAnim(&this->freaks_animatable, 0);
+	if (stage.stage_id != StageId_6_3)
+	{
+		//Set background functions
+		this->back.draw_fg = NULL;
+		this->back.draw_md = NULL;
+		this->back.draw_bg = Back_Week6_DrawBG;
+		this->back.free = Back_Week6_Free;
+		
+		//Load background textures
+		IO_Data arc_back = IO_Read("\\WEEK6\\BACK.ARC;1");
+		Gfx_LoadTex(&this->tex_back0, Archive_Find(arc_back, "back0.tim"), 0);
+		Gfx_LoadTex(&this->tex_back1, Archive_Find(arc_back, "back1.tim"), 0);
+		Gfx_LoadTex(&this->tex_back2, Archive_Find(arc_back, "back2.tim"), 0);
+		Mem_Free(arc_back);
+		
+		//Initialize freaks state
+		Animatable_Init(&this->freaks_animatable, freaks_anim);
+		Animatable_SetAnim(&this->freaks_animatable, 0);
+	}
+	else
+	{
+		//Set background functions
+		this->back.draw_fg = NULL;
+		this->back.draw_md = NULL;
+		this->back.draw_bg = Back_Week6_DrawBG3;
+		this->back.free = Back_Week6_Free;
+		
+		//Load background texture
+		Gfx_LoadTex(&this->tex_back0, IO_Read("\\WEEK6\\BACK3.TIM;1"), GFX_LOADTEX_FREE);
+	}
 	
 	return (StageBack*)this;
 }
