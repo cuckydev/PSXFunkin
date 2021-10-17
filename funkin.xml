@@ -250,6 +250,7 @@
 				
 				<!-- Girlfriend assets -->
 				<file name = "gf.arc" type = "data" source = "iso/gf/main.arc"/>
+				<file name = "gftut.arc" type = "data" source = "iso/gf/tut.arc"/>
 				<file name = "gfweeb.arc" type = "data" source = "iso/gf/weeb.arc"/>
 				<file name = "speaker.tim" type = "data" source = "iso/gf/speaker.tim"/>
 				

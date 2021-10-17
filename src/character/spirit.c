@@ -54,13 +54,13 @@ static const CharFrame char_spirit_frame[] = {
 	{Spirit_ArcMain_Spirit0, {153, 105,  46, 113}, { 21, 50 + 57}}, //8 down 2
 	{Spirit_ArcMain_Spirit0, {200, 100,  47, 110}, { 22, 50 + 58}}, //9 down 3
 	
-	{Spirit_ArcMain_Spirit1, {  0,   0,  43, 110}, { 22, 50 + 61}}, //10 up 1
-	{Spirit_ArcMain_Spirit1, { 44,   0,  42, 125}, { 21, 50 + 62}}, //11 up 2
-	{Spirit_ArcMain_Spirit1, { 87,   0,  43, 126}, { 22, 50 + 61}}, //12 up 3
+	{Spirit_ArcMain_Spirit1, {  0,   0,  43, 110}, { 22, 50 + 65}}, //10 up 1
+	{Spirit_ArcMain_Spirit1, { 44,   0,  42, 125}, { 21, 50 + 64}}, //11 up 2
+	{Spirit_ArcMain_Spirit1, { 87,   0,  43, 126}, { 22, 50 + 63}}, //12 up 3
 	
-	{Spirit_ArcMain_Spirit1, {131,   0,  60, 109}, { 24, 50 + 56}}, //13 right 1
-	{Spirit_ArcMain_Spirit1, {192,   0,  50, 105}, { 25, 50 + 53}}, //14 right 2
-	{Spirit_ArcMain_Spirit1, {  0, 111,  54, 111}, { 24, 50 + 55}}, //15 right 3
+	{Spirit_ArcMain_Spirit1, {131,   0,  60, 109}, { 15, 50 + 56}}, //13 right 1
+	{Spirit_ArcMain_Spirit1, {192,   0,  50, 105}, { 20, 50 + 53}}, //14 right 2
+	{Spirit_ArcMain_Spirit1, {  0, 111,  54, 111}, { 19, 50 + 55}}, //15 right 3
 };
 
 static const Animation char_spirit_anim[CharAnim_Max] = {
@@ -94,8 +94,8 @@ void Char_Spirit_SetFrame(void *user, u8 frame)
 	this->distort_pow += (FIXED_UNIT - this->distort_pow) >> 2;
 	this->distort_spd += (FIXED_UNIT - this->distort_spd) >> 1;
 	
-	this->ghost_x += (FIXED_UNIT - this->ghost_x) >> 1;
-	this->ghost_y += (FIXED_UNIT - this->ghost_y) >> 1;
+	this->ghost_x += (FIXED_UNIT - this->ghost_x) >> 2;
+	this->ghost_y += (FIXED_UNIT - this->ghost_y) >> 2;
 }
 
 static void Char_Spirit_Draw(Char_Spirit *this, fixed_t x, fixed_t y, fixed_t phase, boolean mode)
@@ -159,20 +159,20 @@ void Char_Spirit_SetAnim(Character *character, u8 anim)
 	switch (anim)
 	{
 		case CharAnim_Idle:
-			this->ghost_x += RandomRange(FIXED_DEC(-3,1), FIXED_DEC(3,1));
-			this->ghost_y += RandomRange(FIXED_DEC(0,1), FIXED_DEC(3,1));
+			this->ghost_x += RandomRange(FIXED_DEC(-9,1), FIXED_DEC(9,1));
+			this->ghost_y += RandomRange(FIXED_DEC(-13,1), FIXED_DEC(13,1));
 			break;
 		case CharAnim_Left:
-			this->ghost_x -= RandomRange(FIXED_DEC(2,1), FIXED_DEC(6,1));
+			this->ghost_x += RandomRange(FIXED_DEC(2,1), FIXED_DEC(16,1));
 			break;
 		case CharAnim_Down:
-			this->ghost_y += RandomRange(FIXED_DEC(2,1), FIXED_DEC(6,1));
+			this->ghost_y -= RandomRange(FIXED_DEC(2,1), FIXED_DEC(16,1));
 			break;
 		case CharAnim_Up:
-			this->ghost_y -= RandomRange(FIXED_DEC(2,1), FIXED_DEC(6,1));
+			this->ghost_y += RandomRange(FIXED_DEC(2,1), FIXED_DEC(16,1));
 			break;
 		case CharAnim_Right:
-			this->ghost_x += RandomRange(FIXED_DEC(2,1), FIXED_DEC(6,1));
+			this->ghost_x -= RandomRange(FIXED_DEC(2,1), FIXED_DEC(16,1));
 			break;
 	}
 }

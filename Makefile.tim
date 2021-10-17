@@ -23,6 +23,7 @@ all: \
 	iso/tank/ugh.arc \
 	iso/tank/good.arc \
 	iso/gf/main.arc \
+	iso/gf/tut.arc \
 	iso/gf/weeb.arc \
 	iso/gf/speaker.tim \
 	iso/clucky/main.arc \
@@ -81,7 +82,8 @@ iso/tank/ugh.arc: iso/tank/ugh0.tim iso/tank/ugh1.tim
 iso/tank/good.arc: iso/tank/good0.tim iso/tank/good1.tim iso/tank/good2.tim iso/tank/good3.tim
 
 # GF
-iso/gf/main.arc: iso/gf/bopleft.tim iso/gf/bopright.tim iso/gf/cry.tim
+iso/gf/main.arc: iso/gf/gf0.tim iso/gf/gf1.tim iso/gf/gf2.tim
+iso/gf/tut.arc: iso/gf/tut0.tim iso/gf/tut1.tim
 iso/gf/weeb.arc: iso/gf/weeb0.tim iso/gf/weeb1.tim
 
 # Clucky
