@@ -14,9 +14,9 @@
 #define PSXF_GL_ES 2
 
 #if PSXF_GL == PSXF_GL_ES
- #include <GLES2/gl2.h>
+	#include <GLES2/gl2.h>
 #else
- #include "glad/glad.h"
+	#include "glad/glad.h"
 #endif
 #include <GLFW/glfw3.h>
 

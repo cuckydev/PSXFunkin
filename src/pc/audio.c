@@ -73,32 +73,15 @@ typedef struct
 
 MP3Decode xa_mp3[2];
 
-extern FILE *IO_OpenFile(CdlFILE *file);
+extern IO_Data IO_ReadFile2(CdlFILE *file, size_t *size);
 
 static boolean MP3Decode_Decode(MP3Decode *this, CdlFILE *file)
 {
 	//Open file and read contents
-	FILE *fp = IO_OpenFile(file);
-	if (fp == NULL)
-		return true;
-	
-	fseek(fp, 0, SEEK_END);
-	size_t size = ftell(fp);
-	unsigned char *data = malloc(size);
+	size_t size;
+	IO_Data data = IO_ReadFile2(file, &size);
 	if (data == NULL)
-	{
-		sprintf(error_msg, "[MP3Decode_Decode] Failed to allocate \"%s\" buffer (size 0x%zX)", file->path, size);
-		ErrorLock();
 		return true;
-	}
-	fseek(fp, 0, SEEK_SET);
-	if (fread(data, size, 1, fp) != 1)
-	{
-		sprintf(error_msg, "[MP3Decode_Decode] Failed to read \"%s\"", file->path);
-		ErrorLock();
-		return true;
-	}
-	fclose(fp);
 	
 	//Prepare dr_mp3 decoding
 	drmp3 drmp3_instance;
