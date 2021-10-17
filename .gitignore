@@ -23,6 +23,7 @@ tools/xainterleave/xainterleave
 
 # Exclude object and link files
 obj/
+bin/
 !bin/index.html
 !bin/README.txt
 *.o
