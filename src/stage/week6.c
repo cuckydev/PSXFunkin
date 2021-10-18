@@ -214,22 +214,40 @@ void Back_Week6_DrawBG(StageBack *back)
 }
 
 static fixed_t week6_back_paraly[] = {
-	FIXED_DEC(2,10),
-	FIXED_DEC(2,10),
-	FIXED_DEC(2,10),
-	FIXED_DEC(2,10),
-	FIXED_DEC(8,10),
-	FIXED_DEC(11,10),
+	FIXED_DEC(15,100),
+	FIXED_DEC(15,100),
+	FIXED_DEC(15,100),
+	FIXED_DEC(15,100),
+	FIXED_DEC(7,10),
+	FIXED_DEC(13,10),
+};
+
+static fixed_t week6_back_warpx[] = {
+	FIXED_DEC(5,1),
+	FIXED_DEC(5,1),
+	FIXED_DEC(5,1),
+	FIXED_DEC(4,1),
+	FIXED_DEC(3,1),
+	FIXED_DEC(3,1),
+};
+
+static fixed_t week6_back_warpy[] = {
+	FIXED_DEC(25,10),
+	FIXED_DEC(20,10),
+	FIXED_DEC(15,10),
+	FIXED_DEC(10,10),
+	FIXED_DEC(0,10),
+	FIXED_DEC(0,10),
 };
 
 static s32 Back_Week6_GetX(int x, int y)
 {
-	return ((fixed_t)x << (FIXED_SHIFT + 5)) + FIXED_DEC(-128,1) - FIXED_MUL(stage.camera.x, week6_back_paraly[y]) + ((MUtil_Cos((animf_count << 2) + ((x + y) << 5)) * FIXED_DEC(3,1)) >> 8);
+	return ((fixed_t)x << (FIXED_SHIFT + 5)) + FIXED_DEC(-128,1) - FIXED_MUL(stage.camera.x, week6_back_paraly[y]) + ((MUtil_Cos((animf_count << 2) + ((x + y) << 5)) * week6_back_warpx[y]) >> 8);
 }
 
 static s32 Back_Week6_GetY(int x, int y)
 {
-	return ((fixed_t)y << (FIXED_SHIFT + 5)) + FIXED_DEC(-86,1) - FIXED_MUL(stage.camera.y, week6_back_paraly[y]) + ((MUtil_Sin((animf_count << 2) + ((x + y) << 5)) * FIXED_DEC(3,1)) >> 8);
+	return ((fixed_t)y << (FIXED_SHIFT + 5)) + FIXED_DEC(-86,1) - FIXED_MUL(stage.camera.y, week6_back_paraly[y]) + ((MUtil_Sin((animf_count << 2) + ((x + y) << 5)) * week6_back_warpy[y]) >> 8);
 }
 
 void Back_Week6_DrawBG3(StageBack *back)

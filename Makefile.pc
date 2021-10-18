@@ -37,7 +37,7 @@ ifeq ($(EMSCRIPTEN), 1)
 	CC = emcc
 	PKGCONFIG = :
 	CFLAGS += -DPSXF_GL=PSXF_GL_ES -DPSXF_EMSCRIPTEN
-	LDFLAGS += -s ALLOW_MEMORY_GROWTH=1 -s ASYNCIFY -s ASYNCIFY_IGNORE_INDIRECT -s FULL_ES2=1 -s USE_GLFW=3
+	LDFLAGS += -s ALLOW_MEMORY_GROWTH=1 -s ASYNCIFY=1 -s FULL_ES2=1 -s USE_SDL=2
 	GL = ES
 else
 	# GL options
@@ -97,9 +97,7 @@ SOURCES = main \
           stage \
           pc/psx \
           pc/io \
-          pc/gfx \
-          pc/audio \
-          pc/pad \
+          pc/gl \
           pc/timer \
           pc/movie \
           stage/dummy \
@@ -131,6 +129,16 @@ SOURCES = main \
           object \
           object/combo \
           object/splash
+
+ifeq ($(EMSCRIPTEN),1)
+  SOURCES += pc/sdl \
+             pc/sdlpad \
+             pc/sdlaudio
+else
+  SOURCES += pc/glfw \
+             pc/glfwpad \
+             pc/miniaudio
+endif
 
 ifneq ($(GL), ES)
   # Link glad

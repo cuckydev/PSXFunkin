@@ -14,10 +14,9 @@
 #include "../io.h"
 #include "../main.h"
 
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
+#include "SDL.h"
 
-//We really really don't care if dr_mp3 and miniaudio have unused functions
+//We really really don't care if dr_mp3 has unused functions
 #ifdef __GNUC__
  #pragma GCC diagnostic push
  #pragma GCC diagnostic ignored "-Wunused-function"
@@ -32,15 +31,10 @@
 #define MA_NO_DECODING
 #define MA_NO_ENCODING
 #define MA_NO_GENERATION
+#define MA_NO_DEVICE_IO
+#define MA_NO_THREADING
 #define MA_API static
-
-#define RECT RECT_unconflict
-#define POINT POINT_unconflict
-#define boolean boolean_unconflict
 #include "miniaudio.h"
-#undef boolean
-#undef POINT
-#undef RECT
 
 #ifdef __GNUC__
  #pragma GCC diagnostic pop
@@ -55,14 +49,12 @@ static u8 xa_channel;
 
 static u8 xa_state;
 
-//Miniaudio
-static ma_context xa_context;
-static ma_device xa_device;
-static ma_mutex xa_mutex;
+//SDL audio
+static SDL_AudioDeviceID audio_device;
 
-static size_t bytes_per_frame;
+static size_t bytes_per_frame = 4; //stereo s16
 
-static double xa_lasttime, xa_interptime, xa_interpstart;
+static Uint32 xa_lasttime, xa_interptime, xa_interpstart;
 
 //MP3 decode
 typedef struct
@@ -104,7 +96,7 @@ static boolean MP3Decode_Decode(MP3Decode *this, CdlFILE *file)
 	free(data);
 
 	//Convert buffer to output format
-	ma_uint64 output_frames = ma_convert_frames(NULL, 0, xa_device.playback.format, xa_device.playback.channels, xa_device.sampleRate, decoded, decoded_frames, ma_format_s16, decoded_channels, decoded_samplerate);
+	ma_uint64 output_frames = ma_convert_frames(NULL, 0, ma_format_s16, 2, 44100, decoded, decoded_frames, ma_format_s16, decoded_channels, decoded_samplerate);
 
 	this->data = malloc(output_frames * bytes_per_frame);
 
@@ -115,7 +107,7 @@ static boolean MP3Decode_Decode(MP3Decode *this, CdlFILE *file)
 		return true;
 	}
 
-	output_frames = ma_convert_frames(this->data, output_frames, xa_device.playback.format, xa_device.playback.channels, xa_device.sampleRate, decoded, decoded_frames, ma_format_s16, decoded_channels, decoded_samplerate);
+	output_frames = ma_convert_frames(this->data, output_frames, ma_format_s16, 2, 44100, decoded, decoded_frames, ma_format_s16, decoded_channels, decoded_samplerate);
 	free(decoded);
 	
 	this->datap = this->data;
@@ -160,28 +152,16 @@ static void MP3Decode_Skip(MP3Decode *this, size_t bytes_to_skip)
 		this->datap = this->datae;
 }
 
-//XA files and tracks
-static CdlFILE xa_files[XA_TrackMax];
-
-#include "../audio_def.h"
-
-//Miniaudio callback
-static void Audio_Callback(ma_device *device, void *output_buffer_void, const void *input_buffer, ma_uint32 frames_to_do)
+//Audio callback
+static void Audio_Callback(void *userdata, Uint8 *output_buffer_void, int bytes_to_do)
 {
-	(void)input_buffer;
-	
-	size_t bytes_to_do = frames_to_do * bytes_per_frame;
-	
-	//Lock mutex during mixing
-	ma_mutex_lock(&xa_mutex);
-	
 	//Copy XA
 	if (xa_state & XA_STATE_PLAYING)
 	{
 		//Update timing state
 		xa_interptime = xa_lasttime;
-		xa_interpstart = glfwGetTime();
-		xa_lasttime = (double)(xa_mp3[xa_channel].datap - xa_mp3[xa_channel].data) / bytes_per_frame / xa_device.sampleRate;
+		xa_interpstart = SDL_GetTicks();
+		xa_lasttime = (Sint64)(xa_mp3[xa_channel].datap - xa_mp3[xa_channel].data) / bytes_per_frame * 1000 / 44100;
 		
 		//Copy MP3s into stream
 		unsigned char *output_buffer = output_buffer_void;
@@ -218,10 +198,12 @@ static void Audio_Callback(ma_device *device, void *output_buffer_void, const vo
 		//Clear stream
 		memset(output_buffer_void, 0, bytes_to_do);
 	}
-	
-	//Unlock mutex
-	ma_mutex_unlock(&xa_mutex);
 }
+
+//XA files and tracks
+static CdlFILE xa_files[XA_TrackMax];
+
+#include "../audio_def.h"
 
 //Audio functions
 void Audio_Init(void)
@@ -252,51 +234,31 @@ void Audio_Init(void)
 	xa_mp3[0].data = NULL;
 	xa_mp3[1].data = NULL;
 	
-	//Initialize miniaudio
-	if (ma_context_init(NULL, 0, NULL, &xa_context) != MA_SUCCESS)
+	//Open audio device
+	SDL_AudioSpec want, have;
+	
+	SDL_memset(&want, 0, sizeof(want));
+	want.freq = 44100;
+	want.format = AUDIO_S16;
+	want.channels = 2;
+	want.samples = 256;
+	want.callback = Audio_Callback;
+	
+	if ((audio_device = SDL_OpenAudioDevice(NULL, 0, &want, &have, 0)) == 0)
 	{
-		sprintf(error_msg, "[Audio_Init] Failed to initialize miniaudio");
+		sprintf(error_msg, "[Audio_Init] Failed to open audio device: %s", SDL_GetError());
 		ErrorLock();
-		return;
 	}
 	
-	//Create miniaudio device
-	ma_device_config config = ma_device_config_init(ma_device_type_playback);
-	config.playback.pDeviceID = NULL;
-	config.playback.format = ma_format_unknown; //Use native format
-	config.playback.channels = 0;               //Use native channel count
-	config.sampleRate = 0;                      //Use native sample rate
-	config.noPreZeroedOutputBuffer = MA_TRUE; //We will clear this buffer ourselves if needed
-	config.dataCallback = Audio_Callback;
-	config.pUserData = NULL;
+	printf("%d\n", have.samples);
 	
-	if (ma_device_init(&xa_context, &config, &xa_device) != MA_SUCCESS)
-	{
-		sprintf(error_msg, "[Audio_Init] Failed to create miniaudio device");
-		ErrorLock();
-		return;
-	}
-	
-	//Cache this for later, so we don't have to calculate it constantly
-	bytes_per_frame = ma_get_bytes_per_frame(xa_device.playback.format, xa_device.playback.channels);
-	
-	if (ma_mutex_init(&xa_mutex) != MA_SUCCESS)
-	{
-		sprintf(error_msg, "[Audio_Init] Failed to create miniaudio mutex");
-		ErrorLock();
-		return;
-	}
-	
-	ma_device_start(&xa_device);
+	SDL_PauseAudioDevice(audio_device, 0);
 }
 
 void Audio_Quit(void)
 {
-	//Deinitialize miniaudio
-	ma_device_stop(&xa_device);
-	ma_mutex_uninit(&xa_mutex);
-	ma_device_uninit(&xa_device);
-	ma_context_uninit(&xa_context);
+	//Destroy audio device
+	SDL_CloseAudioDevice(audio_device);
 	
 	//Free mp3s
 	free(xa_mp3[0].data);
@@ -309,21 +271,21 @@ void Audio_PlayXA_Track(XA_Track track, u8 volume, u8 channel, boolean loop)
 	Audio_SeekXA_Track(track);
 	
 	//Lock mutex during state modification
-	ma_mutex_lock(&xa_mutex);
+	SDL_LockAudioDevice(audio_device);
 	xa_state = XA_STATE_PLAYING | (loop ? XA_STATE_LOOPS : 0);
-	ma_mutex_unlock(&xa_mutex);
+	SDL_UnlockAudioDevice(audio_device);
 }
 
 void Audio_SeekXA_Track(XA_Track track)
 {
 	//Lock mutex during state modification
-	ma_mutex_lock(&xa_mutex);
+	SDL_LockAudioDevice(audio_device);
 	
 	//Reset XA state
 	xa_state = 0;
 	xa_channel = 0;
-	xa_lasttime = xa_interptime = 0.0;
-	xa_interpstart = glfwGetTime();
+	xa_lasttime = xa_interptime = 0;
+	xa_interpstart = SDL_GetTicks();
 	
 	//Read file if different track
 	if (track != xa_track)
@@ -352,44 +314,44 @@ void Audio_SeekXA_Track(XA_Track track)
 	}
 	
 	//Unlock mutex
-	ma_mutex_unlock(&xa_mutex);
+	SDL_UnlockAudioDevice(audio_device);
 }
 
 void Audio_PauseXA(void)
 {
 	//Lock mutex during state modification
-	ma_mutex_lock(&xa_mutex);
+	SDL_LockAudioDevice(audio_device);
 	xa_state &= ~XA_STATE_PLAYING;
-	ma_mutex_unlock(&xa_mutex);
+	SDL_UnlockAudioDevice(audio_device);
 }
 
 void Audio_StopXA(void)
 {
 	//Lock mutex during state modification
-	ma_mutex_lock(&xa_mutex);
+	SDL_LockAudioDevice(audio_device);
 	
 	//Set XA state
 	xa_track = -1;
 	xa_state = 0;
 	xa_channel = 0;
-	xa_lasttime = xa_interptime = 0.0;
-	xa_interpstart = glfwGetTime();
+	xa_lasttime = xa_interptime = 0;
+	xa_interpstart = SDL_GetTicks();
 	
 	//Free previous track
 	free(xa_mp3[0].data); xa_mp3[0].data = NULL;
 	free(xa_mp3[1].data); xa_mp3[1].data = NULL;
 	
 	//Unlock mutex
-	ma_mutex_unlock(&xa_mutex);
+	SDL_UnlockAudioDevice(audio_device);
 }
 
 void Audio_ChannelXA(u8 channel)
 {
 	//Lock mutex during state modification
-	ma_mutex_lock(&xa_mutex);
+	SDL_LockAudioDevice(audio_device);
 	if (xa_mp3s[xa_track].vocal)
 		xa_channel = channel & 1;
-	ma_mutex_unlock(&xa_mutex);
+	SDL_UnlockAudioDevice(audio_device);
 }
 
 s32 Audio_TellXA_Sector(void)
@@ -400,13 +362,13 @@ s32 Audio_TellXA_Sector(void)
 s32 Audio_TellXA_Milli(void)
 {
 	//Lock mutex during state check
-	ma_mutex_lock(&xa_mutex);
+	SDL_LockAudioDevice(audio_device);
 	
 	s32 pos;
 	if (xa_state & XA_STATE_PLAYING)
 	{
-		double xa_timesec = xa_interptime + (glfwGetTime() - xa_interpstart);
-		pos = (s32)(xa_timesec * 1000);
+		double xa_timesec = xa_interptime + (double)(SDL_GetTicks() - xa_interpstart);
+		pos = (s32)xa_timesec;
 	}
 	else
 	{
@@ -414,13 +376,20 @@ s32 Audio_TellXA_Milli(void)
 	}
 	
 	//Unlock mutex
-	ma_mutex_unlock(&xa_mutex);
+	SDL_UnlockAudioDevice(audio_device);
 	return pos;
 }
 
 boolean Audio_PlayingXA(void)
 {
-	return (xa_state & XA_STATE_PLAYING) != 0;
+	//Lock mutex during state check
+	SDL_LockAudioDevice(audio_device);
+	
+	boolean playing = (xa_state & XA_STATE_PLAYING) != 0;
+	
+	//Unlock mutex
+	SDL_UnlockAudioDevice(audio_device);
+	return playing;
 }
 
 void Audio_WaitPlayXA(void)

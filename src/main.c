@@ -71,7 +71,7 @@ int main(int argc, char **argv)
 	Menu_Load(MenuPage_Opening);
 	
 #ifdef PSXF_EMSCRIPTEN
-	emscripten_set_main_loop(main_loop, 0, 1);
+	emscripten_set_main_loop(main_loop, -1, 1);
 	return 0;
 }
 

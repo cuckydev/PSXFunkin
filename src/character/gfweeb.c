@@ -97,7 +97,7 @@ void Char_GFWeeb_Tick(Character *character)
 	//Get parallax
 	fixed_t parallax;
 	if (stage.stage_id == StageId_6_3)
-		parallax = FIXED_DEC(1,1);
+		parallax = FIXED_DEC(7,10);
 	else
 		parallax = FIXED_DEC(85,100);
 	
