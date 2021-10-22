@@ -42,11 +42,6 @@ void ErrorLock(void)
 static u32 malloc_heap[0x1B0000 / sizeof(u32)];
 #endif
 
-#ifdef PSXF_EMSCRIPTEN
-#include <emscripten.h>
-void main_loop(void);
-#endif
-
 int main(int argc, char **argv)
 {
 	//Remember arguments
@@ -70,18 +65,9 @@ int main(int argc, char **argv)
 	gameloop = GameLoop_Menu;
 	Menu_Load(MenuPage_Opening);
 	
-#ifdef PSXF_EMSCRIPTEN
-	emscripten_set_main_loop(main_loop, -1, 1);
-	return 0;
-}
-
-void main_loop()
-{
-#else
 	//Game loop
 	while (PSX_Running())
 	{
-#endif
 		//Prepare frame
 		Timer_Tick();
 		Audio_ProcessXA();
@@ -110,7 +96,6 @@ void main_loop()
 		
 		//Flip gfx buffers
 		Gfx_Flip();
-#ifndef PSXF_EMSCRIPTEN
 	}
 	
 	//Deinitialize system
@@ -122,5 +107,4 @@ void main_loop()
 	
 	PSX_Quit();
 	return 0;
-#endif
 }

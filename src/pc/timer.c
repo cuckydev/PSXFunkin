@@ -6,12 +6,8 @@
 
 #include "../timer.h"
 
-#ifdef PSXF_EMSCRIPTEN
-	#include "SDL.h"
-#else
-	#define GLFW_INCLUDE_NONE
-	#include <GLFW/glfw3.h>
-#endif
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
 
 //Timer state
 u32 frame_count, animf_count;
@@ -29,11 +25,7 @@ void Timer_Tick(void)
 	frame_count++;
 	
 	//Update seconds counter
-	#ifdef PSXF_EMSCRIPTEN
-		fixed_t nsec = (fixed_t)(SDL_GetTicks() << FIXED_SHIFT) / 1000;
-	#else
-		fixed_t nsec = (fixed_t)(glfwGetTime() * FIXED_UNIT);
-	#endif
+	fixed_t nsec = (fixed_t)(glfwGetTime() * FIXED_UNIT);
 	timer_dt = nsec - timer_sec;
 	timer_sec = nsec;
 	
@@ -44,11 +36,7 @@ void Timer_Tick(void)
 void Timer_Reset(void)
 {
 	//Update seconds counter
-	#ifdef PSXF_EMSCRIPTEN
-		fixed_t nsec = (fixed_t)(SDL_GetTicks() << FIXED_SHIFT) / 1000;
-	#else
-		fixed_t nsec = (fixed_t)(glfwGetTime() * FIXED_UNIT);
-	#endif
+	fixed_t nsec = (fixed_t)(glfwGetTime() * FIXED_UNIT);
 	timer_sec = nsec;
 	timer_dt = 0;
 }

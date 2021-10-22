@@ -4,6 +4,9 @@ FILENAME = funkin
 CFLAGS = 
 LDFLAGS = 
 
+# Default options
+GL = MODERN
+
 # Win32
 ifeq ($(OS),Windows_NT)
   WINDOWS ?= 1
@@ -15,6 +18,16 @@ endif
 # Options
 ifeq ($(STDMEM), 1)
   CFLAGS += -DPSXF_STDMEM
+endif
+
+ifeq ($(GL), MODERN)
+  CFLAGS += -DPSXF_GL=PSXF_GL_MODERN
+endif
+ifeq ($(GL), LEGACY)
+  CFLAGS += -DPSXF_GL=PSXF_GL_LEGACY
+endif
+ifeq ($(GL), ES)
+  CFLAGS += -DPSXF_GL=PSXF_GL_ES
 endif
 
 ifeq ($(NETWORK), 1)
@@ -29,56 +42,35 @@ ifeq ($(RELEASE), 1)
   CFLAGS += -O3 -Wall -Wextra -pedantic -DPSXF_PC -DNDEBUG
   LDFLAGS += -s -flto
 else
-  CFLAGS += -Wall -Wextra -pedantic -DPSXF_DEBUG -DPSXF_PC
+  CFLAGS += -Og -ggdb3 -Wall -Wextra -pedantic -DPSXF_DEBUG -DPSXF_PC
 endif
 
-# Emscripten Compilation
-ifeq ($(EMSCRIPTEN), 1)
-	CC = emcc
-	PKGCONFIG = :
-	CFLAGS += -DPSXF_GL=PSXF_GL_ES -DPSXF_EMSCRIPTEN
-	LDFLAGS += -s ALLOW_MEMORY_GROWTH=1 -s ASYNCIFY=1 -s FULL_ES2=1 -s USE_SDL=2
-	GL = ES
+# Link GLFW
+CFLAGS += $(shell $(PKGCONFIG) --cflags glfw3)
+
+ifeq ($(STATIC), 1)
+  LDFLAGS += -static
+  LIBS += $(shell $(PKGCONFIG) --libs glfw3 --static)
 else
-	# GL options
-	GL ?= MODERN
-	ifeq ($(GL), MODERN)
-	  CFLAGS += -DPSXF_GL=PSXF_GL_MODERN
-	endif
-	ifeq ($(GL), LEGACY)
-	  CFLAGS += -DPSXF_GL=PSXF_GL_LEGACY
-	endif
-	ifeq ($(GL), ES)
-	  CFLAGS += -DPSXF_GL=PSXF_GL_ES
-	endif
-	
-	# Link GLFW
-	CFLAGS += $(shell $(PKGCONFIG) --cflags glfw3)
+  LIBS += $(shell $(PKGCONFIG) --libs glfw3)
+endif
 
-	ifeq ($(STATIC), 1)
-	  LDFLAGS += -static
-	  LIBS += $(shell $(PKGCONFIG) --libs glfw3 --static)
-	else
-	  LIBS += $(shell $(PKGCONFIG) --libs glfw3)
-	endif
+ifeq ($(GL), ES)
+  # Link GLESv2
+  CFLAGS += $(shell $(PKGCONFIG) --cflags glesv2)
 
-	ifeq ($(GL), ES)
-	  # Link GLESv2
-	  CFLAGS += $(shell $(PKGCONFIG) --cflags glesv2)
+  ifeq ($(STATIC), 1)
+    LIBS += $(shell $(PKGCONFIG) --libs glesv2 --static)
+  else
+    LIBS += $(shell $(PKGCONFIG) --libs glesv2)
+  endif
+endif
 
-	  ifeq ($(STATIC), 1)
-		LIBS += $(shell $(PKGCONFIG) --libs glesv2 --static)
-	  else
-		LIBS += $(shell $(PKGCONFIG) --libs glesv2)
-	  endif
-	endif
-	
-	# Link miniaudio dependencies
-	LIBS += -lm -lpthread
-	
-	ifneq ($(WINDOWS),1)
-	  LIBS += -ldl
-	endif
+# Link miniaudio dependencies
+LIBS += -lm -lpthread
+
+ifneq ($(WINDOWS),1)
+  LIBS += -ldl
 endif
 
 # Other CXX flags
@@ -97,7 +89,9 @@ SOURCES = main \
           stage \
           pc/psx \
           pc/io \
-          pc/gl \
+          pc/gfx \
+          pc/audio \
+          pc/pad \
           pc/timer \
           pc/movie \
           stage/dummy \
@@ -130,16 +124,6 @@ SOURCES = main \
           object/combo \
           object/splash
 
-ifeq ($(EMSCRIPTEN),1)
-  SOURCES += pc/sdl \
-             pc/sdlpad \
-             pc/sdlaudio
-else
-  SOURCES += pc/glfw \
-             pc/glfwpad \
-             pc/miniaudio
-endif
-
 ifneq ($(GL), ES)
   # Link glad
   SOURCES += pc/glad/glad
@@ -155,20 +139,7 @@ OBJECTS = $(addprefix obj/$(FILENAME)/, $(addsuffix .o, $(SOURCES)))
 DEPENDENCIES = $(addprefix obj/$(FILENAME)/, $(addsuffix .o.d, $(SOURCES)))
 
 # Compilation
-ifeq ($(EMSCRIPTEN), 1)
-# Emscripten compilation
-all: bin/$(FILENAME).js
-
-bin/$(FILENAME).js: $(OBJECTS)
-	@mkdir -p $(@D)
-	@echo Linking...
-	@$(CC) $(CCFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
-	@echo Finished linking $@
-
-else
-# Regular compilation
 all: bin/$(FILENAME)
-endif
 
 bin/$(FILENAME): $(OBJECTS)
 	@mkdir -p $(@D)
@@ -184,4 +155,4 @@ include $(wildcard $(DEPENDENCIES))
 
 # Remove all our compiled objects
 clean:
-	rm -rf obj
+	@rm -rf obj

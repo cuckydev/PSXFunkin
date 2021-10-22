@@ -8,19 +8,11 @@
 
 #include "../main.h"
 
-#ifdef PSXF_EMSCRIPTEN
-	#include "SDL.h"
-	#include "SDL_hints.h"
-	
-	//Window closed
-	extern boolean window_closed;
-#else
-	#define GLFW_INCLUDE_NONE
-	#include <GLFW/glfw3.h>
-	
-	//Window
-	extern GLFWwindow *window;
-#endif
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
+
+//Window
+extern GLFWwindow *window;
 
 //Arguments
 int my_argc;
@@ -29,41 +21,23 @@ char **my_argv;
 //PSX functions
 void PSX_Init(void)
 {
-	#ifdef PSXF_EMSCRIPTEN
-		//Initialize SDL2
-		if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER) < 0)
-		{
-			sprintf(error_msg, "[PSX_Init] Failed to initialize SDL2");
-			ErrorLock();
-		}
-	#else
-		//Initialize GLFW
-		if (glfwInit() != GLFW_TRUE)
-		{
-			sprintf(error_msg, "[PSX_Init] Failed to initialize GLFW");
-			ErrorLock();
-		}
-	#endif
+	//Initialize GLFW
+	if (glfwInit() != GLFW_TRUE)
+	{
+		sprintf(error_msg, "[PSX_Init] Failed to initialize GLFW");
+		ErrorLock();
+	}
 }
 
 void PSX_Quit(void)
 {
-	#ifdef PSXF_EMSCRIPTEN
-		//Quit SDL2
-		SDL_Quit();
-	#else
-		//Quit GLFW
-		glfwTerminate();
-	#endif
+	//Quit GLEW
+	glfwTerminate();
 }
 
 boolean PSX_Running(void)
 {
-	#ifdef PSXF_EMSCRIPTEN
-		return window_closed;
-	#else
-		return !glfwWindowShouldClose(window);
-	#endif
+	return !glfwWindowShouldClose(window);
 }
 
 //Misc. functions
