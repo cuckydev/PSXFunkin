@@ -221,11 +221,11 @@ static u8 Stage_HitNote(PlayerState *this, u8 type, fixed_t offset)
 		offset = -offset;
 	
 	u8 hit_type;
-	if (offset > stage.late_safe * 8 / 10)
+	if (offset > stage.late_safe * 9 / 11)
 		hit_type = 3; //SHIT
-	else if (offset > stage.late_safe * 11 / 20)
+	else if (offset > stage.late_safe * 6 / 11)
 		hit_type = 2; //BAD
-	else if (offset > stage.late_safe / 5)
+	else if (offset > stage.late_safe * 3 / 11)
 		hit_type = 1; //GOOD
 	else
 		hit_type = 0; //SICK
@@ -1275,14 +1275,10 @@ void Stage_Load(StageId id, StageDiff difficulty, boolean story)
 	Stage_LoadMusic();
 	
 	//Test offset
-	#ifdef PSXF_PC
-		stage.offset = -20;
-	#else
-		stage.offset = 0;
-	#endif
+	stage.offset = 0;
 	
 	#ifdef PSXF_NETWORK
-	if (Network_IsHost() && stage.mode >= StageMode_Net1)
+	if (stage.mode >= StageMode_Net1 && Network_IsHost())
 	{
 		//Send ready packet to peer
 		Packet ready;
@@ -1497,7 +1493,7 @@ void Stage_Tick(void)
 			fixed_t next_scroll;
 			
 			#ifdef PSXF_NETWORK
-			if (!Network_IsReady())
+			if (stage.mode >= StageMode_Net1 && !Network_IsReady())
 			{
 				if (!Network_IsHost())
 				{

@@ -94,6 +94,8 @@ typedef struct
 #define COUNT_OF(x) (sizeof(x) / sizeof(0[x]))
 #define COUNT_OF_MEMBER(type, member) (sizeof_member(type, member) / sizeof_member(type, member[0]))
 
+#define TYPE_SIGNMIN(utype, stype) ((stype)((((utype)-1) >> 1) + 1))
+
 //PSX functions
 void PSX_Init(void);
 void PSX_Quit(void);
