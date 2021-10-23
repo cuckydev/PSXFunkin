@@ -20,7 +20,7 @@ TIMs should be packed into .arc files, and you can control the dependencies and 
 
 ## XA files
 
-In [iso/music/](/iso/music/), you can find .mp3 files with .txt files for various groups of .xa files. The txt files are pretty obvious, so I won't go into much more detail here.
+In [iso/music/](/iso/music/), you can find .ogg files with .txt files for various groups of .xa files. The txt files are pretty obvious, so I won't go into much more detail here.
 
 You can control the dependencies and rules of .xa conversion and interleaving in [Makefile.xa](/Makefile.xa).
 

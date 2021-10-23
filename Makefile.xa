@@ -20,7 +20,7 @@ all: \
   iso/music/kapib.xa
 
 # XA converts
-iso/music/%.xa: iso/music/%.mp3
+iso/music/%.xa: iso/music/%.ogg
 	tools/psxavenc/psxavenc -f 37800 -t xa -b 4 -c 2 -F 1 -C 0 $< $@
 iso/music/%.xa:
 	tools/xainterleave/xainterleave $@
