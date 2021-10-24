@@ -6,7 +6,6 @@
 
 #include "main.h"
 
-#include "mem.h"
 #include "timer.h"
 #include "io.h"
 #include "gfx.h"
@@ -37,11 +36,18 @@ void ErrorLock(void)
 	}
 }
 
-//Entry point
+//Memory heap
+//#define MEM_STAT //This will enable the Mem_GetStat function which returns information about available memory in the heap
+
+#define MEM_IMPLEMENTATION
+#include "mem.h"
+#undef MEM_IMPLEMENTATION
+
 #ifndef PSXF_STDMEM
 static u8 malloc_heap[0x1B0000];
 #endif
 
+//Entry point
 int main(int argc, char **argv)
 {
 	//Remember arguments

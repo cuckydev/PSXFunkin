@@ -2,7 +2,6 @@ TARGET = funkin
 TYPE = ps-exe
 
 SRCS = src/main.c \
-       src/mem.c \
        src/mutil.c \
        src/random.c \
        src/archive.c \

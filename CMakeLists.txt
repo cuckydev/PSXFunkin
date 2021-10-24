@@ -9,7 +9,6 @@ project(funkin LANGUAGES C)
 add_executable(funkin
 	"src/main.c"
 	"src/main.h"
-	"src/mem.c"
 	"src/mem.h"
 	"src/mutil.c"
 	"src/mutil.h"

@@ -78,7 +78,6 @@ CFLAGS += -MMD -MP -MF $@.d
 
 # Sources to compile
 SOURCES = main \
-          mem \
           mutil \
           random \
           archive \
