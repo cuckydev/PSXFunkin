@@ -4,8 +4,8 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef _MENU_H
-#define _MENU_H
+#ifndef PSXF_GUARD_MENU_H
+#define PSXF_GUARD_MENU_H
 
 #include "stage.h"
 

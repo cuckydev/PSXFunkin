@@ -4,8 +4,8 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef _WEEK3_H
-#define _WEEK3_H
+#ifndef PSXF_GUARD_WEEK3_H
+#define PSXF_GUARD_WEEK3_H
 
 #include "../stage.h"
 

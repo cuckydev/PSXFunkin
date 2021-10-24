@@ -4,8 +4,8 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef _RANDOM_H
-#define _RANDOM_H
+#ifndef PSXF_GUARD_RANDOM_H
+#define PSXF_GUARD_RANDOM_H
 
 #include "psx.h"
 

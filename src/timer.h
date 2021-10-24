@@ -4,8 +4,8 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef _TIMER_H
-#define _TIMER_H
+#ifndef PSXF_GUARD_TIMER_H
+#define PSXF_GUARD_TIMER_H
 
 #include "psx.h"
 #include "fixed.h"

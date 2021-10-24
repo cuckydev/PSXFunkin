@@ -4,8 +4,8 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef _SPLASH_H
-#define _SPLASH_H
+#ifndef PSXF_GUARD_SPLASH_H
+#define PSXF_GUARD_SPLASH_H
 
 #include "../object.h"
 #include "../stage.h"

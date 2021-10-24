@@ -4,8 +4,8 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef _CLUCKY_H
-#define _CLUCKY_H
+#ifndef PSXF_GUARD_CLUCKY_H
+#define PSXF_GUARD_CLUCKY_H
 
 #include "../character.h"
 

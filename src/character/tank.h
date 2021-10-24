@@ -4,8 +4,8 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef _TANK_H
-#define _TANK_H
+#ifndef PSXF_GUARD_TANK_H
+#define PSXF_GUARD_TANK_H
 
 #include "../character.h"
 

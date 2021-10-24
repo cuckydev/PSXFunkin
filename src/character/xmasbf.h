@@ -4,8 +4,8 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef _XMASBF_H
-#define _XMASBF_H
+#ifndef PSXF_GUARD_XMASBF_H
+#define PSXF_GUARD_XMASBF_H
 
 #include "../player.h"
 

@@ -4,8 +4,8 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef _PSX_H
-#define _PSX_H
+#ifndef PSXF_GUARD_PSX_H
+#define PSXF_GUARD_PSX_H
 
 extern int my_argc;
 extern char **my_argv;

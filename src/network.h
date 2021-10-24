@@ -4,8 +4,8 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef _NETWORK_H
-#define _NETWORK_H
+#ifndef PSXF_GUARD_NETWORK_H
+#define PSXF_GUARD_NETWORK_H
 #ifdef PSXF_NETWORK
 
 #include "psx.h"

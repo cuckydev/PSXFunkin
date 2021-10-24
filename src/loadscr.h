@@ -4,8 +4,8 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef _LOADSCR_H
-#define _LOADSCR_H
+#ifndef PSXF_GUARD_LOADSCR_H
+#define PSXF_GUARD_LOADSCR_H
 
 //Loading screen functions
 void LoadScr_Start(void);

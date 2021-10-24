@@ -4,8 +4,8 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef _SPEAKER_H
-#define _SPEAKER_H
+#ifndef PSXF_GUARD_SPEAKER_H
+#define PSXF_GUARD_SPEAKER_H
 
 #include "../gfx.h"
 #include "../fixed.h"

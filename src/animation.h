@@ -4,8 +4,8 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef _ANIMATION_H
-#define _ANIMATION_H
+#ifndef PSXF_GUARD_ANIMATION_H
+#define PSXF_GUARD_ANIMATION_H
 
 #include "psx.h"
 

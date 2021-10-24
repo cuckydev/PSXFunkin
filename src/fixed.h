@@ -4,8 +4,8 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef _FIXED_H
-#define _FIXED_H
+#ifndef PSXF_GUARD_FIXED_H
+#define PSXF_GUARD_FIXED_H
 
 #include "psx.h"
 

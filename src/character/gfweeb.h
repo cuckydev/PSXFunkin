@@ -4,8 +4,8 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef _GFWEEB_H
-#define _GFWEEB_H
+#ifndef PSXF_GUARD_GFWEEB_H
+#define PSXF_GUARD_GFWEEB_H
 
 #include "../character.h"
 

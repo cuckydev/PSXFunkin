@@ -4,8 +4,8 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef _SPIRIT_H
-#define _SPIRIT_H
+#ifndef PSXF_GUARD_SPIRIT_H
+#define PSXF_GUARD_SPIRIT_H
 
 #include "../character.h"
 

@@ -4,8 +4,8 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef _MAIN_H
-#define _MAIN_H
+#ifndef PSXF_GUARD_MAIN_H
+#define PSXF_GUARD_MAIN_H
 
 //Game loop
 typedef enum

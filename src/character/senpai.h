@@ -4,8 +4,8 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef _SENPAI_H
-#define _SENPAI_H
+#ifndef PSXF_GUARD_SENPAI_H
+#define PSXF_GUARD_SENPAI_H
 
 #include "../character.h"
 
