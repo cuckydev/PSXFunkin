@@ -14,7 +14,7 @@
 
 #include <stddef.h>
 
-//Constants and macros
+/* Constants and macros */
 #define MEM_ALIGNSIZE 0x10
 #define MEM_ALIGN(x) (((size_t)(x) + 0xF) & ~0xF)
 
@@ -22,7 +22,7 @@
 
 #include <stdlib.h>
 
-#undef MEM_STAT //Control unsupported
+#undef MEM_STAT /* Control unsupported */
 
 #define Mem_Init(x,y)
 #define Mem_Alloc malloc
@@ -30,7 +30,7 @@
 
 #else
 
-//Function declarations
+/* Function declarations */
 int Mem_Init(void *ptr, size_t size);
 void *Mem_Alloc(size_t size);
 void Mem_Free(void *ptr);
@@ -38,7 +38,7 @@ void Mem_Free(void *ptr);
 	void Mem_GetStat(size_t *used, size_t *size, size_t *max);
 #endif
 
-//Implementation
+/* Implementation */
 #ifdef MEM_IMPLEMENTATION
 
 typedef struct Mem_Header
@@ -55,19 +55,19 @@ static Mem_Header *mem = NULL;
 
 int Mem_Init(void *ptr, size_t size)
 {
-	//Make sure there's enough space for mem header
+	/* Make sure there's enough space for mem header */
 	if (ptr == NULL || size < MEM_HEDSIZE)
 		return 1;
 	
-	//Get mem pointer and available range (after 16 byte alignment)
+	/* Get mem pointer and available range (after 16 byte alignment) */
 	mem = (Mem_Header*)MEM_ALIGN(ptr);
 	
-	//Initial mem header
+	/* Initial mem header */
 	mem->prev = NULL;
 	mem->next = NULL;
 	mem->size = ((char*)ptr + size) - (char*)mem;
 	
-	//Initial mem state
+	/* Initial mem state */
 	#ifdef MEM_STAT
 		mem_max = mem_used = MEM_HEDSIZE;
 	#endif
@@ -84,14 +84,14 @@ static Mem_Header *Mem_GetHeader(void *ptr)
 
 void *Mem_Alloc(size_t size)
 {
-	//Ensure we have a heap
+	/* Ensure we have a heap */
 	if (mem == NULL)
 		return NULL;
 	
-	//Get true size we have to fit
+	/* Get true size we have to fit */
 	size = MEM_ALIGN(size + MEM_HEDSIZE);
 	
-	//Get header pointer
+	/* Get header pointer */
 	Mem_Header *head, *prev, *next;
 	char *hpos = (char*)mem + MEM_HEDSIZE;
 	
@@ -102,34 +102,34 @@ void *Mem_Alloc(size_t size)
 	{
 		if (next != NULL)
 		{
-			//Check against the next block
+			/* Check against the next block */
 			size_t cleft = (char*)next - hpos;
 			if (cleft >= size)
 			{
-				//Set pointer
+				/* Set pointer */
 				head = (Mem_Header*)hpos;
 				break;
 			}
 			
-			//Check next header
+			/* Check next header */
 			hpos = (char*)next + next->size;
 			prev = next;
 			next = prev->next;
 		}
 		else
 		{
-			//Check against end of heap
+			/* Check against end of heap */
 			size_t cleft = ((char*)mem + mem->size) - hpos;
 			if (cleft < size)
 				return NULL;
 			
-			//Set pointer
+			/* Set pointer */
 			head = (Mem_Header*)hpos;
 			break;
 		}
 	}
 	
-	//Link header
+	/* Link header */
 	head->size = size;
 	head->prev = prev;
 	if ((head->next = prev->next) != NULL)
@@ -137,7 +137,7 @@ void *Mem_Alloc(size_t size)
 	prev->next = head;
 	
 	#ifdef MEM_STAT
-		//Update stats
+		/* Update stats */
 		if ((mem_used += size) >= mem_max)
 			mem_max = mem_used;
 	#endif
@@ -147,17 +147,17 @@ void *Mem_Alloc(size_t size)
 
 void Mem_Free(void *ptr)
 {
-	//Get header of pointer
+	/* Get header of pointer */
 	if (ptr == NULL)
 		return;
 	Mem_Header *head = Mem_GetHeader(ptr);
 	
-	//Unlink header
+	/* Unlink header */
 	if ((head->prev->next = head->next) != NULL)
 		head->next->prev = head->prev;
 	
 	#ifdef MEM_STAT
-		//Update stats
+		/* Update stats */
 		mem_used -= head->size;
 	#endif
 }
@@ -174,8 +174,8 @@ void Mem_Free(void *ptr)
 	}
 #endif
 
-#endif //MEM_IMPLEMENTATION
+#endif /* MEM_IMPLEMENTATION */
 
-#endif //PSXF_STDMEM
+#endif /* PSXF_STDMEM */
 
-#endif //MEM_GUARD_MEM_H
+#endif /* MEM_GUARD_MEM_H */
