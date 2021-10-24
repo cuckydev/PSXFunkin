@@ -1,0 +1,18 @@
+all: \
+	iso/bf/main.chr \
+	iso/bf/weeb.chr \
+	iso/dad/main.chr \
+	iso/spook/main.chr \
+	iso/pico/main.chr \
+	iso/mom/main.chr \
+	iso/bf/xmas.chr \
+	iso/xmasp/main.chr \
+	iso/senpai/main.chr \
+	iso/senpaim/main.chr \
+	iso/spirit/main.chr \
+	iso/tank/main.chr \
+	iso/gf/main.chr \
+	iso/gf/weeb.chr \
+
+%.chr: %.arc
+	tools/funkinchrpak/funkinchrpak $< $@

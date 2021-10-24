@@ -24,6 +24,8 @@ In [iso/music/](/iso/music/), you can find .ogg files with .txt files for variou
 
 You can control the dependencies and rules of .xa conversion and interleaving in [Makefile.xa](/Makefile.xa).
 
+You must change the lengths in [/src/audio_def.h](audio_def.h) if you modify the oggs.
+
 ## CHT files
 
 In [iso/chart/](/iso/chart/), you can find .json files. These .json files will be converted to .cht files that are significantly smaller and can be played by the game.
