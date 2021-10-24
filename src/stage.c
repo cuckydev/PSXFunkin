@@ -1178,6 +1178,8 @@ static void Stage_LoadMusic(void)
 	//Offset sing ends
 	stage.player->sing_end -= stage.note_scroll;
 	stage.opponent->sing_end -= stage.note_scroll;
+	if (stage.gf != NULL)
+		stage.gf->sing_end -= stage.note_scroll;
 	
 	//Find music file and begin seeking to it
 	Audio_SeekXA_Track(stage.stage_def->music_track);
@@ -1192,6 +1194,8 @@ static void Stage_LoadMusic(void)
 	//Offset sing ends again
 	stage.player->sing_end += stage.note_scroll;
 	stage.opponent->sing_end += stage.note_scroll;
+	if (stage.gf != NULL)
+		stage.gf->sing_end += stage.note_scroll;
 }
 
 static void Stage_LoadState(void)
@@ -1272,6 +1276,7 @@ void Stage_Load(StageId id, StageDiff difficulty, boolean story)
 	stage.note_swap = (stage.mode == StageMode_Swap) ? 4 : 0;
 	
 	//Load music
+	stage.note_scroll = 0;
 	Stage_LoadMusic();
 	
 	//Test offset

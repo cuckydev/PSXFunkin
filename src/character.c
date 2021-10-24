@@ -30,7 +30,7 @@ void Character_Init(Character *this, fixed_t x, fixed_t y)
 	this->set_anim(this, CharAnim_Idle);
 	this->pad_held = 0;
 	
-	this->sing_end = TYPE_SIGNMIN(u32, s32);
+	this->sing_end = 0;
 }
 
 void Character_DrawParallax(Character *this, Gfx_Tex *tex, const CharFrame *cframe, fixed_t parallax)
