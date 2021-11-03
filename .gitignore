@@ -13,6 +13,8 @@ mips/psyq/
 *.map
 *.ps-exe
 *.exe
+/Overlay.*
+!overlay.ld
 tools/funkinisopak/funkinisopak
 tools/funkinarcpak/funkinarcpak
 tools/funkinchartpak/funkinchartpak
