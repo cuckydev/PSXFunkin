@@ -133,9 +133,9 @@ endif()
 target_compile_definitions(funkin PRIVATE PSXF_PC)
 
 # Use standard memory allocators if requested to
-if(PSXF_STDMEM)
-	target_compile_definitions(funkin PRIVATE PSXF_STDMEM)
-endif()
+#if(PSXF_STDMEM)
+target_compile_definitions(funkin PRIVATE PSXF_STDMEM)
+#endif()
 
 # Use networking if requested to
 if(PSXF_NETWORK)

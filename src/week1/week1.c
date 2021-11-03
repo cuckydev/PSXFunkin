@@ -11,6 +11,13 @@
 #include "boot/mem.h"
 
 //Week 1 assets
+static const u8 week1_hud0[] = {
+	#include "iso/stage/hud0.tim.h"
+};
+static const u8 week1_hud1[] = {
+	#include "iso/stage/hud1.tim.h"
+};
+
 static const u8 week1_arc_back[] = {
 	#include "iso/week1/back.arc.h"
 };
@@ -28,6 +35,10 @@ static Gfx_Tex week1_tex_back1; //Curtains
 //Week 1 background functions
 void Week1_Load(void)
 {
+	//Load HUD textures
+	Gfx_LoadTex(&stage.tex_hud0, (IO_Data)week1_hud0, 0);
+	Gfx_LoadTex(&stage.tex_hud1, (IO_Data)week1_hud1, 0);
+	
 	//Load background textures
 	Gfx_LoadTex(&week1_tex_back0, Archive_Find((IO_Data)week1_arc_back, "back0.tim"), 0);
 	Gfx_LoadTex(&week1_tex_back1, Archive_Find((IO_Data)week1_arc_back, "back1.tim"), 0);

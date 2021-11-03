@@ -1,4 +1,8 @@
 all: \
+  src/iso/menu/menu.arc.h \
+  src/iso/stage/hud0.tim.h \
+  src/iso/stage/hud0weeb.tim.h \
+  src/iso/stage/hud1.tim.h \
   src/iso/week1/back.arc.h \
   src/iso/bf/main.arc.h \
   src/iso/dad/main.arc.h \

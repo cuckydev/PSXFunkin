@@ -19,10 +19,10 @@
 #include "network.h"
 
 //Stage constants
-#define INPUT_LEFT  (PAD_LEFT  | PAD_SQUARE)
-#define INPUT_DOWN  (PAD_DOWN  | PAD_CROSS)
-#define INPUT_UP    (PAD_UP    | PAD_TRIANGLE)
-#define INPUT_RIGHT (PAD_RIGHT | PAD_CIRCLE)
+#define INPUT_LEFT  (PAD_LEFT  | PAD_SQUARE   | PAD_L1)
+#define INPUT_DOWN  (PAD_DOWN  | PAD_CROSS    | PAD_L2)
+#define INPUT_UP    (PAD_UP    | PAD_TRIANGLE | PAD_R2)
+#define INPUT_RIGHT (PAD_RIGHT | PAD_CIRCLE   | PAD_R1)
 
 #define STAGE_FLAG_JUST_STEP     (1 << 0) //Song just stepped this frame
 #define STAGE_FLAG_VOCAL_ACTIVE  (1 << 1) //Song's vocal track is currently active

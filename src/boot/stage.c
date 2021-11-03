@@ -578,48 +578,10 @@ void Stage_DrawTexCol(Gfx_Tex *tex, const RECT *src, const RECT_FIXED *dst, fixe
 	fixed_t wz = dst->w;
 	fixed_t hz = dst->h;
 	
-	if (stage.stage_id >= StageId_6_1 && stage.stage_id <= StageId_6_3)
-	{
-		//Handle HUD drawing
-		if (tex == &stage.tex_hud0)
-		{
-			#ifdef STAGE_NOHUD
-				return;
-			#endif
-			if (src->y >= 128 && src->y < 224)
-			{
-				//Pixel perfect scrolling
-				xz &= FIXED_UAND;
-				yz &= FIXED_UAND;
-				wz &= FIXED_UAND;
-				hz &= FIXED_UAND;
-			}
-		}
-		else if (tex == &stage.tex_hud1)
-		{
-			#ifdef STAGE_NOHUD
-				return;
-			#endif
-		}
-		else
-		{
-			//Pixel perfect scrolling
-			xz &= FIXED_UAND;
-			yz &= FIXED_UAND;
-			wz &= FIXED_UAND;
-			hz &= FIXED_UAND;
-		}
-	}
-	else
-	{
-		//Don't draw if HUD and is disabled
+	#ifdef STAGE_NOHUD
 		if (tex == &stage.tex_hud0 || tex == &stage.tex_hud1)
-		{
-			#ifdef STAGE_NOHUD
-				return;
-			#endif
-		}
-	}
+			return;
+	#endif
 	
 	fixed_t l = (SCREEN_WIDTH2  << FIXED_SHIFT) + FIXED_MUL(xz, zoom);// + FIXED_DEC(1,2);
 	fixed_t t = (SCREEN_HEIGHT2 << FIXED_SHIFT) + FIXED_MUL(yz, zoom);// + FIXED_DEC(1,2);
@@ -1191,13 +1153,6 @@ void Stage_Load(StageId id, StageDiff difficulty, boolean story)
 	stageoverlay_load();
 	Stage_SwapChars();
 	Stage_LoadChart();
-	
-	//Load HUD textures
-	if (id >= StageId_6_1 && id <= StageId_6_3)
-		Gfx_LoadTex(&stage.tex_hud0, IO_Read("\\STAGE\\HUD0WEEB.TIM;1"), GFX_LOADTEX_FREE);
-	else
-		Gfx_LoadTex(&stage.tex_hud0, IO_Read("\\STAGE\\HUD0.TIM;1"), GFX_LOADTEX_FREE);
-	Gfx_LoadTex(&stage.tex_hud1, IO_Read("\\STAGE\\HUD1.TIM;1"), GFX_LOADTEX_FREE);
 	
 	//Initialize stage state
 	stage.story = story;

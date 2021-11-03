@@ -23,6 +23,11 @@
 
 #include "boot/stage.h"
 
+//Menu assets
+static const u8 menu_arc[] = {
+	#include "iso/menu/menu.arc.h"
+};
+
 #include "character/gf.c"
 
 //Menu messages
@@ -290,12 +295,10 @@ static void Menu_DrawWeek(const char *week, s32 x, s32 y)
 void Menu_Load2(MenuPage page)
 {
 	//Load menu assets
-	IO_Data menu_arc = IO_Read("\\MENU\\MENU.ARC;1");
-	Gfx_LoadTex(&menu.tex_back,  Archive_Find(menu_arc, "back.tim"),  0);
-	Gfx_LoadTex(&menu.tex_ng,    Archive_Find(menu_arc, "ng.tim"),    0);
-	Gfx_LoadTex(&menu.tex_story, Archive_Find(menu_arc, "story.tim"), 0);
-	Gfx_LoadTex(&menu.tex_title, Archive_Find(menu_arc, "title.tim"), 0);
-	Mem_Free(menu_arc);
+	Gfx_LoadTex(&menu.tex_back,  Archive_Find((IO_Data)menu_arc, "back.tim"),  0);
+	Gfx_LoadTex(&menu.tex_ng,    Archive_Find((IO_Data)menu_arc, "ng.tim"),    0);
+	Gfx_LoadTex(&menu.tex_story, Archive_Find((IO_Data)menu_arc, "story.tim"), 0);
+	Gfx_LoadTex(&menu.tex_title, Archive_Find((IO_Data)menu_arc, "title.tim"), 0);
 	
 	FontData_Load(&menu.font_bold, Font_Bold);
 	FontData_Load(&menu.font_arial, Font_Arial);
