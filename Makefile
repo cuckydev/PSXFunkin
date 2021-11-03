@@ -1,54 +1,35 @@
 TARGET = funkin
 TYPE = ps-exe
 
-SRCS = src/main.c \
-       src/mutil.c \
-       src/random.c \
-       src/archive.c \
-       src/font.c \
-       src/trans.c \
-       src/loadscr.c \
-       src/menu.c \
-       src/stage.c \
-       src/psx/psx.c \
-       src/psx/io.c \
-       src/psx/gfx.c \
-       src/psx/audio.c \
-       src/psx/pad.c \
-       src/psx/timer.c \
-       src/psx/movie.c \
-       src/stage/dummy.c \
-       src/stage/week1.c \
-       src/stage/week2.c \
-       src/stage/week3.c \
-       src/stage/week4.c \
-       src/stage/week5.c \
-       src/stage/week6.c \
-       src/stage/week7.c \
-       src/animation.c \
-       src/character.c \
-       src/character/bf.c \
-       src/character/bfweeb.c \
-       src/character/speaker.c \
-       src/character/dad.c \
-       src/character/spook.c \
-       src/character/pico.c \
-       src/character/mom.c \
-       src/character/xmasbf.c \
-       src/character/xmasp.c \
-       src/character/senpai.c \
-       src/character/senpaim.c \
-       src/character/spirit.c \
-       src/character/tank.c \
-       src/character/gf.c \
-       src/character/gfweeb.c \
-       src/character/clucky.c \
-       src/object.c \
-       src/object/combo.c \
-       src/object/splash.c \
+SRCS = src/boot/main.c \
+       src/boot/mutil.c \
+       src/boot/random.c \
+       src/boot/archive.c \
+       src/boot/font.c \
+       src/boot/trans.c \
+       src/boot/loadscr.c \
+       src/boot/menu.c \
+       src/boot/stage.c \
+       src/boot/psx/psx.c \
+       src/boot/psx/io.c \
+       src/boot/psx/gfx.c \
+       src/boot/psx/audio.c \
+       src/boot/psx/pad.c \
+       src/boot/psx/timer.c \
+       src/boot/psx/movie.c \
+       src/boot/animation.c \
+       src/boot/character.c \
+       src/boot/object.c \
+       src/boot/object/combo.c \
+       src/boot/object/splash.c \
+       src/menu/menu.c \
+       src/week1/week1.c \
        mips/common/crt0/crt0.s
 
-CPPFLAGS += -Wall -Wextra -pedantic -mno-check-zero-division
+OVERLAYSCRIPT  ?= overlay.ld
+OVERLAYSECTION ?= .menu .week1
+
+CPPFLAGS += -Wall -Wextra -pedantic -Isrc/ -mno-check-zero-division
 LDFLAGS += -Wl,--start-group
 # TODO: remove unused libraries
 LDFLAGS += -lapi

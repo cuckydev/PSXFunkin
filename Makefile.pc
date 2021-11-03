@@ -16,9 +16,9 @@ ifeq ($(WINDOWS),1)
 endif
 
 # Options
-ifeq ($(STDMEM), 1)
-  CFLAGS += -DPSXF_STDMEM
-endif
+#ifeq ($(STDMEM), 1)
+CFLAGS += -DPSXF_STDMEM
+#endif
 
 ifeq ($(GL), MODERN)
   CFLAGS += -DPSXF_GL=PSXF_GL_MODERN

@@ -4,16 +4,23 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#include "gf.h"
+#include "boot/character.h"
+#include "boot/mem.h"
+#include "boot/archive.h"
+#include "boot/stage.h"
+#include "boot/main.h"
 
-#include "../mem.h"
-#include "../archive.h"
-#include "../stage.h"
-#include "../main.h"
+#include "speaker.c"
 
-#include "speaker.h"
-
-#include "../stage/week7.h"
+//GF assets
+static const u8 char_gf_arc_main[] = {
+	#include "iso/gf/main.arc.h"
+};
+#ifdef CHAR_GF_TUTORIAL
+static const u8 char_gf_arc_tut[] = {
+	#include "iso/gf/tut.arc.h"
+};
+#endif
 
 //GF character structure
 enum
@@ -34,7 +41,6 @@ typedef struct
 	Character character;
 	
 	//Render data and state
-	IO_Data arc_main, arc_scene;
 	IO_Data arc_ptr[GF_Arc_Max];
 	
 	Gfx_Tex tex;
@@ -98,7 +104,7 @@ static const Animation char_gf_anim[CharAnim_Max] = {
 };
 
 //GF character functions
-void Char_GF_SetFrame(void *user, u8 frame)
+static void Char_GF_SetFrame(void *user, u8 frame)
 {
 	Char_GF *this = (Char_GF*)user;
 	
@@ -112,59 +118,38 @@ void Char_GF_SetFrame(void *user, u8 frame)
 	}
 }
 
-void Char_GF_Tick(Character *character)
+static void Char_GF_Tick(Character *character)
 {
 	Char_GF *this = (Char_GF*)character;
 	
-	//Initialize Pico test
-	if (stage.stage_id == StageId_7_3 && stage.back != NULL && this->pico_p == NULL)
-		this->pico_p = ((Back_Week7*)stage.back)->pico_chart;
-	
-	if (this->pico_p != NULL)
+	//Dance to the beat
+	if (stage.flag & STAGE_FLAG_JUST_STEP)
 	{
+		//Stage specific animations
 		if (stage.note_scroll >= 0)
 		{
-			//Scroll through Pico chart
-			u16 substep = stage.note_scroll >> FIXED_SHIFT;
-			while (substep >= ((*this->pico_p) & 0x7FFF))
+			switch (stage.stage_id)
 			{
-				//Play animation and bump speakers
-				character->set_anim(character, ((*this->pico_p) & 0x8000) ? CharAnim_RightAlt : CharAnim_LeftAlt);
-				Speaker_Bump(&this->speaker);
-				this->pico_p++;
+				case StageId_1_4: //Tutorial cheer
+					if (stage.song_step > 64 && stage.song_step < 192 && (stage.song_step & 0x3F) == 60)
+						character->set_anim(character, CharAnim_UpAlt);
+					break;
+				default:
+					break;
 			}
 		}
-	}
-	else
-	{
-		if (stage.flag & STAGE_FLAG_JUST_STEP)
+		
+		//Perform dance
+		if (stage.note_scroll >= character->sing_end && (stage.song_step % stage.gf_speed) == 0)
 		{
-			//Stage specific animations
-			if (stage.note_scroll >= 0)
-			{
-				switch (stage.stage_id)
-				{
-					case StageId_1_4: //Tutorial cheer
-						if (stage.song_step > 64 && stage.song_step < 192 && (stage.song_step & 0x3F) == 60)
-							character->set_anim(character, CharAnim_UpAlt);
-						break;
-					default:
-						break;
-				}
-			}
+			//Switch animation
+			if (character->animatable.anim == CharAnim_LeftAlt || character->animatable.anim == CharAnim_Right)
+				character->set_anim(character, CharAnim_RightAlt);
+			else
+				character->set_anim(character, CharAnim_LeftAlt);
 			
-			//Perform dance
-			if (stage.note_scroll >= character->sing_end && (stage.song_step % stage.gf_speed) == 0)
-			{
-				//Switch animation
-				if (character->animatable.anim == CharAnim_LeftAlt || character->animatable.anim == CharAnim_Right)
-					character->set_anim(character, CharAnim_RightAlt);
-				else
-					character->set_anim(character, CharAnim_LeftAlt);
-				
-				//Bump speakers
-				Speaker_Bump(&this->speaker);
-			}
+			//Bump speakers
+			Speaker_Bump(&this->speaker);
 		}
 	}
 	
@@ -183,7 +168,7 @@ void Char_GF_Tick(Character *character)
 	Speaker_Tick(&this->speaker, character->x, character->y, parallax);
 }
 
-void Char_GF_SetAnim(Character *character, u8 anim)
+static void Char_GF_SetAnim(Character *character, u8 anim)
 {
 	//Set animation
 	if (anim == CharAnim_Left || anim == CharAnim_Down || anim == CharAnim_Up || anim == CharAnim_Right || anim == CharAnim_UpAlt)
@@ -191,16 +176,12 @@ void Char_GF_SetAnim(Character *character, u8 anim)
 	Animatable_SetAnim(&character->animatable, anim);
 }
 
-void Char_GF_Free(Character *character)
+static void Char_GF_Free(Character *character)
 {
-	Char_GF *this = (Char_GF*)character;
-	
-	//Free art
-	Mem_Free(this->arc_main);
-	Mem_Free(this->arc_scene);
+	(void)character;
 }
 
-Character *Char_GF_New(fixed_t x, fixed_t y)
+static Character *Char_GF_New(fixed_t x, fixed_t y)
 {
 	//Allocate gf object
 	Char_GF *this = Mem_Alloc(sizeof(Char_GF));
@@ -229,8 +210,6 @@ Character *Char_GF_New(fixed_t x, fixed_t y)
 	this->character.focus_zoom = FIXED_DEC(2,1);
 	
 	//Load art
-	this->arc_main = IO_Read("\\CHAR\\GF.ARC;1");
-	
 	const char **pathp = (const char *[]){
 		"gf0.tim", //GF_ArcMain_GF0
 		"gf1.tim", //GF_ArcMain_GF1
@@ -239,27 +218,26 @@ Character *Char_GF_New(fixed_t x, fixed_t y)
 	};
 	IO_Data *arc_ptr = this->arc_ptr;
 	for (; *pathp != NULL; pathp++)
-		*arc_ptr++ = Archive_Find(this->arc_main, *pathp);
+		*arc_ptr++ = Archive_Find((IO_Data)char_gf_arc_main, *pathp);
 	
 	//Load scene specific art
 	switch (stage.stage_id)
 	{
-		case StageId_1_4: //Tutorial
-		{
-			this->arc_scene = IO_Read("\\CHAR\\GFTUT.ARC;1");
-			
-			const char **pathp = (const char *[]){
-				"tut0.tim", //GF_ArcScene_0
-				"tut1.tim", //GF_ArcScene_1
-				NULL
-			};
-			IO_Data *arc_ptr = &this->arc_ptr[GF_ArcScene_0];
-			for (; *pathp != NULL; pathp++)
-				*arc_ptr++ = Archive_Find(this->arc_scene, *pathp);
-			break;
-		}
+		#ifdef CHAR_GF_TUTORIAL
+			case StageId_1_4: //Tutorial
+			{
+				const char **pathp = (const char *[]){
+					"tut0.tim", //GF_ArcScene_0
+					"tut1.tim", //GF_ArcScene_1
+					NULL
+				};
+				IO_Data *arc_ptr = &this->arc_ptr[GF_ArcScene_0];
+				for (; *pathp != NULL; pathp++)
+					*arc_ptr++ = Archive_Find((IO_Data)char_gf_arc_tut, *pathp);
+				break;
+			}
+		#endif
 		default:
-			this->arc_scene = NULL;
 			break;
 	}
 	
@@ -268,12 +246,6 @@ Character *Char_GF_New(fixed_t x, fixed_t y)
 	
 	//Initialize speaker
 	Speaker_Init(&this->speaker);
-	
-	//Initialize Pico test
-	if (stage.stage_id == StageId_7_3 && stage.back != NULL)
-		this->pico_p = ((Back_Week7*)stage.back)->pico_chart;
-	else
-		this->pico_p = NULL;
 	
 	return (Character*)this;
 }

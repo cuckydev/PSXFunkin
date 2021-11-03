@@ -4,12 +4,24 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef PSXF_GUARD_TANK_H
-#define PSXF_GUARD_TANK_H
+#include "psx.h"
 
-#include "../character.h"
+//Arguments
+int my_argc;
+char **my_argv;
 
-//Tank character functions
-Character *Char_Tank_New(fixed_t x, fixed_t y);
+//PSX functions
+void PSX_Init(void)
+{
+	//PSX already exists lol
+}
 
-#endif
+void PSX_Quit(void)
+{
+	
+}
+
+boolean PSX_Running(void)
+{
+	return true;
+}

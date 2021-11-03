@@ -1,4 +1,4 @@
-#define XA_LENGTH(x) (((u64)(x) * 75) / 100 * IO_SECT_SIZE) //Centiseconds to sectors in bytes (w)
+#define XA_LENGTH(x) ((((u64)(x) * 75) / 100) << 11) //Centiseconds to sectors in bytes (w)
 
 typedef struct
 {

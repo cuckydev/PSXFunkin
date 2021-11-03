@@ -6,23 +6,24 @@
 
 #include "menu.h"
 
-#include "mem.h"
-#include "main.h"
-#include "timer.h"
-#include "io.h"
-#include "gfx.h"
-#include "audio.h"
-#include "pad.h"
-#include "archive.h"
-#include "mutil.h"
-#include "network.h"
+#include "boot/mem.h"
+#include "boot/main.h"
+#include "boot/timer.h"
+#include "boot/io.h"
+#include "boot/gfx.h"
+#include "boot/audio.h"
+#include "boot/pad.h"
+#include "boot/archive.h"
+#include "boot/mutil.h"
+#include "boot/network.h"
 
-#include "font.h"
-#include "trans.h"
-#include "loadscr.h"
+#include "boot/font.h"
+#include "boot/trans.h"
+#include "boot/loadscr.h"
 
-#include "stage.h"
-#include "character/gf.h"
+#include "boot/stage.h"
+
+#include "character/gf.c"
 
 //Menu messages
 static const char *funny_messages[][2] = {
@@ -37,7 +38,6 @@ static const char *funny_messages[][2] = {
 	{"CUCKYFNF", "SETTING STANDARDS"},
 	{"lool", "inverted colours"},
 	{"NEVER LOOK AT", "THE ISSUE TRACKER"},
-	{"PSXDEV", "HOMEBREW"},
 	{"ZERO POINT ZERO TWO TWO EIGHT", "ONE FIVE NINE ONE ZERO FIVE"},
 	{"DOPE ASS GAME", "PLAYSTATION MAGAZINE"},
 	{"NEWGROUNDS", "FOREVER"},
@@ -287,7 +287,7 @@ static void Menu_DrawWeek(const char *week, s32 x, s32 y)
 }
 
 //Menu functions
-void Menu_Load(MenuPage page)
+void Menu_Load2(MenuPage page)
 {
 	//Load menu assets
 	IO_Data menu_arc = IO_Read("\\MENU\\MENU.ARC;1");
@@ -1680,15 +1680,10 @@ void Menu_Tick(void)
 	#endif
 		case MenuPage_Stage:
 		{
-			//Unload menu state
+			//Unload menu state and load stage
 			Menu_Unload();
-			
-			//Load new stage
-			LoadScr_Start();
-			Stage_Load(menu.page_param.stage.id, menu.page_param.stage.diff, menu.page_param.stage.story);
-			gameloop = GameLoop_Stage;
-			LoadScr_End();
-			break;
+			Stage_LoadScr(menu.page_param.stage.id, menu.page_param.stage.diff, menu.page_param.stage.story);
+			return;
 		}
 		default:
 			break;

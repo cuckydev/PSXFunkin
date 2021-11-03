@@ -109,37 +109,35 @@ typedef enum
 	StageTrans_Disconnect,
 } StageTrans;
 
-//Stage background
-typedef struct StageBack
-{
-	//Stage background functions
-	void (*draw_fg)(struct StageBack*);
-	void (*draw_md)(struct StageBack*);
-	void (*draw_bg)(struct StageBack*);
-	void (*free)(struct StageBack*);
-} StageBack;
+//Stage overlay state
+typedef void (*StageOverlay_Load)(void);
+typedef void (*StageOverlay_DrawBG)(void);
+typedef void (*StageOverlay_DrawMD)(void);
+typedef void (*StageOverlay_DrawFG)(void);
+typedef void (*StageOverlay_Free)(void);
+typedef boolean (*StageOverlay_NextStage)(void);
+
+extern StageOverlay_Load stageoverlay_load;
+extern StageOverlay_DrawBG stageoverlay_drawbg;
+extern StageOverlay_DrawMD stageoverlay_drawmd;
+extern StageOverlay_DrawFG stageoverlay_drawfg;
+extern StageOverlay_Free stageoverlay_free;
+extern StageOverlay_NextStage stageoverlay_nextstage;
+
+extern const char *stageoverlay_chartfmt;
 
 //Stage definitions
 typedef struct
 {
-	//Characters
-	struct
-	{
-		Character* (*new)();
-		fixed_t x, y;
-	} pchar, ochar, gchar;
-	
-	//Stage background
-	StageBack* (*back)();
+	//Overlay
+	const char *overlay_path;
+	void (*overlay_setptr)(void);
 	
 	//Song info
 	fixed_t speed[3];
 	
-	u8 week, week_song;
+	u8 week_song;
 	u8 music_track, music_channel;
-	
-	StageId next_stage;
-	u8 next_load;
 } StageDef;
 
 //Stage state
@@ -219,8 +217,6 @@ typedef struct
 	} camera;
 	fixed_t bump, sbump;
 	
-	StageBack *back;
-	
 	Character *player;
 	Character *opponent;
 	Character *gf;
@@ -264,13 +260,16 @@ extern Stage stage;
 //Stage drawing functions
 void Stage_DrawTexCol(Gfx_Tex *tex, const RECT *src, const RECT_FIXED *dst, fixed_t zoom, u8 r, u8 g, u8 b);
 void Stage_DrawTex(Gfx_Tex *tex, const RECT *src, const RECT_FIXED *dst, fixed_t zoom);
+void Stage_DrawTexArbCol(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, const POINT_FIXED *p1, const POINT_FIXED *p2, const POINT_FIXED *p3, u8 r, u8 g, u8 b, fixed_t zoom);
 void Stage_DrawTexArb(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, const POINT_FIXED *p1, const POINT_FIXED *p2, const POINT_FIXED *p3, fixed_t zoom);
+void Stage_BlendTexArbCol(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, const POINT_FIXED *p1, const POINT_FIXED *p2, const POINT_FIXED *p3, fixed_t zoom, u8 r, u8 g, u8 b, u8 mode);
 void Stage_BlendTexArb(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, const POINT_FIXED *p1, const POINT_FIXED *p2, const POINT_FIXED *p3, fixed_t zoom, u8 mode);
 
 //Stage functions
 void Stage_Load(StageId id, StageDiff difficulty, boolean story);
-void Stage_Unload();
-void Stage_Tick();
+void Stage_LoadScr(StageId id, StageDiff difficulty, boolean story);
+void Stage_Unload(void);
+void Stage_Tick(void);
 
 #ifdef PSXF_NETWORK
 void Stage_NetHit(Packet *packet);

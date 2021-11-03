@@ -59,6 +59,13 @@ _bss_init:
 
 _bss_init_skip:
 
+    /*
+    la    $a0, __heap_start
+    la    $a1, __heap_size
+    jal   Mem_Init
+    nop
+    */
+
     la    $a1, _mainargv
     j     main
     li    $a0, 1

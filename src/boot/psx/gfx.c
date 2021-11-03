@@ -27,6 +27,10 @@ void Gfx_Init(void)
 	//Reset GPU
 	ResetGraph(0);
 	
+	//Clear screen
+	RECT dst = {0, 0, 320, 480};
+	ClearImage(&dst, 0, 0, 0);
+	
 	//Initialize display environment
 	SetDefDispEnv(&disp[0], 0, 0, 320, 240);
 	SetDefDispEnv(&disp[1], 0, 240, 320, 240);
@@ -240,50 +244,6 @@ void Gfx_DrawTexCol(Gfx_Tex *tex, const RECT *src, const RECT *dst, u8 r, u8 g, 
 		cdst.h = cdst.h * csrc.h / src->h;
 	}
 	
-	/*
-	//Subdivide if particularly large
-	if (csrc.w > 0x80)
-	{
-		RECT csrc2, cdst2;
-		
-		int srcs = csrc.w / 2;
-		csrc2.x = csrc.x + srcs;
-		csrc2.w = csrc.w - srcs;
-		csrc2.y = csrc.y;
-		csrc2.h = csrc.h;
-		csrc.w = srcs;
-		
-		int dsts = cdst.w / 2;
-		cdst2.x = cdst.x + dsts;
-		cdst2.w = cdst.w - dsts;
-		cdst2.y = cdst.y;
-		cdst2.h = cdst.h;
-		cdst.w = dsts;
-		
-		Gfx_DrawTexCol(tex, &csrc2, &cdst2, r, g, b);
-	}
-	if (csrc.h > 0x80)
-	{
-		RECT csrc2, cdst2;
-		
-		int srcs = csrc.h / 2;
-		csrc2.x = csrc.x;
-		csrc2.w = csrc.w;
-		csrc2.y = csrc.y + srcs;
-		csrc2.h = csrc.h - srcs;
-		csrc.h = srcs;
-		
-		int dsts = cdst.h / 2;
-		cdst2.x = cdst.x;
-		cdst2.w = cdst.w;
-		cdst2.y = cdst.y + dsts;
-		cdst2.h = cdst.h - dsts;
-		cdst.h = dsts;
-		
-		Gfx_DrawTexCol(tex, &csrc2, &cdst2, r, g, b);
-	}
-	*/
-	
 	//Add quad
 	POLY_FT4 *quad = (POLY_FT4*)nextpri;
 	setPolyFT4(quad);
@@ -322,18 +282,22 @@ void Gfx_DrawTexArb(Gfx_Tex *tex, const RECT *src, const POINT *p0, const POINT 
 	Gfx_DrawTexArbCol(tex, src, p0, p1, p2, p3, 0x80, 0x80, 0x80);
 }
 
-void Gfx_BlendTexArb(Gfx_Tex *tex, const RECT *src, const POINT *p0, const POINT *p1, const POINT *p2, const POINT *p3, u8 mode)
+void Gfx_BlendTexArbCol(Gfx_Tex *tex, const RECT *src, const POINT *p0, const POINT *p1, const POINT *p2, const POINT *p3, u8 r, u8 g, u8 b, u8 mode)
 {
 	//Add quad
 	POLY_FT4 *quad = (POLY_FT4*)nextpri;
 	setPolyFT4(quad);
 	setUVWH(quad, src->x, src->y, src->w, src->h);
 	setXY4(quad, p0->x, p0->y, p1->x, p1->y, p2->x, p2->y, p3->x, p3->y);
-	setRGB0(quad, 0x80, 0x80, 0x80);
-	setSemiTrans(quad, 1);
+	setRGB0(quad, r, g, b);
 	quad->tpage = tex->tpage | getTPage(0, mode, 0, 0);
 	quad->clut = tex->clut;
 	
 	addPrim(ot[db], quad);
 	nextpri += sizeof(POLY_FT4);
+}
+
+void Gfx_BlendTexArb(Gfx_Tex *tex, const RECT *src, const POINT *p0, const POINT *p1, const POINT *p2, const POINT *p3, u8 mode)
+{
+	Gfx_BlendTexArbCol(tex, src, p0, p1, p2, p3, 0x80, 0x80, 0x80, mode);
 }

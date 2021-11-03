@@ -56,12 +56,12 @@ IO_Data IO_AsyncReadFile(CdlFILE *file)
 	//Stop XA playback
 	Audio_StopXA();
 	
-	//Get number of sectors for the file
-	size_t sects = (file->size + IO_SECT_SIZE - 1) / IO_SECT_SIZE;
+	//Get number of sectors then bytes for the file
+	size_t sects = (file->size + 0x7FF) >> 11;
+	size_t size = sects << 11;
 	
 	//Allocate a buffer for the file
-	size_t size;
-	IO_Data buffer = (IO_Data)Mem_Alloc(size = (IO_SECT_SIZE * sects));
+	IO_Data buffer = (IO_Data)Mem_Alloc(size);
 	if (buffer == NULL)
 	{
 		sprintf(error_msg, "[IO_AsyncReadFile] Malloc (size %X) fail", size);

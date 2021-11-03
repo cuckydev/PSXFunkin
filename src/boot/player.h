@@ -20,16 +20,6 @@ typedef enum
 	PlayerAnim_Peace,
 	PlayerAnim_Sweat,
 	
-	PlayerAnim_Dead0, //BREAK
-	PlayerAnim_Dead1, //Idle with mic
-	PlayerAnim_Dead2, //Mic Drop
-	PlayerAnim_Dead3, //Idle
-	PlayerAnim_Dead4, //Body twitch
-	PlayerAnim_Dead5, //Balls twitch
-	
-	PlayerAnim_Dead6, //Retry
-	PlayerAnim_Dead7, //Blueball
-	
 	PlayerAnim_Max,
 } PlayerAnim;
 

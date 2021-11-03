@@ -4,12 +4,16 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#include "dad.h"
+#include "boot/character.h"
+#include "boot/mem.h"
+#include "boot/archive.h"
+#include "boot/stage.h"
+#include "boot/main.h"
 
-#include "../mem.h"
-#include "../archive.h"
-#include "../stage.h"
-#include "../main.h"
+//Dad character assets
+static const u8 char_dad_arc_main[] = {
+	#include "iso/dad/main.arc.h"
+};
 
 //Dad character structure
 enum
@@ -70,7 +74,7 @@ static const Animation char_dad_anim[CharAnim_Max] = {
 };
 
 //Dad character functions
-void Char_Dad_SetFrame(void *user, u8 frame)
+static void Char_Dad_SetFrame(void *user, u8 frame)
 {
 	Char_Dad *this = (Char_Dad*)user;
 	
@@ -84,7 +88,7 @@ void Char_Dad_SetFrame(void *user, u8 frame)
 	}
 }
 
-void Char_Dad_Tick(Character *character)
+static void Char_Dad_Tick(Character *character)
 {
 	Char_Dad *this = (Char_Dad*)character;
 	
@@ -97,22 +101,19 @@ void Char_Dad_Tick(Character *character)
 	Character_Draw(character, &this->tex, &char_dad_frame[this->frame]);
 }
 
-void Char_Dad_SetAnim(Character *character, u8 anim)
+static void Char_Dad_SetAnim(Character *character, u8 anim)
 {
 	//Set animation
 	Animatable_SetAnim(&character->animatable, anim);
 	Character_CheckStartSing(character);
 }
 
-void Char_Dad_Free(Character *character)
+static void Char_Dad_Free(Character *character)
 {
-	Char_Dad *this = (Char_Dad*)character;
-	
-	//Free art
-	Mem_Free(this->arc_main);
+	(void)character;
 }
 
-Character *Char_Dad_New(fixed_t x, fixed_t y)
+static Character *Char_Dad_New(fixed_t x, fixed_t y)
 {
 	//Allocate dad object
 	Char_Dad *this = Mem_Alloc(sizeof(Char_Dad));
@@ -141,8 +142,6 @@ Character *Char_Dad_New(fixed_t x, fixed_t y)
 	this->character.focus_zoom = FIXED_DEC(1,1);
 	
 	//Load art
-	this->arc_main = IO_Read("\\CHAR\\DAD.ARC;1");
-	
 	const char **pathp = (const char *[]){
 		"idle0.tim", //Dad_ArcMain_Idle0
 		"idle1.tim", //Dad_ArcMain_Idle1
@@ -154,7 +153,7 @@ Character *Char_Dad_New(fixed_t x, fixed_t y)
 	};
 	IO_Data *arc_ptr = this->arc_ptr;
 	for (; *pathp != NULL; pathp++)
-		*arc_ptr++ = Archive_Find(this->arc_main, *pathp);
+		*arc_ptr++ = Archive_Find((IO_Data)char_dad_arc_main, *pathp);
 	
 	//Initialize render state
 	this->tex_id = this->frame = 0xFF;

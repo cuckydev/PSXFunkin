@@ -4,29 +4,40 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#include "speaker.h"
+#include "boot/io.h"
+#include "boot/stage.h"
+#include "boot/timer.h"
 
-#include "../io.h"
-#include "../stage.h"
-#include "../timer.h"
+//Speaker structure
+typedef struct
+{
+	//Speaker state
+	Gfx_Tex tex;
+	fixed_t bump;
+} Speaker;
+
+//Speaker assets
+static const u8 speaker_tim[] = {
+	#include "iso/gf/speaker.tim.h"
+};
 
 //Speaker functions
-void Speaker_Init(Speaker *this)
+static void Speaker_Init(Speaker *this)
 {
 	//Initialize speaker state
 	this->bump = 0;
 	
 	//Load speaker graphics
-	Gfx_LoadTex(&this->tex, IO_Read("\\CHAR\\SPEAKER.TIM;1"), GFX_LOADTEX_FREE);
+	Gfx_LoadTex(&this->tex, (IO_Data)speaker_tim, 0);
 }
 
-void Speaker_Bump(Speaker *this)
+static void Speaker_Bump(Speaker *this)
 {
 	//Set bump
 	this->bump = FIXED_DEC(4,1) / 24 - 1;
 }
 
-void Speaker_Tick(Speaker *this, fixed_t x, fixed_t y, fixed_t parallax)
+static void Speaker_Tick(Speaker *this, fixed_t x, fixed_t y, fixed_t parallax)
 {
 	//Get frame to use according to bump
 	u8 frame;

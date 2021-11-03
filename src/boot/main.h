@@ -18,6 +18,9 @@ extern GameLoop gameloop;
 
 //Error handler
 extern char error_msg[0x200];
-void ErrorLock();
+void ErrorLock(void);
+
+//Overlay interface
+void Overlay_Load(const char *path);
 
 #endif

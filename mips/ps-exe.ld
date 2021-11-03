@@ -183,9 +183,11 @@ SECTIONS {
     . = ALIGN(4);
     __bss_end = .;
 
-    __heap_start = __heap_base;
-	
-	. = ADDR(.text) - 0x800;
+    . = ALIGN(16);
+    __heap_start = .;
+    __heap_size = (__ram_top - __heap_start);
+
+    . = ADDR(.text) - 0x800;
     __end = .;
 
     /DISCARD/ : { *(.MIPS.abiflags) }

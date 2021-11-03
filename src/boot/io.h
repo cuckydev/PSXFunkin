@@ -11,9 +11,6 @@
 
 typedef u32* IO_Data;
 
-//IO constants
-#define IO_SECT_SIZE 2048
-
 //IO functions
 void IO_Init(void);
 void IO_Quit(void);

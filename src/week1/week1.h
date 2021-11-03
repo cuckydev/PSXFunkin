@@ -4,12 +4,10 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef PSXF_GUARD_SPIRIT_H
-#define PSXF_GUARD_SPIRIT_H
+#ifndef PSXF_GUARD_WEEK1_WEEK1_H
+#define PSXF_GUARD_WEEK1_WEEK1_H
 
-#include "../character.h"
-
-//Spirit character functions
-Character *Char_Spirit_New(fixed_t x, fixed_t y);
+//Week 1 functions
+void Week1_SetPtr(void);
 
 #endif

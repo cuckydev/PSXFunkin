@@ -13,8 +13,15 @@
 #include "pad.h"
 #include "network.h"
 
-#include "menu.h"
+#include "menu/menu.h"
 #include "stage.h"
+
+//Memory implementation
+#define MEM_STAT //This will enable the Mem_GetStat function which returns information about available memory in the heap
+
+#define MEM_IMPLEMENTATION
+#include "mem.h"
+#undef MEM_IMPLEMENTATION
 
 //Game loop
 GameLoop gameloop;
@@ -36,15 +43,37 @@ void ErrorLock(void)
 	}
 }
 
-//Memory heap
-//#define MEM_STAT //This will enable the Mem_GetStat function which returns information about available memory in the heap
+//Overlay interface
+#ifndef PSXF_PC
 
-#define MEM_IMPLEMENTATION
-#include "mem.h"
-#undef MEM_IMPLEMENTATION
+extern u8 __heap_start, __ram_top;
 
-#ifndef PSXF_STDMEM
-static u8 malloc_heap[0x1B0000];
+void Overlay_Load(const char *path)
+{
+	//Find file
+	CdlFILE file;
+	IO_FindFile(&file, path);
+	
+	//Get number of sectors and then bytes for the file
+	size_t sects = (file.size + 0x7FF) >> 11;
+	size_t size = sects << 11;
+	
+	//Read file to start of heap
+	CdControl(CdlSetloc, (u8*)&file.pos, NULL);
+	CdRead(sects, (IO_Data)&__heap_start, CdlModeSpeed);
+	CdReadSync(0, NULL);
+	
+	//Initialize memory heap at end of overlay data
+	Mem_Init(&__heap_start + size, &__ram_top - &__heap_start - size);
+}
+
+#else
+
+void Overlay_Load(const char *path)
+{
+	(void)path;
+}
+
 #endif
 
 //Entry point
@@ -57,8 +86,6 @@ int main(int argc, char **argv)
 	//Initialize system
 	PSX_Init();
 	
-	Mem_Init((void*)malloc_heap, sizeof(malloc_heap));
-	
 	IO_Init();
 	Audio_Init();
 	Gfx_Init();
@@ -68,7 +95,6 @@ int main(int argc, char **argv)
 	Timer_Init();
 	
 	//Start game
-	gameloop = GameLoop_Menu;
 	Menu_Load(MenuPage_Opening);
 	
 	//Game loop

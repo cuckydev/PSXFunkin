@@ -1,0 +1,11 @@
+all: \
+  src/iso/week1/back.arc.h \
+  src/iso/bf/main.arc.h \
+  src/iso/dad/main.arc.h \
+  src/iso/gf/main.arc.h \
+  src/iso/gf/tut.arc.h \
+  src/iso/gf/speaker.tim.h
+
+src/iso/%.h: iso/%
+	mkdir -p $(dir $@)
+	tools/bin2h/bin2h $< $@

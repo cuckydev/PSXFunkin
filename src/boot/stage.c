@@ -15,7 +15,7 @@
 #include "movie.h"
 #include "network.h"
 
-#include "menu.h"
+#include "menu/menu.h"
 #include "trans.h"
 #include "loadscr.h"
 
@@ -50,38 +50,21 @@ static const u8 note_anims[4][3] = {
 	{CharAnim_Right, CharAnim_RightAlt, PlayerAnim_RightMiss},
 };
 
-//Stage definitions
-#include "character/bf.h"
-#include "character/bfweeb.h"
-#include "character/dad.h"
-#include "character/spook.h"
-#include "character/pico.h"
-#include "character/mom.h"
-#include "character/xmasbf.h"
-#include "character/xmasp.h"
-#include "character/senpai.h"
-#include "character/senpaim.h"
-#include "character/spirit.h"
-#include "character/tank.h"
-#include "character/gf.h"
-#include "character/gfweeb.h"
-#include "character/clucky.h"
-
-#include "stage/dummy.h"
-#include "stage/week1.h"
-#include "stage/week2.h"
-#include "stage/week3.h"
-#include "stage/week4.h"
-#include "stage/week5.h"
-#include "stage/week6.h"
-#include "stage/week7.h"
-
-static const StageDef stage_defs[StageId_Max] = {
-	#include "stagedef_disc1.h"
-};
-
 //Stage state
 Stage stage;
+
+//Stage overlay state
+StageOverlay_Load stageoverlay_load;
+StageOverlay_DrawBG stageoverlay_drawbg;
+StageOverlay_DrawMD stageoverlay_drawmd;
+StageOverlay_DrawFG stageoverlay_drawfg;
+StageOverlay_Free stageoverlay_free;
+StageOverlay_NextStage stageoverlay_nextstage;
+
+const char *stageoverlay_chartfmt;
+
+//Stage definitions
+#include "stagedef_disc1.h"
 
 //Stage music functions
 static void Stage_StartVocal(void)
@@ -662,7 +645,7 @@ void Stage_DrawTex(Gfx_Tex *tex, const RECT *src, const RECT_FIXED *dst, fixed_t
 	Stage_DrawTexCol(tex, src, dst, zoom, 0x80, 0x80, 0x80);
 }
 
-void Stage_DrawTexArb(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, const POINT_FIXED *p1, const POINT_FIXED *p2, const POINT_FIXED *p3, fixed_t zoom)
+void Stage_DrawTexArbCol(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, const POINT_FIXED *p1, const POINT_FIXED *p2, const POINT_FIXED *p3, u8 r, u8 g, u8 b, fixed_t zoom)
 {
 	//Don't draw if HUD and HUD is disabled
 	#ifdef STAGE_NOHUD
@@ -676,24 +659,34 @@ void Stage_DrawTexArb(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, cons
 	POINT s2 = {SCREEN_WIDTH2 + (FIXED_MUL(p2->x, zoom) >> FIXED_SHIFT), SCREEN_HEIGHT2 + (FIXED_MUL(p2->y, zoom) >> FIXED_SHIFT)};
 	POINT s3 = {SCREEN_WIDTH2 + (FIXED_MUL(p3->x, zoom) >> FIXED_SHIFT), SCREEN_HEIGHT2 + (FIXED_MUL(p3->y, zoom) >> FIXED_SHIFT)};
 	
-	Gfx_DrawTexArb(tex, src, &s0, &s1, &s2, &s3);
+	Gfx_DrawTexArbCol(tex, src, &s0, &s1, &s2, &s3, r, g, b);
+}
+
+void Stage_DrawTexArb(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, const POINT_FIXED *p1, const POINT_FIXED *p2, const POINT_FIXED *p3, fixed_t zoom)
+{
+	Stage_DrawTexArbCol(tex, src, p0, p1, p2, p3, 0x80, 0x80, 0x80, zoom);
+}
+
+void Stage_BlendTexArbCol(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, const POINT_FIXED *p1, const POINT_FIXED *p2, const POINT_FIXED *p3, fixed_t zoom, u8 r, u8 g, u8 b, u8 mode)
+{
+	//Don't draw if HUD and HUD is disabled
+	#ifdef STAGE_NOHUD
+		if (tex == &stage.tex_hud0 || tex == &stage.tex_hud1)
+			return;
+	#endif
+	
+	//Get screen-space points
+	POINT s0 = {SCREEN_WIDTH2 + (FIXED_MUL(p0->x, zoom) >> FIXED_SHIFT), SCREEN_HEIGHT2 + (FIXED_MUL(p0->y, zoom) >> FIXED_SHIFT)};
+	POINT s1 = {SCREEN_WIDTH2 + (FIXED_MUL(p1->x, zoom) >> FIXED_SHIFT), SCREEN_HEIGHT2 + (FIXED_MUL(p1->y, zoom) >> FIXED_SHIFT)};
+	POINT s2 = {SCREEN_WIDTH2 + (FIXED_MUL(p2->x, zoom) >> FIXED_SHIFT), SCREEN_HEIGHT2 + (FIXED_MUL(p2->y, zoom) >> FIXED_SHIFT)};
+	POINT s3 = {SCREEN_WIDTH2 + (FIXED_MUL(p3->x, zoom) >> FIXED_SHIFT), SCREEN_HEIGHT2 + (FIXED_MUL(p3->y, zoom) >> FIXED_SHIFT)};
+	
+	Gfx_BlendTexArbCol(tex, src, &s0, &s1, &s2, &s3, r, g, b, mode);
 }
 
 void Stage_BlendTexArb(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, const POINT_FIXED *p1, const POINT_FIXED *p2, const POINT_FIXED *p3, fixed_t zoom, u8 mode)
 {
-	//Don't draw if HUD and HUD is disabled
-	#ifdef STAGE_NOHUD
-		if (tex == &stage.tex_hud0 || tex == &stage.tex_hud1)
-			return;
-	#endif
-	
-	//Get screen-space points
-	POINT s0 = {SCREEN_WIDTH2 + (FIXED_MUL(p0->x, zoom) >> FIXED_SHIFT), SCREEN_HEIGHT2 + (FIXED_MUL(p0->y, zoom) >> FIXED_SHIFT)};
-	POINT s1 = {SCREEN_WIDTH2 + (FIXED_MUL(p1->x, zoom) >> FIXED_SHIFT), SCREEN_HEIGHT2 + (FIXED_MUL(p1->y, zoom) >> FIXED_SHIFT)};
-	POINT s2 = {SCREEN_WIDTH2 + (FIXED_MUL(p2->x, zoom) >> FIXED_SHIFT), SCREEN_HEIGHT2 + (FIXED_MUL(p2->y, zoom) >> FIXED_SHIFT)};
-	POINT s3 = {SCREEN_WIDTH2 + (FIXED_MUL(p3->x, zoom) >> FIXED_SHIFT), SCREEN_HEIGHT2 + (FIXED_MUL(p3->y, zoom) >> FIXED_SHIFT)};
-	
-	Gfx_BlendTexArb(tex, src, &s0, &s1, &s2, &s3, mode);
+	Stage_BlendTexArbCol(tex, src, p0, p1, p2, p3, zoom, 0x80, 0x80, 0x80, mode);
 }
 
 //Stage HUD functions
@@ -1013,60 +1006,13 @@ static void Stage_SwapChars(void)
 	}
 }
 
-static void Stage_LoadPlayer(void)
-{
-	//Load player character
-	Character_Free(stage.player);
-	stage.player = stage.stage_def->pchar.new(stage.stage_def->pchar.x, stage.stage_def->pchar.y);
-}
-
-static void Stage_LoadOpponent(void)
-{
-	//Load opponent character
-	Character_Free(stage.opponent);
-	stage.opponent = stage.stage_def->ochar.new(stage.stage_def->ochar.x, stage.stage_def->ochar.y);
-}
-
-static void Stage_LoadGirlfriend(void)
-{
-	//Load girlfriend character
-	Character_Free(stage.gf);
-	if (stage.stage_def->gchar.new != NULL)
-		stage.gf = stage.stage_def->gchar.new(stage.stage_def->gchar.x, stage.stage_def->gchar.y);
-	else
-		stage.gf = NULL;
-}
-
-static void Stage_LoadStage(void)
-{
-	//Load back
-	if (stage.back != NULL)
-		stage.back->free(stage.back);
-	stage.back = stage.stage_def->back();
-}
-
 static void Stage_LoadChart(void)
 {
-	//Load stage data
+	//Get chart path
 	char chart_path[64];
-	if (stage.stage_def->week & 0x80)
-	{
-		//Use mod path convention
-		static const char *mod_format[] = {
-			"\\KAPI\\KAPI.%d%c.CHT;1", //Kapi
-			"\\CLWN\\CLWN.%d%c.CHT;1" //Tricky
-		};
-		
-		sprintf(chart_path, mod_format[stage.stage_def->week & 0x7F], stage.stage_def->week_song, "ENH"[stage.stage_diff]);
-	}
-	else
-	{
-		//Use standard path convention
-		sprintf(chart_path, "\\WEEK%d\\%d.%d%c.CHT;1", stage.stage_def->week, stage.stage_def->week, stage.stage_def->week_song, "ENH"[stage.stage_diff]);
-	}
+	sprintf(chart_path, stageoverlay_chartfmt, stage.stage_def->week_song, "ENH"[stage.stage_diff]);
 	
-	if (stage.chart_data != NULL)
-		Mem_Free(stage.chart_data);
+	//Load stage data
 	stage.chart_data = IO_Read(chart_path);
 	u8 *chart_byte = (u8*)stage.chart_data;
 	
@@ -1218,7 +1164,8 @@ static void Stage_LoadState(void)
 		
 		stage.player_state[i].refresh_score = false;
 		stage.player_state[i].score = 0;
-		strcpy(stage.player_state[i].score_text, "0");
+		stage.player_state[i].score_text[0] = '0';
+		stage.player_state[i].score_text[1] = '\0';
 		
 		stage.player_state[i].pad_held = stage.player_state[i].pad_press = 0;
 	}
@@ -1236,6 +1183,15 @@ void Stage_Load(StageId id, StageDiff difficulty, boolean story)
 	stage.stage_diff = difficulty;
 	stage.story = story;
 	
+	//Load overlay
+	Overlay_Load(stage.stage_def->overlay_path);
+	stage.stage_def->overlay_setptr();
+	
+	//Load stage and chart
+	stageoverlay_load();
+	Stage_SwapChars();
+	Stage_LoadChart();
+	
 	//Load HUD textures
 	if (id >= StageId_6_1 && id <= StageId_6_3)
 		Gfx_LoadTex(&stage.tex_hud0, IO_Read("\\STAGE\\HUD0WEEB.TIM;1"), GFX_LOADTEX_FREE);
@@ -1243,21 +1199,8 @@ void Stage_Load(StageId id, StageDiff difficulty, boolean story)
 		Gfx_LoadTex(&stage.tex_hud0, IO_Read("\\STAGE\\HUD0.TIM;1"), GFX_LOADTEX_FREE);
 	Gfx_LoadTex(&stage.tex_hud1, IO_Read("\\STAGE\\HUD1.TIM;1"), GFX_LOADTEX_FREE);
 	
-	//Load stage background
-	Stage_LoadStage();
-	
-	//Load characters
-	Stage_LoadPlayer();
-	Stage_LoadOpponent();
-	Stage_LoadGirlfriend();
-	Stage_SwapChars();
-	
-	//Load stage chart
-	Stage_LoadChart();
-	
 	//Initialize stage state
 	stage.story = story;
-	
 	Stage_LoadState();
 	
 	//Initialize camera
@@ -1282,32 +1225,40 @@ void Stage_Load(StageId id, StageDiff difficulty, boolean story)
 	//Test offset
 	stage.offset = 0;
 	
+	//Send ready packet to peer if net host
 	#ifdef PSXF_NETWORK
-	if (stage.mode >= StageMode_Net1 && Network_IsHost())
-	{
-		//Send ready packet to peer
-		Packet ready;
-		ready[0] = PacketType_Ready;
-		ready[1] = id;
-		ready[2] = difficulty;
-		ready[3] = (stage.mode == StageMode_Net1) ? 1 : 0;
-		Network_Send(&ready);
-	}
+		if (stage.mode >= StageMode_Net1 && Network_IsHost())
+		{
+			Packet ready;
+			ready[0] = PacketType_Ready;
+			ready[1] = id;
+			ready[2] = difficulty;
+			ready[3] = (stage.mode == StageMode_Net1) ? 1 : 0;
+			Network_Send(&ready);
+		}
 	#endif
+	
+	//Set game state
+	gameloop = GameLoop_Stage;
+}
+
+void Stage_LoadScr(StageId id, StageDiff difficulty, boolean story)
+{
+	//Wrap stage load in loading screen
+	LoadScr_Start();
+	Stage_Load(id, difficulty, story);
+	LoadScr_End();
 }
 
 void Stage_Unload(void)
 {
 	//Disable net mode to not break the game
-	if (stage.mode >= StageMode_Net1)
-		stage.mode = StageMode_Normal;
+	#ifdef PSXF_NETWORK
+		if (stage.mode >= StageMode_Net1)
+			stage.mode = StageMode_Normal;
+	#endif
 	
-	//Unload stage background
-	if (stage.back != NULL)
-		stage.back->free(stage.back);
-	stage.back = NULL;
-	
-	//Unload stage data
+	//Free stage data
 	Mem_Free(stage.chart_data);
 	stage.chart_data = NULL;
 	
@@ -1323,71 +1274,10 @@ void Stage_Unload(void)
 	stage.opponent = NULL;
 	Character_Free(stage.gf);
 	stage.gf = NULL;
-}
-
-static boolean Stage_NextLoad(void)
-{
-	u8 load = stage.stage_def->next_load;
-	if (load == 0)
-	{
-		//Do stage transition if full reload
-		stage.trans = StageTrans_NextSong;
-		Trans_Start();
-		return false;
-	}
-	else
-	{
-		//Get stage definition
-		stage.stage_def = &stage_defs[stage.stage_id = stage.stage_def->next_stage];
-		
-		//Load stage background
-		if (load & STAGE_LOAD_STAGE)
-			Stage_LoadStage();
-		
-		//Load characters
-		Stage_SwapChars();
-		if (load & STAGE_LOAD_PLAYER)
-		{
-			Stage_LoadPlayer();
-		}
-		else
-		{
-			stage.player->x = stage.stage_def->pchar.x;
-			stage.player->y = stage.stage_def->pchar.y;
-		}
-		if (load & STAGE_LOAD_OPPONENT)
-		{
-			Stage_LoadOpponent();
-		}
-		else
-		{
-			stage.opponent->x = stage.stage_def->ochar.x;
-			stage.opponent->y = stage.stage_def->ochar.y;
-		}
-		Stage_SwapChars();
-		if (load & STAGE_LOAD_GIRLFRIEND)
-		{
-			Stage_LoadGirlfriend();
-		}
-		else if (stage.gf != NULL)
-		{
-			stage.gf->x = stage.stage_def->gchar.x;
-			stage.gf->y = stage.stage_def->gchar.y;
-		}
-		
-		//Load stage chart
-		Stage_LoadChart();
-		
-		//Initialize stage state
-		Stage_LoadState();
-		
-		//Load music
-		Stage_LoadMusic();
-		
-		//Reset timer
-		Timer_Reset();
-		return true;
-	}
+	
+	//Free stage
+	if (stageoverlay_free != NULL)
+		stageoverlay_free();
 }
 
 void Stage_Tick(void)
@@ -1457,7 +1347,7 @@ void Stage_Tick(void)
 				Stage_Unload();
 				
 				LoadScr_Start();
-				Stage_Load(stage.stage_def->next_stage, stage.stage_diff, stage.story);
+				//Stage_Load(stage.stage_def->next_stage, stage.stage_diff, stage.story);
 				LoadScr_End();
 				break;
 			case StageTrans_Reload:
@@ -1602,6 +1492,7 @@ void Stage_Tick(void)
 					next_scroll = ((fixed_t)stage.step_base << FIXED_SHIFT) + FIXED_MUL(stage.song_time - stage.time_base, stage.step_crochet);
 					
 					//Transition to menu or next song
+					/*
 					if (stage.story && stage.stage_def->next_stage != stage.stage_id)
 					{
 						if (Stage_NextLoad())
@@ -1612,6 +1503,7 @@ void Stage_Tick(void)
 						stage.trans = StageTrans_Menu;
 						Trans_Start();
 					}
+					*/
 				}
 			}
 			
@@ -1819,7 +1711,6 @@ void Stage_Tick(void)
 				{
 					//Player has died
 					stage.player_state[0].health = 0;
-					stage.state = StageState_Dead;
 				}
 				if (stage.player_state[0].health > 20000)
 					stage.player_state[0].health = 20000;
@@ -1866,8 +1757,8 @@ void Stage_Tick(void)
 			}
 			
 			//Draw stage foreground
-			if (stage.back->draw_fg != NULL)
-				stage.back->draw_fg(stage.back);
+			if (stageoverlay_drawfg != NULL)
+				stageoverlay_drawfg();
 			
 			//Tick foreground objects
 			ObjectList_Tick(&stage.objlist_fg);
@@ -1877,8 +1768,8 @@ void Stage_Tick(void)
 			stage.opponent->tick(stage.opponent);
 			
 			//Draw stage middle
-			if (stage.back->draw_md != NULL)
-				stage.back->draw_md(stage.back);
+			if (stageoverlay_drawmd != NULL)
+				stageoverlay_drawmd();
 			
 			//Tick girlfriend
 			if (stage.gf != NULL)
@@ -1888,97 +1779,8 @@ void Stage_Tick(void)
 			ObjectList_Tick(&stage.objlist_bg);
 			
 			//Draw stage background
-			if (stage.back->draw_bg != NULL)
-				stage.back->draw_bg(stage.back);
-			break;
-		}
-		case StageState_Dead: //Start BREAK animation and reading extra data from CD
-		{
-			//Stop music immediately
-			Audio_StopXA();
-			
-			//Unload stage data
-			Mem_Free(stage.chart_data);
-			stage.chart_data = NULL;
-			
-			//Free background
-			stage.back->free(stage.back);
-			stage.back = NULL;
-			
-			//Free objects
-			ObjectList_Free(&stage.objlist_fg);
-			ObjectList_Free(&stage.objlist_bg);
-			
-			//Free opponent and girlfriend
-			Stage_SwapChars();
-			Character_Free(stage.opponent);
-			stage.opponent = NULL;
-			Character_Free(stage.gf);
-			stage.gf = NULL;
-			
-			//Reset stage state
-			stage.flag = 0;
-			stage.bump = stage.sbump = FIXED_UNIT;
-			
-			//Change background colour to black
-			Gfx_SetClear(0, 0, 0);
-			
-			//Run death animation, focus on player, and change state
-			stage.player->set_anim(stage.player, PlayerAnim_Dead0);
-			
-			Stage_FocusCharacter(stage.player, 0);
-			stage.song_time = 0;
-			
-			stage.state = StageState_DeadLoad;
-		}
-	//Fallthrough
-		case StageState_DeadLoad:
-		{
-			//Scroll camera and tick player
-			if (stage.song_time < FIXED_UNIT)
-				stage.song_time += FIXED_UNIT / 60;
-			stage.camera.td = FIXED_DEC(-2, 100) + FIXED_MUL(stage.song_time, FIXED_DEC(45, 1000));
-			if (stage.camera.td > 0)
-				Stage_ScrollCamera();
-			stage.player->tick(stage.player);
-			
-			//Drop mic and change state if CD has finished reading and animation has ended
-			if (IO_IsReading() || stage.player->animatable.anim != PlayerAnim_Dead1)
-				break;
-			
-			stage.player->set_anim(stage.player, PlayerAnim_Dead2);
-			stage.camera.td = FIXED_DEC(25, 1000);
-			stage.state = StageState_DeadDrop;
-			break;
-		}
-		case StageState_DeadDrop:
-		{
-			//Scroll camera and tick player
-			Stage_ScrollCamera();
-			stage.player->tick(stage.player);
-			
-			//Enter next state once mic has been dropped
-			if (stage.player->animatable.anim == PlayerAnim_Dead3)
-			{
-				stage.state = StageState_DeadRetry;
-				Audio_PlayXA_Track(XA_GameOver, 0x40, 1, true);
-			}
-			break;
-		}
-		case StageState_DeadRetry:
-		{
-			//Randomly twitch
-			if (stage.player->animatable.anim == PlayerAnim_Dead3)
-			{
-				if (RandomRange(0, 29) == 0)
-					stage.player->set_anim(stage.player, PlayerAnim_Dead4);
-				if (RandomRange(0, 29) == 0)
-					stage.player->set_anim(stage.player, PlayerAnim_Dead5);
-			}
-			
-			//Scroll camera and tick player
-			Stage_ScrollCamera();
-			stage.player->tick(stage.player);
+			if (stageoverlay_drawbg != NULL)
+				stageoverlay_drawbg();
 			break;
 		}
 		default:

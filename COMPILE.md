@@ -70,11 +70,11 @@ TIP: For any make, try appending `-jX` to the end of it, where X is the number o
 
 `make -f Makefile.tim` This will convert all the pngs in [iso/](/iso/) to TIM files that can be displayed by the PS1.
 
-`make -f Makefile.chr` This will convert all the character jsons in [iso/](/iso/) to chr files that contain mapping and art data.
-
 `make -f Makefile.xa` This will convert all the oggs in [iso/music/](/iso/music/) to XA files that can be played by the PS1. This step will take a WHILE. Be patient!
 
 `make -f Makefile.cht` This will convert all the jsons in [iso/chart/](/iso/chart/) to cht files that can be played by the game.
+
+`make -f Makefile.toh` This will convert specific files to `.h` files in `src/iso/`, which allows for specific data to be loaded alongside stages, speeding up read times.
 
 You can read more about these asset formats in [FORMATS.md](/FORMATS.md)
 
