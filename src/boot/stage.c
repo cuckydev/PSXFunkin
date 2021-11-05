@@ -55,6 +55,7 @@ Stage stage;
 
 //Stage overlay state
 StageOverlay_Load stageoverlay_load;
+StageOverlay_Tick stageoverlay_tick;
 StageOverlay_DrawBG stageoverlay_drawbg;
 StageOverlay_DrawMD stageoverlay_drawmd;
 StageOverlay_DrawFG stageoverlay_drawfg;
@@ -246,7 +247,7 @@ static u8 Stage_HitNote(PlayerState *this, u8 type, fixed_t offset)
 		{
 			//Create splash object
 			Obj_Splash *splash = Obj_Splash_New(
-				note_x[type ^ stage.note_swap],
+				note_x[type],
 				note_y * (stage.downscroll ? -1 : 1),
 				type & 0x3
 			);
@@ -686,7 +687,7 @@ static void Stage_DrawStrum(u8 i, RECT *note_src, RECT_FIXED *note_dst)
 {
 	(void)note_dst;
 	
-	PlayerState *this = &stage.player_state[(i & NOTE_FLAG_OPPONENT) != 0];
+	PlayerState *this = &stage.player_state[((i ^ stage.note_swap) & NOTE_FLAG_OPPONENT) != 0];
 	i &= 0x3;
 	
 	if (this->arrow_hitan[i] > 0)
@@ -758,7 +759,7 @@ static void Stage_DrawNotes(void)
 		}
 		
 		//Get note information
-		u8 i = (note->type & NOTE_FLAG_OPPONENT) != 0;
+		u8 i = ((note->type ^ stage.note_swap) & NOTE_FLAG_OPPONENT) != 0;
 		PlayerState *this = &stage.player_state[i];
 		
 		fixed_t note_fp = (fixed_t)note->pos << FIXED_SHIFT;
@@ -773,7 +774,7 @@ static void Stage_DrawNotes(void)
 				continue;
 			
 			//Miss note if player's note
-			if (!(note->type & (bot | NOTE_FLAG_HIT | NOTE_FLAG_MINE)))
+			if (!((note->type ^ stage.note_swap) & (bot | NOTE_FLAG_HIT | NOTE_FLAG_MINE)))
 			{
 				if (stage.mode < StageMode_Net1 || i == ((stage.mode == StageMode_Net1) ? 0 : 1))
 				{
@@ -819,7 +820,7 @@ static void Stage_DrawNotes(void)
 				//Check for sustain clipping
 				fixed_t clip;
 				y -= scroll.size;
-				if ((note->type & (bot | NOTE_FLAG_HIT)) || ((this->pad_held & note_key[note->type & 0x3]) && (note_fp + stage.late_sus_safe >= stage.note_scroll)))
+				if (((note->type ^ stage.note_swap) & (bot | NOTE_FLAG_HIT)) || ((this->pad_held & note_key[note->type & 0x3]) && (note_fp + stage.late_sus_safe >= stage.note_scroll)))
 				{
 					clip = FIXED_DEC(32 - SCREEN_HEIGHT2, 1) - y;
 					if (clip < 0)
@@ -840,7 +841,7 @@ static void Stage_DrawNotes(void)
 						note_src.w = 32;
 						note_src.h = 28 - (clip >> FIXED_SHIFT);
 						
-						note_dst.x = note_x[(note->type & 0x7) ^ stage.note_swap] - FIXED_DEC(16,1);
+						note_dst.x = note_x[note->type & 0x7] - FIXED_DEC(16,1);
 						note_dst.y = y + clip;
 						note_dst.w = note_src.w << FIXED_SHIFT;
 						note_dst.h = (note_src.h << FIXED_SHIFT);
@@ -867,7 +868,7 @@ static void Stage_DrawNotes(void)
 						note_src.w = 32;
 						note_src.h = 16;
 						
-						note_dst.x = note_x[(note->type & 0x7) ^ stage.note_swap] - FIXED_DEC(16,1);
+						note_dst.x = note_x[note->type & 0x7] - FIXED_DEC(16,1);
 						note_dst.y = y + clip;
 						note_dst.w = note_src.w << FIXED_SHIFT;
 						note_dst.h = (next_y - y) - clip;
@@ -890,7 +891,7 @@ static void Stage_DrawNotes(void)
 				note_src.w = 32;
 				note_src.h = 32;
 				
-				note_dst.x = note_x[(note->type & 0x7) ^ stage.note_swap] - FIXED_DEC(16,1);
+				note_dst.x = note_x[note->type & 0x7] - FIXED_DEC(16,1);
 				note_dst.y = y - FIXED_DEC(16,1);
 				note_dst.w = note_src.w << FIXED_SHIFT;
 				note_dst.h = note_src.h << FIXED_SHIFT;
@@ -944,7 +945,7 @@ static void Stage_DrawNotes(void)
 				note_src.w = 32;
 				note_src.h = 32;
 				
-				note_dst.x = note_x[(note->type & 0x7) ^ stage.note_swap] - FIXED_DEC(16,1);
+				note_dst.x = note_x[note->type & 0x7] - FIXED_DEC(16,1);
 				note_dst.y = y - FIXED_DEC(16,1);
 				note_dst.w = note_src.w << FIXED_SHIFT;
 				note_dst.h = note_src.h << FIXED_SHIFT;
@@ -958,16 +959,6 @@ static void Stage_DrawNotes(void)
 }
 
 //Stage loads
-static void Stage_SwapChars(void)
-{
-	if (stage.mode == StageMode_Swap)
-	{
-		Character *temp = stage.player;
-		stage.player = stage.opponent;
-		stage.opponent = temp;
-	}
-}
-
 static void Stage_LoadChart(void)
 {
 	//Get chart path
@@ -1039,19 +1030,6 @@ static void Stage_LoadChart(void)
 			stage.num_notes++;
 	#endif
 	
-	//Swap chart
-	if (stage.mode == StageMode_Swap)
-	{
-		for (Note *note = stage.notes; note->pos != 0xFFFF; note++)
-			note->type ^= NOTE_FLAG_OPPONENT;
-		for (Section *section = stage.sections;; section++)
-		{
-			section->flag ^= SECTION_FLAG_OPPFOCUS;
-			if (section->end == 0xFFFF)
-				break;
-		}
-	}
-	
 	//Count max scores
 	stage.player_state[0].max_score = 0;
 	stage.player_state[1].max_score = 0;
@@ -1115,8 +1093,17 @@ static void Stage_LoadState(void)
 	
 	stage.state = StageState_Play;
 	
-	stage.player_state[0].character = stage.player;
-	stage.player_state[1].character = stage.opponent;
+	if (stage.mode == StageMode_Swap)
+	{
+		stage.player_state[0].character = stage.opponent;
+		stage.player_state[1].character = stage.player;
+	}
+	else
+	{
+		stage.player_state[0].character = stage.player;
+		stage.player_state[1].character = stage.opponent;
+	}
+	
 	for (int i = 0; i < 2; i++)
 	{
 		memset(stage.player_state[i].arrow_hitan, 0, sizeof(stage.player_state[i].arrow_hitan));
@@ -1151,7 +1138,6 @@ void Stage_Load(StageId id, StageDiff difficulty, boolean story)
 	
 	//Load stage and chart
 	stageoverlay_load();
-	Stage_SwapChars();
 	Stage_LoadChart();
 	
 	//Initialize stage state
@@ -1171,7 +1157,7 @@ void Stage_Load(StageId id, StageDiff difficulty, boolean story)
 	stage.sbump = FIXED_UNIT;
 	
 	//Initialize stage according to mode
-	stage.note_swap = (stage.mode == StageMode_Swap) ? 4 : 0;
+	stage.note_swap = (stage.mode == StageMode_Swap) ? NOTE_FLAG_OPPONENT : 0;
 	
 	//Load music
 	stage.note_scroll = 0;
@@ -1496,6 +1482,10 @@ void Stage_Tick(void)
 				}
 			}
 			
+			//Tick stage
+			if (stageoverlay_tick != NULL)
+				stageoverlay_tick();
+			
 			//Handle bump
 			if ((stage.bump = FIXED_UNIT + FIXED_MUL(stage.bump - FIXED_UNIT, FIXED_DEC(95,100))) <= FIXED_DEC(1003,1000))
 				stage.bump = FIXED_UNIT;
@@ -1544,7 +1534,7 @@ void Stage_Tick(void)
 							break;
 						
 						//Opponent note hits
-						if (playing && (note->type & NOTE_FLAG_OPPONENT) && !(note->type & NOTE_FLAG_HIT))
+						if (playing && ((note->type ^ stage.note_swap) & NOTE_FLAG_OPPONENT) && !(note->type & NOTE_FLAG_HIT))
 						{
 							//Opponent hits note
 							Stage_StartVocal();
@@ -1557,9 +1547,9 @@ void Stage_Tick(void)
 					}
 					
 					if (opponent_anote != CharAnim_Idle)
-						stage.opponent->set_anim(stage.opponent, opponent_anote);
+						stage.player_state[1].character->set_anim(stage.player_state[1].character, opponent_anote);
 					else if (opponent_snote != CharAnim_Idle)
-						stage.opponent->set_anim(stage.opponent, opponent_snote);
+						stage.player_state[1].character->set_anim(stage.player_state[1].character, opponent_snote);
 					break;
 				}
 				case StageMode_2P:
@@ -1600,12 +1590,12 @@ void Stage_Tick(void)
 			for (u8 i = 0; i < 4; i++)
 			{
 				//BF
-				note_dst.x = note_x[i ^ stage.note_swap] - FIXED_DEC(16,1);
+				note_dst.x = note_x[i] - FIXED_DEC(16,1);
 				Stage_DrawStrum(i, &note_src, &note_dst);
 				Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, stage.bump);
 				
 				//Opponent
-				note_dst.x = note_x[(i | 0x4) ^ stage.note_swap] - FIXED_DEC(16,1);
+				note_dst.x = note_x[i | NOTE_FLAG_OPPONENT] - FIXED_DEC(16,1);
 				Stage_DrawStrum(i | 4, &note_src, &note_dst);
 				Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, stage.bump);
 			}
@@ -1671,8 +1661,8 @@ void Stage_Tick(void)
 					stage.player_state[0].health = 20000;
 				
 				//Draw health heads
-				Stage_DrawHealth(stage.player_state[0].health, stage.player->health_i,    1);
-				Stage_DrawHealth(stage.player_state[0].health, stage.opponent->health_i, -1);
+				Stage_DrawHealth(stage.player_state[0].health, stage.player_state[0].character->health_i,    1);
+				Stage_DrawHealth(stage.player_state[0].health, stage.player_state[1].character->health_i, -1);
 				
 				//Draw health bar
 				RECT health_fill = {0, 0, 256 - (256 * stage.player_state[0].health / 20000), 8};
@@ -1685,30 +1675,6 @@ void Stage_Tick(void)
 				Stage_DrawTex(&stage.tex_hud1, &health_fill, &health_dst, stage.bump);
 				health_dst.w = health_back.w << FIXED_SHIFT;
 				Stage_DrawTex(&stage.tex_hud1, &health_back, &health_dst, stage.bump);
-			}
-			
-			//Hardcoded stage stuff
-			switch (stage.stage_id)
-			{
-				case StageId_1_2: //Fresh GF bop
-					switch (stage.song_step)
-					{
-						case 16 << 2:
-							stage.gf_speed = 2 << 2;
-							break;
-						case 48 << 2:
-							stage.gf_speed = 1 << 2;
-							break;
-						case 80 << 2:
-							stage.gf_speed = 2 << 2;
-							break;
-						case 112 << 2:
-							stage.gf_speed = 1 << 2;
-							break;
-					}
-					break;
-				default:
-					break;
 			}
 			
 			//Draw stage foreground
@@ -1806,7 +1772,7 @@ void Stage_NetHit(Packet *packet)
 			{
 				//Create splash object
 				Obj_Splash *splash = Obj_Splash_New(
-					note_x[(note->type & 0x7) ^ stage.note_swap],
+					note_x[note->type & 0x7],
 					note_y * (stage.downscroll ? -1 : 1),
 					type
 				);

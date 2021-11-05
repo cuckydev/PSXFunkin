@@ -111,6 +111,7 @@ typedef enum
 
 //Stage overlay state
 typedef void (*StageOverlay_Load)(void);
+typedef void (*StageOverlay_Tick)(void);
 typedef void (*StageOverlay_DrawBG)(void);
 typedef void (*StageOverlay_DrawMD)(void);
 typedef void (*StageOverlay_DrawFG)(void);
@@ -118,6 +119,7 @@ typedef void (*StageOverlay_Free)(void);
 typedef boolean (*StageOverlay_NextStage)(void);
 
 extern StageOverlay_Load stageoverlay_load;
+extern StageOverlay_Tick stageoverlay_tick;
 extern StageOverlay_DrawBG stageoverlay_drawbg;
 extern StageOverlay_DrawMD stageoverlay_drawmd;
 extern StageOverlay_DrawFG stageoverlay_drawfg;

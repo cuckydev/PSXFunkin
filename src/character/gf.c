@@ -122,28 +122,18 @@ static void Char_GF_Tick(Character *character)
 {
 	Char_GF *this = (Char_GF*)character;
 	
-	//Dance to the beat
-	if (stage.flag & STAGE_FLAG_JUST_STEP)
+	#ifdef CHAR_GF_TUTORIAL
+	//Stop singing after a beat
+	if (character->animatable.anim == CharAnim_Left ||
+		character->animatable.anim == CharAnim_Down ||
+		character->animatable.anim == CharAnim_Up ||
+		character->animatable.anim == CharAnim_Right ||
+		character->animatable.anim == CharAnim_UpAlt)
 	{
-		//Stage specific animations
-		if (stage.note_scroll >= 0)
-		{
-			switch (stage.stage_id)
-			{
-				case StageId_1_4: //Tutorial cheer
-					if (stage.song_step > 64 && stage.song_step < 192 && (stage.song_step & 0x3F) == 60)
-						character->set_anim(character, CharAnim_UpAlt);
-					break;
-				default:
-					break;
-			}
-		}
-		
-		//Perform dance
-		if (stage.note_scroll >= character->sing_end && (stage.song_step % stage.gf_speed) == 0)
+		if (character->pad_held == 0 && stage.note_scroll >= character->sing_end)
 		{
 			//Switch animation
-			if (character->animatable.anim == CharAnim_LeftAlt || character->animatable.anim == CharAnim_Right)
+			if (character->animatable.anim == CharAnim_Right)
 				character->set_anim(character, CharAnim_RightAlt);
 			else
 				character->set_anim(character, CharAnim_LeftAlt);
@@ -152,6 +142,27 @@ static void Char_GF_Tick(Character *character)
 			Speaker_Bump(&this->speaker);
 		}
 	}
+	else
+	{
+	#endif
+		//Dance to the beat
+		if (stage.note_scroll >= character->sing_end)
+		{
+			if ((stage.flag & STAGE_FLAG_JUST_STEP) && (stage.song_step % stage.gf_speed) == 0)
+			{
+				//Switch animation
+				if (character->animatable.anim == CharAnim_LeftAlt)
+					character->set_anim(character, CharAnim_RightAlt);
+				else
+					character->set_anim(character, CharAnim_LeftAlt);
+				
+				//Bump speakers
+				Speaker_Bump(&this->speaker);
+			}
+		}
+	#ifdef CHAR_GF_TUTORIAL
+	}
+	#endif
 	
 	//Get parallax
 	fixed_t parallax;
@@ -171,8 +182,14 @@ static void Char_GF_Tick(Character *character)
 static void Char_GF_SetAnim(Character *character, u8 anim)
 {
 	//Set animation
-	if (anim == CharAnim_Left || anim == CharAnim_Down || anim == CharAnim_Up || anim == CharAnim_Right || anim == CharAnim_UpAlt)
-		character->sing_end = stage.note_scroll + FIXED_DEC(22,1); //Nearly 2 steps
+	#ifdef CHAR_GF_TUTORIAL
+		if (anim == CharAnim_Left ||
+		    anim == CharAnim_Down ||
+		    anim == CharAnim_Up ||
+		    anim == CharAnim_Right ||
+		    anim == CharAnim_UpAlt)
+			character->sing_end = stage.note_scroll + (FIXED_DEC(12,1) << 2); //1 beat
+	#endif
 	Animatable_SetAnim(&character->animatable, anim);
 }
 

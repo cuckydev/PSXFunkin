@@ -137,9 +137,9 @@ static void Char_BF_Tick(Character *character)
 	     character->animatable.anim != CharAnim_RightAlt))
 		Character_CheckEndSing(character);
 	
+	//Perform idle dance
 	if (stage.flag & STAGE_FLAG_JUST_STEP)
 	{
-		//Perform idle dance
 		if (Animatable_Ended(&character->animatable) &&
 			(character->animatable.anim != CharAnim_Left &&
 		     character->animatable.anim != CharAnim_LeftAlt &&
@@ -155,26 +155,6 @@ static void Char_BF_Tick(Character *character)
 		     character->animatable.anim != PlayerAnim_RightMiss) &&
 			(stage.song_step & 0x7) == 0)
 			character->set_anim(character, CharAnim_Idle);
-		
-		//Stage specific animations
-		if (stage.note_scroll >= 0)
-		{
-			switch (stage.stage_id)
-			{
-				case StageId_1_4: //Tutorial peace
-					//Perform peace when song step every 64 steps starting at 124 until 192
-					if (stage.song_step > 64 && stage.song_step < 192 && (stage.song_step & 0x3F) == 60)
-						character->set_anim(character, PlayerAnim_Peace);
-					break;
-				case StageId_1_1: //Bopeebo peace
-					//Perform peace every 32 steps starting at 28
-					if ((stage.song_step & 0x1F) == 28)
-						character->set_anim(character, PlayerAnim_Peace);
-					break;
-				default:
-					break;
-			}
-		}
 	}
 	
 	//Animate and draw character

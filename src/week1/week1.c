@@ -33,7 +33,7 @@ static Gfx_Tex week1_tex_back0; //Stage and back
 static Gfx_Tex week1_tex_back1; //Curtains
 
 //Week 1 background functions
-void Week1_Load(void)
+static void Week1_Load(void)
 {
 	//Load HUD textures
 	Gfx_LoadTex(&stage.tex_hud0, (IO_Data)week1_hud0, 0);
@@ -59,7 +59,44 @@ void Week1_Load(void)
 	}
 }
 
-void Week1_DrawBG()
+static void Week1_Tick()
+{
+	//Stage specific events
+	if (stage.flag & STAGE_FLAG_JUST_STEP)
+	{
+		switch (stage.stage_id)
+		{
+			case StageId_1_1:
+				//BF peace
+				if (stage.song_step >= 0 && (stage.song_step & 0x1F) == 28)
+					stage.player->set_anim(stage.player, PlayerAnim_Peace);
+				break;
+			case StageId_1_2:
+				//GF bopping
+				if (stage.stage_id == StageId_1_2)
+				{
+					if (stage.song_step >= 0 && stage.song_step < 0x1C0 && ((stage.song_step - 0x40) & 0x80) == 0)
+						stage.gf_speed = 8;
+					else
+						stage.gf_speed = 4;
+				}
+				break;
+			case StageId_1_4:
+				//BF and GF peace + cheer
+				stage.gf_speed = 8;
+				if (stage.song_step > 64 && stage.song_step < 192 && (stage.song_step & 0x3F) == 60)
+				{
+					stage.player->set_anim(stage.player, PlayerAnim_Peace);
+					stage.opponent->set_anim(stage.opponent, CharAnim_UpAlt);
+				}
+				break;
+			default:
+				break;
+		}
+	}
+}
+
+static void Week1_DrawBG()
 {
 	fixed_t fx, fy;
 	
@@ -149,6 +186,7 @@ void Week1_SetPtr(void)
 {
 	//Set pointers
 	stageoverlay_load = Week1_Load;
+	stageoverlay_tick = Week1_Tick;
 	stageoverlay_drawbg = Week1_DrawBG;
 	stageoverlay_drawmd = NULL;
 	stageoverlay_drawfg = NULL;
