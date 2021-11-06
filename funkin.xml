@@ -35,8 +35,9 @@
 			
 			<!-- Week 1 assets -->
 			<dir name = "week1">
-				<!-- Overlay -->
+				<!-- Overlay and archive -->
 				<file name = "week1.exe" type = "data" source = "Overlay.week1"/>
+				<file name = "week1.arc" type = "data" source = "iso/week1/week1.arc"/>
 				
 				<!-- Bopeebo charts -->
 				<file name = "1e.cht" type = "data" source = "iso/chart/bopeebo-easy.json.cht"/>

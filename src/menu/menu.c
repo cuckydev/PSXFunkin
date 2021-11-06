@@ -28,7 +28,15 @@ static const u8 menu_arc[] = {
 	#include "iso/menu/menu.arc.h"
 };
 
+//Characters
+//Girlfriend
 #include "character/gf.c"
+
+static fixed_t Char_GF_GetParallax(Char_GF *this)
+{
+	(void)this;
+	return FIXED_UNIT;
+}
 
 //Menu messages
 static const char *funny_messages[][2] = {

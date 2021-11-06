@@ -118,6 +118,8 @@ static void Char_GF_SetFrame(void *user, u8 frame)
 	}
 }
 
+static fixed_t Char_GF_GetParallax(Char_GF *this);
+
 static void Char_GF_Tick(Character *character)
 {
 	Char_GF *this = (Char_GF*)character;
@@ -164,18 +166,10 @@ static void Char_GF_Tick(Character *character)
 	}
 	#endif
 	
-	//Get parallax
-	fixed_t parallax;
-	if (stage.stage_id >= StageId_1_1 && stage.stage_id <= StageId_1_4)
-		parallax = FIXED_DEC(7,10);
-	else
-		parallax = FIXED_UNIT;
-	
 	//Animate and draw
+	fixed_t parallax = Char_GF_GetParallax(this);
 	Animatable_Animate(&character->animatable, (void*)this, Char_GF_SetFrame);
 	Character_DrawParallax(character, &this->tex, &char_gf_frame[this->frame], parallax);
-	
-	//Tick speakers
 	Speaker_Tick(&this->speaker, character->x, character->y, parallax);
 }
 

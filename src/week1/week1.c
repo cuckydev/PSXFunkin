@@ -10,23 +10,23 @@
 #include "boot/archive.h"
 #include "boot/mem.h"
 
-//Week 1 assets
-static const u8 week1_hud0[] = {
-	#include "iso/stage/hud0.tim.h"
-};
-static const u8 week1_hud1[] = {
-	#include "iso/stage/hud1.tim.h"
-};
-
-static const u8 week1_arc_back[] = {
-	#include "iso/week1/back.arc.h"
-};
-
+//Characters
+//Boyfriend
 #include "character/bf.c"
+
+//Daddy Dearest
 #include "character/dad.c"
+
+//Girlfriend
 #define CHAR_GF_TUTORIAL
 #include "character/gf.c"
 #undef CHAR_GF_TUTORIAL
+
+static fixed_t Char_GF_GetParallax(Char_GF *this)
+{
+	(void)this;
+	return FIXED_DEC(7,10);
+}
 
 //Week 1 textures
 static Gfx_Tex week1_tex_back0; //Stage and back
@@ -35,13 +35,19 @@ static Gfx_Tex week1_tex_back1; //Curtains
 //Week 1 background functions
 static void Week1_Load(void)
 {
+	//Read archive
+	IO_Data week1_arc = IO_Read("\\WEEK1\\WEEK1.ARC;1");
+	
 	//Load HUD textures
-	Gfx_LoadTex(&stage.tex_hud0, (IO_Data)week1_hud0, 0);
-	Gfx_LoadTex(&stage.tex_hud1, (IO_Data)week1_hud1, 0);
+	Gfx_LoadTex(&stage.tex_hud0, Archive_Find(week1_arc, "hud0.tim"), 0);
+	Gfx_LoadTex(&stage.tex_hud1, Archive_Find(week1_arc, "hud1.tim"), 0);
 	
 	//Load background textures
-	Gfx_LoadTex(&week1_tex_back0, Archive_Find((IO_Data)week1_arc_back, "back0.tim"), 0);
-	Gfx_LoadTex(&week1_tex_back1, Archive_Find((IO_Data)week1_arc_back, "back1.tim"), 0);
+	Gfx_LoadTex(&week1_tex_back0, Archive_Find(week1_arc, "back0.tim"), 0);
+	Gfx_LoadTex(&week1_tex_back1, Archive_Find(week1_arc, "back1.tim"), 0);
+	
+	//Free archive
+	Mem_Free(week1_arc);
 	
 	//Load characters
 	stage.player = Char_BF_New(FIXED_DEC(60,1), FIXED_DEC(100,1));

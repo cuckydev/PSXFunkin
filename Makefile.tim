@@ -3,9 +3,6 @@ all: \
 	iso/menu/loading.tim \
 	iso/font/boldfont.tim \
 	iso/font/arial.tim \
-	iso/stage/hud0.tim \
-	iso/stage/hud1.tim \
-	iso/stage/hud0weeb.tim \
 	iso/bf/main.arc \
 	iso/bf/dead.arc \
 	iso/bf/weeb.arc \
@@ -27,15 +24,15 @@ all: \
 	iso/gf/weeb.arc \
 	iso/gf/speaker.tim \
 	iso/clucky/main.arc \
-	iso/week1/back.arc \
-	iso/week2/back.arc \
-	iso/week3/back.arc \
-	iso/week4/back.arc \
+	iso/week1/week1.arc \
+	iso/week2/week2.arc \
+	iso/week3/week3.arc \
+	iso/week4/week4.arc \
 	iso/week4/hench.arc \
-	iso/week5/back.arc \
-	iso/week6/back.arc \
-	iso/week6/back3.tim \
-	iso/week7/back.arc
+	iso/week5/week5.arc \
+	iso/week6/week6a.arc \
+	iso/week6/week6b.arc \
+	iso/week7/week7.arc
 
 iso/%.tim: iso/%.png
 	tools/funkintimconv/funkintimconv $@ $<
@@ -89,24 +86,25 @@ iso/gf/weeb.arc: iso/gf/weeb0.tim iso/gf/weeb1.tim
 # Clucky
 iso/clucky/main.arc: iso/clucky/idle0.tim iso/clucky/idle1.tim iso/clucky/left.tim iso/clucky/down.tim iso/clucky/up.tim iso/clucky/right.tim
 
+# Stages
 # Week 1
-iso/week1/back.arc: iso/week1/back0.tim iso/week1/back1.tim
+iso/week1/week1.arc: iso/stage/hud0.tim iso/stage/hud1.tim iso/week1/back0.tim iso/week1/back1.tim
 
 # Week 2
-iso/week2/back.arc: iso/week2/back0.tim iso/week2/back1.tim iso/week2/back2.tim
+iso/week2/week2.arc: iso/stage/hud0.tim iso/stage/hud1.tim iso/week2/back0.tim iso/week2/back1.tim iso/week2/back2.tim
 
 # Week 3
-iso/week3/back.arc: iso/week3/back0.tim iso/week3/back1.tim iso/week3/back2.tim iso/week3/back3.tim iso/week3/back4.tim iso/week3/back5.tim
+iso/week3/week3.arc: iso/stage/hud0.tim iso/stage/hud1.tim iso/week3/back0.tim iso/week3/back1.tim iso/week3/back2.tim iso/week3/back3.tim iso/week3/back4.tim iso/week3/back5.tim
 
 # Week 4
-iso/week4/back.arc: iso/week4/back0.tim iso/week4/back1.tim iso/week4/back2.tim iso/week4/back3.tim
+iso/week4/week4.arc: iso/stage/hud0.tim iso/stage/hud1.tim iso/week4/back0.tim iso/week4/back1.tim iso/week4/back2.tim iso/week4/back3.tim
 iso/week4/hench.arc: iso/week4/hench0.tim iso/week4/hench1.tim
 
 # Week 5
-iso/week5/back.arc: iso/week5/back0.tim iso/week5/back1.tim iso/week5/back2.tim iso/week5/back3.tim iso/week5/back4.tim iso/week5/back5.tim
+iso/week5/week5.arc: iso/stage/hud0.tim iso/stage/hud1.tim iso/week5/back0.tim iso/week5/back1.tim iso/week5/back2.tim iso/week5/back3.tim iso/week5/back4.tim iso/week5/back5.tim
 
-# Week6
-iso/week6/back.arc: iso/week6/back0.tim iso/week6/back1.tim iso/week6/back2.tim
+# Week 6
+iso/week6/week6.arc: iso/stage/hud0weeb.tim iso/stage/hud1.tim iso/week6/back0.tim iso/week6/back1.tim iso/week6/back2.tim
 
 # Week 7
-iso/week7/back.arc: iso/week7/back0.tim iso/week7/back1.tim iso/week7/back2.tim iso/week7/back3.tim
+iso/week7/week7.arc: iso/stage/hud0.tim iso/stage/hud1.tim iso/week7/back0.tim iso/week7/back1.tim iso/week7/back2.tim iso/week7/back3.tim
