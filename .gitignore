@@ -22,6 +22,7 @@ tools/funkinpicopak/funkinpicopak
 tools/funkintimconv/funkintimconv
 tools/psxavenc/psxavenc
 tools/xainterleave/xainterleave
+tools/bin2h/bin2h
 
 # Exclude object and link files
 obj/
