@@ -1,8 +1,16 @@
 all: \
+	iso/menu/back.tim \
+	iso/menu/ng.tim \
+	iso/menu/story.tim \
+	iso/menu/title.tim \
+	iso/menu/loading.tim \
+	iso/font/bold.tim \
+	iso/font/arial.tim \
 	iso/stage/hud0.tim \
 	iso/stage/hud1.tim \
 	iso/stage/hud0weeb.tim \
-	iso/menu/loading.tim \
+	iso/week1/back0.tim \
+	iso/week1/back1.tim \
 	iso/bf/main.arc \
 	iso/bf/dead.arc \
 	iso/bf/weeb.arc \

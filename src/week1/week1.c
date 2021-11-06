@@ -154,9 +154,6 @@ static void Week1_DrawBG()
 	Stage_DrawTexArb(&week1_tex_back0, &stage_src, &stage_d0, &stage_d1, &stage_d2, &stage_d3, stage.camera.bzoom);
 	
 	//Draw back
-	//fx = stage.camera.x * 2 / 3;
-	//fy = stage.camera.y * 2 / 3;
-	
 	RECT backl_src = {0, 59, 121, 105};
 	RECT_FIXED backl_dst = {
 		FIXED_DEC(-190,1) - fx,
