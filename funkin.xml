@@ -23,9 +23,8 @@
 			
 			<!-- Menu assets -->
 			<dir name = "menu">
-				<!-- Overlay and archive -->
+				<!-- Overlay -->
 				<file name = "menu.exe" type = "data" source = "Overlay.menu"/>
-				<file name = "menu.arc" type = "data" source = "iso/menu/menu.arc"/>
 				
 				<!-- Loading screen -->
 				<file name = "loading.tim" type = "data" source = "iso/menu/loading.tim"/>
@@ -33,9 +32,8 @@
 			
 			<!-- Week 1 assets -->
 			<dir name = "week1">
-				<!-- Overlay and archive -->
+				<!-- Overlay -->
 				<file name = "week1.exe" type = "data" source = "Overlay.week1"/>
-				<file name = "week1.arc" type = "data" source = "iso/week1/week1.arc"/>
 				
 				<!-- Bopeebo charts -->
 				<file name = "1e.cht" type = "data" source = "iso/chart/bopeebo-easy.json.cht"/>

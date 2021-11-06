@@ -10,6 +10,11 @@
 #include "boot/archive.h"
 #include "boot/mem.h"
 
+//Week 1 assets
+static const u8 week1_arc[] = {
+	#include "iso/week1/week1.arc.h"
+};
+
 //Characters
 //Boyfriend
 #include "character/bf.c"
@@ -35,19 +40,13 @@ static Gfx_Tex week1_tex_back1; //Curtains
 //Week 1 background functions
 static void Week1_Load(void)
 {
-	//Read archive
-	IO_Data week1_arc = IO_Read("\\WEEK1\\WEEK1.ARC;1");
-	
 	//Load HUD textures
-	Gfx_LoadTex(&stage.tex_hud0, Archive_Find(week1_arc, "hud0.tim"), 0);
-	Gfx_LoadTex(&stage.tex_hud1, Archive_Find(week1_arc, "hud1.tim"), 0);
+	Gfx_LoadTex(&stage.tex_hud0, Archive_Find((IO_Data)week1_arc, "hud0.tim"), 0);
+	Gfx_LoadTex(&stage.tex_hud1, Archive_Find((IO_Data)week1_arc, "hud1.tim"), 0);
 	
 	//Load background textures
-	Gfx_LoadTex(&week1_tex_back0, Archive_Find(week1_arc, "back0.tim"), 0);
-	Gfx_LoadTex(&week1_tex_back1, Archive_Find(week1_arc, "back1.tim"), 0);
-	
-	//Free archive
-	Mem_Free(week1_arc);
+	Gfx_LoadTex(&week1_tex_back0, Archive_Find((IO_Data)week1_arc, "back0.tim"), 0);
+	Gfx_LoadTex(&week1_tex_back1, Archive_Find((IO_Data)week1_arc, "back1.tim"), 0);
 	
 	//Load characters
 	stage.player = Char_BF_New(FIXED_DEC(60,1), FIXED_DEC(100,1));
