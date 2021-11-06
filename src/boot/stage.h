@@ -116,6 +116,7 @@ typedef void (*StageOverlay_DrawBG)(void);
 typedef void (*StageOverlay_DrawMD)(void);
 typedef void (*StageOverlay_DrawFG)(void);
 typedef void (*StageOverlay_Free)(void);
+typedef IO_Data (*StageOverlay_GetChart)(void);
 typedef boolean (*StageOverlay_NextStage)(void);
 
 extern StageOverlay_Load stageoverlay_load;
@@ -124,9 +125,8 @@ extern StageOverlay_DrawBG stageoverlay_drawbg;
 extern StageOverlay_DrawMD stageoverlay_drawmd;
 extern StageOverlay_DrawFG stageoverlay_drawfg;
 extern StageOverlay_Free stageoverlay_free;
+extern StageOverlay_GetChart stageoverlay_getchart;
 extern StageOverlay_NextStage stageoverlay_nextstage;
-
-extern const char *stageoverlay_chartfmt;
 
 //Stage definitions
 typedef struct

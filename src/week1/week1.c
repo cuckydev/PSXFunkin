@@ -11,6 +11,51 @@
 #include "boot/main.h"
 #include "boot/mem.h"
 
+//Charts
+static const u8 week1_cht_bopeebo_easy[] = {
+	#include "iso/chart/bopeebo-easy.json.cht.h"
+};
+static const u8 week1_cht_bopeebo_normal[] = {
+	#include "iso/chart/bopeebo.json.cht.h"
+};
+static const u8 week1_cht_bopeebo_hard[] = {
+	#include "iso/chart/bopeebo-hard.json.cht.h"
+};
+
+static const u8 week1_cht_fresh_easy[] = {
+	#include "iso/chart/fresh-easy.json.cht.h"
+};
+static const u8 week1_cht_fresh_normal[] = {
+	#include "iso/chart/fresh.json.cht.h"
+};
+static const u8 week1_cht_fresh_hard[] = {
+	#include "iso/chart/fresh-hard.json.cht.h"
+};
+
+static const u8 week1_cht_dadbattle_easy[] = {
+	#include "iso/chart/dadbattle-easy.json.cht.h"
+};
+static const u8 week1_cht_dadbattle_normal[] = {
+	#include "iso/chart/dadbattle.json.cht.h"
+};
+static const u8 week1_cht_dadbattle_hard[] = {
+	#include "iso/chart/dadbattle-hard.json.cht.h"
+};
+
+static const u8 week1_cht_tutorial_normal[] = {
+	#include "iso/chart/tutorial.json.cht.h"
+};
+static const u8 week1_cht_tutorial_hard[] = {
+	#include "iso/chart/tutorial-hard.json.cht.h"
+};
+
+static const u8 *week1_cht[4][3] = {
+	{week1_cht_bopeebo_easy,     week1_cht_bopeebo_normal,   week1_cht_bopeebo_hard},
+	{week1_cht_fresh_easy,       week1_cht_fresh_normal,     week1_cht_fresh_hard},
+	{week1_cht_dadbattle_easy,   week1_cht_dadbattle_normal, week1_cht_dadbattle_hard},
+	{week1_cht_tutorial_normal,  week1_cht_tutorial_normal,  week1_cht_tutorial_hard},
+};
+
 //Characters
 //Boyfriend
 #include "character/bf.c"
@@ -181,6 +226,11 @@ static void Week1_DrawBG()
 	Gfx_DrawTex(&week1_tex_back0, &backf_src, &backf_dst);
 }
 
+static IO_Data Week1_GetChart(void)
+{
+	return (IO_Data)week1_cht[stage.stage_id - StageId_1_1][stage.stage_diff];
+}
+
 void Week1_SetPtr(void)
 {
 	//Set pointers
@@ -190,7 +240,6 @@ void Week1_SetPtr(void)
 	stageoverlay_drawmd = NULL;
 	stageoverlay_drawfg = NULL;
 	stageoverlay_free = NULL;
-	
-	//Set stage information
-	stageoverlay_chartfmt = "\\WEEK1\\%d%c.CHT;1";
+	stageoverlay_getchart = Week1_GetChart;
+	stageoverlay_nextstage = NULL;
 }

@@ -4,7 +4,18 @@ all: \
 	src/iso/dad/main.arc.h \
 	src/iso/gf/main.arc.h \
 	src/iso/gf/tut.arc.h \
-	src/iso/gf/speaker.tim.h
+	src/iso/gf/speaker.tim.h \
+	src/iso/chart/bopeebo-easy.json.cht.h \
+	src/iso/chart/bopeebo.json.cht.h \
+	src/iso/chart/bopeebo-hard.json.cht.h \
+	src/iso/chart/fresh-easy.json.cht.h \
+	src/iso/chart/fresh.json.cht.h \
+	src/iso/chart/fresh-hard.json.cht.h \
+	src/iso/chart/dadbattle-easy.json.cht.h \
+	src/iso/chart/dadbattle.json.cht.h \
+	src/iso/chart/dadbattle-hard.json.cht.h \
+	src/iso/chart/tutorial.json.cht.h \
+	src/iso/chart/tutorial-hard.json.cht.h \
 
 src/iso/%.h: iso/%
 	mkdir -p $(dir $@)

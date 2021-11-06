@@ -60,9 +60,8 @@ StageOverlay_DrawBG stageoverlay_drawbg;
 StageOverlay_DrawMD stageoverlay_drawmd;
 StageOverlay_DrawFG stageoverlay_drawfg;
 StageOverlay_Free stageoverlay_free;
+StageOverlay_GetChart stageoverlay_getchart;
 StageOverlay_NextStage stageoverlay_nextstage;
-
-const char *stageoverlay_chartfmt;
 
 //Stage definitions
 #include "stagedef_disc1.h"
@@ -967,12 +966,8 @@ static void Stage_DrawNotes(void)
 //Stage loads
 static void Stage_LoadChart(void)
 {
-	//Get chart path
-	char chart_path[64];
-	sprintf(chart_path, stageoverlay_chartfmt, stage.stage_def->week_song, "ENH"[stage.stage_diff]);
-	
 	//Load stage data
-	stage.chart_data = IO_Read(chart_path);
+	stage.chart_data = stageoverlay_getchart();
 	u8 *chart_byte = (u8*)stage.chart_data;
 	
 	#ifdef PSXF_PC
@@ -1025,7 +1020,6 @@ static void Stage_LoadChart(void)
 		}
 		
 		//Use reformatted chart
-		Mem_Free(stage.chart_data);
 		stage.chart_data = (IO_Data)nchart;
 	#else
 		//Directly use section and notes pointers
@@ -1205,9 +1199,11 @@ void Stage_Unload(void)
 			stage.mode = StageMode_Normal;
 	#endif
 	
-	//Free stage data
-	Mem_Free(stage.chart_data);
-	stage.chart_data = NULL;
+	#ifdef PSXF_PC
+		//Free stage data
+		Mem_Free(stage.chart_data);
+		stage.chart_data = NULL;
+	#endif
 	
 	//Free objects
 	ObjectList_Free(&stage.objlist_splash);

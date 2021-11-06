@@ -101,8 +101,6 @@ void Overlay_Load(const char *path)
 
 IO_Data Overlay_DataRead(void)
 {
-	printf("Reading %d overlay sectors\n", *overlay_sizes);
-	
 	//Read data to overlay data buffer according to sizes
 	CdlLOC pos;
 	

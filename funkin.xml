@@ -31,23 +31,6 @@
 			<dir name = "week1">
 				<!-- Overlay -->
 				<file name = "week1.exe" type = "data" source = "iso/week1/week1.exe"/>
-				
-				<!-- Bopeebo charts -->
-				<file name = "1e.cht" type = "data" source = "iso/chart/bopeebo-easy.json.cht"/>
-				<file name = "1n.cht" type = "data" source = "iso/chart/bopeebo.json.cht"/>
-				<file name = "1h.cht" type = "data" source = "iso/chart/bopeebo-hard.json.cht"/>
-				<!-- Fresh charts -->
-				<file name = "2e.cht" type = "data" source = "iso/chart/fresh-easy.json.cht"/>
-				<file name = "2n.cht" type = "data" source = "iso/chart/fresh.json.cht"/>
-				<file name = "2h.cht" type = "data" source = "iso/chart/fresh-hard.json.cht"/>
-				<!-- Dadbattle charts -->
-				<file name = "3e.cht" type = "data" source = "iso/chart/dadbattle-easy.json.cht"/>
-				<file name = "3n.cht" type = "data" source = "iso/chart/dadbattle.json.cht"/>
-				<file name = "3h.cht" type = "data" source = "iso/chart/dadbattle-hard.json.cht"/>
-				<!-- Tutorial charts -->
-				<file name = "4e.cht" type = "data" source = "iso/chart/tutorial-easy.json.cht"/>
-				<file name = "4n.cht" type = "data" source = "iso/chart/tutorial.json.cht"/>
-				<file name = "4h.cht" type = "data" source = "iso/chart/tutorial-hard.json.cht"/>
 			</dir>
 			
 			<!-- Music -->
