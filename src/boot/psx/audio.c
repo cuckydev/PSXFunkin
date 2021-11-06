@@ -146,7 +146,7 @@ static void Audio_PlayXA_File(CdlFILE *file, u8 volume, u8 channel, boolean loop
 	
 	//Set XA state
 	xa_start = xa_pos = CdPosToInt(&file->pos);
-	xa_end = xa_start + (file->size >> 1) - 1;
+	xa_end = xa_start + (file->size >> 11) - 1;
 	xa_state = XA_STATE_INIT | XA_STATE_PLAYING | XA_STATE_SEEKING;
 	xa_resync = 0;
 	if (loop)

@@ -214,6 +214,12 @@ static u8 Stage_HitNote(PlayerState *this, u8 type, fixed_t offset)
 	else
 		hit_type = 0; //SICK
 	
+	if (stage.ghost && hit_Type == 3)
+	{
+		Stage_MissNote(this);
+		return;
+	}
+	
 	//Increment combo and score
 	this->combo++;
 	
