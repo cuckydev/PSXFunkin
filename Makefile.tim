@@ -22,15 +22,6 @@ all: \
 	iso/gf/weeb.arc \
 	iso/gf/speaker.tim \
 	iso/clucky/main.arc \
-	iso/week1/week1.arc \
-	iso/week2/week2.arc \
-	iso/week3/week3.arc \
-	iso/week4/week4.arc \
-	iso/week4/hench.arc \
-	iso/week5/week5.arc \
-	iso/week6/week6a.arc \
-	iso/week6/week6b.arc \
-	iso/week7/week7.arc
 
 iso/%.tim: iso/%.png
 	tools/funkintimconv/funkintimconv $@ $<

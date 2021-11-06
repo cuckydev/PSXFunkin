@@ -54,20 +54,26 @@ void Overlay_Load(const char *path)
 	CdlFILE file;
 	IO_FindFile(&file, path);
 	
-	//Get number of sectors and then bytes for the file
-	size_t sects = (file.size + 0x7FF) >> 11;
-	size_t size = sects << 11;
-	
-	//Read file to start of heap
+	//Read first overlay sector
 	CdControl(CdlSetloc, (u8*)&file.pos, NULL);
-	CdRead(sects, (IO_Data)&__heap_start, CdlModeSpeed);
+	
+	CdRead(1, (IO_Data)&__heap_start, CdlModeSpeed);
+	CdReadSync(0, NULL);
+	
+	//Read the rest of the overlay
+	size_t overlay_sectsleft = *((u16*)&__heap_start);
+	size_t overlay_size = (overlay_sectsleft + 1) << 11;
+	
+	CdRead(overlay_sectsleft, (IO_Data)((u8*)&__heap_start + 0x800), CdlModeSpeed);
 	CdReadSync(0, NULL);
 	
 	//Initialize memory heap at end of overlay data
-	Mem_Init(&__heap_start + size, &__ram_top - &__heap_start - size);
+	Mem_Init(&__heap_start + overlay_size, &__ram_top - &__heap_start - overlay_size);
 }
 
 #else
+
+u16 overlay_datas[2048 / 2];
 
 void Overlay_Load(const char *path)
 {

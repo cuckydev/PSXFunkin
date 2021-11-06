@@ -1,11 +1,9 @@
 all: \
-  src/iso/menu/menu.arc.h \
-  src/iso/week1/week1.arc.h \
-  src/iso/bf/main.arc.h \
-  src/iso/dad/main.arc.h \
-  src/iso/gf/main.arc.h \
-  src/iso/gf/tut.arc.h \
-  src/iso/gf/speaker.tim.h
+	src/iso/bf/main.arc.h \
+	src/iso/dad/main.arc.h \
+	src/iso/gf/main.arc.h \
+	src/iso/gf/tut.arc.h \
+	src/iso/gf/speaker.tim.h
 
 src/iso/%.h: iso/%
 	mkdir -p $(dir $@)

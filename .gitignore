@@ -20,6 +20,7 @@ tools/funkinarcpak/funkinarcpak
 tools/funkinchartpak/funkinchartpak
 tools/funkinpicopak/funkinpicopak
 tools/funkintimconv/funkintimconv
+tools/funkinoverlaypak/funkinoverlaypak
 tools/psxavenc/psxavenc
 tools/xainterleave/xainterleave
 tools/bin2h/bin2h

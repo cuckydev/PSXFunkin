@@ -7,6 +7,7 @@ SECTIONS {
 	{
 		.menu
 		{
+			. = . + 2;
 			KEEP(src/menu/*.o(.text))
 			__menu_ctor = .;
 			KEEP(src/menu/*.o(.text.startup._GLOBAL__*))
@@ -23,6 +24,7 @@ SECTIONS {
 		}
 		.week1
 		{
+			. = . + 2;
 			KEEP(src/week1/*.o(.text))
 			__week1_ctor = .;
 			KEEP(src/week1/*.o(.text.startup._GLOBAL__*))

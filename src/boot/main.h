@@ -7,6 +7,8 @@
 #ifndef PSXF_GUARD_MAIN_H
 #define PSXF_GUARD_MAIN_H
 
+#include "psx.h"
+
 //Game loop
 typedef enum
 {
@@ -21,6 +23,7 @@ extern char error_msg[0x200];
 void ErrorLock(void);
 
 //Overlay interface
+extern u16 *overlay_datas;
 void Overlay_Load(const char *path);
 
 #endif
