@@ -36,13 +36,14 @@ static Gfx_Tex week1_tex_back1; //Curtains
 //Week 1 background functions
 static void Week1_Load(void)
 {
-	//Load HUD textures
+	//Load assets
 	Gfx_LoadTex(&stage.tex_hud0, Overlay_DataRead(), 0); //hud0.tim
 	Gfx_LoadTex(&stage.tex_hud1, Overlay_DataRead(), 0); //hud1.tim
 	
-	//Load background textures
 	Gfx_LoadTex(&week1_tex_back0, Overlay_DataRead(), 0); //back0.tim
 	Gfx_LoadTex(&week1_tex_back1, Overlay_DataRead(), 0); //back1.tim
+	
+	Overlay_DataFree();
 	
 	//Load characters
 	stage.player = Char_BF_New(FIXED_DEC(60,1), FIXED_DEC(100,1));
