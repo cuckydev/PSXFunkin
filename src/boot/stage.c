@@ -198,6 +198,27 @@ static void Stage_GetSectionScroll(SectionScroll *scroll, Section *section)
 }
 
 //Note hit detection
+static void Stage_MissNote(PlayerState *this)
+{
+	if (this->combo)
+	{
+		//Kill combo
+		if (stage.gf != NULL && this->combo > 5)
+			stage.gf->set_anim(stage.gf, CharAnim_DownAlt); //Cry if we lost a large combo
+		this->combo = 0;
+		
+		//Create combo object telling of our lost combo
+		Obj_Combo *combo = Obj_Combo_New(
+			this->character->focus_x,
+			this->character->focus_y,
+			0xFF,
+			0
+		);
+		if (combo != NULL)
+			ObjectList_Add(&stage.objlist_fg, (Object*)combo);
+	}
+}
+
 static u8 Stage_HitNote(PlayerState *this, u8 type, fixed_t offset)
 {
 	//Get hit type
@@ -214,7 +235,7 @@ static u8 Stage_HitNote(PlayerState *this, u8 type, fixed_t offset)
 	else
 		hit_type = 0; //SICK
 	
-	if (stage.ghost && hit_Type == 3)
+	if (stage.ghost && hit_type == 3)
 	{
 		Stage_MissNote(this);
 		return;
@@ -263,27 +284,6 @@ static u8 Stage_HitNote(PlayerState *this, u8 type, fixed_t offset)
 	}
 	
 	return hit_type;
-}
-
-static void Stage_MissNote(PlayerState *this)
-{
-	if (this->combo)
-	{
-		//Kill combo
-		if (stage.gf != NULL && this->combo > 5)
-			stage.gf->set_anim(stage.gf, CharAnim_DownAlt); //Cry if we lost a large combo
-		this->combo = 0;
-		
-		//Create combo object telling of our lost combo
-		Obj_Combo *combo = Obj_Combo_New(
-			this->character->focus_x,
-			this->character->focus_y,
-			0xFF,
-			0
-		);
-		if (combo != NULL)
-			ObjectList_Add(&stage.objlist_fg, (Object*)combo);
-	}
 }
 
 static void Stage_NoteCheck(PlayerState *this, u8 type)
