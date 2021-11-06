@@ -23,11 +23,6 @@
 
 #include "boot/stage.h"
 
-//Menu assets
-static const u8 menu_arc[] = {
-	#include "iso/menu/menu.arc.h"
-};
-
 //Characters
 //Girlfriend
 #include "character/gf.c"
@@ -302,15 +297,22 @@ static void Menu_DrawWeek(const char *week, s32 x, s32 y)
 //Menu functions
 void Menu_Load2(MenuPage page)
 {
+	//Read archive
+	IO_Data menu_arc = IO_Read("\\MENU\\MENU.ARC;1");
+	
 	//Load menu assets
-	Gfx_LoadTex(&menu.tex_back,  Archive_Find((IO_Data)menu_arc, "back.tim"),  0);
-	Gfx_LoadTex(&menu.tex_ng,    Archive_Find((IO_Data)menu_arc, "ng.tim"),    0);
-	Gfx_LoadTex(&menu.tex_story, Archive_Find((IO_Data)menu_arc, "story.tim"), 0);
-	Gfx_LoadTex(&menu.tex_title, Archive_Find((IO_Data)menu_arc, "title.tim"), 0);
+	Gfx_LoadTex(&menu.tex_back,  Archive_Find(menu_arc, "back.tim"),  0);
+	Gfx_LoadTex(&menu.tex_ng,    Archive_Find(menu_arc, "ng.tim"),    0);
+	Gfx_LoadTex(&menu.tex_story, Archive_Find(menu_arc, "story.tim"), 0);
+	Gfx_LoadTex(&menu.tex_title, Archive_Find(menu_arc, "title.tim"), 0);
 	
-	FontData_Load(&menu.font_bold, Font_Bold);
-	FontData_Load(&menu.font_arial, Font_Arial);
+	FontData_Bold(&menu.font_bold, Archive_Find(menu_arc, "bold.tim"));
+	FontData_Arial(&menu.font_arial, Archive_Find(menu_arc, "arial.tim"));
 	
+	//Free archive
+	Mem_Free(menu_arc);
+	
+	//Initialize Girlfriend and stage
 	menu.gf = Char_GF_New(FIXED_DEC(62,1), FIXED_DEC(-12,1));
 	stage.camera.x = stage.camera.y = FIXED_DEC(0,1);
 	stage.camera.bzoom = FIXED_UNIT;

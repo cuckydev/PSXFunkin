@@ -23,14 +23,12 @@
 			
 			<!-- Menu assets -->
 			<dir name = "menu">
+				<!-- Overlay and archive -->
 				<file name = "menu.exe" type = "data" source = "Overlay.menu"/>
+				<file name = "menu.arc" type = "data" source = "iso/menu/menu.arc"/>
+				
+				<!-- Loading screen -->
 				<file name = "loading.tim" type = "data" source = "iso/menu/loading.tim"/>
-			</dir>
-			
-			<!-- Fonts -->
-			<dir name = "font">
-				<file name = "boldfont.tim" type = "data" source = "iso/font/boldfont.tim"/>
-				<file name = "arial.tim" type = "data" source = "iso/font/arial.tim"/>
 			</dir>
 			
 			<!-- Week 1 assets -->

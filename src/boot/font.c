@@ -114,23 +114,20 @@ void Font_Draw(struct FontData *this, const char *text, s32 x, s32 y, FontAlign 
 }
 
 //Font functions
-void FontData_Load(FontData *this, Font font)
+void FontData_Bold(FontData *this, IO_Data tex)
 {
-	//Load the given font
-	switch (font)
-	{
-		case Font_Bold:
-			//Load texture and set functions
-			Gfx_LoadTex(&this->tex, IO_Read("\\FONT\\BOLDFONT.TIM;1"), GFX_LOADTEX_FREE);
-			this->get_width = Font_Bold_GetWidth;
-			this->draw_col = Font_Bold_DrawCol;
-			break;
-		case Font_Arial:
-			//Load texture and set functions
-			Gfx_LoadTex(&this->tex, IO_Read("\\FONT\\ARIAL.TIM;1"), GFX_LOADTEX_FREE);
-			this->get_width = Font_Arial_GetWidth;
-			this->draw_col = Font_Arial_DrawCol;
-			break;
-	}
+	//Load texture and set functions
+	Gfx_LoadTex(&this->tex, tex, 0);
+	this->get_width = Font_Bold_GetWidth;
+	this->draw_col = Font_Bold_DrawCol;
+	this->draw = Font_Draw;
+}
+
+void FontData_Arial(FontData *this, IO_Data tex)
+{
+	//Load texture and set functions
+	Gfx_LoadTex(&this->tex, tex, 0);
+	this->get_width = Font_Arial_GetWidth;
+	this->draw_col = Font_Arial_DrawCol;
 	this->draw = Font_Draw;
 }

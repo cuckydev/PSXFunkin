@@ -8,14 +8,9 @@
 #define PSXF_GUARD_FONT_H
 
 #include "gfx.h"
+#include "io.h"
 
 //Font types
-typedef enum
-{
-	Font_Bold,
-	Font_Arial,
-} Font;
-
 typedef enum
 {
 	FontAlign_Left,
@@ -34,6 +29,7 @@ typedef struct FontData
 } FontData;
 
 //Font functions
-void FontData_Load(FontData *this, Font font);
+void FontData_Bold(FontData *this, IO_Data tex);
+void FontData_Arial(FontData *this, IO_Data tex);
 
 #endif

@@ -1,8 +1,6 @@
 all: \
 	iso/menu/menu.arc \
 	iso/menu/loading.tim \
-	iso/font/boldfont.tim \
-	iso/font/arial.tim \
 	iso/bf/main.arc \
 	iso/bf/dead.arc \
 	iso/bf/weeb.arc \
@@ -41,7 +39,7 @@ iso/%.arc:
 	tools/funkinarcpak/funkinarcpak $@ $^
 
 # Menu
-iso/menu/menu.arc: iso/menu/back.tim iso/menu/ng.tim iso/menu/story.tim iso/menu/title.tim
+iso/menu/menu.arc: iso/menu/back.tim iso/menu/ng.tim iso/menu/story.tim iso/menu/title.tim iso/font/bold.tim iso/font/arial.tim
 
 # BF
 iso/bf/main.arc: iso/bf/bf0.tim iso/bf/bf1.tim iso/bf/bf2.tim iso/bf/bf3.tim iso/bf/bf4.tim iso/bf/bf5.tim iso/bf/bf6.tim iso/bf/dead0.tim
@@ -104,7 +102,8 @@ iso/week4/hench.arc: iso/week4/hench0.tim iso/week4/hench1.tim
 iso/week5/week5.arc: iso/stage/hud0.tim iso/stage/hud1.tim iso/week5/back0.tim iso/week5/back1.tim iso/week5/back2.tim iso/week5/back3.tim iso/week5/back4.tim iso/week5/back5.tim
 
 # Week 6
-iso/week6/week6.arc: iso/stage/hud0weeb.tim iso/stage/hud1.tim iso/week6/back0.tim iso/week6/back1.tim iso/week6/back2.tim
+iso/week6/week6a.arc: iso/stage/hud0weeb.tim iso/stage/hud1.tim iso/week6/back0.tim iso/week6/back1.tim iso/week6/back2.tim
+iso/week6/week6b.arc: iso/stage/hud0weeb.tim iso/stage/hud1.tim iso/week6/back3.tim
 
 # Week 7
 iso/week7/week7.arc: iso/stage/hud0.tim iso/stage/hud1.tim iso/week7/back0.tim iso/week7/back1.tim iso/week7/back2.tim iso/week7/back3.tim
