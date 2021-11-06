@@ -48,6 +48,10 @@ void ErrorLock(void)
 
 extern u8 __heap_start, __ram_top;
 
+static int overlay_pos;
+static u16 *overlay_sizes;
+static IO_Data overlay_data;
+
 void Overlay_Load(const char *path)
 {
 	//Find file
@@ -55,29 +59,68 @@ void Overlay_Load(const char *path)
 	IO_FindFile(&file, path);
 	
 	//Read first overlay sector
+	overlay_pos = CdPosToInt(&file.pos);
+	
+	CdIntToPos(overlay_pos, &file.pos);
 	CdControl(CdlSetloc, (u8*)&file.pos, NULL);
 	
 	CdRead(1, (IO_Data)&__heap_start, CdlModeSpeed);
 	CdReadSync(0, NULL);
 	
+	overlay_pos += 1;
+	
 	//Read the rest of the overlay
 	size_t overlay_sectsleft = *((u16*)&__heap_start);
 	size_t overlay_size = (overlay_sectsleft + 1) << 11;
 	
-	CdRead(overlay_sectsleft, (IO_Data)((u8*)&__heap_start + 0x800), CdlModeSpeed);
+	CdIntToPos(overlay_pos, &file.pos);
+	CdControl(CdlSetloc, (u8*)&file.pos, NULL);
+	
+	CdRead(overlay_sectsleft, (IO_Data)(&__heap_start + 0x800), CdlModeSpeed);
 	CdReadSync(0, NULL);
+	
+	overlay_pos += overlay_sectsleft;
 	
 	//Initialize memory heap at end of overlay data
 	Mem_Init(&__heap_start + overlay_size, &__ram_top - &__heap_start - overlay_size);
+	
+	//Allocate overlay data buffers
+	overlay_sizes = (u16*)(&__heap_start + (overlay_sectsleft << 11));
+	
+	u16 *overlay_sizep = overlay_sizes;
+	u16 overlay_sizemax = 0;
+	for (size_t i = 0; i < (0x800 >> 1); i++, overlay_sizep++)
+		if (*overlay_sizep > overlay_sizemax)
+			overlay_sizemax = *overlay_sizep;
+	
+	if ((overlay_data = Mem_Alloc(overlay_sizemax << 11)) == NULL)
+	{
+		sprintf(error_msg, "[Overlay_Load] Failed to allocate overlay data buffer (%d sectors)", overlay_sizemax);
+		ErrorLock();
+	}
 }
 
-#else
-
-u16 overlay_datas[2048 / 2];
-
-void Overlay_Load(const char *path)
+IO_Data Overlay_DataRead(void)
 {
-	(void)path;
+	printf("Reading %d overlay sectors\n", *overlay_sizes);
+	
+	//Read data to overlay data buffer according to sizes
+	CdlLOC pos;
+	
+	CdIntToPos(overlay_pos, &pos);
+	CdControl(CdlSetloc, (u8*)&pos, NULL);
+	
+	CdRead(*overlay_sizes, overlay_data, CdlModeSpeed);
+	CdReadSync(0, NULL);
+	
+	overlay_pos += *overlay_sizes++;
+	return overlay_data;
+}
+
+void Overlay_DataFree(void)
+{
+	//Free overlay data buffer
+	Mem_Free(overlay_data);
 }
 
 #endif

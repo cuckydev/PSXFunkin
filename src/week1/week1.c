@@ -8,12 +8,8 @@
 
 #include "boot/stage.h"
 #include "boot/archive.h"
+#include "boot/main.h"
 #include "boot/mem.h"
-
-//Week 1 assets
-static const u8 week1_arc[] = {
-	#include "iso/week1/week1.arc.h"
-};
 
 //Characters
 //Boyfriend
@@ -41,12 +37,12 @@ static Gfx_Tex week1_tex_back1; //Curtains
 static void Week1_Load(void)
 {
 	//Load HUD textures
-	Gfx_LoadTex(&stage.tex_hud0, Archive_Find((IO_Data)week1_arc, "hud0.tim"), 0);
-	Gfx_LoadTex(&stage.tex_hud1, Archive_Find((IO_Data)week1_arc, "hud1.tim"), 0);
+	Gfx_LoadTex(&stage.tex_hud0, Overlay_DataRead(), 0); //hud0.tim
+	Gfx_LoadTex(&stage.tex_hud1, Overlay_DataRead(), 0); //hud1.tim
 	
 	//Load background textures
-	Gfx_LoadTex(&week1_tex_back0, Archive_Find((IO_Data)week1_arc, "back0.tim"), 0);
-	Gfx_LoadTex(&week1_tex_back1, Archive_Find((IO_Data)week1_arc, "back1.tim"), 0);
+	Gfx_LoadTex(&week1_tex_back0, Overlay_DataRead(), 0); //back0.tim
+	Gfx_LoadTex(&week1_tex_back1, Overlay_DataRead(), 0); //back1.tim
 	
 	//Load characters
 	stage.player = Char_BF_New(FIXED_DEC(60,1), FIXED_DEC(100,1));

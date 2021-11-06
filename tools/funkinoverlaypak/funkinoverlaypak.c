@@ -45,8 +45,8 @@ int main(int argc, char *argv[])
 	fclose(fp);
 	
 	//Modify overlay data
-	overlay_data[0] = (overlay_sects - 1);
-	overlay_data[1] = (overlay_sects - 1) >> 8;
+	overlay_data[0] = overlay_sects;
+	overlay_data[1] = overlay_sects >> 8;
 	
 	//Allocate directory
 	typedef struct

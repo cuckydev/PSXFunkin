@@ -9,6 +9,8 @@
 
 #include "psx.h"
 
+#include "io.h"
+
 //Game loop
 typedef enum
 {
@@ -23,7 +25,8 @@ extern char error_msg[0x200];
 void ErrorLock(void);
 
 //Overlay interface
-extern u16 *overlay_datas;
 void Overlay_Load(const char *path);
+IO_Data Overlay_DataRead(void);
+void Overlay_DataFree(void);
 
 #endif

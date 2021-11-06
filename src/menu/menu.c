@@ -23,11 +23,6 @@
 
 #include "boot/stage.h"
 
-//Menu assets
-static const u8 menu_arc[] = {
-	#include "iso/menu/menu.arc.h"
-};
-
 //Characters
 //Girlfriend
 #include "character/gf.c"
@@ -303,13 +298,15 @@ static void Menu_DrawWeek(const char *week, s32 x, s32 y)
 void Menu_Load2(MenuPage page)
 {
 	//Load menu assets
-	Gfx_LoadTex(&menu.tex_back,  Archive_Find((IO_Data)menu_arc, "back.tim"),  0);
-	Gfx_LoadTex(&menu.tex_ng,    Archive_Find((IO_Data)menu_arc, "ng.tim"),    0);
-	Gfx_LoadTex(&menu.tex_story, Archive_Find((IO_Data)menu_arc, "story.tim"), 0);
-	Gfx_LoadTex(&menu.tex_title, Archive_Find((IO_Data)menu_arc, "title.tim"), 0);
+	Gfx_LoadTex(&menu.tex_back,  Overlay_DataRead(), 0); //back.tim
+	Gfx_LoadTex(&menu.tex_ng,    Overlay_DataRead(), 0); //ng.tim
+	Gfx_LoadTex(&menu.tex_story, Overlay_DataRead(), 0); //story.tim
+	Gfx_LoadTex(&menu.tex_title, Overlay_DataRead(), 0); //title.tim
 	
-	FontData_Bold(&menu.font_bold, Archive_Find((IO_Data)menu_arc, "bold.tim"));
-	FontData_Arial(&menu.font_arial, Archive_Find((IO_Data)menu_arc, "arial.tim"));
+	FontData_Bold(&menu.font_bold, Overlay_DataRead()); //bold.tim
+	FontData_Arial(&menu.font_arial, Overlay_DataRead()); //arial.tim
+	
+	Overlay_DataFree();
 	
 	//Initialize Girlfriend and stage
 	menu.gf = Char_GF_New(FIXED_DEC(62,1), FIXED_DEC(-12,1));

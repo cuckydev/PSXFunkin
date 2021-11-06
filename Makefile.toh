@@ -1,4 +1,5 @@
 all: \
+	src/iso/menu/loading.tim.h \
 	src/iso/bf/main.arc.h \
 	src/iso/dad/main.arc.h \
 	src/iso/gf/main.arc.h \

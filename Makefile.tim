@@ -1,5 +1,7 @@
 all: \
-	iso/menu/menu.arc \
+	iso/stage/hud0.tim \
+	iso/stage/hud1.tim \
+	iso/stage/hud0weeb.tim \
 	iso/menu/loading.tim \
 	iso/bf/main.arc \
 	iso/bf/dead.arc \
