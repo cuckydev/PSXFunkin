@@ -1,10 +1,11 @@
 all: \
 	src/iso/menu/loading.tim.h \
 	src/iso/bf/main.arc.h \
-	src/iso/dad/main.arc.h \
 	src/iso/gf/main.arc.h \
 	src/iso/gf/tut.arc.h \
 	src/iso/gf/speaker.tim.h \
+	src/iso/dad/main.arc.h \
+	src/iso/spook/main.arc.h \
 	src/iso/chart/bopeebo-easy.json.cht.h \
 	src/iso/chart/bopeebo.json.cht.h \
 	src/iso/chart/bopeebo-hard.json.cht.h \
@@ -16,6 +17,15 @@ all: \
 	src/iso/chart/dadbattle-hard.json.cht.h \
 	src/iso/chart/tutorial.json.cht.h \
 	src/iso/chart/tutorial-hard.json.cht.h \
+	src/iso/chart/spookeez-easy.json.cht.h \
+	src/iso/chart/spookeez.json.cht.h \
+	src/iso/chart/spookeez-hard.json.cht.h \
+	src/iso/chart/south-easy.json.cht.h \
+	src/iso/chart/south.json.cht.h \
+	src/iso/chart/south-hard.json.cht.h \
+	src/iso/chart/monster-easy.json.cht.h \
+	src/iso/chart/monster.json.cht.h \
+	src/iso/chart/monster-hard.json.cht.h \
 
 src/iso/%.h: iso/%
 	mkdir -p $(dir $@)

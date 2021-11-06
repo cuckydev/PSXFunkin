@@ -70,6 +70,9 @@ static const char *funny_messages[][2] = {
 	{"ITS A PORT", "ITS WORSE"},
 	{"WOW GATO", "WOW GATO"},
 	{"BALLS FISH", "BALLS FISH"},
+	{"TURINGMANIA", "IS BETTER"},
+	{"NUTRIA IN A", "WOOL SWEATER"},
+	{"CHECK OUT THIS", "COOL ASS HOT DOG"},
 };
 
 #ifdef PSXF_NETWORK

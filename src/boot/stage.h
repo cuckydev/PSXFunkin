@@ -137,8 +137,6 @@ typedef struct
 	
 	//Song info
 	fixed_t speed[3];
-	
-	u8 week_song;
 	u8 music_track, music_channel;
 } StageDef;
 

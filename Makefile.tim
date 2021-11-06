@@ -11,6 +11,34 @@ all: \
 	iso/stage/hud0weeb.tim \
 	iso/week1/back0.tim \
 	iso/week1/back1.tim \
+	iso/week2/back0.tim \
+	iso/week2/back1.tim \
+	iso/week2/back2.tim \
+	iso/week3/back0.tim \
+	iso/week3/back1.tim \
+	iso/week3/back2.tim \
+	iso/week3/back3.tim \
+	iso/week3/back4.tim \
+	iso/week3/back5.tim \
+	iso/week4/back0.tim \
+	iso/week4/back1.tim \
+	iso/week4/back2.tim \
+	iso/week4/back3.tim \
+	iso/week4/hench.arc \
+	iso/week5/back0.tim \
+	iso/week5/back1.tim \
+	iso/week5/back2.tim \
+	iso/week5/back3.tim \
+	iso/week5/back4.tim \
+	iso/week5/back5.tim \
+	iso/week6/back0.tim \
+	iso/week6/back1.tim \
+	iso/week6/back2.tim \
+	iso/week6/back3.tim \
+	iso/week7/back0.tim \
+	iso/week7/back1.tim \
+	iso/week7/back2.tim \
+	iso/week7/back3.tim \
 	iso/bf/main.arc \
 	iso/bf/dead.arc \
 	iso/bf/weeb.arc \

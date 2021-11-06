@@ -48,8 +48,8 @@ void ErrorLock(void)
 
 extern u8 __heap_start, __ram_top;
 
-static int overlay_pos;
-static u16 *overlay_sizes;
+static int overlay_pos, overlay_datapos;
+static u16 *overlay_sizes, *overlay_sizestart;
 static IO_Data overlay_data;
 
 void Overlay_Load(const char *path)
@@ -84,8 +84,17 @@ void Overlay_Load(const char *path)
 	//Initialize memory heap at end of overlay data
 	Mem_Init(&__heap_start + overlay_size, &__ram_top - &__heap_start - overlay_size);
 	
-	//Allocate overlay data buffers
-	overlay_sizes = (u16*)(&__heap_start + (overlay_sectsleft << 11));
+	//Initialize overlay data reading
+	overlay_datapos = overlay_pos;
+	overlay_sizestart = (u16*)(&__heap_start + (overlay_sectsleft << 11));
+	
+	Overlay_DataInit();
+}
+
+void Overlay_DataInit(void)
+{
+	//Get max size and allocate appropriate buffer
+	overlay_sizes = overlay_sizestart;
 	
 	u16 overlay_sizemax = 0;
 	for (u16 *overlay_sizep = overlay_sizes; *overlay_sizep != 0; overlay_sizep++)
@@ -97,6 +106,9 @@ void Overlay_Load(const char *path)
 		sprintf(error_msg, "[Overlay_Load] Failed to allocate overlay data buffer (%d sectors)", overlay_sizemax);
 		ErrorLock();
 	}
+	
+	//Set CD position for subsequent reads
+	overlay_pos = overlay_datapos;
 }
 
 IO_Data Overlay_DataRead(void)

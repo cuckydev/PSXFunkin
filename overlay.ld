@@ -39,5 +39,22 @@ SECTIONS {
 			. = ALIGN(4);
 			__week1_end = .;
 		}
+		.week2
+		{
+			. = . + 2;
+			KEEP(src/week2/*.o(.text))
+			__week2_ctor = .;
+			KEEP(src/week2/*.o(.text.startup._GLOBAL__*))
+			KEEP(src/week2/*.o(.text.*))
+			KEEP(src/week2/*.o(.rodata*))
+			KEEP(src/week2/*.o(.sdata*))
+			KEEP(src/week2/*.o(.data*))
+			KEEP(src/week2/*.o(.sbss*))
+			KEEP(src/week2/*.o(.bss*))
+			KEEP(src/week2/*.o(.ctors))
+			
+			. = ALIGN(4);
+			__week2_end = .;
+		}
 	}
 }
