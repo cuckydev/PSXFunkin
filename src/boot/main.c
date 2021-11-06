@@ -87,9 +87,8 @@ void Overlay_Load(const char *path)
 	//Allocate overlay data buffers
 	overlay_sizes = (u16*)(&__heap_start + (overlay_sectsleft << 11));
 	
-	u16 *overlay_sizep = overlay_sizes;
 	u16 overlay_sizemax = 0;
-	for (size_t i = 0; i < (0x800 >> 1); i++, overlay_sizep++)
+	for (u16 *overlay_sizep = overlay_sizes; *overlay_sizep != 0; overlay_sizep++)
 		if (*overlay_sizep > overlay_sizemax)
 			overlay_sizemax = *overlay_sizep;
 	
