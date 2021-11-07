@@ -50,9 +50,7 @@ Download mkpsxiso's source from https://github.com/Lameguy64/mkpsxiso, cd to it,
 
 `cmake --build build --config Release`
 
-Then do `ls build/`, and if it went well, you should see a folder that starts with `bin_`, this is where the executable will be, so do `cd build/bin_...` to go to the executable's directory.
-
-Finally, do `sudo cp mkpsxiso /usr/local/bin/mkpsxiso` (MSYS2 doesn't have sudo, so just omit it)
+Finally, do `sudo cp build/mkpsxiso /usr/local/bin/mkpsxiso` (MSYS2 doesn't have sudo, so just omit it)
 
 This will allow you to call mkpsxiso from anywhere (like the PSXFunkin repo).
 
