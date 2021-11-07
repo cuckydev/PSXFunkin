@@ -320,13 +320,13 @@ static boolean Week4_NextStage(void)
 {
 	switch (stage.stage_id)
 	{
-		case StageId_3_1: //Pico
-			stage.stage_id = StageId_3_2;
+		case StageId_4_1: //Satin Panties
+			stage.stage_id = StageId_4_2;
 			return true;
-		case StageId_3_2: //Philly Nice
-			stage.stage_id = StageId_3_3;
+		case StageId_4_2: //High
+			stage.stage_id = StageId_4_3;
 			return true;
-		case StageId_3_3: //Blammed
+		case StageId_4_3: //M.I.L.F
 			return false;
 		default:
 			return false;
