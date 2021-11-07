@@ -1233,13 +1233,12 @@ void Stage_Tick(void)
 				//Load next stage
 				if (stageoverlay_nextstage())
 				{
-					LoadScr_Start();
 					stage.stage_def = &stage_defs[stage.stage_id];
 					Stage_LoadChart();
 					Stage_LoadState();
 					Stage_InitCamera();
 					Stage_LoadMusic();
-					LoadScr_End();
+					Timer_Reset();
 					break;
 				}
 		//Fallthrough
