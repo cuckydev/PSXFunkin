@@ -104,10 +104,27 @@ typedef enum
 typedef enum
 {
 	StageTrans_Menu,
-	StageTrans_NextSong,
+	StageTrans_NextStage,
 	StageTrans_Reload,
 	StageTrans_Disconnect,
 } StageTrans;
+
+//Stage definitions
+typedef struct
+{
+	const IO_Data data;
+	size_t size;
+} StageChart;
+
+typedef struct
+{
+	//Overlay
+	const char *overlay_path;
+	void (*overlay_setptr)(void);
+	
+	//Song info
+	u8 music_track, music_channel;
+} StageDef;
 
 //Stage overlay state
 typedef void (*StageOverlay_Load)(void);
@@ -116,7 +133,8 @@ typedef void (*StageOverlay_DrawBG)(void);
 typedef void (*StageOverlay_DrawMD)(void);
 typedef void (*StageOverlay_DrawFG)(void);
 typedef void (*StageOverlay_Free)(void);
-typedef IO_Data (*StageOverlay_GetChart)(void);
+typedef const StageChart *(*StageOverlay_GetChart)(void);
+typedef boolean (*StageOverlay_LoadScreen)(void);
 typedef boolean (*StageOverlay_NextStage)(void);
 
 extern StageOverlay_Load stageoverlay_load;
@@ -126,19 +144,8 @@ extern StageOverlay_DrawMD stageoverlay_drawmd;
 extern StageOverlay_DrawFG stageoverlay_drawfg;
 extern StageOverlay_Free stageoverlay_free;
 extern StageOverlay_GetChart stageoverlay_getchart;
+extern StageOverlay_LoadScreen stageoverlay_loadscreen;
 extern StageOverlay_NextStage stageoverlay_nextstage;
-
-//Stage definitions
-typedef struct
-{
-	//Overlay
-	const char *overlay_path;
-	void (*overlay_setptr)(void);
-	
-	//Song info
-	fixed_t speed[3];
-	u8 music_track, music_channel;
-} StageDef;
 
 //Stage state
 #define SECTION_FLAG_OPPFOCUS (1 << 15) //Focus on opponent

@@ -61,6 +61,7 @@ StageOverlay_DrawMD stageoverlay_drawmd;
 StageOverlay_DrawFG stageoverlay_drawfg;
 StageOverlay_Free stageoverlay_free;
 StageOverlay_GetChart stageoverlay_getchart;
+StageOverlay_LoadScreen stageoverlay_loadscreen;
 StageOverlay_NextStage stageoverlay_nextstage;
 
 //Stage definitions
@@ -197,27 +198,6 @@ static void Stage_GetSectionScroll(SectionScroll *scroll, Section *section)
 }
 
 //Note hit detection
-static void Stage_MissNote(PlayerState *this)
-{
-	if (this->combo)
-	{
-		//Kill combo
-		if (stage.gf != NULL && this->combo > 5)
-			stage.gf->set_anim(stage.gf, CharAnim_DownAlt); //Cry if we lost a large combo
-		this->combo = 0;
-		
-		//Create combo object telling of our lost combo
-		Obj_Combo *combo = Obj_Combo_New(
-			this->character->focus_x,
-			this->character->focus_y,
-			0xFF,
-			0
-		);
-		if (combo != NULL)
-			ObjectList_Add(&stage.objlist_fg, (Object*)combo);
-	}
-}
-
 static u8 Stage_HitNote(PlayerState *this, u8 type, fixed_t offset)
 {
 	//Get hit type
@@ -236,8 +216,28 @@ static u8 Stage_HitNote(PlayerState *this, u8 type, fixed_t offset)
 	
 	if (stage.ghost && hit_type == 3)
 	{
-		Stage_MissNote(this);
-		return;
+		//Miss combo
+		if (this->combo)
+		{
+			//Kill combo
+			if (stage.gf != NULL && this->combo > 5)
+				stage.gf->set_anim(stage.gf, CharAnim_DownAlt); //Cry if we lost a large combo
+			this->combo = 0;
+			
+			//Create combo object telling of our lost combo
+			Obj_Combo *combo = Obj_Combo_New(
+				this->character->focus_x,
+				this->character->focus_y,
+				hit_type,
+				0
+			);
+			if (combo != NULL)
+				ObjectList_Add(&stage.objlist_fg, (Object*)combo);
+		}
+		
+		//Play miss animation
+		this->character->set_anim(this->character, note_anims[type & 0x3][2]);
+		return hit_type;
 	}
 	
 	//Increment combo and score
@@ -283,6 +283,27 @@ static u8 Stage_HitNote(PlayerState *this, u8 type, fixed_t offset)
 	}
 	
 	return hit_type;
+}
+
+static void Stage_MissNote(PlayerState *this)
+{
+	if (this->combo)
+	{
+		//Kill combo
+		if (stage.gf != NULL && this->combo > 5)
+			stage.gf->set_anim(stage.gf, CharAnim_DownAlt); //Cry if we lost a large combo
+		this->combo = 0;
+		
+		//Create combo object telling of our lost combo
+		Obj_Combo *combo = Obj_Combo_New(
+			this->character->focus_x,
+			this->character->focus_y,
+			0xFF,
+			0
+		);
+		if (combo != NULL)
+			ObjectList_Add(&stage.objlist_fg, (Object*)combo);
+	}
 }
 
 static void Stage_NoteCheck(PlayerState *this, u8 type)
@@ -966,69 +987,20 @@ static void Stage_DrawNotes(void)
 //Stage loads
 static void Stage_LoadChart(void)
 {
-	//Load stage data
-	stage.chart_data = stageoverlay_getchart();
+	//Copy chart data
+	const StageChart *chart_data = stageoverlay_getchart();
+	
+	stage.chart_data = Mem_Alloc(chart_data->size);
+	memcpy(stage.chart_data, chart_data->data, chart_data->size);
+	
 	u8 *chart_byte = (u8*)stage.chart_data;
 	
-	#ifdef PSXF_PC
-		//Get lengths
-		u16 note_off = chart_byte[0] | (chart_byte[1] << 8);
-		
-		u8 *section_p = chart_byte + 2;
-		u8 *note_p = chart_byte + note_off;
-		
-		u8 *section_pp;
-		u8 *note_pp;
-		
-		size_t sections = (note_off - 2) >> 2;
-		size_t notes = 0;
-		
-		for (note_pp = note_p;; note_pp += 4)
-		{
-			notes++;
-			u16 pos = note_pp[0] | (note_pp[1] << 8);
-			if (pos == 0xFFFF)
-				break;
-		}
-		
-		if (notes)
-			stage.num_notes = notes - 1;
-		else
-			stage.num_notes = 0;
-		
-		//Realloc for separate structs
-		size_t sections_size = sections * sizeof(Section);
-		size_t notes_size = notes * sizeof(Note);
-		size_t notes_off = MEM_ALIGN(sections_size);
-		
-		u8 *nchart = Mem_Alloc(notes_off + notes_size);
-		
-		Section *nsection_p = stage.sections = (Section*)nchart;
-		section_pp = section_p;
-		for (size_t i = 0; i < sections; i++, section_pp += 4, nsection_p++)
-		{
-			nsection_p->end = section_pp[0] | (section_pp[1] << 8);
-			nsection_p->flag = section_pp[2] | (section_pp[3] << 8);
-		}
-		
-		Note *nnote_p = stage.notes = (Note*)(nchart + notes_off);
-		note_pp = note_p;
-		for (size_t i = 0; i < notes; i++, note_pp += 4, nnote_p++)
-		{
-			nnote_p->pos = note_pp[0] | (note_pp[1] << 8);
-			nnote_p->type = note_pp[2] | (note_pp[3] << 8);
-		}
-		
-		//Use reformatted chart
-		stage.chart_data = (IO_Data)nchart;
-	#else
-		//Directly use section and notes pointers
-		stage.sections = (Section*)(chart_byte + 2);
-		stage.notes = (Note*)(chart_byte + *((u16*)stage.chart_data));
-		
-		for (Note *note = stage.notes; note->pos != 0xFFFF; note++)
-			stage.num_notes++;
-	#endif
+	//Directly use section and notes pointers
+	stage.sections = (Section*)(chart_byte + 6);
+	stage.notes = (Note*)(chart_byte + ((u16*)stage.chart_data)[2]);
+	
+	for (Note *note = stage.notes; note->pos != 0xFFFF; note++)
+		stage.num_notes++;
 	
 	//Count max scores
 	stage.player_state[0].max_score = 0;
@@ -1050,7 +1022,7 @@ static void Stage_LoadChart(void)
 	stage.cur_section = stage.sections;
 	stage.cur_note = stage.notes;
 	
-	stage.speed = stage.stage_def->speed[stage.stage_diff];
+	stage.speed = *((fixed_t*)stage.chart_data);
 	
 	stage.step_crochet = 0;
 	stage.time_base = 0;
@@ -1124,6 +1096,23 @@ static void Stage_LoadState(void)
 	ObjectList_Free(&stage.objlist_bg);
 }
 
+static void Stage_InitCamera(void)
+{
+	//Set camera focus
+	if (stage.cur_section->flag & SECTION_FLAG_OPPFOCUS)
+		Stage_FocusCharacter(stage.opponent, FIXED_UNIT);
+	else
+		Stage_FocusCharacter(stage.player, FIXED_UNIT);
+	
+	//Initialize camera to focus
+	stage.camera.x = stage.camera.tx;
+	stage.camera.y = stage.camera.ty;
+	stage.camera.zoom = stage.camera.tz;
+	
+	stage.bump = FIXED_UNIT;
+	stage.sbump = FIXED_UNIT;
+}
+
 //Stage functions
 void Stage_Load(StageId id, StageDiff difficulty, boolean story)
 {
@@ -1145,16 +1134,7 @@ void Stage_Load(StageId id, StageDiff difficulty, boolean story)
 	Stage_LoadState();
 	
 	//Initialize camera
-	if (stage.cur_section->flag & SECTION_FLAG_OPPFOCUS)
-		Stage_FocusCharacter(stage.opponent, FIXED_UNIT);
-	else
-		Stage_FocusCharacter(stage.player, FIXED_UNIT);
-	stage.camera.x = stage.camera.tx;
-	stage.camera.y = stage.camera.ty;
-	stage.camera.zoom = stage.camera.tz;
-	
-	stage.bump = FIXED_UNIT;
-	stage.sbump = FIXED_UNIT;
+	Stage_InitCamera();
 	
 	//Initialize stage according to mode
 	stage.note_swap = (stage.mode == StageMode_Swap) ? NOTE_FLAG_OPPONENT : 0;
@@ -1253,6 +1233,19 @@ void Stage_Tick(void)
 	{
 		switch (stage.trans)
 		{
+			case StageTrans_NextStage:
+				//Load next stage
+				if (stageoverlay_nextstage())
+				{
+					stage.stage_def = &stage_defs[stage.stage_id];
+					Stage_LoadChart();
+					Stage_LoadState();
+					Stage_InitCamera();
+					Stage_LoadMusic();
+					LoadScr_End();
+					break;
+				}
+		//Fallthrough
 			case StageTrans_Menu:
 				//Load appropriate menu
 				Stage_Unload();
@@ -1285,14 +1278,6 @@ void Stage_Tick(void)
 				
 				gameloop = GameLoop_Menu;
 				return;
-			case StageTrans_NextSong:
-				//Load next song
-				Stage_Unload();
-				
-				LoadScr_Start();
-				//Stage_Load(stage.stage_def->next_stage, stage.stage_diff, stage.story);
-				LoadScr_End();
-				break;
 			case StageTrans_Reload:
 				//Reload song
 				Stage_Unload();
@@ -1435,18 +1420,27 @@ void Stage_Tick(void)
 					next_scroll = ((fixed_t)stage.step_base << FIXED_SHIFT) + FIXED_MUL(stage.song_time - stage.time_base, stage.step_crochet);
 					
 					//Transition to menu or next song
-					/*
-					if (stage.story && stage.stage_def->next_stage != stage.stage_id)
+					if (stageoverlay_loadscreen())
 					{
-						if (Stage_NextLoad())
-							goto SeamLoad;
+						stage.trans = StageTrans_NextStage;
+						Trans_Start();
 					}
 					else
 					{
-						stage.trans = StageTrans_Menu;
-						Trans_Start();
+						if (stageoverlay_nextstage())
+						{
+							stage.stage_def = &stage_defs[stage.stage_id];
+							Stage_LoadChart();
+							Stage_LoadState();
+							Stage_LoadMusic();
+							goto SeamLoad;
+						}
+						else
+						{
+							stage.trans = StageTrans_Menu;
+							Trans_Start();
+						}
 					}
-					*/
 				}
 			}
 			

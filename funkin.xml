@@ -39,6 +39,12 @@
 				<file name = "week2.exe" type = "data" source = "iso/week2/week2.exe"/>
 			</dir>
 			
+			<!-- Week 3 assets -->
+			<dir name = "week3">
+				<!-- Overlay -->
+				<file name = "week3.exe" type = "data" source = "iso/week3/week3.exe"/>
+			</dir>
+			
 			<!-- Music -->
 			<dir name = "music">
 				<file name = "menu.xa" type = "xa" source = "iso/music/menu.xa"/>

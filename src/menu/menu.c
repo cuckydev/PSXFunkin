@@ -71,7 +71,7 @@ static const char *funny_messages[][2] = {
 	{"WOW GATO", "WOW GATO"},
 	{"BALLS FISH", "BALLS FISH"},
 	{"TURINGMANIA", "IS BETTER"},
-	{"NUTRIA IN A", "WOOL SWEATER"},
+	{"NUTRIA EN UN", "SUETER DE LANA"},
 	{"CHECK OUT THIS", "COOL ASS HOT DOG"},
 };
 

@@ -77,7 +77,7 @@ static const Animation char_spook_anim[CharAnim_Max] = {
 };
 
 //Spook character functions
-void Char_Spook_SetFrame(void *user, u8 frame)
+static void Char_Spook_SetFrame(void *user, u8 frame)
 {
 	Char_Spook *this = (Char_Spook*)user;
 	
@@ -91,7 +91,7 @@ void Char_Spook_SetFrame(void *user, u8 frame)
 	}
 }
 
-void Char_Spook_Tick(Character *character)
+static void Char_Spook_Tick(Character *character)
 {
 	Char_Spook *this = (Char_Spook*)character;
 	
@@ -116,7 +116,7 @@ void Char_Spook_Tick(Character *character)
 	Character_Draw(character, &this->tex, &char_spook_frame[this->frame]);
 }
 
-void Char_Spook_SetAnim(Character *character, u8 anim)
+static void Char_Spook_SetAnim(Character *character, u8 anim)
 {
 	//Set animation
 	if (anim == CharAnim_Idle)
@@ -134,15 +134,12 @@ void Char_Spook_SetAnim(Character *character, u8 anim)
 	Animatable_SetAnim(&character->animatable, anim);
 }
 
-void Char_Spook_Free(Character *character)
+static void Char_Spook_Free(Character *character)
 {
-	Char_Spook *this = (Char_Spook*)character;
-	
-	//Free art
-	Mem_Free(this->arc_main);
+	(void)character;
 }
 
-Character *Char_Spook_New(fixed_t x, fixed_t y)
+static Character *Char_Spook_New(fixed_t x, fixed_t y)
 {
 	//Allocate spook object
 	Char_Spook *this = Mem_Alloc(sizeof(Char_Spook));

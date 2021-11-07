@@ -4,12 +4,16 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#include "pico.h"
+#include "boot/character.h"
+#include "boot/mem.h"
+#include "boot/archive.h"
+#include "boot/stage.h"
+#include "boot/main.h"
 
-#include "../mem.h"
-#include "../archive.h"
-#include "../stage.h"
-#include "../main.h"
+//Pico character assets
+static const u8 char_pico_arc_main[] = {
+	#include "iso/pico/main.arc.h"
+};
 
 //Pico character structure
 enum
@@ -67,7 +71,7 @@ static const Animation char_pico_anim[CharAnim_Max] = {
 };
 
 //Pico character functions
-void Char_Pico_SetFrame(void *user, u8 frame)
+static void Char_Pico_SetFrame(void *user, u8 frame)
 {
 	Char_Pico *this = (Char_Pico*)user;
 	
@@ -81,7 +85,7 @@ void Char_Pico_SetFrame(void *user, u8 frame)
 	}
 }
 
-void Char_Pico_Tick(Character *character)
+static void Char_Pico_Tick(Character *character)
 {
 	Char_Pico *this = (Char_Pico*)character;
 	
@@ -94,22 +98,19 @@ void Char_Pico_Tick(Character *character)
 	Character_Draw(character, &this->tex, &char_pico_frame[this->frame]);
 }
 
-void Char_Pico_SetAnim(Character *character, u8 anim)
+static void Char_Pico_SetAnim(Character *character, u8 anim)
 {
 	//Set animation
 	Animatable_SetAnim(&character->animatable, anim);
 	Character_CheckStartSing(character);
 }
 
-void Char_Pico_Free(Character *character)
+static void Char_Pico_Free(Character *character)
 {
-	Char_Pico *this = (Char_Pico*)character;
-	
-	//Free art
-	Mem_Free(this->arc_main);
+	(void)character;
 }
 
-Character *Char_Pico_New(fixed_t x, fixed_t y)
+static Character *Char_Pico_New(fixed_t x, fixed_t y)
 {
 	//Allocate pico object
 	Char_Pico *this = Mem_Alloc(sizeof(Char_Pico));
@@ -138,8 +139,6 @@ Character *Char_Pico_New(fixed_t x, fixed_t y)
 	this->character.focus_zoom = FIXED_DEC(1,1);
 	
 	//Load art
-	this->arc_main = IO_Read("\\CHAR\\PICO.ARC;1");
-	
 	const char **pathp = (const char *[]){
 		"idle.tim", //Pico_ArcMain_Idle0
 		"hit0.tim", //Pico_ArcMain_Hit0
@@ -148,7 +147,7 @@ Character *Char_Pico_New(fixed_t x, fixed_t y)
 	};
 	IO_Data *arc_ptr = this->arc_ptr;
 	for (; *pathp != NULL; pathp++)
-		*arc_ptr++ = Archive_Find(this->arc_main, *pathp);
+		*arc_ptr++ = Archive_Find((IO_Data)char_pico_arc_main, *pathp);
 	
 	//Initialize render state
 	this->tex_id = this->frame = 0xFF;

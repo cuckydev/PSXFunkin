@@ -42,10 +42,22 @@ static const u8 week2_cht_monster_hard[] = {
 	#include "iso/chart/monster-hard.json.cht.h"
 };
 
-static const u8 *week2_cht[3][3] = {
-	{week2_cht_spookeez_easy, week2_cht_spookeez_normal, week2_cht_spookeez_hard},
-	{week2_cht_south_easy,    week2_cht_south_normal,    week2_cht_south_hard},
-	{week2_cht_monster_easy,  week2_cht_monster_normal,  week2_cht_monster_hard},
+static const StageChart week2_cht[4][3] = {
+	{
+		{(const IO_Data)week2_cht_spookeez_easy,   sizeof(week2_cht_spookeez_easy)},
+		{(const IO_Data)week2_cht_spookeez_normal, sizeof(week2_cht_spookeez_normal)},
+		{(const IO_Data)week2_cht_spookeez_hard,   sizeof(week2_cht_spookeez_hard)},
+	},
+	{
+		{(const IO_Data)week2_cht_south_easy,   sizeof(week2_cht_south_easy)},
+		{(const IO_Data)week2_cht_south_normal, sizeof(week2_cht_south_normal)},
+		{(const IO_Data)week2_cht_south_hard,   sizeof(week2_cht_south_hard)},
+	},
+	{
+		{(const IO_Data)week2_cht_monster_easy,   sizeof(week2_cht_monster_easy)},
+		{(const IO_Data)week2_cht_monster_normal, sizeof(week2_cht_monster_normal)},
+		{(const IO_Data)week2_cht_monster_hard,   sizeof(week2_cht_monster_hard)},
+	},
 };
 
 //Characters
@@ -128,9 +140,31 @@ static void Week2_DrawBG()
 	Stage_DrawTex(&week2_tex_back0, &back_src, &back_dst, stage.camera.bzoom);
 }
 
-static IO_Data Week2_GetChart(void)
+static const StageChart *Week2_GetChart(void)
 {
-	return (IO_Data)week2_cht[stage.stage_id - StageId_2_1][stage.stage_diff];
+	return &week2_cht[stage.stage_id - StageId_2_1][stage.stage_diff];
+}
+
+static boolean Week2_LoadScreen(void)
+{
+	return stage.stage_id == StageId_2_2; //Going to Monster
+}
+
+static boolean Week2_NextStage(void)
+{
+	switch (stage.stage_id)
+	{
+		case StageId_2_1: //Spookeez
+			stage.stage_id = StageId_2_2;
+			return true;
+		case StageId_2_2: //South
+			stage.stage_id = StageId_2_3;
+			return true;
+		case StageId_2_3: //Monster
+			return false;
+		default:
+			return false;
+	}
 }
 
 void Week2_SetPtr(void)
@@ -143,5 +177,6 @@ void Week2_SetPtr(void)
 	stageoverlay_drawfg = NULL;
 	stageoverlay_free = NULL;
 	stageoverlay_getchart = Week2_GetChart;
-	stageoverlay_nextstage = NULL;
+	stageoverlay_loadscreen = Week2_LoadScreen;
+	stageoverlay_nextstage = Week2_NextStage;
 }

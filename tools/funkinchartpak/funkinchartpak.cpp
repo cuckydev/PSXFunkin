@@ -35,6 +35,11 @@ struct Note
 	uint8_t type, pad = 0;
 };
 
+typedef int32_t fixed_t;
+
+#define FIXED_SHIFT (10)
+#define FIXED_UNIT  (1 << FIXED_SHIFT)
+
 uint16_t PosRound(double pos, double crochet)
 {
 	return (uint16_t)std::floor(pos / crochet + 0.5);
@@ -44,6 +49,14 @@ void WriteWord(std::ostream &out, uint16_t word)
 {
 	out.put(word >> 0);
 	out.put(word >> 8);
+}
+
+void WriteLong(std::ostream &out, uint32_t word)
+{
+	out.put(word >> 0);
+	out.put(word >> 8);
+	out.put(word >> 16);
+	out.put(word >> 24);
 }
 
 int main(int argc, char *argv[])
@@ -179,8 +192,11 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 	
+	//Write header
+	WriteLong(out, (fixed_t)(speed * FIXED_UNIT));
+	WriteWord(out, 6 + (sections.size() << 2));
+	
 	//Write sections
-	WriteWord(out, 2 + (sections.size() << 2));
 	for (auto &i : sections)
 	{
 		WriteWord(out, i.end);

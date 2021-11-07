@@ -49,11 +49,27 @@ static const u8 week1_cht_tutorial_hard[] = {
 	#include "iso/chart/tutorial-hard.json.cht.h"
 };
 
-static const u8 *week1_cht[4][3] = {
-	{week1_cht_bopeebo_easy,     week1_cht_bopeebo_normal,   week1_cht_bopeebo_hard},
-	{week1_cht_fresh_easy,       week1_cht_fresh_normal,     week1_cht_fresh_hard},
-	{week1_cht_dadbattle_easy,   week1_cht_dadbattle_normal, week1_cht_dadbattle_hard},
-	{week1_cht_tutorial_normal,  week1_cht_tutorial_normal,  week1_cht_tutorial_hard},
+static const StageChart week1_cht[4][3] = {
+	{
+		{(const IO_Data)week1_cht_bopeebo_easy,   sizeof(week1_cht_bopeebo_easy)},
+		{(const IO_Data)week1_cht_bopeebo_normal, sizeof(week1_cht_bopeebo_normal)},
+		{(const IO_Data)week1_cht_bopeebo_hard,   sizeof(week1_cht_bopeebo_hard)},
+	},
+	{
+		{(const IO_Data)week1_cht_fresh_easy,   sizeof(week1_cht_fresh_easy)},
+		{(const IO_Data)week1_cht_fresh_normal, sizeof(week1_cht_fresh_normal)},
+		{(const IO_Data)week1_cht_fresh_hard,   sizeof(week1_cht_fresh_hard)},
+	},
+	{
+		{(const IO_Data)week1_cht_dadbattle_easy,   sizeof(week1_cht_dadbattle_easy)},
+		{(const IO_Data)week1_cht_dadbattle_normal, sizeof(week1_cht_dadbattle_normal)},
+		{(const IO_Data)week1_cht_dadbattle_hard,   sizeof(week1_cht_dadbattle_hard)},
+	},
+	{
+		{(const IO_Data)week1_cht_tutorial_normal, sizeof(week1_cht_tutorial_normal)},
+		{(const IO_Data)week1_cht_tutorial_normal, sizeof(week1_cht_tutorial_normal)},
+		{(const IO_Data)week1_cht_tutorial_hard,   sizeof(week1_cht_tutorial_hard)},
+	},
 };
 
 //Characters
@@ -226,9 +242,33 @@ static void Week1_DrawBG()
 	Gfx_DrawTex(&week1_tex_back0, &backf_src, &backf_dst);
 }
 
-static IO_Data Week1_GetChart(void)
+static const StageChart *Week1_GetChart(void)
 {
-	return (IO_Data)week1_cht[stage.stage_id - StageId_1_1][stage.stage_diff];
+	return &week1_cht[stage.stage_id - StageId_1_1][stage.stage_diff];
+}
+
+static boolean Week1_LoadScreen(void)
+{
+	return false;
+}
+
+static boolean Week1_NextStage(void)
+{
+	switch (stage.stage_id)
+	{
+		case StageId_1_1: //Bopeebo
+			stage.stage_id = StageId_1_2;
+			return true;
+		case StageId_1_2: //Fresh
+			stage.stage_id = StageId_1_3;
+			return true;
+		case StageId_1_3: //Dadbattle
+			return false;
+		case StageId_1_4: //Tutorial
+			return false;
+		default:
+			return false;
+	}
 }
 
 void Week1_SetPtr(void)
@@ -241,5 +281,6 @@ void Week1_SetPtr(void)
 	stageoverlay_drawfg = NULL;
 	stageoverlay_free = NULL;
 	stageoverlay_getchart = Week1_GetChart;
-	stageoverlay_nextstage = NULL;
+	stageoverlay_loadscreen = Week1_LoadScreen;
+	stageoverlay_nextstage = Week1_NextStage;
 }
