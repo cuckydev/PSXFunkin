@@ -258,7 +258,7 @@ static void Week3_DrawBG()
 			FIXED_DEC(103,1)
 		};
 		
-		RECT lightr_src = {0, 132, 255, 124};
+		RECT lightr_src = {0, 132, 255, 123};
 		RECT_FIXED lightr_dst = {
 			FIXED_DEC(98,1) - fx,
 			FIXED_DEC(-64,1) - fy,
