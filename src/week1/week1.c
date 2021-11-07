@@ -12,63 +12,63 @@
 #include "boot/mem.h"
 
 //Charts
-static const u8 week1_cht_bopeebo_easy[] = {
+static u8 week1_cht_bopeebo_easy[] = {
 	#include "iso/chart/bopeebo-easy.json.cht.h"
 };
-static const u8 week1_cht_bopeebo_normal[] = {
+static u8 week1_cht_bopeebo_normal[] = {
 	#include "iso/chart/bopeebo.json.cht.h"
 };
-static const u8 week1_cht_bopeebo_hard[] = {
+static u8 week1_cht_bopeebo_hard[] = {
 	#include "iso/chart/bopeebo-hard.json.cht.h"
 };
 
-static const u8 week1_cht_fresh_easy[] = {
+static u8 week1_cht_fresh_easy[] = {
 	#include "iso/chart/fresh-easy.json.cht.h"
 };
-static const u8 week1_cht_fresh_normal[] = {
+static u8 week1_cht_fresh_normal[] = {
 	#include "iso/chart/fresh.json.cht.h"
 };
-static const u8 week1_cht_fresh_hard[] = {
+static u8 week1_cht_fresh_hard[] = {
 	#include "iso/chart/fresh-hard.json.cht.h"
 };
 
-static const u8 week1_cht_dadbattle_easy[] = {
+static u8 week1_cht_dadbattle_easy[] = {
 	#include "iso/chart/dadbattle-easy.json.cht.h"
 };
-static const u8 week1_cht_dadbattle_normal[] = {
+static u8 week1_cht_dadbattle_normal[] = {
 	#include "iso/chart/dadbattle.json.cht.h"
 };
-static const u8 week1_cht_dadbattle_hard[] = {
+static u8 week1_cht_dadbattle_hard[] = {
 	#include "iso/chart/dadbattle-hard.json.cht.h"
 };
 
-static const u8 week1_cht_tutorial_normal[] = {
+static u8 week1_cht_tutorial_normal[] = {
 	#include "iso/chart/tutorial.json.cht.h"
 };
-static const u8 week1_cht_tutorial_hard[] = {
+static u8 week1_cht_tutorial_hard[] = {
 	#include "iso/chart/tutorial-hard.json.cht.h"
 };
 
-static const StageChart week1_cht[4][3] = {
+static IO_Data week1_cht[4][3] = {
 	{
-		{(const IO_Data)week1_cht_bopeebo_easy,   sizeof(week1_cht_bopeebo_easy)},
-		{(const IO_Data)week1_cht_bopeebo_normal, sizeof(week1_cht_bopeebo_normal)},
-		{(const IO_Data)week1_cht_bopeebo_hard,   sizeof(week1_cht_bopeebo_hard)},
+		(IO_Data)week1_cht_bopeebo_easy,
+		(IO_Data)week1_cht_bopeebo_normal,
+		(IO_Data)week1_cht_bopeebo_hard,
 	},
 	{
-		{(const IO_Data)week1_cht_fresh_easy,   sizeof(week1_cht_fresh_easy)},
-		{(const IO_Data)week1_cht_fresh_normal, sizeof(week1_cht_fresh_normal)},
-		{(const IO_Data)week1_cht_fresh_hard,   sizeof(week1_cht_fresh_hard)},
+		(IO_Data)week1_cht_fresh_easy,
+		(IO_Data)week1_cht_fresh_normal,
+		(IO_Data)week1_cht_fresh_hard,
 	},
 	{
-		{(const IO_Data)week1_cht_dadbattle_easy,   sizeof(week1_cht_dadbattle_easy)},
-		{(const IO_Data)week1_cht_dadbattle_normal, sizeof(week1_cht_dadbattle_normal)},
-		{(const IO_Data)week1_cht_dadbattle_hard,   sizeof(week1_cht_dadbattle_hard)},
+		(IO_Data)week1_cht_dadbattle_easy,
+		(IO_Data)week1_cht_dadbattle_normal,
+		(IO_Data)week1_cht_dadbattle_hard,
 	},
 	{
-		{(const IO_Data)week1_cht_tutorial_normal, sizeof(week1_cht_tutorial_normal)},
-		{(const IO_Data)week1_cht_tutorial_normal, sizeof(week1_cht_tutorial_normal)},
-		{(const IO_Data)week1_cht_tutorial_hard,   sizeof(week1_cht_tutorial_hard)},
+		(IO_Data)week1_cht_tutorial_normal,
+		(IO_Data)week1_cht_tutorial_normal,
+		(IO_Data)week1_cht_tutorial_hard,
 	},
 };
 
@@ -242,9 +242,9 @@ static void Week1_DrawBG()
 	Gfx_DrawTex(&week1_tex_back0, &backf_src, &backf_dst);
 }
 
-static const StageChart *Week1_GetChart(void)
+static IO_Data Week1_GetChart(void)
 {
-	return &week1_cht[stage.stage_id - StageId_1_1][stage.stage_diff];
+	return week1_cht[stage.stage_id - StageId_1_1][stage.stage_diff];
 }
 
 static boolean Week1_LoadScreen(void)

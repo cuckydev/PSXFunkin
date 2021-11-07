@@ -12,51 +12,51 @@
 #include "boot/mem.h"
 
 //Charts
-static const u8 week3_cht_pico_easy[] = {
+static u8 week3_cht_pico_easy[] = {
 	#include "iso/chart/pico-easy.json.cht.h"
 };
-static const u8 week3_cht_pico_normal[] = {
+static u8 week3_cht_pico_normal[] = {
 	#include "iso/chart/pico.json.cht.h"
 };
-static const u8 week3_cht_pico_hard[] = {
+static u8 week3_cht_pico_hard[] = {
 	#include "iso/chart/pico-hard.json.cht.h"
 };
 
-static const u8 week3_cht_philly_easy[] = {
+static u8 week3_cht_philly_easy[] = {
 	#include "iso/chart/philly-easy.json.cht.h"
 };
-static const u8 week3_cht_philly_normal[] = {
+static u8 week3_cht_philly_normal[] = {
 	#include "iso/chart/philly.json.cht.h"
 };
-static const u8 week3_cht_philly_hard[] = {
+static u8 week3_cht_philly_hard[] = {
 	#include "iso/chart/philly-hard.json.cht.h"
 };
 
-static const u8 week3_cht_blammed_easy[] = {
+static u8 week3_cht_blammed_easy[] = {
 	#include "iso/chart/blammed-easy.json.cht.h"
 };
-static const u8 week3_cht_blammed_normal[] = {
+static u8 week3_cht_blammed_normal[] = {
 	#include "iso/chart/blammed.json.cht.h"
 };
-static const u8 week3_cht_blammed_hard[] = {
+static u8 week3_cht_blammed_hard[] = {
 	#include "iso/chart/blammed-hard.json.cht.h"
 };
 
-static const StageChart week3_cht[4][3] = {
+static IO_Data week3_cht[4][3] = {
 	{
-		{(const IO_Data)week3_cht_pico_easy,   sizeof(week3_cht_pico_easy)},
-		{(const IO_Data)week3_cht_pico_normal, sizeof(week3_cht_pico_normal)},
-		{(const IO_Data)week3_cht_pico_hard,   sizeof(week3_cht_pico_hard)},
+		(IO_Data)week3_cht_pico_easy,
+		(IO_Data)week3_cht_pico_normal,
+		(IO_Data)week3_cht_pico_hard,
 	},
 	{
-		{(const IO_Data)week3_cht_philly_easy,   sizeof(week3_cht_philly_easy)},
-		{(const IO_Data)week3_cht_philly_normal, sizeof(week3_cht_philly_normal)},
-		{(const IO_Data)week3_cht_philly_hard,   sizeof(week3_cht_philly_hard)},
+		(IO_Data)week3_cht_philly_easy,
+		(IO_Data)week3_cht_philly_normal,
+		(IO_Data)week3_cht_philly_hard,
 	},
 	{
-		{(const IO_Data)week3_cht_blammed_easy,   sizeof(week3_cht_blammed_easy)},
-		{(const IO_Data)week3_cht_blammed_normal, sizeof(week3_cht_blammed_normal)},
-		{(const IO_Data)week3_cht_blammed_hard,   sizeof(week3_cht_blammed_hard)},
+		(IO_Data)week3_cht_blammed_easy,
+		(IO_Data)week3_cht_blammed_normal,
+		(IO_Data)week3_cht_blammed_hard,
 	},
 };
 
@@ -310,9 +310,9 @@ static void Week3_DrawBG()
 	Stage_DrawTex(&week3_tex_back5, &sky_src, &sky_dst, stage.camera.bzoom);
 }
 
-static const StageChart *Week3_GetChart(void)
+static IO_Data Week3_GetChart(void)
 {
-	return &week3_cht[stage.stage_id - StageId_3_1][stage.stage_diff];
+	return week3_cht[stage.stage_id - StageId_3_1][stage.stage_diff];
 }
 
 static boolean Week3_LoadScreen(void)

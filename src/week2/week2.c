@@ -12,51 +12,51 @@
 #include "boot/mem.h"
 
 //Charts
-static const u8 week2_cht_spookeez_easy[] = {
+static u8 week2_cht_spookeez_easy[] = {
 	#include "iso/chart/spookeez-easy.json.cht.h"
 };
-static const u8 week2_cht_spookeez_normal[] = {
+static u8 week2_cht_spookeez_normal[] = {
 	#include "iso/chart/spookeez.json.cht.h"
 };
-static const u8 week2_cht_spookeez_hard[] = {
+static u8 week2_cht_spookeez_hard[] = {
 	#include "iso/chart/spookeez-hard.json.cht.h"
 };
 
-static const u8 week2_cht_south_easy[] = {
+static u8 week2_cht_south_easy[] = {
 	#include "iso/chart/south-easy.json.cht.h"
 };
-static const u8 week2_cht_south_normal[] = {
+static u8 week2_cht_south_normal[] = {
 	#include "iso/chart/south.json.cht.h"
 };
-static const u8 week2_cht_south_hard[] = {
+static u8 week2_cht_south_hard[] = {
 	#include "iso/chart/south-hard.json.cht.h"
 };
 
-static const u8 week2_cht_monster_easy[] = {
+static u8 week2_cht_monster_easy[] = {
 	#include "iso/chart/monster-easy.json.cht.h"
 };
-static const u8 week2_cht_monster_normal[] = {
+static u8 week2_cht_monster_normal[] = {
 	#include "iso/chart/monster.json.cht.h"
 };
-static const u8 week2_cht_monster_hard[] = {
+static u8 week2_cht_monster_hard[] = {
 	#include "iso/chart/monster-hard.json.cht.h"
 };
 
-static const StageChart week2_cht[4][3] = {
+static IO_Data week2_cht[4][3] = {
 	{
-		{(const IO_Data)week2_cht_spookeez_easy,   sizeof(week2_cht_spookeez_easy)},
-		{(const IO_Data)week2_cht_spookeez_normal, sizeof(week2_cht_spookeez_normal)},
-		{(const IO_Data)week2_cht_spookeez_hard,   sizeof(week2_cht_spookeez_hard)},
+		(IO_Data)week2_cht_spookeez_easy,
+		(IO_Data)week2_cht_spookeez_normal,
+		(IO_Data)week2_cht_spookeez_hard,
 	},
 	{
-		{(const IO_Data)week2_cht_south_easy,   sizeof(week2_cht_south_easy)},
-		{(const IO_Data)week2_cht_south_normal, sizeof(week2_cht_south_normal)},
-		{(const IO_Data)week2_cht_south_hard,   sizeof(week2_cht_south_hard)},
+		(IO_Data)week2_cht_south_easy,
+		(IO_Data)week2_cht_south_normal,
+		(IO_Data)week2_cht_south_hard,
 	},
 	{
-		{(const IO_Data)week2_cht_monster_easy,   sizeof(week2_cht_monster_easy)},
-		{(const IO_Data)week2_cht_monster_normal, sizeof(week2_cht_monster_normal)},
-		{(const IO_Data)week2_cht_monster_hard,   sizeof(week2_cht_monster_hard)},
+		(IO_Data)week2_cht_monster_easy,
+		(IO_Data)week2_cht_monster_normal,
+		(IO_Data)week2_cht_monster_hard,
 	},
 };
 
@@ -140,9 +140,9 @@ static void Week2_DrawBG()
 	Stage_DrawTex(&week2_tex_back0, &back_src, &back_dst, stage.camera.bzoom);
 }
 
-static const StageChart *Week2_GetChart(void)
+static IO_Data Week2_GetChart(void)
 {
-	return &week2_cht[stage.stage_id - StageId_2_1][stage.stage_diff];
+	return week2_cht[stage.stage_id - StageId_2_1][stage.stage_diff];
 }
 
 static boolean Week2_LoadScreen(void)

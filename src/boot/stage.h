@@ -112,12 +112,6 @@ typedef enum
 //Stage definitions
 typedef struct
 {
-	const IO_Data data;
-	size_t size;
-} StageChart;
-
-typedef struct
-{
 	//Overlay
 	const char *overlay_path;
 	void (*overlay_setptr)(void);
@@ -133,7 +127,7 @@ typedef void (*StageOverlay_DrawBG)(void);
 typedef void (*StageOverlay_DrawMD)(void);
 typedef void (*StageOverlay_DrawFG)(void);
 typedef void (*StageOverlay_Free)(void);
-typedef const StageChart *(*StageOverlay_GetChart)(void);
+typedef IO_Data (*StageOverlay_GetChart)(void);
 typedef boolean (*StageOverlay_LoadScreen)(void);
 typedef boolean (*StageOverlay_NextStage)(void);
 

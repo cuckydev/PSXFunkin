@@ -987,12 +987,8 @@ static void Stage_DrawNotes(void)
 //Stage loads
 static void Stage_LoadChart(void)
 {
-	//Copy chart data
-	const StageChart *chart_data = stageoverlay_getchart();
-	
-	stage.chart_data = Mem_Alloc(chart_data->size);
-	memcpy(stage.chart_data, chart_data->data, chart_data->size);
-	
+	//Get chart data
+	stage.chart_data = stageoverlay_getchart();
 	u8 *chart_byte = (u8*)stage.chart_data;
 	
 	//Directly use section and notes pointers
