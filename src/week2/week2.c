@@ -118,12 +118,12 @@ static void Week2_DrawBG()
 	Stage_DrawTex(&week2_tex_back1, &window_src, &window_dst, stage.camera.bzoom);
 	
 	//Draw window light
-	RECT windowl_src = {0, 128, 255, 128};
+	RECT windowl_src = {0, 128, 255, 127};
 	RECT_FIXED windowl_dst = {
 		FIXED_DEC(-130,1) - fx,
 		FIXED_DEC(44,1) - fy,
 		FIXED_DEC(350,1),
-		FIXED_DEC(148,1)
+		FIXED_DEC(146,1)
 	};
 	
 	Stage_DrawTex(&week2_tex_back1, &windowl_src, &windowl_dst, stage.camera.bzoom);
