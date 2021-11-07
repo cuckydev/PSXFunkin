@@ -163,11 +163,11 @@ static void Week3_DrawBG()
 		RECT src;
 		fixed_t scale;
 	} roof_piece[] = {
-		{{  0, 0,  16, 256}, FIXED_MUL(FIXED_DEC(3,1) * 7 / 10, FIXED_UNIT + FIXED_DEC(SCREEN_WIDEOADD,2) * 10 / 336)},
-		{{ 16, 0,  55, 256}, FIXED_DEC(1,1) * 9 / 10},
-		{{ 71, 0, 128, 256}, FIXED_DEC(265,100) * 7 / 10},
-		{{199, 0,  55, 256}, FIXED_DEC(1,1) * 9 / 10},
-		{{255, 0,   0, 256}, FIXED_DEC(16,1) + FIXED_DEC(SCREEN_WIDEOADD2,1)}
+		{{  0, 0,  16, 255}, FIXED_MUL(FIXED_DEC(3,1) * 7 / 10, FIXED_UNIT + FIXED_DEC(SCREEN_WIDEOADD,2) * 10 / 336)},
+		{{ 16, 0,  55, 255}, FIXED_DEC(1,1) * 9 / 10},
+		{{ 71, 0, 128, 255}, FIXED_DEC(265,100) * 7 / 10},
+		{{199, 0,  55, 255}, FIXED_DEC(1,1) * 9 / 10},
+		{{255, 0,   0, 255}, FIXED_DEC(16,1) + FIXED_DEC(SCREEN_WIDEOADD2,1)}
 	};
 	
 	RECT_FIXED roof_dst = {
@@ -275,7 +275,7 @@ static void Week3_DrawBG()
 	}
 	
 	//Draw buildings
-	RECT building_src = {0, 0, 255, 128};
+	RECT building_src = {0, 0, 255, 127};
 	RECT_FIXED building_dst = {
 		FIXED_DEC(-195,1) - fx,
 		FIXED_DEC(-120,1) - fy,
@@ -285,7 +285,7 @@ static void Week3_DrawBG()
 	
 	Stage_DrawTex(&week3_tex_back0, &building_src, &building_dst, stage.camera.bzoom);
 	building_dst.x += building_dst.w;
-	building_src.y += building_src.h;
+	building_src.y += 128;
 	Stage_DrawTex(&week3_tex_back0, &building_src, &building_dst, stage.camera.bzoom);
 	
 	RECT building_fillsrc = {0, 255, 1, 0};
@@ -296,7 +296,7 @@ static void Week3_DrawBG()
 	fx = stage.camera.x >> 3;
 	fy = stage.camera.y >> 3;
 	
-	RECT sky_src = {0, 0, 255, 128};
+	RECT sky_src = {0, 0, 255, 127};
 	RECT_FIXED sky_dst = {
 		FIXED_DEC(-166,1) - FIXED_DEC(SCREEN_WIDEOADD,2) - fx,
 		FIXED_DEC(-117,1) - FIXED_DEC(SCREEN_WIDEOADD,4) - fy,
@@ -306,7 +306,7 @@ static void Week3_DrawBG()
 	
 	Stage_DrawTex(&week3_tex_back5, &sky_src, &sky_dst, stage.camera.bzoom);
 	sky_dst.x += sky_dst.w;
-	sky_src.y += sky_src.h;
+	sky_src.y += 128;
 	Stage_DrawTex(&week3_tex_back5, &sky_src, &sky_dst, stage.camera.bzoom);
 }
 
