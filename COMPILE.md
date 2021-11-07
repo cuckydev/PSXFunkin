@@ -64,7 +64,10 @@ Then, download the converted PsyQ library from http://psx.arthus.net/sdk/Psy-Q/p
 ## Compiling PSXFunkin
 First, make sure to `cd` to the repo directory where all the makefile is. You're gonna want to run a few commands from here.
 
-If everything went well, you can `cd` back to the repo directory, run `make`, and it will compile the game and spit out a `funkin.ps-exe` in the same directory.
+Then you must run a few makes to convert assets and compile the code.
+- `make -f Makefile.tools`
+- `make -f Makefile.assets`
+- `make`
 
 TIP: For `make`, try appending `-jX` to the end of it, where X is the number of CPU cores you have times two. This will try to put as much of your CPU as it can to doing whatever it needs to do and makes it go way quicker.
 
