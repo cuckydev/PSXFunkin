@@ -7,6 +7,9 @@ all: \
 	src/iso/dad/main.arc.h \
 	src/iso/spook/main.arc.h \
 	src/iso/pico/main.arc.h \
+	src/iso/mom/main.arc.h \
+	src/iso/mom/hair.tim.h \
+	src/iso/week4/hench.arc.h \
 	src/iso/chart/bopeebo-easy.json.cht.h \
 	src/iso/chart/bopeebo.json.cht.h \
 	src/iso/chart/bopeebo-hard.json.cht.h \
@@ -36,6 +39,16 @@ all: \
 	src/iso/chart/blammed-easy.json.cht.h \
 	src/iso/chart/blammed.json.cht.h \
 	src/iso/chart/blammed-hard.json.cht.h \
+	src/iso/chart/satin-panties-easy.json.cht.h \
+	src/iso/chart/satin-panties.json.cht.h \
+	src/iso/chart/satin-panties-hard.json.cht.h \
+	src/iso/chart/high-easy.json.cht.h \
+	src/iso/chart/high.json.cht.h \
+	src/iso/chart/high-hard.json.cht.h \
+	src/iso/chart/milf-easy.json.cht.h \
+	src/iso/chart/milf.json.cht.h \
+	src/iso/chart/milf-hard.json.cht.h \
+	src/iso/chart/test.json.cht.h \
 
 src/iso/%.h: iso/%
 	mkdir -p $(dir $@)

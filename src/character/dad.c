@@ -11,7 +11,7 @@
 #include "boot/main.h"
 
 //Dad character assets
-static const u8 char_dad_arc_main[] = {
+static u8 char_dad_arc_main[] = {
 	#include "iso/dad/main.arc.h"
 };
 

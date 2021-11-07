@@ -26,10 +26,11 @@ SRCS = src/boot/main.c \
        src/week1/week1.c \
        src/week2/week2.c \
        src/week3/week3.c \
+       src/week4/week4.c \
        mips/common/crt0/crt0.s
 
 OVERLAYSCRIPT  ?= overlay.ld
-OVERLAYSECTION ?= .menu .week1 .week2 .week3
+OVERLAYSECTION ?= .menu .week1 .week2 .week3 .week4
 
 CPPFLAGS += -Wall -Wextra -pedantic -Isrc/ -mno-check-zero-division
 LDFLAGS += -Wl,--start-group
@@ -65,6 +66,7 @@ all: \
 	iso/week1/week1.exe \
 	iso/week2/week2.exe \
 	iso/week3/week3.exe \
+	iso/week4/week4.exe \
 
 iso/%.exe:
 	tools/funkinoverlaypak/funkinoverlaypak $@ $^
@@ -73,3 +75,4 @@ iso/menu/menu.exe: Overlay.menu iso/menu/back.tim iso/menu/ng.tim iso/menu/story
 iso/week1/week1.exe: Overlay.week1 iso/stage/hud0.tim iso/stage/hud1.tim iso/week1/back0.tim iso/week1/back1.tim
 iso/week2/week2.exe: Overlay.week2 iso/stage/hud0.tim iso/stage/hud1.tim iso/week2/back0.tim iso/week2/back1.tim iso/week2/back2.tim
 iso/week3/week3.exe: Overlay.week3 iso/stage/hud0.tim iso/stage/hud1.tim iso/week3/back0.tim iso/week3/back1.tim iso/week3/back2.tim iso/week3/back3.tim iso/week3/back4.tim iso/week3/back5.tim
+iso/week4/week4.exe: Overlay.week4 iso/stage/hud0.tim iso/stage/hud1.tim iso/week4/back0.tim iso/week4/back1.tim iso/week4/back2.tim iso/week4/back3.tim iso/week4/back4.tim

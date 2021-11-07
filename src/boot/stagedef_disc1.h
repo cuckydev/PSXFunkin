@@ -1,6 +1,7 @@
 #include "week1/week1.h"
 #include "week2/week2.h"
 #include "week3/week3.h"
+#include "week4/week4.h"
 
 static const StageDef stage_defs[StageId_Max] = {
 	//Week 1
@@ -75,5 +76,34 @@ static const StageDef stage_defs[StageId_Max] = {
 		
 		//Song info
 		XA_Blammed, 0
+	},
+	
+	{ //StageId_4_1 (Satin Panties)
+		//Overlay
+		"\\WEEK4\\WEEK4.EXE;1", Week4_SetPtr,
+		
+		//Song info
+		XA_SatinPanties, 0
+	},
+	{ //StageId_4_2 (High)
+		//Overlay
+		"\\WEEK4\\WEEK4.EXE;1", Week4_SetPtr,
+		
+		//Song info
+		XA_High, 2
+	},
+	{ //StageId_4_3 (MILF)
+		//Overlay
+		"\\WEEK4\\WEEK4.EXE;1", Week4_SetPtr,
+		
+		//Song info
+		XA_MILF, 0
+	},
+	{ //StageId_4_4 (Test)
+		//Overlay
+		"\\WEEK4\\WEEK4.EXE;1", Week4_SetPtr,
+		
+		//Song info
+		XA_Test, 2
 	},
 };

@@ -73,5 +73,22 @@ SECTIONS {
 			. = ALIGN(4);
 			__week3_end = .;
 		}
+		.week4
+		{
+			. = . + 2;
+			KEEP(src/week4/*.o(.text))
+			__week4_ctor = .;
+			KEEP(src/week4/*.o(.text.startup._GLOBAL__*))
+			KEEP(src/week4/*.o(.text.*))
+			KEEP(src/week4/*.o(.rodata*))
+			KEEP(src/week4/*.o(.sdata*))
+			KEEP(src/week4/*.o(.data*))
+			KEEP(src/week4/*.o(.sbss*))
+			KEEP(src/week4/*.o(.bss*))
+			KEEP(src/week4/*.o(.ctors))
+			
+			. = ALIGN(4);
+			__week4_end = .;
+		}
 	}
 }

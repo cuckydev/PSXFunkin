@@ -12,7 +12,7 @@
 #include "boot/main.h"
 
 //Boyfriend player assets
-static const u8 char_bf_arc_main[] = {
+static u8 char_bf_arc_main[] = {
 	#include "iso/bf/main.arc.h"
 };
 

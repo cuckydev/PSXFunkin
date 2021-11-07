@@ -24,6 +24,7 @@ all: \
 	iso/week4/back1.tim \
 	iso/week4/back2.tim \
 	iso/week4/back3.tim \
+	iso/week4/back4.tim \
 	iso/week4/hench.arc \
 	iso/week5/back0.tim \
 	iso/week5/back1.tim \

@@ -223,32 +223,11 @@ void Gfx_BlitTex(Gfx_Tex *tex, const RECT *src, s32 x, s32 y)
 
 void Gfx_DrawTexCol(Gfx_Tex *tex, const RECT *src, const RECT *dst, u8 r, u8 g, u8 b)
 {
-	//Manipulate rects to comply with GPU restrictions
-	RECT csrc, cdst;
-	csrc = *src;
-	cdst = *dst;
-	
-	if (dst->w < 0)
-		csrc.x--;
-	if (dst->h < 0)
-		csrc.y--;
-	
-	if ((csrc.x + csrc.w) >= 0x100)
-	{
-		csrc.w = 0xFF - csrc.x;
-		cdst.w = cdst.w * csrc.w / src->w;
-	}
-	if ((csrc.y + csrc.h) >= 0x100)
-	{
-		csrc.h = 0xFF - csrc.y;
-		cdst.h = cdst.h * csrc.h / src->h;
-	}
-	
 	//Add quad
 	POLY_FT4 *quad = (POLY_FT4*)nextpri;
 	setPolyFT4(quad);
-	setUVWH(quad, csrc.x, csrc.y, csrc.w, csrc.h);
-	setXYWH(quad, cdst.x, cdst.y, cdst.w, cdst.h);
+	setUVWH(quad, src->x, src->y, src->w, src->h);
+	setXYWH(quad, dst->x, dst->y, dst->w, dst->h);
 	setRGB0(quad, r, g, b);
 	quad->tpage = tex->tpage;
 	quad->clut = tex->clut;

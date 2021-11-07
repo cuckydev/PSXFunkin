@@ -13,11 +13,11 @@
 #include "speaker.c"
 
 //GF assets
-static const u8 char_gf_arc_main[] = {
+static u8 char_gf_arc_main[] = {
 	#include "iso/gf/main.arc.h"
 };
 #ifdef CHAR_GF_TUTORIAL
-static const u8 char_gf_arc_tut[] = {
+static u8 char_gf_arc_tut[] = {
 	#include "iso/gf/tut.arc.h"
 };
 #endif

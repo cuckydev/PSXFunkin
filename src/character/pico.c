@@ -11,7 +11,7 @@
 #include "boot/main.h"
 
 //Pico character assets
-static const u8 char_pico_arc_main[] = {
+static u8 char_pico_arc_main[] = {
 	#include "iso/pico/main.arc.h"
 };
 

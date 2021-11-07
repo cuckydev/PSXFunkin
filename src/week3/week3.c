@@ -42,7 +42,7 @@ static u8 week3_cht_blammed_hard[] = {
 	#include "iso/chart/blammed-hard.json.cht.h"
 };
 
-static IO_Data week3_cht[4][3] = {
+static IO_Data week3_cht[][3] = {
 	{
 		(IO_Data)week3_cht_pico_easy,
 		(IO_Data)week3_cht_pico_normal,
@@ -208,12 +208,12 @@ static void Week3_DrawBG()
 		week3_train_x  -= timer_dt * 2000;
 		
 		//Draw train
-		RECT train_src = {0, 0, 256, 256};
+		RECT train_src = {0, 0, 255, 255};
 		RECT_FIXED train_dst = {
 			week3_train_x - fx,
 			FIXED_DEC(-65,1) - fy,
-			FIXED_DEC(285,1),
-			FIXED_DEC(120,1)
+			FIXED_DEC(284,1),
+			FIXED_DEC(119,1)
 		};
 		
 		for (int i = 0; i < 24; i++, train_dst.x += train_dst.w)
@@ -250,7 +250,7 @@ static void Week3_DrawBG()
 	
 	if (week3_win_time >= 0)
 	{
-		RECT lightl_src = {0, 0, 256, 132};
+		RECT lightl_src = {0, 0, 255, 132};
 		RECT_FIXED lightl_dst = {
 			FIXED_DEC(-175,1) - fx,
 			FIXED_DEC(-80,1) - fy,
@@ -258,7 +258,7 @@ static void Week3_DrawBG()
 			FIXED_DEC(103,1)
 		};
 		
-		RECT lightr_src = {0, 132, 256, 124};
+		RECT lightr_src = {0, 132, 255, 124};
 		RECT_FIXED lightr_dst = {
 			FIXED_DEC(98,1) - fx,
 			FIXED_DEC(-64,1) - fy,

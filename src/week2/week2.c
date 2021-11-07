@@ -42,7 +42,7 @@ static u8 week2_cht_monster_hard[] = {
 	#include "iso/chart/monster-hard.json.cht.h"
 };
 
-static IO_Data week2_cht[4][3] = {
+static IO_Data week2_cht[][3] = {
 	{
 		(IO_Data)week2_cht_spookeez_easy,
 		(IO_Data)week2_cht_spookeez_normal,
@@ -118,7 +118,7 @@ static void Week2_DrawBG()
 	Stage_DrawTex(&week2_tex_back1, &window_src, &window_dst, stage.camera.bzoom);
 	
 	//Draw window light
-	RECT windowl_src = {0, 128, 256, 128};
+	RECT windowl_src = {0, 128, 255, 128};
 	RECT_FIXED windowl_dst = {
 		FIXED_DEC(-130,1) - fx,
 		FIXED_DEC(44,1) - fy,
@@ -129,7 +129,7 @@ static void Week2_DrawBG()
 	Stage_DrawTex(&week2_tex_back1, &windowl_src, &windowl_dst, stage.camera.bzoom);
 	
 	//Draw background
-	RECT back_src = {0, 0, 256, 256};
+	RECT back_src = {0, 0, 255, 255};
 	RECT_FIXED back_dst = {
 		FIXED_DEC(-185,1) - fx,
 		FIXED_DEC(-125,1) - fy,

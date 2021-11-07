@@ -49,7 +49,7 @@ static u8 week1_cht_tutorial_hard[] = {
 	#include "iso/chart/tutorial-hard.json.cht.h"
 };
 
-static IO_Data week1_cht[4][3] = {
+static IO_Data week1_cht[][3] = {
 	{
 		(IO_Data)week1_cht_bopeebo_easy,
 		(IO_Data)week1_cht_bopeebo_normal,
@@ -174,12 +174,12 @@ static void Week1_DrawBG()
 		FIXED_DEC(107,1),
 		FIXED_DEC(221,1)
 	};
-	RECT curtainr_src = {122, 0, 134, 256};
+	RECT curtainr_src = {122, 0, 134, 255};
 	RECT_FIXED curtainr_dst = {
 		FIXED_DEC(110,1) - fx,
 		FIXED_DEC(-150,1) - fy,
 		FIXED_DEC(134,1),
-		FIXED_DEC(256,1)
+		FIXED_DEC(255,1)
 	};
 	
 	Stage_DrawTex(&week1_tex_back1, &curtainl_src, &curtainl_dst, stage.camera.bzoom);

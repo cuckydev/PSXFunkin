@@ -11,7 +11,7 @@
 #include "boot/main.h"
 
 //Spook character assets
-static const u8 char_spook_arc_main[] = {
+static u8 char_spook_arc_main[] = {
 	#include "iso/spook/main.arc.h"
 };
 
