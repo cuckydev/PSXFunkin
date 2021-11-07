@@ -1233,6 +1233,7 @@ void Stage_Tick(void)
 				//Load next stage
 				if (stageoverlay_nextstage())
 				{
+					LoadScr_Start();
 					stage.stage_def = &stage_defs[stage.stage_id];
 					Stage_LoadChart();
 					Stage_LoadState();
@@ -1416,7 +1417,12 @@ void Stage_Tick(void)
 					next_scroll = ((fixed_t)stage.step_base << FIXED_SHIFT) + FIXED_MUL(stage.song_time - stage.time_base, stage.step_crochet);
 					
 					//Transition to menu or next song
-					if (stageoverlay_loadscreen())
+					if (stage.story == false)
+					{
+						stage.trans = StageTrans_Menu;
+						Trans_Start();
+					}
+					else if (stageoverlay_loadscreen())
 					{
 						stage.trans = StageTrans_NextStage;
 						Trans_Start();
