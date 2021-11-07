@@ -27,7 +27,7 @@ boolean Obj_Combo_Tick(Object *obj)
 			0,
 			128 + (this->hit_type << 5),
 			80,
-			clipp << 1
+			(31 * clipp) >> 4
 		};
 		RECT_FIXED hit_dst = {
 			this->x - FIXED_DEC(8,1),
