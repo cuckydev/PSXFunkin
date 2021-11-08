@@ -12,7 +12,7 @@
 			volume_set    = "PSXFUNKIN"
 			publisher     = "CUCKYDEV"
 			copyright     = "NINJAMUFFIN99"
-			data_provider = "NOW TAKE THE WATERMARK OUT OF ELF2X YA DUMMY"
+			data_preparer = "NOW TAKE THE WATERMARK OUT OF ELF2X YA DUMMY"
 		/>
 		<license file="licensea.dat"/>
 		
