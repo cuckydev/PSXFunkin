@@ -44,7 +44,7 @@ On Arch derivatives (Manjaro), the mipsel environment can be installed from AUR 
 You'll also need to install `ffmpeg` (you may also need to install `avformat`, `avfilter`, and `swscale` separately), and `cmake`, which of course, depends on your distro of choice.
 
 ## Compiling mkpsxiso
-First, `cd` to somewhere safe where you can put source code. Then run these few commands.
+First, `cd` to somewhere safe where you can put source code (such as `Documents` or the PSXFunkin folder). Then run these few commands.
 
 - `git clone https://github.com/CookiePLMonster/mkpsxiso`
 
