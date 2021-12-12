@@ -115,9 +115,6 @@ typedef struct
 	//Overlay
 	const char *overlay_path;
 	void (*overlay_setptr)(void);
-	
-	//Song info
-	u8 music_track, music_channel;
 } StageDef;
 
 //Stage overlay state

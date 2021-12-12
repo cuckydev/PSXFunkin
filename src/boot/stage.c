@@ -72,7 +72,7 @@ static void Stage_StartVocal(void)
 {
 	if (!(stage.flag & STAGE_FLAG_VOCAL_ACTIVE))
 	{
-		Audio_ChannelXA(stage.stage_def->music_channel);
+		//Audio_ChannelXA(stage.stage_def->music_channel);
 		stage.flag |= STAGE_FLAG_VOCAL_ACTIVE;
 	}
 }
@@ -81,7 +81,7 @@ static void Stage_CutVocal(void)
 {
 	if (stage.flag & STAGE_FLAG_VOCAL_ACTIVE)
 	{
-		Audio_ChannelXA(stage.stage_def->music_channel + 1);
+		//Audio_ChannelXA(stage.stage_def->music_channel + 1);
 		stage.flag &= ~STAGE_FLAG_VOCAL_ACTIVE;
 	}
 }
@@ -1036,7 +1036,7 @@ static void Stage_LoadMusic(void)
 		stage.gf->sing_end -= stage.note_scroll;
 	
 	//Find music file and begin seeking to it
-	Audio_SeekXA_Track(stage.stage_def->music_track);
+	//Audio_SeekXA_Track(stage.stage_def->music_track);
 	
 	//Initialize music state
 	stage.note_scroll = FIXED_DEC(-5 * 4 * 12,1);
@@ -1338,10 +1338,10 @@ void Stage_Tick(void)
 					{
 						//Song has started
 						playing = true;
-						Audio_PlayXA_Track(stage.stage_def->music_track, 0x40, stage.stage_def->music_channel, 0);
+						//Audio_PlayXA_Track(stage.stage_def->music_track, 0x40, stage.stage_def->music_channel, 0);
 						
 						//Update song time
-						fixed_t audio_time = (fixed_t)Audio_TellXA_Milli() - stage.offset;
+						fixed_t audio_time = 0;//(fixed_t)Audio_TellXA_Milli() - stage.offset;
 						if (audio_time < 0)
 							audio_time = 0;
 						stage.interp_ms = (audio_time << FIXED_SHIFT) / 1000;
@@ -1357,9 +1357,9 @@ void Stage_Tick(void)
 					//Update scroll
 					next_scroll = FIXED_MUL(stage.song_time, stage.step_crochet);
 				}
-				else if (Audio_PlayingXA())
+				else if (0)//Audio_PlayingXA())
 				{
-					fixed_t audio_time_pof = (fixed_t)Audio_TellXA_Milli();
+					fixed_t audio_time_pof = 0;//(fixed_t)Audio_TellXA_Milli();
 					fixed_t audio_time = (audio_time_pof > 0) ? (audio_time_pof - stage.offset) : 0;
 					
 					if (stage.expsync)

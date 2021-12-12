@@ -98,13 +98,13 @@ static Gfx_Tex week1_tex_back1; //Curtains
 static void Week1_Load(void)
 {
 	//Load assets
-	Gfx_LoadTex(&stage.tex_hud0, Overlay_DataRead(), 0); //hud0.tim
-	Gfx_LoadTex(&stage.tex_hud1, Overlay_DataRead(), 0); //hud1.tim
+	IO_Data overlay_data;
 	
-	Gfx_LoadTex(&week1_tex_back0, Overlay_DataRead(), 0); //back0.tim
-	Gfx_LoadTex(&week1_tex_back1, Overlay_DataRead(), 0); //back1.tim
+	Gfx_LoadTex(&stage.tex_hud0, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //hud0.tim
+	Gfx_LoadTex(&stage.tex_hud1, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //hud1.tim
 	
-	Overlay_DataFree();
+	Gfx_LoadTex(&week1_tex_back0, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //back0.tim
+	Gfx_LoadTex(&week1_tex_back1, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //back1.tim
 	
 	//Load characters
 	stage.player = Char_BF_New(FIXED_DEC(60,1), FIXED_DEC(100,1));

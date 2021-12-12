@@ -139,7 +139,7 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag)
 		if (tex != NULL)
 		{
 			tex->tim_prect = *tparam.prect;
-			tex->tpage = getTPage(tparam.mode & 0x3, 0, tparam.prect->x, tparam.prect->y);
+			tex->tpage = getTPage(tparam.mode, 0, tparam.prect->x, tparam.prect->y);
 		}
 		LoadImage(tparam.prect, (u32*)tparam.paddr);
 		DrawSync(0);

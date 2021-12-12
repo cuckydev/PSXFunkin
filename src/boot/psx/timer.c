@@ -18,10 +18,11 @@ fixed_t timer_sec, timer_dt, timer_secbase;
 u8 timer_brokeconf;
 
 //Timer interface
-extern void InterruptCallback(int index, void *cb);
+extern void InterruptCallback(int index, void (*cb)(void));
 extern void ChangeClearRCnt(int t, int m);
 
-void Timer_Callback(void) {
+void Timer_Callback(void)
+{
 	timer_count++;
 }
 
@@ -48,7 +49,7 @@ void Timer_Init(void)
 	EnterCriticalSection();
 	
 	SetRCnt(RCntCNT1, 1 << TIMER_BITS, RCntMdINTR);
-	InterruptCallback(5, (void*)Timer_Callback); //IRQ5 is RCNT1
+	InterruptCallback(5, Timer_Callback); //IRQ5 is RCNT1
 	StartRCnt(RCntCNT1);
 	ChangeClearRCnt(1, 0);
 	

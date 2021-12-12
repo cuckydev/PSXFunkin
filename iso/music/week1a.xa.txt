@@ -1,4 +1,0 @@
-1 xa bopeebov.xa 1 0
-1 xa bopeeboi.xa 1 1
-1 xa freshv.xa 1 2
-1 xa freshi.xa 1 3

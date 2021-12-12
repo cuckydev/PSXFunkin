@@ -44,7 +44,6 @@ static void Pad_UpdateState(Pad *this, PADTYPE *pad)
 //Pad functions
 void Pad_Init(void)
 {
-	
 	//Clear pad states
 	pad_state.held = pad_state.press = 0;
 	pad_state.left_x = pad_state.left_y = pad_state.right_x = pad_state.right_y = 0;
@@ -58,7 +57,7 @@ void Pad_Init(void)
 	pad_buff[1][0] = 0xFFFF;
 	StartPAD();
 	
-	ChangeClearPAD(0);
+	ChangeClearPAD(NULL);
 }
 
 void Pad_Quit(void)

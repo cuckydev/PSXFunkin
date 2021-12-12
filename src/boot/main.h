@@ -28,6 +28,5 @@ void ErrorLock(void);
 void Overlay_Load(const char *path);
 void Overlay_DataInit(void);
 IO_Data Overlay_DataRead(void);
-void Overlay_DataFree(void);
 
 #endif

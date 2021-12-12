@@ -39,7 +39,7 @@ build/
 # Exclude converted assets
 iso/*/*.tim
 iso/*/*.arc
-iso/*/*.xa
+iso/*/*/*.mus
 iso/*/*.cht
 src/iso/
 

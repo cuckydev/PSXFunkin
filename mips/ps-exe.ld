@@ -185,7 +185,7 @@ SECTIONS {
 
     . = ALIGN(16);
     __heap_start = .;
-    __heap_size = (__ram_top - __heap_start);
+    __heap_size = (__sp - __heap_start);
 
     . = ADDR(.text) - 0x800;
     __end = .;

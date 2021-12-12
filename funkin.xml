@@ -26,6 +26,7 @@
 			<dir name = "menu">
 				<!-- Overlay -->
 				<file name = "menu.exe" type = "data" source = "iso/menu/menu.exe"/>
+				<file name = "menu.mus" type = "data" source = "iso/music/stream.bin"/>
 			</dir>
 			
 			<!-- Week 1 assets -->
@@ -51,51 +52,6 @@
 				<!-- Overlay -->
 				<file name = "week4.exe" type = "data" source = "iso/week4/week4.exe"/>
 			</dir>
-			
-			<!-- Music -->
-			<dir name = "music">
-				<file name = "menu.xa" type = "xa" source = "iso/music/menu.xa"/>
-				<dummy sectors="128"/>
-				<file name = "week1a.xa" type = "xa" source = "iso/music/week1a.xa"/>
-				<dummy sectors="128"/>
-				<file name = "week1b.xa" type = "xa" source = "iso/music/week1b.xa"/>
-				<dummy sectors="128"/>
-				<file name = "week2a.xa" type = "xa" source = "iso/music/week2a.xa"/>
-				<dummy sectors="128"/>
-				<file name = "week2b.xa" type = "xa" source = "iso/music/week2b.xa"/>
-				<dummy sectors="128"/>
-				<file name = "week3a.xa" type = "xa" source = "iso/music/week3a.xa"/>
-				<dummy sectors="128"/>
-				<file name = "week3b.xa" type = "xa" source = "iso/music/week3b.xa"/>
-				<dummy sectors="128"/>
-				<file name = "week4a.xa" type = "xa" source = "iso/music/week4a.xa"/>
-				<dummy sectors="128"/>
-				<file name = "week4b.xa" type = "xa" source = "iso/music/week4b.xa"/>
-				<dummy sectors="128"/>
-				<file name = "week5a.xa" type = "xa" source = "iso/music/week5a.xa"/>
-				<dummy sectors="128"/>
-				<file name = "week5b.xa" type = "xa" source = "iso/music/week5b.xa"/>
-				<dummy sectors="128"/>
-				<file name = "week6a.xa" type = "xa" source = "iso/music/week6a.xa"/>
-				<dummy sectors="128"/>
-				<file name = "week6b.xa" type = "xa" source = "iso/music/week6b.xa"/>
-				<dummy sectors="128"/>
-				<file name = "week7a.xa" type = "xa" source = "iso/music/week7a.xa"/>
-				<dummy sectors="128"/>
-				<file name = "week7b.xa" type = "xa" source = "iso/music/week7b.xa"/>
-				<dummy sectors="128"/>
-				<file name = "kapia.xa" type = "xa" source = "iso/music/kapia.xa"/>
-				<dummy sectors="128"/>
-				<file name = "kapib.xa" type = "xa" source = "iso/music/kapib.xa"/>
-				<dummy sectors="128"/>
-				<file name = "clwna.xa" type = "xa" source = "iso/music/clwna.xa"/>
-				<dummy sectors="128"/>
-				<file name = "clwnb.xa" type = "xa" source = "iso/music/clwnb.xa"/>
-				<dummy sectors="128"/>
-			</dir>
-			
-			<!-- Dummy sectors -->
-			<dummy sectors="1024"/>
 		</directory_tree>
 	</track>
 </iso_project>

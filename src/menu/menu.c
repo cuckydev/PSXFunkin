@@ -301,15 +301,15 @@ static void Menu_DrawWeek(const char *week, s32 x, s32 y)
 void Menu_Load2(MenuPage page)
 {
 	//Load menu assets
-	Gfx_LoadTex(&menu.tex_back,  Overlay_DataRead(), 0); //back.tim
-	Gfx_LoadTex(&menu.tex_ng,    Overlay_DataRead(), 0); //ng.tim
-	Gfx_LoadTex(&menu.tex_story, Overlay_DataRead(), 0); //story.tim
-	Gfx_LoadTex(&menu.tex_title, Overlay_DataRead(), 0); //title.tim
+	IO_Data overlay_data;
 	
-	FontData_Bold(&menu.font_bold, Overlay_DataRead()); //bold.tim
-	FontData_Arial(&menu.font_arial, Overlay_DataRead()); //arial.tim
+	Gfx_LoadTex(&menu.tex_back,  overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //back.tim
+	Gfx_LoadTex(&menu.tex_ng,    overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //ng.tim
+	Gfx_LoadTex(&menu.tex_story, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //story.tim
+	Gfx_LoadTex(&menu.tex_title, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //title.tim
 	
-	Overlay_DataFree();
+	FontData_Bold(&menu.font_bold, overlay_data = Overlay_DataRead()); Mem_Free(overlay_data); //bold.tim
+	FontData_Arial(&menu.font_arial, overlay_data = Overlay_DataRead()); Mem_Free(overlay_data); //arial.tim
 	
 	//Initialize Girlfriend and stage
 	menu.gf = Char_GF_New(FIXED_DEC(62,1), FIXED_DEC(-12,1));
@@ -342,7 +342,7 @@ void Menu_Load2(MenuPage page)
 	stage.song_step = 0;
 	
 	//Play menu music
-	Audio_PlayXA_Track(XA_GettinFreaky, 0x40, 0, 1);
+	//Audio_PlayXA_Track(XA_GettinFreaky, 0x40, 0, 1);
 	
 	//Set background colour
 	Gfx_SetClear(0, 0, 0);
@@ -369,7 +369,7 @@ void Menu_Tick(void)
 	stage.flag &= ~STAGE_FLAG_JUST_STEP;
 	
 	//Get song position
-	u16 next_step = Audio_TellXA_Milli() / 147; //100 BPM
+	u16 next_step = 0;//Audio_TellXA_Milli() / 147; //100 BPM
 	if (next_step != stage.song_step)
 	{
 		if (next_step >= stage.song_step)

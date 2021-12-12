@@ -1,4 +1,0 @@
-1 xa dadbattlev.xa 1 0
-1 xa dadbattlei.xa 1 1
-1 xa tutorial.xa 1 2
-1 xa tutorial.xa 1 3

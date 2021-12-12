@@ -164,16 +164,16 @@ static Animatable week4_hench_animatable;
 static void Week4_Load(void)
 {
 	//Load assets
-	Gfx_LoadTex(&stage.tex_hud0, Overlay_DataRead(), 0); //hud0.tim
-	Gfx_LoadTex(&stage.tex_hud1, Overlay_DataRead(), 0); //hud1.tim
+	IO_Data overlay_data;
 	
-	Gfx_LoadTex(&week4_tex_back0, Overlay_DataRead(), 0); //back0.tim
-	Gfx_LoadTex(&week4_tex_back1, Overlay_DataRead(), 0); //back1.tim
-	Gfx_LoadTex(&week4_tex_back2, Overlay_DataRead(), 0); //back2.tim
-	Gfx_LoadTex(&week4_tex_back3, Overlay_DataRead(), 0); //back3.tim
-	Gfx_LoadTex(&week4_tex_back4, Overlay_DataRead(), 0); //back4.tim
+	Gfx_LoadTex(&stage.tex_hud0, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //hud0.tim
+	Gfx_LoadTex(&stage.tex_hud1, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //hud1.tim
 	
-	Overlay_DataFree();
+	Gfx_LoadTex(&week4_tex_back0, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //back0.tim
+	Gfx_LoadTex(&week4_tex_back1, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //back1.tim
+	Gfx_LoadTex(&week4_tex_back2, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //back2.tim
+	Gfx_LoadTex(&week4_tex_back3, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //back3.tim
+	Gfx_LoadTex(&week4_tex_back4, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //back4.tim
 	
 	//Load characters
 	stage.player = Char_BF_New(FIXED_DEC(120,1), FIXED_DEC(40,1));

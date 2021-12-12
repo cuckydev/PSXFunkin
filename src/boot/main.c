@@ -50,7 +50,6 @@ extern u8 __heap_start, __ram_top;
 
 static int overlay_pos, overlay_datapos;
 static u16 *overlay_sizes, *overlay_sizestart;
-static IO_Data overlay_data;
 
 void Overlay_Load(const char *path)
 {
@@ -93,46 +92,33 @@ void Overlay_Load(const char *path)
 
 void Overlay_DataInit(void)
 {
-	//Get max size and allocate appropriate buffer
+	//Initialize overlay read state
 	overlay_sizes = overlay_sizestart;
-	
-	u16 overlay_sizemax = 0;
-	for (u16 *overlay_sizep = overlay_sizes; *overlay_sizep != 0; overlay_sizep++)
-		if (*overlay_sizep > overlay_sizemax)
-			overlay_sizemax = *overlay_sizep;
-	
-	if ((overlay_data = Mem_Alloc(overlay_sizemax << 11)) == NULL)
-	{
-		sprintf(error_msg, "[Overlay_Load] Failed to allocate overlay data buffer (%d sectors)", overlay_sizemax);
-		ErrorLock();
-	}
-	
-	//Set CD position for subsequent reads
 	overlay_pos = overlay_datapos;
 }
 
 IO_Data Overlay_DataRead(void)
 {
+	//Allocate buffer
+	u16 size = *overlay_sizes++;
+	IO_Data overlay_data = Mem_Alloc(size << 11);
+	
 	//Read data to overlay data buffer according to sizes
 	CdlLOC pos;
 	
 	CdIntToPos(overlay_pos, &pos);
 	CdControl(CdlSetloc, (u8*)&pos, NULL);
 	
-	CdRead(*overlay_sizes, overlay_data, CdlModeSpeed);
+	CdRead(size, overlay_data, CdlModeSpeed);
 	CdReadSync(0, NULL);
 	
-	overlay_pos += *overlay_sizes++;
+	overlay_pos += size;
 	return overlay_data;
 }
 
-void Overlay_DataFree(void)
-{
-	//Free overlay data buffer
-	Mem_Free(overlay_data);
-}
-
 #endif
+
+void Audio_Test(void);
 
 //Entry point
 int main(int argc, char **argv)
@@ -156,11 +142,11 @@ int main(int argc, char **argv)
 	Menu_Load(MenuPage_Opening);
 	
 	//Game loop
+	Audio_Test();
 	while (PSX_Running())
 	{
 		//Prepare frame
 		Timer_Tick();
-		Audio_ProcessXA();
 		Pad_Update();
 		
 		#ifdef MEM_STAT
@@ -192,7 +178,7 @@ int main(int argc, char **argv)
 	Network_Quit();
 	Pad_Quit();
 	Gfx_Quit();
-	Audio_Quit();
+	//Audio_Quit();
 	IO_Quit();
 	
 	PSX_Quit();
