@@ -3,6 +3,7 @@
   License, v. 2.0. If a copy of the MPL was not distributed with this
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
+//The bulk of this code was written by spicyjpeg
 
 #include "../audio.h"
 
@@ -11,7 +12,10 @@ extern void InterruptCallback(int index, void (*cb)(void));
 
 //Audio constants
 #define SAMPLE_RATE 0x1000 //44100 Hz
+
 #define BUFFER_SIZE (13 << 11) //26624 bytes = 1.05 seconds
+#define BUFFER_START_ADDR 0x1000
+#define CHUNK_SIZE (BUFFER_SIZE * 2)
 
 //SPU registers
 typedef struct
@@ -34,9 +38,6 @@ typedef struct
 #define SPU_RAM_ADDR(x) ((u16)(((u32)(x)) >> 3))
 
 //Audio streaming
-#define BUFFER_START_ADDR 0x1000
-#define CHUNK_SIZE        (BUFFER_SIZE * 2)
-
 typedef struct
 {
 	//CD state
@@ -63,8 +64,8 @@ void Audio_StreamIRQ_SPU(void)
 	
 	//Update addresses
 	audio_streamcontext.spu_addr = BUFFER_START_ADDR + CHUNK_SIZE * audio_streamcontext.db_active;
-	
 	SPU_IRQ_ADDR = SPU_RAM_ADDR(audio_streamcontext.spu_addr);
+	
 	SPU_CHANNELS[0].loop_addr = SPU_RAM_ADDR(audio_streamcontext.spu_addr);
 	SPU_CHANNELS[1].loop_addr = SPU_RAM_ADDR(audio_streamcontext.spu_addr + BUFFER_SIZE);
 	
@@ -109,6 +110,7 @@ void Audio_Init(void)
 {
 	//Initialize SPU
 	SpuInit();
+	SpuSetCommonMasterVolume(0x3FFF, 0x3FFF);
 }
 
 void Audio_Quit(void)
@@ -127,15 +129,16 @@ void Audio_Test(void)
 	}
 	
 	//Set IRQs
+	EnterCriticalSection();
+	
+	InterruptCallback(9, Audio_StreamIRQ_SPU);
 	CdReadyCallback(Audio_StreamIRQ_CD);
 	
-	EnterCriticalSection();
-	InterruptCallback(9, Audio_StreamIRQ_SPU);
 	ExitCriticalSection();
 	
 	//Initialize context
 	audio_streamcontext.lba = CdPosToInt(&file.pos);
-	audio_streamcontext.length = file.size >> 11;
+	audio_streamcontext.length = (file.size + 2047) >> 11;
 	audio_streamcontext.pos = 0;
 	
 	//Preload chunk
@@ -145,7 +148,7 @@ void Audio_Test(void)
 	while (audio_streamcontext.spu_pos < CHUNK_SIZE)
 		__asm__("nop");
 	
-	// Start playing on SPU channels 0 and 1.
+	//Start playing channels 0 and 1
 	for (int i = 0; i < 2; i++)
 	{
 		SPU_CHANNELS[i].vol_left   = 0x0000;
@@ -154,7 +157,7 @@ void Audio_Test(void)
 		SPU_CHANNELS[i].freq       = SAMPLE_RATE;
 		SPU_CHANNELS[i].adsr_param = 0xdfee80ff; // 0xdff18087
 	}
-	SPU_KEY_ON = 0x0003;
+	SPU_KEY_ON |= (1 << 0) | (1 << 1);
 	
 	Audio_StreamIRQ_SPU();
 }
