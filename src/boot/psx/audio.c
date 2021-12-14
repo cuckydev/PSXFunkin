@@ -53,17 +53,6 @@ typedef struct
 
 static volatile Audio_StreamContext audio_streamcontext;
 
-void Audio_StreamIRQ_DMA(void)
-{
-	//Start SPU IRQ if finished reading
-	if (audio_streamcontext.spu_pos >= CHUNK_SIZE)
-	{
-		CdControlF(CdlPause, NULL);
-		SpuSetIRQAddr(audio_streamcontext.spu_addr);
-		SpuSetIRQ(SPU_ON);
-	}
-}
-
 void Audio_StreamIRQ_SPU(void)
 {
 	//Disable SPU IRQ until we've finished streaming more data
@@ -103,7 +92,7 @@ void Audio_StreamIRQ_CD(u8 event, u8 *payload)
 		return;
 	
 	//Fetch the sector that has been read from the drive
-	u8 sector[2048];
+	static u8 sector[2048];
 	CdGetSector(sector, 2048 / 4);
 	audio_streamcontext.pos++;
 	
@@ -111,10 +100,21 @@ void Audio_StreamIRQ_CD(u8 event, u8 *payload)
 	if (length > 2048)
 		length = 2048;
 	
+	//DMA to SPU
+	SpuSetTransferMode(SPU_TRANSFER_BY_DMA);
 	SpuSetTransferStartAddr(audio_streamcontext.spu_addr + audio_streamcontext.spu_pos);
 	audio_streamcontext.spu_pos += length;
 	
-	SpuWrite(sector, length);
+	u32 write = SpuWrite(sector, length);
+	printf("%d\n", write);
+	
+	//Start SPU IRQ if finished reading
+	if (audio_streamcontext.spu_pos >= CHUNK_SIZE)
+	{
+		CdControlF(CdlPause, NULL);
+		SpuSetIRQAddr(audio_streamcontext.spu_addr);
+		SpuSetIRQ(SPU_ON);
+	}
 }
 
 //Audio interface
@@ -131,9 +131,12 @@ void Audio_Init(void)
 	SpuSetCommonAttr(&spu_attr);
 	
 	//Upload dummy block
-	static u8 dummy[16] = {0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	static u8 dummy[64] = {0, 5};
+	
+	SpuSetTransferMode(SPU_TRANSFER_BY_DMA);
 	SpuSetTransferStartAddr(DUMMY_START_ADDR);
 	SpuWrite(dummy, sizeof(dummy));
+	
 	SpuIsTransferCompleted(SPU_TRANSFER_WAIT);
 }
 
@@ -156,7 +159,7 @@ void Audio_Test(void)
 	
 	//Setup CD
 	u8 param[4];
-	param[0] = CdlModeRept | CdlModeSpeed;
+	param[0] = CdlModeSpeed;
 	CdControlB(CdlSetmode, param, 0);
 	CdReadyCallback(Audio_StreamIRQ_CD);
 	
@@ -166,13 +169,10 @@ void Audio_Test(void)
 		SPU_CHANNELS[i].vol_left   = 0x0000;
 		SPU_CHANNELS[i].vol_right  = 0x0000;
 		SPU_CHANNELS[i].addr       = SPU_RAM_ADDR(DUMMY_START_ADDR);
-		SPU_CHANNELS[i].freq       = SAMPLE_RATE;
+		SPU_CHANNELS[i].freq       = 0;
 		SPU_CHANNELS[i].adsr_param = 0xdfee80ff; // 0xdff18087
 	}
 	SPU_KEY_OFF = 0x00FFFFFF;
-	
-	SpuSetTransferMode(SPU_TRANSFER_BY_DMA);
-	SpuSetTransferCallback(Audio_StreamIRQ_DMA);
 	
 	SpuSetIRQCallback(Audio_StreamIRQ_SPU);
 	

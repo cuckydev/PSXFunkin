@@ -178,7 +178,7 @@ int main(int argc, char **argv)
 	Network_Quit();
 	Pad_Quit();
 	Gfx_Quit();
-	//Audio_Quit();
+	Audio_Quit();
 	IO_Quit();
 	
 	PSX_Quit();
