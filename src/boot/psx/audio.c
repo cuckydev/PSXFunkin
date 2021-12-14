@@ -13,7 +13,7 @@ extern void InterruptCallback(int index, void (*cb)(void));
 //Audio constants
 #define SAMPLE_RATE 0x1000 //44100 Hz
 
-#define BUFFER_SIZE (13 << 11) //26624 bytes = 1.05 seconds
+#define BUFFER_SIZE 26624 //26624 bytes = 1.05 seconds
 #define BUFFER_START_ADDR 0x1000
 #define CHUNK_SIZE (BUFFER_SIZE * 2)
 
@@ -62,6 +62,11 @@ void Audio_StreamIRQ_SPU(void)
 	audio_streamcontext.db_active ^= 1;
 	audio_streamcontext.spu_pos = 0;
 	
+	// Align the sector counter to the size of a chunk (to prevent glitches
+	// after seeking) and reset it if it exceeds the stream's length.
+	audio_streamcontext.pos %= audio_streamcontext.length;
+	audio_streamcontext.pos -= audio_streamcontext.pos % ((CHUNK_SIZE + 2047) / 2048);
+
 	//Update addresses
 	audio_streamcontext.spu_addr = BUFFER_START_ADDR + CHUNK_SIZE * audio_streamcontext.db_active;
 	SPU_IRQ_ADDR = SPU_RAM_ADDR(audio_streamcontext.spu_addr);
@@ -92,10 +97,13 @@ void Audio_StreamIRQ_CD(u8 event, u8 *payload)
 	CdGetSector(sector, 2048 / 4);
 	audio_streamcontext.pos++;
 	
-	//Write sector to SPU RAM
+	u32 length = CHUNK_SIZE - audio_streamcontext.spu_pos;
+	if (length > 2048)
+		length = 2048;
+
 	SpuSetTransferStartAddr(audio_streamcontext.spu_addr + audio_streamcontext.spu_pos);
-	SpuWrite(sector, 2048);
-	audio_streamcontext.spu_pos += 2048;
+	SpuWrite(sector, length);
+	audio_streamcontext.spu_pos += length;
 	
 	//Start SPU IRQ if finished reading
 	if (audio_streamcontext.spu_pos >= CHUNK_SIZE)
@@ -128,6 +136,10 @@ void Audio_Test(void)
 		return;
 	}
 	
+	u_char param[4];
+	param[0] = CdlModeSpeed;
+	CdControlB(CdlSetmode, param, 0);
+	
 	//Set IRQs
 	EnterCriticalSection();
 	
@@ -157,7 +169,7 @@ void Audio_Test(void)
 		SPU_CHANNELS[i].freq       = SAMPLE_RATE;
 		SPU_CHANNELS[i].adsr_param = 0xdfee80ff; // 0xdff18087
 	}
-	SPU_KEY_ON |= (1 << 0) | (1 << 1);
+	SPU_KEY_ON |= 0x0003;
 	
 	Audio_StreamIRQ_SPU();
 }
