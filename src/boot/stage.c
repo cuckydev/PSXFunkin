@@ -1348,7 +1348,7 @@ void Stage_Tick(void)
 					//Update scroll
 					next_scroll = FIXED_MUL(stage.song_time, stage.step_crochet);
 				}
-				else if (true)
+				else if (Audio_IsPlaying())
 				{
 					//Sync to audio
 					stage.interp_ms = Audio_GetTime();

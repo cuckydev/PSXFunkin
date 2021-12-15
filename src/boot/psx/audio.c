@@ -51,10 +51,12 @@ typedef struct
 	//CD state
 	enum
 	{
+		Audio_StreamState_Stopped,
 		Audio_StreamState_Ini,
 		Audio_StreamState_Play,
 		Audio_StreamState_Playing,
 	} state;
+	boolean loops;
 	
 	u32 cd_lba;
 	u32 cd_length;
@@ -85,6 +87,20 @@ void Audio_StreamIRQ_SPU(void)
 {
 	//Disable SPU IRQ until we've finished streaming more data
 	SpuSetIRQ(SPU_OFF);
+	
+	//Check for loop
+	if (audio_streamcontext.loops)
+	{
+		//Return to beginning of mus
+		if (audio_streamcontext.cd_pos >= audio_streamcontext.cd_length)
+			audio_streamcontext.cd_pos = 0;
+	}
+	else
+	{
+		//Stop playing
+		if (audio_streamcontext.cd_pos > audio_streamcontext.cd_length)
+			Audio_StopMus();
+	}
 	
 	//Update timing state
 	audio_streamcontext.timing_pos += BUFFER_TIME;
@@ -161,6 +177,8 @@ void Audio_StreamIRQ_CD(u8 event, u8 *payload)
 				SpuSetIRQ(SPU_ON);
 				break;
 			}
+			default:
+				break;
 		}
 	}
 }
@@ -273,7 +291,13 @@ void Audio_PlayMus(boolean loops)
 	while (audio_streamcontext.state != Audio_StreamState_Playing)
 		__asm__("nop");
 	
+	//Start timing
+	audio_streamcontext.timing_pos = 0;
+	audio_streamcontext.timing_start = timer_sec;
+	
 	//Play keys
+	audio_streamcontext.loops = loops;
+	
 	u16 key_or = 0;
 	for (int i = 0; i < audio_streamcontext.header.s.channels; i++)
 	{
@@ -284,19 +308,20 @@ void Audio_PlayMus(boolean loops)
 		key_or |= (1 << i);
 	}
 	SPU_KEY_ON |= key_or;
-	
-	//Start timing
-	audio_streamcontext.timing_pos = 0;
-	audio_streamcontext.timing_start = timer_sec;
 }
 
 void Audio_StopMus(void)
 {
 	//Stop CD, callbacks, and keys
+	SPU_KEY_OFF |= 0x00FFFFFF;
+	
+	CdControlF(CdlPause, NULL);
 	CdReadyCallback(NULL);
 	SpuSetIRQCallback(NULL);
 	SpuSetIRQ(SPU_OFF);
-	SPU_KEY_OFF |= 0x00FFFFFF;
+	
+	audio_streamcontext.state = Audio_StreamState_Stopped;
+	
 }
 
 void Audio_SetVolume(u8 i, u16 vol_left, u16 vol_right)
@@ -313,4 +338,9 @@ fixed_t Audio_GetTime(void)
 	if (dt > BUFFER_TIME)
 		return audio_streamcontext.timing_pos + BUFFER_TIME;
 	return audio_streamcontext.timing_pos + dt;
+}
+
+boolean Audio_IsPlaying(void)
+{
+	return audio_streamcontext.state != Audio_StreamState_Stopped;
 }
