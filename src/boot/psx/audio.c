@@ -88,20 +88,6 @@ void Audio_StreamIRQ_SPU(void)
 	//Disable SPU IRQ until we've finished streaming more data
 	SpuSetIRQ(SPU_OFF);
 	
-	//Check for loop
-	if (audio_streamcontext.loops)
-	{
-		//Return to beginning of mus
-		if (audio_streamcontext.cd_pos >= audio_streamcontext.cd_length)
-			audio_streamcontext.cd_pos = 0;
-	}
-	else
-	{
-		//Stop playing
-		if (audio_streamcontext.cd_pos > audio_streamcontext.cd_length)
-			Audio_StopMus();
-	}
-	
 	//Update timing state
 	audio_streamcontext.timing_pos += BUFFER_TIME;
 	audio_streamcontext.timing_start = timer_sec;
@@ -116,11 +102,34 @@ void Audio_StreamIRQ_SPU(void)
 	for (int i = 0; i < audio_streamcontext.header.s.channels; i++)
 		SPU_CHANNELS[i].loop_addr = SPU_RAM_ADDR(audio_streamcontext.spu_addr + BUFFER_SIZE * i);
 	
+	//Check for loop
+	if (audio_streamcontext.loops)
+	{
+		//Return to beginning of mus
+		if (audio_streamcontext.cd_pos >= audio_streamcontext.cd_length)
+		{
+			audio_streamcontext.timing_pos = 0;
+			audio_streamcontext.cd_pos = 0;
+		}
+	}
+	else
+	{
+		//Stop playing
+		if (audio_streamcontext.cd_pos > audio_streamcontext.cd_length)
+		{
+			//Stop playing
+			Audio_StopMus();
+			return;
+		}
+	}
+	
 	//Continue streaming from CD
 	CdlLOC pos;
 	CdIntToPos(audio_streamcontext.cd_lba + audio_streamcontext.cd_pos, &pos);
 	CdControlF(CdlReadN, (u8*)&pos);
 }
+
+static u8 read_sector[2048];
 
 void Audio_StreamIRQ_CD(u8 event, u8 *payload)
 {
@@ -131,8 +140,7 @@ void Audio_StreamIRQ_CD(u8 event, u8 *payload)
 		return;
 	
 	//Fetch the sector that has been read from the drive
-	static u8 sector[2048];
-	CdGetSector(sector, 2048 / 4);
+	CdGetSector(read_sector, 2048 / 4);
 	audio_streamcontext.cd_pos++;
 	
 	//DMA to SPU
@@ -140,7 +148,7 @@ void Audio_StreamIRQ_CD(u8 event, u8 *payload)
 	SpuSetTransferStartAddr(audio_streamcontext.spu_addr + audio_streamcontext.spu_pos);
 	audio_streamcontext.spu_pos += 2048;
 	
-	SpuWrite(sector, 2048);
+	SpuWrite(read_sector, 2048);
 	
 	//Start SPU IRQ if finished reading
 	if (audio_streamcontext.spu_pos >= CHUNK_SIZE)
