@@ -197,11 +197,11 @@ int main(int argc, char *argv[])
 				//Convert and write blocks
 				for (size_t k = 0; k < CHUNK_BLOCKS; k++)
 				{
-					char block[16] = {};
+					uint8_t block[16] = {};
 					memcpy(block, j.adpcm.data() + ((i * CHUNK_BLOCKS + k) * 16), 16);
 					if (k == (CHUNK_BLOCKS - 1))
 						block[1] = 0x03;
-					stream_mus.write(block, 16);
+					stream_mus.write((const char*)block, 16);
 				}
 			}
 			else
@@ -209,9 +209,10 @@ int main(int argc, char *argv[])
 				//Write silent blocks
 				for (size_t k = 0; k < CHUNK_BLOCKS; k++)
 				{
-					char block[16] = {};
-					block[1] = (k == (CHUNK_BLOCKS - 1)) ? 0x03 : 0x00;
-					stream_mus.write(block, 16);
+					uint8_t block[16] = {0x0B};
+					if (k == (CHUNK_BLOCKS - 1))
+						block[1] = 0x03;
+					stream_mus.write((const char*)block, 16);
 				}
 			}
 		}
