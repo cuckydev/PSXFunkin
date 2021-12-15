@@ -17,7 +17,7 @@
 //Audio constants
 #define SAMPLE_RATE 0x1000 //44100 Hz
 
-#define BUFFER_SIZE 26624 //26624 bytes = 1.05 seconds
+#define BUFFER_SIZE (13 << 11) //13 sectors = 26624 bytes = 1.05 seconds (see BUFFER_TIME)
 #define CHUNK_SIZE (BUFFER_SIZE * 2)
 
 #define BUFFER_TIME FIXED_DEC(((BUFFER_SIZE * 28) / 16), 44100)
