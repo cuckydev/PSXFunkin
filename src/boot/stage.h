@@ -25,8 +25,7 @@
 #define INPUT_RIGHT (PAD_RIGHT | PAD_CIRCLE   | PAD_R1)
 
 #define STAGE_FLAG_JUST_STEP     (1 << 0) //Song just stepped this frame
-#define STAGE_FLAG_VOCAL_ACTIVE  (1 << 1) //Song's vocal track is currently active
-#define STAGE_FLAG_SCORE_REFRESH (1 << 2) //Score text should be refreshed
+#define STAGE_FLAG_SCORE_REFRESH (1 << 1) //Score text should be refreshed
 
 #define STAGE_LOAD_PLAYER     (1 << 0) //Reload player character
 #define STAGE_LOAD_OPPONENT   (1 << 1) //Reload opponent character
@@ -115,6 +114,9 @@ typedef struct
 	//Overlay
 	const char *overlay_path;
 	void (*overlay_setptr)(void);
+	
+	//Mus file
+	const char *mus_path;
 } StageDef;
 
 //Stage overlay state

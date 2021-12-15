@@ -6,62 +6,62 @@
 static const StageDef stage_defs[StageId_Max] = {
 	//Week 1
 	{ //StageId_1_1 (Bopeebo)
-		//Overlay
 		"\\WEEK1\\WEEK1.EXE;1", Week1_SetPtr,
+		"\\WEEK1\\WEEK1_1.MUS;1"
 	},
 	{ //StageId_1_2 (Fresh)
-		//Overlay
 		"\\WEEK1\\WEEK1.EXE;1", Week1_SetPtr,
+		"\\WEEK1\\WEEK1_2.MUS;1"
 	},
 	{ //StageId_1_3 (Dadbattle)
-		//Overlay
 		"\\WEEK1\\WEEK1.EXE;1", Week1_SetPtr,
+		"\\WEEK1\\WEEK1_3.MUS;1"
 	},
 	{ //StageId_1_4 (Tutorial)
-		//Overlay
 		"\\WEEK1\\WEEK1.EXE;1", Week1_SetPtr,
+		"\\WEEK1\\WEEK1_4.MUS;1"
 	},
 	
 	{ //StageId_2_1 (Spookeez)
-		//Overlay
 		"\\WEEK2\\WEEK2.EXE;1", Week2_SetPtr,
+		"\\WEEK1\\WEEK2_1.MUS;1"
 	},
 	{ //StageId_2_2 (South)
-		//Overlay
 		"\\WEEK2\\WEEK2.EXE;1", Week2_SetPtr,
+		"\\WEEK1\\WEEK2_2.MUS;1"
 	},
 	{ //StageId_2_3 (Monster)
-		//Overlay
 		"\\WEEK2\\WEEK2.EXE;1", Week2_SetPtr,
+		"\\WEEK1\\WEEK2_3.MUS;1"
 	},
 	
 	{ //StageId_3_1 (Pico)
-		//Overlay
 		"\\WEEK3\\WEEK3.EXE;1", Week3_SetPtr,
+		"\\WEEK1\\WEEK3_1.MUS;1"
 	},
 	{ //StageId_3_2 (Philly Nice)
-		//Overlay
 		"\\WEEK3\\WEEK3.EXE;1", Week3_SetPtr,
+		"\\WEEK1\\WEEK3_2.MUS;1"
 	},
 	{ //StageId_3_3 (Blammed)
-		//Overlay
 		"\\WEEK3\\WEEK3.EXE;1", Week3_SetPtr,
+		"\\WEEK1\\WEEK3_3.MUS;1"
 	},
 	
 	{ //StageId_4_1 (Satin Panties)
-		//Overlay
 		"\\WEEK4\\WEEK4.EXE;1", Week4_SetPtr,
+		"\\WEEK1\\WEEK4_1.MUS;1"
 	},
 	{ //StageId_4_2 (High)
-		//Overlay
 		"\\WEEK4\\WEEK4.EXE;1", Week4_SetPtr,
+		"\\WEEK1\\WEEK4_2.MUS;1"
 	},
 	{ //StageId_4_3 (MILF)
-		//Overlay
 		"\\WEEK4\\WEEK4.EXE;1", Week4_SetPtr,
+		"\\WEEK1\\WEEK4_3.MUS;1"
 	},
 	{ //StageId_4_4 (Test)
-		//Overlay
 		"\\WEEK4\\WEEK4.EXE;1", Week4_SetPtr,
+		"\\WEEK1\\WEEK4_4.MUS;1"
 	},
 };

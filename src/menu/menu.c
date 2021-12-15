@@ -345,11 +345,10 @@ void Menu_Load2(MenuPage page)
 	Gfx_SetClear(0, 0, 0);
 	
 	//Play menu music
-	Audio_LoadMus("\\WEEK1\\WEEK1_2.MUS;1");
-	Audio_PlayMus(false);
+	Audio_LoadMus("\\MENU\\MENU.MUS;1");
+	Audio_PlayMus(true);
 	Audio_SetVolume(0, 0x3FFF, 0x0000);
 	Audio_SetVolume(1, 0x0000, 0x3FFF);
-	Audio_SetVolume(2, 0x3FFF, 0x3FFF);
 }
 
 void Menu_Unload(void)

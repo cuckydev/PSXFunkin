@@ -284,6 +284,10 @@ void Audio_PlayMus(boolean loops)
 		key_or |= (1 << i);
 	}
 	SPU_KEY_ON |= key_or;
+	
+	//Start timing
+	audio_streamcontext.timing_pos = 0;
+	audio_streamcontext.timing_start = timer_sec;
 }
 
 void Audio_StopMus(void)
