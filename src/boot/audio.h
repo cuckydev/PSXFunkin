@@ -16,7 +16,7 @@ void Audio_Init(void);
 void Audio_Quit(void);
 void Audio_LoadMusFile(CdlFILE *file);
 void Audio_LoadMus(const char *path);
-void Audio_PlayMus(u8 loops);
+void Audio_PlayMus(boolean loops);
 void Audio_StopMus(void);
 void Audio_SetVolume(u8 i, u16 vol_left, u16 vol_right);
 fixed_t Audio_GetTime(void);

@@ -51,9 +51,9 @@ typedef struct
 	//CD state
 	enum
 	{
-		Audio_StreamState_Ini1,
-		Audio_StreamState_Ini2,
+		Audio_StreamState_Ini,
 		Audio_StreamState_Play,
+		Audio_StreamState_Playing,
 	} state;
 	
 	u32 cd_lba;
@@ -131,7 +131,7 @@ void Audio_StreamIRQ_CD(u8 event, u8 *payload)
 	{
 		switch (audio_streamcontext.state)
 		{
-			case Audio_StreamState_Ini1:
+			case Audio_StreamState_Ini:
 			{
 				//Update addresses
 				audio_streamcontext.spu_addr = BUFFER_START_ADDR + CHUNK_SIZE;
@@ -139,33 +139,21 @@ void Audio_StreamIRQ_CD(u8 event, u8 *payload)
 				audio_streamcontext.spu_pos = 0;
 				
 				//Set state
-				audio_streamcontext.state = Audio_StreamState_Ini2;
+				audio_streamcontext.state = Audio_StreamState_Play;
 				break;
 			}
-			case Audio_StreamState_Ini2:
+			case Audio_StreamState_Play:
 			{
 				//Stop and turn on SPU IRQ
 				CdControlF(CdlPause, NULL);
 				SpuSetIRQAddr(audio_streamcontext.spu_addr);
 				SpuSetIRQ(SPU_ON);
 				
-				//Play keys
-				u16 key_or = 0;
-				for (int i = 0; i < audio_streamcontext.header.s.channels; i++)
-				{
-					SPU_CHANNELS[i].addr       = SPU_RAM_ADDR(BUFFER_START_ADDR + BUFFER_SIZE * i);
-					SPU_CHANNELS[i].loop_addr  = SPU_CHANNELS[i].addr + SPU_RAM_ADDR(CHUNK_SIZE);
-					SPU_CHANNELS[i].freq       = SAMPLE_RATE;
-					SPU_CHANNELS[i].adsr_param = 0x9FC080FF;
-					key_or |= (1 << i);
-				}
-				SPU_KEY_ON |= key_or;
-				
 				//Set state
-				audio_streamcontext.state = Audio_StreamState_Play;
+				audio_streamcontext.state = Audio_StreamState_Playing;
 				break;
 			}
-			case Audio_StreamState_Play:
+			case Audio_StreamState_Playing:
 			{
 				//Stop and turn on SPU IRQ
 				CdControlF(CdlPause, NULL);
@@ -203,6 +191,7 @@ void Audio_Reset(u32 stream_size)
 {
 	//Reset callbacks
 	SpuSetIRQCallback(NULL);
+	SpuSetIRQ(SPU_OFF);
 	
 	//Upload dummy block at end of stream
 	u32 dummy_addr = BUFFER_START_ADDR + stream_size;
@@ -231,20 +220,41 @@ void Audio_LoadMusFile(CdlFILE *file)
 	//Stop playing mus
 	Audio_StopMus();
 	
-	//Reset context
-	audio_streamcontext.timing_pos = BUFFER_TIME * -2;
-	audio_streamcontext.timing_start = -1;
-	
 	//Read header
 	CdReadyCallback(NULL);
 	CdControl(CdlSetloc, (u8*)&file->pos, NULL);
 	CdRead(1, (IO_Data)audio_streamcontext.header.d, CdlModeSpeed);
 	CdReadSync(0, NULL);
 	
+	//Reset context
+	audio_streamcontext.state = Audio_StreamState_Ini;
+	
+	audio_streamcontext.timing_pos = 0;
+	audio_streamcontext.timing_start = -1;
+	
+	audio_streamcontext.spu_addr = BUFFER_START_ADDR;
+	audio_streamcontext.spu_swap = 0;
+	audio_streamcontext.spu_pos = 0;
+	
 	//Use mus file
 	audio_streamcontext.cd_lba = CdPosToInt(&file->pos) + 1;
 	audio_streamcontext.cd_length = ((file->size + 2047) >> 11) - 1;
 	audio_streamcontext.cd_pos = 0;
+	
+	//Setup SPU
+	Audio_Reset(CHUNK_SIZE * 2);
+	SpuSetIRQCallback(Audio_StreamIRQ_SPU);
+	
+	//Begin streaming from CD
+	u8 param[4];
+	param[0] = CdlModeSpeed;
+	CdControlB(CdlSetmode, param, 0);
+	
+	CdlLOC pos;
+	CdIntToPos(audio_streamcontext.cd_lba + audio_streamcontext.cd_pos, &pos);
+	
+	CdReadyCallback(Audio_StreamIRQ_CD);
+	CdControlF(CdlReadN, (u8*)&pos);
 }
 
 void Audio_LoadMus(const char *path)
@@ -257,33 +267,23 @@ void Audio_LoadMus(const char *path)
 	Audio_LoadMusFile(&file);
 }
 
-void Audio_PlayMus(u8 loops)
+void Audio_PlayMus(boolean loops)
 {
-	//Stop playing mus
-	Audio_StopMus();
+	//Wait for play state
+	while (audio_streamcontext.state != Audio_StreamState_Playing)
+		__asm__("nop");
 	
-	//Setup CD
-	u8 param[4];
-	param[0] = CdlModeSpeed;
-	CdControlB(CdlSetmode, param, 0);
-	CdReadyCallback(Audio_StreamIRQ_CD);
-	
-	//Setup SPU
-	Audio_Reset(CHUNK_SIZE * 2);
-	SpuSetIRQCallback(Audio_StreamIRQ_SPU);
-	
-	//Initialize context state
-	audio_streamcontext.state = Audio_StreamState_Ini1;
-	
-	//Update addresses
-	audio_streamcontext.spu_addr = BUFFER_START_ADDR;
-	audio_streamcontext.spu_swap = 0;
-	audio_streamcontext.spu_pos = 0;
-	
-	//Begin streaming from CD
-	CdlLOC pos;
-	CdIntToPos(audio_streamcontext.cd_lba + audio_streamcontext.cd_pos, &pos);
-	CdControlF(CdlReadN, (u8*)&pos);
+	//Play keys
+	u16 key_or = 0;
+	for (int i = 0; i < audio_streamcontext.header.s.channels; i++)
+	{
+		SPU_CHANNELS[i].addr       = SPU_RAM_ADDR(BUFFER_START_ADDR + BUFFER_SIZE * i);
+		SPU_CHANNELS[i].loop_addr  = SPU_CHANNELS[i].addr + SPU_RAM_ADDR(CHUNK_SIZE);
+		SPU_CHANNELS[i].freq       = SAMPLE_RATE;
+		SPU_CHANNELS[i].adsr_param = 0x9FC080FF;
+		key_or |= (1 << i);
+	}
+	SPU_KEY_ON |= key_or;
 }
 
 void Audio_StopMus(void)
@@ -291,6 +291,7 @@ void Audio_StopMus(void)
 	//Stop CD, callbacks, and keys
 	CdReadyCallback(NULL);
 	SpuSetIRQCallback(NULL);
+	SpuSetIRQ(SPU_OFF);
 	SPU_KEY_OFF |= 0x00FFFFFF;
 }
 
