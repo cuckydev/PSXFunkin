@@ -118,8 +118,6 @@ IO_Data Overlay_DataRead(void)
 
 #endif
 
-void Audio_Test(void);
-
 //Entry point
 int main(int argc, char **argv)
 {
@@ -142,7 +140,6 @@ int main(int argc, char **argv)
 	Menu_Load(MenuPage_Opening);
 	
 	//Game loop
-	Audio_Test();
 	while (PSX_Running())
 	{
 		//Prepare frame
@@ -153,9 +150,7 @@ int main(int argc, char **argv)
 			//Memory stats
 			size_t mem_used, mem_size, mem_max;
 			Mem_GetStat(&mem_used, &mem_size, &mem_max);
-			#ifndef MEM_BAR
-				FntPrint("mem: %08X/%08X (max %08X)\n", mem_used, mem_size, mem_max);
-			#endif
+			FntPrint("mem: %08X/%08X (max %08X)\n", mem_used, mem_size, mem_max);
 		#endif
 		
 		//Tick and draw game

@@ -30,7 +30,7 @@ void LoadScr_Start(void)
 	RECT loading_dst = {(SCREEN_WIDTH - 300) >> 1, (SCREEN_HEIGHT - 224) >> 1, 300, 224};
 	Gfx_Tex loading_tex;
 	Gfx_SetClear(202, 255, 77);
-	Gfx_LoadTex(&loading_tex, loading_tim, 0);
+	Gfx_LoadTex(&loading_tex, (IO_Data)loading_tim, 0);
 	Timer_Reset();
 	
 	//Draw loading screen and run transition

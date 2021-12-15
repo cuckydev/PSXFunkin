@@ -1,0 +1,5 @@
+all: \
+	iso/music/freakyMenu/freakyMenu.mus
+
+iso/%.mus: iso/%.txt
+	tools/funkinmuspak/funkinmuspak $@ $<

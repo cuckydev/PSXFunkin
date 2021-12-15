@@ -1,6 +1,6 @@
 /*
- * funkinpicopak by Regan "CuckyDev" Green
- * Packs Friday Night Funkin' json formatted charts (PICO CHART) into a binary file for the PSX port
+ * funkinchtpak by Regan "CuckyDev" Green
+ * Packs Friday Night Funkin' json formatted charts into a binary file for the PSX port
 */
 
 #include <iostream>
@@ -35,6 +35,11 @@ struct Note
 	uint8_t type, pad = 0;
 };
 
+typedef int32_t fixed_t;
+
+#define FIXED_SHIFT (10)
+#define FIXED_UNIT  (1 << FIXED_SHIFT)
+
 uint16_t PosRound(double pos, double crochet)
 {
 	return (uint16_t)std::floor(pos / crochet + 0.5);
@@ -46,11 +51,19 @@ void WriteWord(std::ostream &out, uint16_t word)
 	out.put(word >> 8);
 }
 
+void WriteLong(std::ostream &out, uint32_t word)
+{
+	out.put(word >> 0);
+	out.put(word >> 8);
+	out.put(word >> 16);
+	out.put(word >> 24);
+}
+
 int main(int argc, char *argv[])
 {
 	if (argc < 2)
 	{
-		std::cout << "usage: funkinchartpak in_json" << std::endl;
+		std::cout << "usage: funkinchtpak in_json" << std::endl;
 		return 0;
 	}
 	
@@ -117,12 +130,10 @@ int main(int argc, char *argv[])
 			new_note.pos = (step_base * 12) + PosRound(((double)j[0] - milli_base) * 12.0, step_crochet);
 			new_note.type = (uint8_t)j[1] & (3 | NOTE_FLAG_OPPONENT);
 			if (is_opponent)
-			{
 				new_note.type ^= NOTE_FLAG_OPPONENT;
-				if (is_alt)
-					new_note.type |= NOTE_FLAG_ALT_ANIM;
-			}
 			if (j[3] == true)
+				new_note.type |= NOTE_FLAG_ALT_ANIM;
+			else if ((new_note.type & NOTE_FLAG_OPPONENT) && is_alt)
 				new_note.type |= NOTE_FLAG_ALT_ANIM;
 			if (sustain >= 0)
 				new_note.type |= NOTE_FLAG_SUSTAIN_END;
@@ -181,22 +192,23 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 	
+	//Write header
+	WriteLong(out, (fixed_t)(speed * FIXED_UNIT));
+	WriteWord(out, 6 + (sections.size() << 2));
+	
 	//Write sections
-	/*
-	WriteWord(out, 2 + (sections.size() << 2));
 	for (auto &i : sections)
 	{
 		WriteWord(out, i.end);
 		WriteWord(out, i.flag);
 	}
-	*/
 	
 	//Write notes
 	for (auto &i : notes)
 	{
-		WriteWord(out, i.pos | ((i.type & 3) ? 0x8000 : 0));
-		//out.put(i.type);
-		//out.put(0);
+		WriteWord(out, i.pos);
+		out.put(i.type);
+		out.put(0);
 	}
 	return 0;
 }

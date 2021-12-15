@@ -341,11 +341,11 @@ void Menu_Load2(MenuPage page)
 	
 	stage.song_step = 0;
 	
-	//Play menu music
-	//Audio_PlayXA_Track(XA_GettinFreaky, 0x40, 0, 1);
-	
 	//Set background colour
 	Gfx_SetClear(0, 0, 0);
+	
+	//Play menu music
+	Audio_PlayMus("\\MENU\\MENU.MUS;1");
 }
 
 void Menu_Unload(void)
@@ -369,7 +369,7 @@ void Menu_Tick(void)
 	stage.flag &= ~STAGE_FLAG_JUST_STEP;
 	
 	//Get song position
-	u16 next_step = 0;//Audio_TellXA_Milli() / 147; //100 BPM
+	u16 next_step = Audio_GetTime() / FIXED_DEC(15, 102);
 	if (next_step != stage.song_step)
 	{
 		if (next_step >= stage.song_step)

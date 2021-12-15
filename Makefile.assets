@@ -2,3 +2,4 @@ all:
 	@ $(MAKE) -f Makefile.tim
 	@ $(MAKE) -f Makefile.cht
 	@ $(MAKE) -f Makefile.toh
+	@ $(MAKE) -f Makefile.mus

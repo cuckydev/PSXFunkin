@@ -69,7 +69,7 @@ all: \
 	iso/week4/week4.exe \
 
 iso/%.exe:
-	tools/funkinoverlaypak/funkinoverlaypak $@ $^
+	tools/funkinexepak/funkinexepak $@ $^
 
 iso/menu/menu.exe: Overlay.menu iso/menu/back.tim iso/menu/ng.tim iso/menu/story.tim iso/menu/title.tim iso/font/bold.tim iso/font/arial.tim
 iso/week1/week1.exe: Overlay.week1 iso/stage/hud0.tim iso/stage/hud1.tim iso/week1/back0.tim iso/week1/back1.tim

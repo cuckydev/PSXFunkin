@@ -1,4 +1,4 @@
-TOOLS = tools/funkinarcpak tools/funkinchartpak tools/funkinpicopak tools/funkintimconv tools/funkinoverlaypak tools/bin2h
+TOOLS = tools/funkinarcpak tools/funkinchtpak tools/funkintimpak tools/funkinexepak tools/funkinmuspak tools/bin2h
 
 all: $(TOOLS)
 

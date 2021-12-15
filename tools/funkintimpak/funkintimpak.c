@@ -1,5 +1,5 @@
 /*
- * funkintimconv by Regan "CuckyDev" Green
+ * funkintimpak by Regan "CuckyDev" Green
  * Converts image files to TIM files for the Friday Night Funkin' PSX port
 */
 
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 	//Read parameters
 	if (argc < 3)
 	{
-		printf("usage: funkintimconv out.tim in.png\n");
+		printf("usage: funkintimpak out.tim in.png\n");
 		return 0;
 	}
 	

@@ -331,7 +331,7 @@ void Char_XmasBF_SetAnim(Character *character, u8 anim)
 	{
 		case PlayerAnim_Dead0:
 			//Begin reading dead.arc and adjust focus
-			this->arc_dead = IO_AsyncReadFile(&this->file_dead_arc);
+			//this->arc_dead = IO_AsyncReadFile(&this->file_dead_arc);
 			character->focus_x = FIXED_DEC(0,1);
 			character->focus_y = FIXED_DEC(-40,1);
 			character->focus_zoom = FIXED_DEC(125,100);

@@ -1,5 +1,5 @@
 /*
- * funkinoverlaypak by Regan "CuckyDev" Green
+ * funkinexepak by Regan "CuckyDev" Green
  * Packs overlay and temporary data together for the Friday Night Funkin' PSX port
 */
 
@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
 	//Read parameters
 	if (argc < 3)
 	{
-		printf("usage: funkinoverlaypak out.exe overlay.in ...\n");
+		printf("usage: funkinexepak out.exe overlay.in ...\n");
 		return 0;
 	}
 	FILE *fp;
