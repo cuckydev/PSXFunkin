@@ -158,7 +158,7 @@ int main(int argc, char *argv[])
 		//Encode audio to ADPCM
 		std::vector<int16_t> mix_buffer(channel.audio->chunks * CHUNK_SAMPLES);
 		for (size_t i = 0; i < mix_buffer.size(); i++)
-			mix_buffer[i] = channel.audio->data[(i << 1)] * channel.use_l + channel.audio->data[(i << 1) | 1] * channel.use_r;
+			mix_buffer[i] = (int16_t)((float)channel.audio->data[(i << 1)] * channel.use_l + (float)channel.audio->data[(i << 1) | 1] * channel.use_r);
 		
 		channel.adpcm.resize(channel.audio->chunks * CHUNK_BLOCKS * 16);
 		spu::encodeSound(mix_buffer.data(), channel.adpcm.data(), mix_buffer.size(), mix_buffer.size());
@@ -179,6 +179,12 @@ int main(int argc, char *argv[])
 		std::cout << "Failed to open mus " << path_mus << std::endl;
 		return 1;
 	}
+	
+	//Write meta header
+	uint8_t header[2048] = {};
+	header[0] = mus_channels.size();
+	
+	stream_mus.write((const char*)header, 2048);
 	
 	//Write sector by sector
 	size_t chunks = 1;

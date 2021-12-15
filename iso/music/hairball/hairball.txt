@@ -1,0 +1,5 @@
+3
+"Inst.ogg" 1.0 0.0
+"Inst.ogg" 0.0 1.0
+"Voices.ogg" 0.5 0.5
+0

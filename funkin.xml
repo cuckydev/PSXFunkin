@@ -33,6 +33,9 @@
 			<dir name = "week1">
 				<!-- Overlay -->
 				<file name = "week1.exe" type = "data" source = "iso/week1/week1.exe"/>
+				<file name = "week1_1.mus" type = "data" source = "iso/music/bopeebo/bopeebo.mus"/>
+				<file name = "week1_2.mus" type = "data" source = "iso/music/fresh/fresh.mus"/>
+				<file name = "week1_3.mus" type = "data" source = "iso/music/dadbattle/dadbattle.mus"/>
 			</dir>
 			
 			<!-- Week 2 assets -->

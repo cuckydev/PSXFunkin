@@ -1,5 +1,8 @@
 all: \
-	iso/music/freakyMenu/freakyMenu.mus
+	iso/music/freakyMenu/freakyMenu.mus \
+	iso/music/bopeebo/bopeebo.mus \
+	iso/music/fresh/fresh.mus \
+	iso/music/dadbattle/dadbattle.mus \
 
 iso/%.mus: iso/%.txt
 	tools/funkinmuspak/funkinmuspak $@ $<
