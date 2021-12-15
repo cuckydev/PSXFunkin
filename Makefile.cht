@@ -3,6 +3,6 @@ all: \
 	iso/week7/picospeaker.json.cht
 
 iso/chart/%.json.cht: iso/chart/%.json
-	tools/funkinchartpak/funkinchartpak $<
+	tools/funkinchtpak/funkinchtpak $<
 iso/week7/picospeaker.json.cht: iso/week7/picospeaker.json
-	tools/funkinchartpak/funkinchartpak $<
+	tools/funkinchtpak/funkinchtpak $<
