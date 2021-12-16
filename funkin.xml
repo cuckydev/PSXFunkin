@@ -36,6 +36,7 @@
 				<file name = "week1_1.mus" type = "data" source = "iso/music/bopeebo/bopeebo.mus"/>
 				<file name = "week1_2.mus" type = "data" source = "iso/music/fresh/fresh.mus"/>
 				<file name = "week1_3.mus" type = "data" source = "iso/music/dadbattle/dadbattle.mus"/>
+				<file name = "week1_4.mus" type = "data" source = "iso/music/tutorial/tutorial.mus"/>
 			</dir>
 			
 			<!-- Week 2 assets -->

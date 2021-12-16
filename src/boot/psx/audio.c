@@ -85,9 +85,12 @@ static volatile Audio_StreamContext audio_streamcontext;
 
 void Audio_StreamIRQ_SPU(void)
 {
-	printf("SPU IRQ\n");
 	//Disable SPU IRQ until we've finished streaming more data
 	SpuSetIRQ(SPU_OFF);
+	
+	//Don't run if stopped
+	if (audio_streamcontext.state == Audio_StreamState_Stopped)
+		return;
 	
 	//Update timing state
 	audio_streamcontext.timing_pos += BUFFER_TIME;
@@ -142,8 +145,14 @@ static u8 read_sector[2048];
 
 void Audio_StreamIRQ_CD(u8 event, u8 *payload)
 {
-	printf("CD IRQ\n");
 	(void)payload;
+	
+	//Don't run if stopped
+	if (audio_streamcontext.state == Audio_StreamState_Stopped)
+	{
+		CdControlF(CdlPause, NULL);
+		return;
+	}
 	
 	//Ignore all events other than a sector being ready
 	if (event != CdlDataReady)
@@ -331,13 +340,8 @@ void Audio_PlayMus(boolean loops)
 
 void Audio_StopMus(void)
 {
-	//Reset CD
-	CdReadyCallback(NULL);
-	CdControlF(CdlPause, NULL);
-	
-	//Reset SPU
-	SpuSetIRQCallback(NULL);
-	SpuSetIRQ(SPU_OFF);
+	//Reset context
+	audio_streamcontext.state = Audio_StreamState_Stopped;
 	
 	//Reset keys
 	u32 dummy_addr = BUFFER_START_ADDR + (CHUNK_SIZE * 2);
@@ -353,8 +357,13 @@ void Audio_StopMus(void)
 	SPU_KEY_OFF |= 0x00FFFFFF;
 	SPU_KEY_ON |= 0x00FFFFFF;
 	
-	//Reset context
-	audio_streamcontext.state = Audio_StreamState_Stopped;
+	//Reset SPU
+	SpuSetIRQCallback(NULL);
+	SpuSetIRQ(SPU_OFF);
+	
+	//Reset CD
+	CdReadyCallback(NULL);
+	CdControlF(CdlPause, NULL);
 }
 
 void Audio_SetVolume(u8 i, u16 vol_left, u16 vol_right)

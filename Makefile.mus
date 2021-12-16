@@ -3,6 +3,7 @@ all: \
 	iso/music/bopeebo/bopeebo.mus \
 	iso/music/fresh/fresh.mus \
 	iso/music/dadbattle/dadbattle.mus \
+	iso/music/tutorial/tutorial.mus \
 
 iso/%.mus: iso/%.txt
 	tools/funkinmuspak/funkinmuspak $@ $<
