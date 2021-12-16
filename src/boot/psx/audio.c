@@ -17,7 +17,7 @@
 //Audio constants
 #define SAMPLE_RATE 0x1000 //44100 Hz
 
-#define BUFFER_SIZE (13 << 11) //13 sectors = 26624 bytes = 1.05 seconds (see BUFFER_TIME)
+#define BUFFER_SIZE (13 << 11) //13 sectors
 #define CHUNK_SIZE (BUFFER_SIZE * audio_streamcontext.header.s.channels)
 
 #define BUFFER_TIME FIXED_DEC(((BUFFER_SIZE * 28) / 16), 44100)
@@ -68,6 +68,7 @@ typedef struct
 	u32 spu_swap;
 	
 	//Timing state
+	u32 timing_chunk;
 	fixed_t timing_pos, timing_start;
 	
 	//Header
@@ -93,7 +94,8 @@ void Audio_StreamIRQ_SPU(void)
 		return;
 	
 	//Update timing state
-	audio_streamcontext.timing_pos += BUFFER_TIME;
+	audio_streamcontext.timing_chunk++;
+	audio_streamcontext.timing_pos = (audio_streamcontext.timing_chunk << FIXED_SHIFT) * (BUFFER_SIZE / 16) / 1575;
 	audio_streamcontext.timing_start = timer_sec;
 	
 	//Update addresses
@@ -275,6 +277,7 @@ void Audio_LoadMusFile(CdlFILE *file)
 	//Reset context
 	audio_streamcontext.state = Audio_StreamState_Ini;
 	
+	audio_streamcontext.timing_chunk = 0;
 	audio_streamcontext.timing_pos = 0;
 	audio_streamcontext.timing_start = -1;
 	
@@ -320,6 +323,7 @@ void Audio_PlayMus(boolean loops)
 		__asm__("nop");
 	
 	//Start timing
+	audio_streamcontext.timing_chunk = 0;
 	audio_streamcontext.timing_pos = 0;
 	audio_streamcontext.timing_start = timer_sec;
 	
