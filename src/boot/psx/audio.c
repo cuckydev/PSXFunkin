@@ -85,6 +85,7 @@ static volatile Audio_StreamContext audio_streamcontext;
 
 void Audio_StreamIRQ_SPU(void)
 {
+	printf("SPU IRQ\n");
 	//Disable SPU IRQ until we've finished streaming more data
 	SpuSetIRQ(SPU_OFF);
 	
@@ -115,7 +116,15 @@ void Audio_StreamIRQ_SPU(void)
 	else
 	{
 		//Stop playing
-		if (audio_streamcontext.cd_pos > audio_streamcontext.cd_length)
+		if (audio_streamcontext.cd_pos == audio_streamcontext.cd_length)
+		{
+			//Continue streaming from CD (wrap to prevent unintended errors)
+			CdlLOC pos;
+			CdIntToPos(audio_streamcontext.cd_lba, &pos);
+			CdControlF(CdlReadN, (u8*)&pos);
+			return;
+		}
+		else if (audio_streamcontext.cd_pos > audio_streamcontext.cd_length)
 		{
 			//Stop playing
 			Audio_StopMus();
@@ -133,6 +142,7 @@ static u8 read_sector[2048];
 
 void Audio_StreamIRQ_CD(u8 event, u8 *payload)
 {
+	printf("CD IRQ\n");
 	(void)payload;
 	
 	//Ignore all events other than a sector being ready
@@ -213,14 +223,14 @@ void Audio_Quit(void)
 	
 }
 
-void Audio_Reset(u32 stream_size)
+void Audio_Reset(void)
 {
-	//Reset callbacks
+	//Reset SPU
 	SpuSetIRQCallback(NULL);
 	SpuSetIRQ(SPU_OFF);
 	
 	//Upload dummy block at end of stream
-	u32 dummy_addr = BUFFER_START_ADDR + stream_size;
+	u32 dummy_addr = BUFFER_START_ADDR + (CHUNK_SIZE * 2);
 	static u8 dummy[64] = {0, 5};
 	
 	SpuSetTransferMode(SPU_TRANSFER_BY_DMA);
@@ -230,7 +240,6 @@ void Audio_Reset(u32 stream_size)
 	SpuIsTransferCompleted(SPU_TRANSFER_WAIT);
 	
 	//Reset keys
-	SPU_KEY_OFF |= 0x00FFFFFF;
 	for (int i = 0; i < 24; i++)
 	{
 		SPU_CHANNELS[i].vol_left   = 0x0000;
@@ -239,6 +248,8 @@ void Audio_Reset(u32 stream_size)
 		SPU_CHANNELS[i].freq       = 0;
 		SPU_CHANNELS[i].adsr_param = 0x9FC080FF;
 	}
+	SPU_KEY_OFF |= 0x00FFFFFF;
+	SPU_KEY_ON |= 0x00FFFFFF;
 }
 
 void Audio_LoadMusFile(CdlFILE *file)
@@ -268,7 +279,7 @@ void Audio_LoadMusFile(CdlFILE *file)
 	audio_streamcontext.cd_pos = 0;
 	
 	//Setup SPU
-	Audio_Reset(CHUNK_SIZE * 2);
+	Audio_Reset();
 	SpuSetIRQCallback(Audio_StreamIRQ_SPU);
 	
 	//Begin streaming from CD
@@ -320,16 +331,30 @@ void Audio_PlayMus(boolean loops)
 
 void Audio_StopMus(void)
 {
-	//Stop CD, callbacks, and keys
-	SPU_KEY_OFF |= 0x00FFFFFF;
-	
-	CdControlF(CdlPause, NULL);
+	//Reset CD
 	CdReadyCallback(NULL);
+	CdControlF(CdlPause, NULL);
+	
+	//Reset SPU
 	SpuSetIRQCallback(NULL);
 	SpuSetIRQ(SPU_OFF);
 	
-	audio_streamcontext.state = Audio_StreamState_Stopped;
+	//Reset keys
+	u32 dummy_addr = BUFFER_START_ADDR + (CHUNK_SIZE * 2);
 	
+	for (int i = 0; i < 24; i++)
+	{
+		SPU_CHANNELS[i].vol_left   = 0x0000;
+		SPU_CHANNELS[i].vol_right  = 0x0000;
+		SPU_CHANNELS[i].addr       = SPU_RAM_ADDR(dummy_addr);
+		SPU_CHANNELS[i].freq       = 0;
+		SPU_CHANNELS[i].adsr_param = 0x9FC080FF;
+	}
+	SPU_KEY_OFF |= 0x00FFFFFF;
+	SPU_KEY_ON |= 0x00FFFFFF;
+	
+	//Reset context
+	audio_streamcontext.state = Audio_StreamState_Stopped;
 }
 
 void Audio_SetVolume(u8 i, u16 vol_left, u16 vol_right)
