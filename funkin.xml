@@ -43,18 +43,27 @@
 			<dir name = "week2">
 				<!-- Overlay -->
 				<file name = "week2.exe" type = "data" source = "iso/week2/week2.exe"/>
+				<file name = "week2_1.mus" type = "data" source = "iso/music/spookeez/spookeez.mus"/>
+				<file name = "week2_2.mus" type = "data" source = "iso/music/south/south.mus"/>
+				<file name = "week2_3.mus" type = "data" source = "iso/music/monster/monster.mus"/>
 			</dir>
 			
 			<!-- Week 3 assets -->
 			<dir name = "week3">
 				<!-- Overlay -->
 				<file name = "week3.exe" type = "data" source = "iso/week3/week3.exe"/>
+				<file name = "week3_1.mus" type = "data" source = "iso/music/pico/pico.mus"/>
+				<file name = "week3_2.mus" type = "data" source = "iso/music/philly/philly.mus"/>
+				<file name = "week3_3.mus" type = "data" source = "iso/music/blammed/blammed.mus"/>
 			</dir>
 			
 			<!-- Week 4 assets -->
 			<dir name = "week4">
 				<!-- Overlay -->
 				<file name = "week4.exe" type = "data" source = "iso/week4/week4.exe"/>
+				<file name = "week4_1.mus" type = "data" source = "iso/music/satin-panties/satin-panties.mus"/>
+				<file name = "week4_2.mus" type = "data" source = "iso/music/high/high.mus"/>
+				<file name = "week4_3.mus" type = "data" source = "iso/music/milf/milf.mus"/>
 			</dir>
 		</directory_tree>
 	</track>

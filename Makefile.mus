@@ -4,6 +4,15 @@ all: \
 	iso/music/fresh/fresh.mus \
 	iso/music/dadbattle/dadbattle.mus \
 	iso/music/tutorial/tutorial.mus \
+	iso/music/spookeez/spookeez.mus \
+	iso/music/south/south.mus \
+	iso/music/monster/monster.mus \
+	iso/music/pico/pico.mus \
+	iso/music/philly/philly.mus \
+	iso/music/blammed/blammed.mus \
+	iso/music/satin-panties/satin-panties.mus \
+	iso/music/high/high.mus \
+	iso/music/milf/milf.mus
 
 iso/%.mus: iso/%.txt
 	tools/funkinmuspak/funkinmuspak $@ $<
