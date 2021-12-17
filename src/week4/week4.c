@@ -85,27 +85,6 @@ static fixed_t Char_GF_GetParallax(Char_GF *this)
 	return FIXED_UNIT;
 }
 
-//Week 4 textures
-static Gfx_Tex week4_tex_back0; //Front limo
-static Gfx_Tex week4_tex_back1; //Back limo
-static Gfx_Tex week4_tex_back2; //Car
-static Gfx_Tex week4_tex_back3; //Sky left
-static Gfx_Tex week4_tex_back4; //Sky right
-
-//Car state
-#define CAR_START_X FIXED_DEC(-500,1)
-#define CAR_END_X    FIXED_DEC(500,1)
-#define CAR_TIME_A FIXED_DEC(5,1)
-#define CAR_TIME_B FIXED_DEC(14,1)
-
-static fixed_t week4_car_x;
-static fixed_t week4_car_timer;
-
-//Henchmen state
-static IO_Data week4_arc_hench_ptr[2];
-static Gfx_Tex week4_tex_hench;
-static u8 week4_hench_frame, week4_hench_tex_id;
-
 //Henchmen assets
 static const CharFrame henchmen_frame[] = {
 	{0, {  0,   0,  99,  99}, { 71,  98}}, //0 left 1
@@ -129,6 +108,27 @@ static const Animation henchmen_anim[] = {
 static u8 week4_arc_hench[] = {
 	#include "iso/week4/hench.arc.h"
 };
+
+//Week 4 textures
+static Gfx_Tex week4_tex_back0; //Front limo
+static Gfx_Tex week4_tex_back1; //Back limo
+static Gfx_Tex week4_tex_back2; //Car
+static Gfx_Tex week4_tex_back3; //Sky left
+static Gfx_Tex week4_tex_back4; //Sky right
+
+//Car state
+#define CAR_START_X FIXED_DEC(-500,1)
+#define CAR_END_X    FIXED_DEC(500,1)
+#define CAR_TIME_A FIXED_DEC(5,1)
+#define CAR_TIME_B FIXED_DEC(14,1)
+
+static fixed_t week4_car_x;
+static fixed_t week4_car_timer;
+
+//Henchmen state
+static IO_Data week4_arc_hench_ptr[2];
+static Gfx_Tex week4_tex_hench;
+static u8 week4_hench_frame, week4_hench_tex_id;
 
 //Henchmen functions
 void Week4_Henchmen_SetFrame(void *user, u8 frame)

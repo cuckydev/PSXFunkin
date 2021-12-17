@@ -27,10 +27,11 @@ SRCS = src/boot/main.c \
        src/week2/week2.c \
        src/week3/week3.c \
        src/week4/week4.c \
+       src/week6/week6.c \
        mips/common/crt0/crt0.s
 
 OVERLAYSCRIPT  ?= overlay.ld
-OVERLAYSECTION ?= .menu .week1 .week2 .week3 .week4
+OVERLAYSECTION ?= .menu .week1 .week2 .week3 .week4 .week6
 
 CPPFLAGS += -Wall -Wextra -pedantic -Isrc/ -mno-check-zero-division
 LDFLAGS += -Wl,--start-group
@@ -67,12 +68,14 @@ all: \
 	iso/week2/week2.exe \
 	iso/week3/week3.exe \
 	iso/week4/week4.exe \
+	iso/week6/week6.exe
 
 iso/%.exe:
 	tools/funkinexepak/funkinexepak $@ $^
 
 iso/menu/menu.exe: Overlay.menu iso/menu/back.tim iso/menu/ng.tim iso/menu/story.tim iso/menu/title.tim iso/font/bold.tim iso/font/arial.tim
-iso/week1/week1.exe: Overlay.week1 iso/stage/hud0.tim iso/stage/hud1.tim iso/week1/back0.tim iso/week1/back1.tim
-iso/week2/week2.exe: Overlay.week2 iso/stage/hud0.tim iso/stage/hud1.tim iso/week2/back0.tim iso/week2/back1.tim iso/week2/back2.tim
-iso/week3/week3.exe: Overlay.week3 iso/stage/hud0.tim iso/stage/hud1.tim iso/week3/back0.tim iso/week3/back1.tim iso/week3/back2.tim iso/week3/back3.tim iso/week3/back4.tim iso/week3/back5.tim
-iso/week4/week4.exe: Overlay.week4 iso/stage/hud0.tim iso/stage/hud1.tim iso/week4/back0.tim iso/week4/back1.tim iso/week4/back2.tim iso/week4/back3.tim iso/week4/back4.tim
+iso/week1/week1.exe: Overlay.week1 iso/stage/hud0.tim iso/week1/hud1.tim iso/week1/back0.tim iso/week1/back1.tim
+iso/week2/week2.exe: Overlay.week2 iso/stage/hud0.tim iso/week1/hud1.tim iso/week2/back0.tim iso/week2/back1.tim iso/week2/back2.tim
+iso/week3/week3.exe: Overlay.week3 iso/stage/hud0.tim iso/week1/hud1.tim iso/week3/back0.tim iso/week3/back1.tim iso/week3/back2.tim iso/week3/back3.tim iso/week3/back4.tim iso/week3/back5.tim
+iso/week4/week4.exe: Overlay.week4 iso/stage/hud0.tim iso/week1/hud1.tim iso/week4/back0.tim iso/week4/back1.tim iso/week4/back2.tim iso/week4/back3.tim iso/week4/back4.tim
+iso/week6/week6.exe: Overlay.week6 iso/week6/hud0.tim iso/week6/hud1.tim iso/week6/back0.tim iso/week6/back1.tim iso/week6/back2.tim iso/week6/back3.tim

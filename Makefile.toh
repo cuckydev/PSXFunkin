@@ -10,6 +10,11 @@ all: \
 	src/iso/mom/main.arc.h \
 	src/iso/mom/hair.tim.h \
 	src/iso/week4/hench.arc.h \
+	src/iso/bf/weeb.arc.h \
+	src/iso/gf/weeb.arc.h \
+	src/iso/senpai/main.arc.h \
+	src/iso/senpaim/main.arc.h \
+	src/iso/spirit/main.arc.h \
 	src/iso/chart/bopeebo-easy.json.cht.h \
 	src/iso/chart/bopeebo.json.cht.h \
 	src/iso/chart/bopeebo-hard.json.cht.h \
@@ -49,6 +54,15 @@ all: \
 	src/iso/chart/milf.json.cht.h \
 	src/iso/chart/milf-hard.json.cht.h \
 	src/iso/chart/test.json.cht.h \
+	src/iso/chart/senpai-easy.json.cht.h \
+	src/iso/chart/senpai.json.cht.h \
+	src/iso/chart/senpai-hard.json.cht.h \
+	src/iso/chart/roses-easy.json.cht.h \
+	src/iso/chart/roses.json.cht.h \
+	src/iso/chart/roses-hard.json.cht.h \
+	src/iso/chart/thorns-easy.json.cht.h \
+	src/iso/chart/thorns.json.cht.h \
+	src/iso/chart/thorns-hard.json.cht.h \
 
 src/iso/%.h: iso/%
 	mkdir -p $(dir $@)

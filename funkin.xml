@@ -65,6 +65,15 @@
 				<file name = "week4_2.mus" type = "data" source = "iso/music/high/high.mus"/>
 				<file name = "week4_3.mus" type = "data" source = "iso/music/milf/milf.mus"/>
 			</dir>
+			
+			<!-- Week 6 assets -->
+			<dir name = "week6">
+				<!-- Overlay -->
+				<file name = "week6.exe" type = "data" source = "iso/week6/week6.exe"/>
+				<file name = "week6_1.mus" type = "data" source = "iso/music/senpai/senpai.mus"/>
+				<file name = "week6_2.mus" type = "data" source = "iso/music/roses/roses.mus"/>
+				<file name = "week6_3.mus" type = "data" source = "iso/music/thorns/thorns.mus"/>
+			</dir>
 		</directory_tree>
 	</track>
 </iso_project>

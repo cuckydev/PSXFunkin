@@ -7,10 +7,9 @@ all: \
 	iso/font/bold.tim \
 	iso/font/arial.tim \
 	iso/stage/hud0.tim \
-	iso/stage/hud1.tim \
-	iso/stage/hud0weeb.tim \
 	iso/week1/back0.tim \
 	iso/week1/back1.tim \
+	iso/week1/hud1.tim \
 	iso/week2/back0.tim \
 	iso/week2/back1.tim \
 	iso/week2/back2.tim \
@@ -36,6 +35,8 @@ all: \
 	iso/week6/back1.tim \
 	iso/week6/back2.tim \
 	iso/week6/back3.tim \
+	iso/week6/hud0.tim \
+	iso/week6/hud1.tim \
 	iso/week7/back0.tim \
 	iso/week7/back1.tim \
 	iso/week7/back2.tim \

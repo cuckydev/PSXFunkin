@@ -12,7 +12,10 @@ all: \
 	iso/music/blammed/blammed.mus \
 	iso/music/satin-panties/satin-panties.mus \
 	iso/music/high/high.mus \
-	iso/music/milf/milf.mus
+	iso/music/milf/milf.mus \
+	iso/music/senpai/senpai.mus \
+	iso/music/roses/roses.mus \
+	iso/music/thorns/thorns.mus
 
 iso/%.mus: iso/%.txt
 	tools/funkinmuspak/funkinmuspak $@ $<

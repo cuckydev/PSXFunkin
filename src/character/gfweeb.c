@@ -4,16 +4,16 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#include "gf.h"
+#include "boot/character.h"
+#include "boot/mem.h"
+#include "boot/archive.h"
+#include "boot/stage.h"
+#include "boot/main.h"
 
-#include "../mem.h"
-#include "../archive.h"
-#include "../stage.h"
-#include "../main.h"
-
-#include "speaker.h"
-
-#include "../stage/week7.h"
+//GF Weeb assets
+static u8 char_gfweeb_arc_main[] = {
+	#include "iso/gf/weeb.arc.h"
+};
 
 //GF Weeb character structure
 enum
@@ -30,7 +30,6 @@ typedef struct
 	Character character;
 	
 	//Render data and state
-	IO_Data arc_main;
 	IO_Data arc_ptr[GFWeeb_Arc_Max];
 	
 	Gfx_Tex tex;
@@ -63,7 +62,7 @@ static const Animation char_gfweeb_anim[CharAnim_Max] = {
 };
 
 //GF Weeb character functions
-void Char_GFWeeb_SetFrame(void *user, u8 frame)
+static void Char_GFWeeb_SetFrame(void *user, u8 frame)
 {
 	Char_GFWeeb *this = (Char_GFWeeb*)user;
 	
@@ -77,7 +76,7 @@ void Char_GFWeeb_SetFrame(void *user, u8 frame)
 	}
 }
 
-void Char_GFWeeb_Tick(Character *character)
+static void Char_GFWeeb_Tick(Character *character)
 {
 	Char_GFWeeb *this = (Char_GFWeeb*)character;
 	
@@ -106,7 +105,7 @@ void Char_GFWeeb_Tick(Character *character)
 	Character_DrawParallax(character, &this->tex, &char_gfweeb_frame[this->frame], parallax);
 }
 
-void Char_GFWeeb_SetAnim(Character *character, u8 anim)
+static void Char_GFWeeb_SetAnim(Character *character, u8 anim)
 {
 	//Set animation
 	if (anim != CharAnim_Idle && anim != CharAnim_Left && anim != CharAnim_Right)
@@ -114,15 +113,12 @@ void Char_GFWeeb_SetAnim(Character *character, u8 anim)
 	Animatable_SetAnim(&character->animatable, anim);
 }
 
-void Char_GFWeeb_Free(Character *character)
+static void Char_GFWeeb_Free(Character *character)
 {
-	Char_GFWeeb *this = (Char_GFWeeb*)character;
-	
-	//Free art
-	Mem_Free(this->arc_main);
+	(void)character;
 }
 
-Character *Char_GFWeeb_New(fixed_t x, fixed_t y)
+static Character *Char_GFWeeb_New(fixed_t x, fixed_t y)
 {
 	//Allocate gf weeb object
 	Char_GFWeeb *this = Mem_Alloc(sizeof(Char_GFWeeb));
@@ -151,8 +147,6 @@ Character *Char_GFWeeb_New(fixed_t x, fixed_t y)
 	this->character.focus_zoom = FIXED_DEC(13,10);
 	
 	//Load art
-	this->arc_main = IO_Read("\\CHAR\\GFWEEB.ARC;1");
-	
 	const char **pathp = (const char *[]){
 		"weeb0.tim",  //GFWeeb_ArcMain_Weeb0
 		"weeb1.tim",  //GFWeeb_ArcMain_Weeb1
@@ -160,7 +154,7 @@ Character *Char_GFWeeb_New(fixed_t x, fixed_t y)
 	};
 	IO_Data *arc_ptr = this->arc_ptr;
 	for (; *pathp != NULL; pathp++)
-		*arc_ptr++ = Archive_Find(this->arc_main, *pathp);
+		*arc_ptr++ = Archive_Find((IO_Data)char_gfweeb_arc_main, *pathp);
 	
 	//Initialize render state
 	this->tex_id = this->frame = 0xFF;
